@@ -1,0 +1,165 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Tsuzuku</title>
+        <meta charset="utf-8">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.2/color-thief.umd.min.js"></script>
+        <script src="index.js"></script>
+        <link href="index.css" rel="stylesheet">
+    </head>
+    <body id="dark">
+        <dialog></dialog>
+        <noscript>
+            <dialog open>
+                <span>🔔</span>
+                <pre style="margin-top: 0;">Please enable JavaScript</pre>
+            </dialog>
+        </noscript>
+        <div id="top">
+            <table id="table">
+                <tr>
+                    <td>
+                        <button id="mode">Light</button>
+                    </td>
+                    <td></td>
+                    <td>
+                        <input type="text" id="search" placeholder="Search"></input>
+                    </td>
+                    <td>
+                        <button id="update">Update</button>
+                    </td>
+                    <td style="white-space: nowrap;">
+                        <button id="backup">Backup</button>
+                        <button id="restore">Restore</button>
+                        <input type="file" id="file"></input>
+                    </td>
+                </tr>
+            </table>
+            <script>
+                if (localStorage.getItem('mode')) {
+                    document.body.setAttribute('id', localStorage.getItem('mode'));
+
+                    if (localStorage.getItem('mode') === 'dark') {
+                        document.querySelector('#mode').innerHTML = 'Light';
+                    } else {
+                        document.querySelector('#mode').innerHTML = 'Dark';
+                    }
+                } else {
+                    localStorage.setItem('mode', 'light');
+                }
+            </script>
+            <div id="when">
+                <table>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td style="white-space: nowrap; overflow-x: auto;">
+                            <button id="divall">All (0)</button>
+                            <button id="divwatching" selected>Watching (0)</button>
+                            <button id="divcompleted">Completed (0)</button>
+                            <button id="divpaused">Paused (0)</button>
+                            <button id="divdropped">Dropped (0)</button>
+                            <button id="divplanning">Planning (0)</button>
+                        </td>
+                        <td>
+                            <button id="divrelated">Related</button>
+                        </td>
+                        <td></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div></div>
+        <div id="bottom">
+            <div id="database">
+                <table id="database">
+                    <tr id="message" style="height: 34px;">
+                        <td></td>
+                        <td></td>
+                        <td><span>Fetching...</span></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </table>
+            </div>
+            <div id="all">
+                <table id="all">
+                    <tr id="message" style="height: 34px;">
+                        <td></td>
+                        <td></td>
+                        <td><span>Loading...</span></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </table>
+            </div>
+            <div id="watching">
+                <table id="watching">
+                    <tr id="message" style="height: 34px;">
+                        <td></td>
+                        <td></td>
+                        <td><span>Loading...</span></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </table>
+            </div>
+            <div id="completed">
+                <table id="completed">
+                    <tr id="message" style="height: 34px;">
+                        <td></td>
+                        <td></td>
+                        <td><span>Loading...</span></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </table>
+            </div>
+            <div id="paused">
+                <table id="paused">
+                    <tr id="message" style="height: 34px;">
+                        <td></td>
+                        <td></td>
+                        <td><span>Loading...</span></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </table>
+            </div>
+            <div id="dropped">
+                <table id="dropped">
+                    <tr id="message" style="height: 34px;">
+                        <td></td>
+                        <td></td>
+                        <td><span>Loading...</span></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </table>
+            </div>
+            <div id="planning">
+                <table id="planning">
+                    <tr id="message" style="height: 34px;">
+                        <td></td>
+                        <td></td>
+                        <td><span>Loading...</span></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </table>
+            </div>
+            <div id="related">
+                <table id="related">
+                    <tr id="message" style="height: 34px;">
+                        <td></td>
+                        <td></td>
+                        <td><span>Fetching...</span></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </body>
+</html>

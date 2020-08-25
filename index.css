@@ -1,0 +1,271 @@
+:root {
+    --light-background: #fff;
+    --light-color: #000;;
+    --dark-background: #000;
+    --dark-color: #fff;
+}
+
+body#dark .highlight,
+body#dark .searchhighlight,
+body#light {
+    background: var(--light-background);
+}
+
+body#dark,
+body#light .highlight,
+body#light .searchhighlight {
+    background: var(--dark-background);
+}
+
+body#dark .highlight,
+body#dark .searchhighlight,
+body#light a,
+body#light span,
+body#light td {
+    color: var(--light-color);
+}
+
+body#dark a,
+body#dark span,
+body#dark td,
+body#light .highlight,
+body#light .searchhighlight {
+    color: var(--dark-color);
+}
+
+body {
+    font-family: sans-serif;
+    margin: 0;
+}
+
+#progress {
+    height: 2px; 
+}
+
+#bottom,
+#top {
+    left: 18%;
+    right: 18%;
+}
+
+dialog {
+    max-height: 500px;
+    max-width: 1000px;
+    overflow: auto;
+}
+
+#top {
+    position: fixed;
+    top: 0;
+    z-index: 1;
+    padding: 10px 0 10px 0;
+}
+
+#bottom {
+    position: absolute;
+    padding: 110px 0 15px 0;
+    height: 85%;
+}
+
+div#all,
+div#completed,
+div#database,
+div#dropped,
+div#paused,
+div#planning,
+div#related,
+div#watching {
+    height: 100%;
+    overflow-y: auto;
+    will-change: transform;
+}
+
+input[type="number"] {
+    width: 45%;
+}
+
+input[type="text"],
+table,
+textarea {
+    width: 100%
+}
+
+dialog {
+    -moz-appearance: textfield;
+    z-index: 2;
+}
+
+#child,
+#complete,
+#drop,
+#parent,
+#pause,
+#postpone,
+#remove,
+#start,
+
+div#all,
+div#completed,
+div#database,
+div#dropped,
+div#paused,
+div#planning,
+div#related,
+
+span#completed,
+span#planning,
+span#watching {
+    display: none;
+}
+
+#bottom td:nth-child(1) span,
+#bottom td:nth-child(5) span,
+#top td:nth-child(5) img {
+    padding-left: 5%;
+    padding-right: 5%;
+    vertical-align: middle;
+}
+
+#bottom td:nth-child(5) span:hover,
+#pause:hover,
+
+table#all tr:not(#message):hover > td:nth-child(2),
+table#completed tr:not(#message):hover > td:nth-child(2),
+table#database tr:not(#message):hover > td:nth-child(2),
+table#dropped tr:not(#message):hover > td:nth-child(2),
+table#paused tr:not(#message):hover > td:nth-child(2),
+table#planning tr:not(#message):hover > td:nth-child(2),
+table#related tr:not(#message):hover > td:nth-child(2),
+table#watching tr:not(#message):hover > td:nth-child(2),
+
+table#all tr:not(#message):hover > td:nth-child(3),
+table#completed tr:not(#message):hover > td:nth-child(3),
+table#database tr:not(#message):hover > td:nth-child(3),
+table#dropped tr:not(#message):hover > td:nth-child(3),
+table#paused tr:not(#message):hover > td:nth-child(3),
+table#planning tr:not(#message):hover > td:nth-child(3),
+table#related tr:not(#message):hover > td:nth-child(3),
+table#watching tr:not(#message):hover > td:nth-child(3),
+
+table#all tr:not(#message):hover > td:nth-child(4),
+table#completed tr:not(#message):hover > td:nth-child(4),
+table#database tr:not(#message):hover > td:nth-child(4),
+table#dropped tr:not(#message):hover > td:nth-child(4),
+table#paused tr:not(#message):hover > td:nth-child(4),
+table#planning tr:not(#message):hover > td:nth-child(4),
+table#related tr:not(#message):hover > td:nth-child(4),
+table#watching tr:not(#message):hover > td:nth-child(4),
+
+#top td:nth-child(5) img:hover,
+#when button,
+
+[data-when="On-Hold"] {
+    opacity: 0.5;
+}
+
+#bottom td:nth-child(1) span:not(#mismatch),
+#bottom td:nth-child(5) span,
+
+[data-when="Completed"] #type {
+    cursor: pointer;
+}
+
+#mismatch {
+    cursor: default;
+}
+
+#when button[selected] {
+    opacity: 1;
+}
+
+td:hover > #child,
+td:hover > #complete,
+td:hover > #drop,
+td:hover > #parent,
+td:hover > #pause,
+td:hover > #postpone,
+td:hover > #remove,
+td:hover > #start,
+
+td:hover > span#completed,
+td:hover > span#planning,
+td:hover > span#watching {
+    display: inline;
+}
+
+table {
+    table-layout: fixed;
+}
+
+#bottom td:nth-child(3) {
+    vertical-align: middle;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+#bottom td:nth-child(3):hover {
+    overflow: unset;
+    white-space: unset;
+    text-overflow: unset;
+}
+
+td:nth-child(1),
+td:nth-child(4) {
+    width: 98px;
+}
+
+td:nth-child(2) {
+    padding: 0;
+    width: 34px;
+    text-align: center;
+}
+
+td:nth-child(3) {
+    padding-left: 1%;
+    padding-right: 2%;
+}
+
+td:nth-child(5) {
+    width: 25%;
+}
+
+td {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+input[type="number"],
+input[type="text"] {
+    height: 28px;
+}
+
+button {
+    height: 34px;
+}
+
+#picture {
+    height: 34px;
+    width: 34px;
+    object-fit: cover;
+}
+
+[data-when="Plan to Watch"] #name {
+    font-style: italic;
+}
+
+a {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+[data-when="Dropped"] #name {
+    text-decoration: line-through;
+}
+
+[data-when="Dropped"] #name:hover {
+    text-decoration: line-through underline;
+}
