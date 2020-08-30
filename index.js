@@ -10,7 +10,7 @@
         watchFunction = null;
 
     const
-        DB = 'watch (new)',
+        DB = 'tsuzuku',
         db = [],
         openDB = indexedDB.open(DB, 1);
 
