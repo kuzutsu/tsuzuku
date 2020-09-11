@@ -37,6 +37,7 @@
         }],
         "no-loop-func": "off",
         "no-magic-numbers": "off",
+        "no-nested-ternary": "off",
         "no-ternary": "off",
         "padded-blocks": "off",
         "prefer-destructuring": "off",
