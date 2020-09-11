@@ -1,6 +1,6 @@
 :root {
     --light-background: #fff;
-    --light-color: #000;;
+    --light-color: #000;
     --dark-background: #000;
     --dark-color: #fff;
 }
@@ -33,6 +33,16 @@ body#light .searchhighlight {
     color: var(--dark-color);
 }
 
+body#light .github-corner {
+    fill: var(--dark-background);
+    color: var(--dark-color);
+}
+
+body#dark .github-corner {
+    fill: var(--light-background);
+    color: var(--light-color);
+}
+
 body {
     font-family: sans-serif;
     margin: 0;
@@ -56,15 +66,14 @@ dialog {
 
 #top {
     position: fixed;
-    top: 0;
+    top: 10px;
     z-index: 1;
-    padding: 10px 0 10px 0;
 }
 
 #bottom {
     position: absolute;
-    padding: 110px 0 15px 0;
-    height: 85%;
+    top: 72px;
+    bottom: 10px;
 }
 
 div#all,
@@ -127,6 +136,7 @@ span#watching {
 }
 
 #bottom td:nth-child(5) span:hover,
+#comments,
 #pause:hover,
 
 table#all tr:not(#message):hover > td:nth-child(2),
@@ -215,12 +225,6 @@ td:nth-child(4) {
     width: 98px;
 }
 
-td:nth-child(2) {
-    padding: 0;
-    width: 34px;
-    text-align: center;
-}
-
 td:nth-child(3) {
     padding-left: 1%;
     padding-right: 2%;
@@ -235,19 +239,17 @@ td {
     padding-bottom: 0;
 }
 
-input[type="number"],
-input[type="text"] {
-    height: 28px;
-}
-
-button {
-    height: 34px;
-}
-
 #picture {
-    height: 34px;
-    width: 34px;
+    height: 23px;
+    width: 23px;
     object-fit: cover;
+}
+
+td:nth-child(2) {
+    padding: 0;
+    height: 23px;
+    width: 23px;
+    text-align: center;
 }
 
 [data-when="Plan to Watch"] #name {
@@ -268,4 +270,30 @@ a:hover {
 
 [data-when="Dropped"] #name:hover {
     text-decoration: line-through underline;
+}
+
+#message span {
+    vertical-align: middle;
+}
+
+@keyframes octocat-wave {
+    0%, 50%, 100% {
+        transform: rotate(0);
+    }
+
+    25% {
+        transform: rotate(-20deg);
+    }
+
+    75% {
+        transform: rotate(10deg);
+    }
+}
+
+.github-corner .octo-arm {
+    animation: octocat-wave 300ms linear 2;
+}
+
+.github-corner:hover .octo-arm {
+    animation: octocat-wave 300ms linear infinite;
 }
