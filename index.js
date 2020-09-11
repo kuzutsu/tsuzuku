@@ -50,6 +50,19 @@
         return encodeURIComponent(a);
     }
 
+    function defaultcolorFunction(a) {
+        let c = [];
+        const r = Math.round(Math.random() * 255);
+
+        if (a) {
+            c = a;
+        } else {
+            c = [r, r, r];
+        }
+
+        return `rgb(${c[0]}, ${c[1]}, ${c[2]})`;
+    }
+
     function htmlFunction(cur, child, input, name, img) {
         return (
             `<tr data-parentanime="${stringFunction(cur.parentanime)}" data-parentmyanimelist="${cur.parentmyanimelist}" data-child="${cur.child}"` +
@@ -62,7 +75,9 @@
                     `<img id="picture" src="${cur.picture}" loading="lazy" style="vertical-align: middle;" onerror="this.remove();">` +
                 '</td>' +
                 `<td${child || ''}>` +
-                    `<a id="name" href="${cur.key}">${cur.title}</a>` +
+                    `<a id="name" href="${cur.key}" target="_blank" rel="noreferrer">${cur.title}</a>` +
+                    ' ' +
+                    `<span id="comments">${cur.comments}</span>` +
                     `${name || ''}` +
                 '</td>' +
                 '<td>' +
@@ -93,7 +108,7 @@
             completed = [],
             dropped = [],
             message =
-                '<tr id="message" style="height: 34px;">' +
+                '<tr id="message" style="height: 23px;">' +
                     '<td></td>' +
                     '<td></td>' +
                     '<td><span>Nothing here</span></td>' +
@@ -117,6 +132,7 @@
                 cur = {
                     child: cursor.value.child,
                     color: cursor.value.color,
+                    comments: cursor.value.comments,
                     episodes: cursor.value.episodes,
                     key: cursor.key,
                     parentanime: cursor.value.parentanime,
@@ -228,17 +244,6 @@
                 cursor.continue();
             } else {
                 Promise.all(promises).then(() => {
-                    let m = null,
-                        n = '';
-
-                    if (mismatch.length) {
-                        m = mismatch.sort().splice(10).length;
-
-                        if (m) {
-                            n = `\n+${m.toLocaleString('en')} more`;
-                        }
-                    }
-
                     all.push(...completed, ...dropped, ...watching, ...planning, ...paused);
 
                     if (all.length) {
@@ -250,7 +255,7 @@
                     document.querySelector('#divall').innerHTML = `All (${all.length.toLocaleString('en')})`;
                     document.querySelector('#divcompleted').innerHTML = `${
                         mismatch.length
-                            ? `<span title="${mismatch.join('\n') + n}">⚠️</span> `
+                            ? `<span title="${mismatch.length.toLocaleString('en')} mismatched">⚠️</span> `
                             : ''
                     }Completed (${completed.length.toLocaleString('en')})`;
 
@@ -301,7 +306,7 @@
 
         if (name.length < 3) {
             document.querySelector('table#database').innerHTML =
-                '<tr id="message" style="height: 34px;">' +
+                '<tr id="message" style="height: 23px;">' +
                     '<td></td>' +
                     '<td></td>' +
                     '<td><span>Must have at least 3 characters to search</span></td>' +
@@ -350,11 +355,16 @@
                                 '<td>' +
                                     '<input type="number" disabled></input>' +
                                 '</td>' +
-                                '<td>' +
+                                `<td style="background-color: ${defaultcolorFunction()}">` +
                                     `<img id="picture" src="${value.picture}" loading="lazy" style="vertical-align: middle;" onerror="this.remove();">` +
                                 '</td>' +
                                 '<td>' +
-                                    `<a id="name" href="${value.myanimelist}">${
+                                    `${
+                                        value.myanimelist.match(/myanimelist/gu)
+                                            ? '<img src="https://www.google.com/s2/favicons?domain=https://myanimelist.net" style="vertical-align: middle;"> '
+                                            : '<img src="https://www.google.com/s2/favicons?domain=https://kitsu.io" style="vertical-align: middle;"> '
+                                    }` +
+                                    `<a id="name" href="${value.myanimelist}" target="_blank" rel="noreferrer">${
                                         title.join('')
                                     }</a>` +
                                 '</td>' +
@@ -379,7 +389,7 @@
                 document.querySelector('table#database').innerHTML = databaseHTML.sort().join('');
             } else {
                 document.querySelector('table#database').innerHTML =
-                    '<tr id="message" style="height: 34px;">' +
+                    '<tr id="message" style="height: 23px;">' +
                         '<td></td>' +
                         '<td></td>' +
                         '<td><span>Nothing found</span></td>' +
@@ -413,7 +423,10 @@
                 t.map((a) => {
                     const
                         aa = db.findIndex((ii) => ii.myanimelist === a),
-                        dbase = db[aa].relations.filter((r) => anime.indexOf(r) === -1 && r !== myanimelist);
+                        dbase =
+                            db[aa]
+                                ? db[aa].relations.filter((r) => anime.indexOf(r) === -1 && r !== myanimelist)
+                                : [];
 
                     t.splice(t.indexOf(a), 1);
 
@@ -454,16 +467,25 @@
                         .then((w) => {
                             const index = db[db.findIndex((f) => f.myanimelist === value)];
 
+                            if (!index) {
+                                return;
+                            }
+
                             relatedHTML.push(
                                 `<tr data-anime="${stringFunction(index.title)}" data-myanimelist="${value}">` +
                                     '<td>' +
                                         '<input type="number" disabled></input>' +
                                     '</td>' +
-                                    '<td>' +
+                                    `<td style="background-color: ${defaultcolorFunction()}">` +
                                         `<img id="picture" src="${index.picture}" loading="lazy" style="vertical-align: middle;" onerror="this.remove();">` +
                                     '</td>' +
                                     '<td>' +
-                                        `<a id="name" href="${value}">${index.title}</a>` +
+                                        `${
+                                            value.match(/myanimelist/gu)
+                                                ? '<img src="https://www.google.com/s2/favicons?domain=https://myanimelist.net" style="vertical-align: middle;"> '
+                                                : '<img src="https://www.google.com/s2/favicons?domain=https://kitsu.io" style="vertical-align: middle;"> '
+                                        }` +
+                                        `<a id="name" href="${value}" target="_blank" rel="noreferrer">${index.title}</a>` +
                                     '</td>' +
                                     '<td>' +
                                         `<span id="type">${index.type +
@@ -495,11 +517,16 @@
                         '<td>' +
                             '<input type="number" disabled></input>' +
                         '</td>' +
-                        '<td>' +
+                        `<td style="background-color: ${defaultcolorFunction()}">` +
                             `<img id="picture" src="${index.picture}" loading="lazy" style="vertical-align: middle;" onerror="this.remove();">` +
                         '</td>' +
                         '<td>' +
-                            `<a id="name" href="${myanimelist}">${index.title}</a>` +
+                            `${
+                                myanimelist.match(/myanimelist/gu)
+                                    ? '<img src="https://www.google.com/s2/favicons?domain=https://myanimelist.net" style="vertical-align: middle;"> '
+                                    : '<img src="https://www.google.com/s2/favicons?domain=https://kitsu.io" style="vertical-align: middle;"> '
+                            }` +
+                            `<a id="name" href="${myanimelist}" target="_blank" rel="noreferrer">${index.title}</a>` +
                         '</td>' +
                         '<td>' +
                             `<span id="type">${index.type + (
@@ -510,7 +537,7 @@
                         '</td>' +
                         '<td></td>' +
                     '</tr>' +
-                    '<tr id="message" style="height: 34px;">' +
+                    '<tr id="message" style="height: 23px;">' +
                         '<td></td>' +
                         '<td></td>' +
                         `<td><span>${m}</span></td>` +
@@ -525,56 +552,129 @@
 
     function addFunction(name, n) {
         const
+            anime = name[0].parentNode.parentNode.dataset.myanimelist,
             image = new Image(),
-            mal = name[0].parentNode.parentNode.dataset.myanimelist;
+            index = db[db.findIndex((i) => i.myanimelist === anime)],
+            picture = name[0].parentNode.parentNode.querySelector('#picture');
+
+        if (!picture) {
+            const a =
+                watchFunction().add({
+                    child: 0,
+                    color: defaultcolorFunction(),
+                    comments: '',
+                    episodes: index.episodes,
+                    myanimelist: anime,
+                    parentanime: index.title,
+                    parentmyanimelist: anime,
+                    picture: index.picture,
+                    title: index.title,
+                    type: index.type,
+                    what:
+                        n === 'Completed'
+                            ? index.episodes
+                            : 0,
+                    when: n
+                });
+
+            a.onsuccess = () => {
+                searchFunction();
+                databaseFunction();
+
+                if (test) {
+                    testFunction(test);
+                }
+
+                dialogFunction(
+                    `${index.title}\n` +
+                    `=> update when => ${n}`
+                );
+            };
+
+            a.onerror = () => {
+                dialogFunction('Duplicate');
+            };
+
+            return;
+        }
 
         image.crossOrigin = 'anonymous';
-        image.src = name[0].parentNode.parentNode.querySelector('#picture').getAttribute('src');
+        image.src = picture.getAttribute('src');
         image.onload = (event) => {
-            const c = new ColorThief().getColor(event.currentTarget);
+            const a =
+                watchFunction().add({
+                    child: 0,
+                    color: defaultcolorFunction(new ColorThief().getColor(event.currentTarget)),
+                    comments: '',
+                    episodes: index.episodes,
+                    myanimelist: anime,
+                    parentanime: index.title,
+                    parentmyanimelist: anime,
+                    picture: index.picture,
+                    title: index.title,
+                    type: index.type,
+                    what:
+                        n === 'Completed'
+                            ? index.episodes
+                            : 0,
+                    when: n
+                });
 
-            watchFunction().get(mal).onsuccess = (event2) => {
-                if (typeof event2.currentTarget.result === 'undefined') {
-                    for (const value of db) {
-                        if (value.myanimelist !== mal) {
-                            continue;
-                        }
+            a.onsuccess = () => {
+                searchFunction();
+                databaseFunction();
 
-                        let t = 0;
-
-                        if (n === 'Completed') {
-                            t = value.episodes;
-                        }
-
-                        watchFunction().add({
-                            child: 0,
-                            color: `rgb(${c[0]}, ${c[1]}, ${c[2]})`,
-                            episodes: value.episodes,
-                            myanimelist: mal,
-                            parentanime: value.title,
-                            parentmyanimelist: mal,
-                            picture: value.picture,
-                            title: value.title,
-                            type: value.type,
-                            what: t,
-                            when: n
-                        });
-
-                        searchFunction();
-                        databaseFunction();
-
-                        if (test) {
-                            testFunction(test);
-                        }
-
-                        dialogFunction(
-                            `${value.title}\n` +
-                            `=> update when => ${n}`
-                        );
-
-                        break;
-                    }
+                if (test) {
+                    testFunction(test);
                 }
+
+                dialogFunction(
+                    `${index.title}\n` +
+                    `=> update when => ${n}`
+                );
+            };
+
+            a.onerror = () => {
+                dialogFunction('Duplicate');
+            };
+        };
+
+        image.onerror = () => {
+            const a =
+                watchFunction().add({
+                    child: 0,
+                    color: defaultcolorFunction(),
+                    comments: '',
+                    episodes: index.episodes,
+                    myanimelist: anime,
+                    parentanime: index.title,
+                    parentmyanimelist: anime,
+                    picture: index.picture,
+                    title: index.title,
+                    type: index.type,
+                    what:
+                        n === 'Completed'
+                            ? index.episodes
+                            : 0,
+                    when: n
+                });
+
+            a.onsuccess = () => {
+                searchFunction();
+                databaseFunction();
+
+                if (test) {
+                    testFunction(test);
+                }
+
+                dialogFunction(
+                    `${index.title}\n` +
+                    `=> update when => ${n}`
+                );
+            };
+
+            a.onerror = () => {
+                dialogFunction('Duplicate');
             };
         };
     }
@@ -666,16 +766,25 @@
             if (cursor) {
                 backup +=
                     '    <anime>\n' +
+                    `        <my_comments><![CDATA[${cursor.value.comments}]]></my_comments>\n` +
                     '        <my_finish_date>0000-00-00</my_finish_date>\n' +
                     '        <my_score>0</my_score>\n' +
                     '        <my_start_date>0000-00-00</my_start_date>\n' +
                     `        <my_status>${cursor.value.when}</my_status>\n` +
                     `        <my_watched_episodes>${cursor.value.what}</my_watched_episodes>\n` +
-                    `        <series_animedb_id>${cursor.key.slice(cursor.key.lastIndexOf('/') + 1)}</series_animedb_id>\n` +
+                    `        <series_animedb_id>${
+                        cursor.key.match(/myanimelist/gu)
+                            ? cursor.key.substring('https://myanimelist.net/anime/'.length)
+                            : cursor.key
+                    }</series_animedb_id>\n` +
                     `        <series_child>${cursor.value.child}</series_child>\n` +
                     `        <series_color>${cursor.value.color}</series_color>\n` +
                     `        <series_episodes>${cursor.value.episodes}</series_episodes>\n` +
-                    `        <series_parent_animedb_id>${cursor.value.parentmyanimelist.slice(cursor.value.parentmyanimelist.lastIndexOf('/') + 1)}</series_parent_animedb_id>\n` +
+                    `        <series_parent_animedb_id>${
+                        cursor.value.parentmyanimelist.match(/myanimelist/gu)
+                            ? cursor.value.parentmyanimelist.substring('https://myanimelist.net/anime/'.length)
+                            : cursor.value.parentmyanimelist
+                    }</series_parent_animedb_id>\n` +
                     `        <series_parent_title><![CDATA[${cursor.value.parentanime}]]></series_parent_title>\n` +
                     `        <series_picture>${cursor.value.picture}</series_picture>\n` +
                     `        <series_title><![CDATA[${cursor.value.title}]]></series_title>\n` +
@@ -691,7 +800,7 @@
                     type: 'application/xml'
                 });
 
-                a.download = 'backup.xml';
+                a.download = 'export.xml';
                 a.click();
                 a.remove();
             }
@@ -705,7 +814,7 @@
             w.onsuccess = () => {
                 restoretemp -= 1;
                 document.querySelector('dialog pre').innerHTML =
-                    `Restoring ${(restore.length - restoretemp).toLocaleString('en')} of ${restore.length.toLocaleString('en')}...`;
+                    `Importing ${(restore.length - restoretemp).toLocaleString('en')} of ${restore.length.toLocaleString('en')}...`;
 
                 return resolve();
             };
@@ -715,7 +824,7 @@
                 dialogFunction(`Deleted duplicate ${restore[i].title}`);
                 restore.splice(i, 1);
                 document.querySelector('dialog pre').innerHTML =
-                    `Restoring ${(restore.length - restoretemp).toLocaleString('en')} of ${restore.length.toLocaleString('en')}...`;
+                    `Importing ${(restore.length - restoretemp).toLocaleString('en')} of ${restore.length.toLocaleString('en')}...`;
 
                 return resolve();
             };
@@ -728,13 +837,14 @@
         watchFunction().clear();
 
         document.body.innerHTML = '';
-        dialogFunction(`Restoring 0 of ${restore.length.toLocaleString('en')}...`);
+        dialogFunction(`Importing 0 of ${restore.length.toLocaleString('en')}...`);
 
         for (const [index, value] of restore.entries()) {
             promises.push(
                 get2Function({
                     child: value.child,
                     color: value.color,
+                    comments: value.comments,
                     episodes: value.episodes,
                     myanimelist: value.myanimelist,
                     parentanime: value.parentanime,
@@ -749,7 +859,7 @@
         }
 
         Promise.all(promises).then(() => {
-            dialogFunction('Restored');
+            dialogFunction('Done');
             setTimeout(() => location.reload(), 1000);
         });
     }
@@ -768,7 +878,7 @@
             document.querySelector('.highlight').classList.remove('highlight');
         }
 
-        $('div#planning').scrollTop(i * (34 + 2));
+        document.querySelector('div#planning').scrollTop = i * (document.querySelector('td:nth-child(2)').clientHeight + 2);
 
         document.querySelectorAll('table#planning tr')[i].querySelector('#name').classList.add('highlight');
 
@@ -866,7 +976,7 @@
                 cursor.continue();
             } else {
                 Promise.all(promises).then(() => {
-                    dialogFunction('Updated');
+                    dialogFunction('Done');
                     setTimeout(() => location.reload(), 1000);
                 });
             }
@@ -1113,7 +1223,7 @@
         buttonFunction($(`#div${id}`));
 
         // Height of <tr> + border-spacing of <table>
-        $(`div#${id}`).scrollTop(nn * (34 + 2));
+        document.querySelector(`div#${id}`).scrollTop = nn * (document.querySelector('td:nth-child(2)').clientHeight + 2);
 
         n[nn].querySelector('#name').classList.add('highlight');
 
@@ -1133,6 +1243,12 @@
             watchFunction().put(change).onsuccess = () => {
                 searchFunction();
             };
+        };
+    }
+
+    function resetFunction() {
+        watchFunction().clear().onsuccess = () => {
+            location.reload();
         };
     }
 
@@ -1158,7 +1274,7 @@
                 updateFunction();
             })
 
-            .on('click', '#restore', () => {
+            .on('click', '#import', () => {
                 if (!restore.length) {
                     return;
                 }
@@ -1166,8 +1282,12 @@
                 restoreFunction();
             })
 
-            .on('click', '#backup', () => {
+            .on('click', '#export', () => {
                 backupFunction();
+            })
+
+            .on('click', '#reset', () => {
+                resetFunction();
             })
 
             .on('focus', 'input#search', () => {
@@ -1182,7 +1302,7 @@
                 }
 
                 $('table#database').html(
-                    '<tr id="message" style="height: 34px;">' +
+                    '<tr id="message" style="height: 23px;">' +
                         '<td></td>' +
                         '<td></td>' +
                         '<td><span>Searching...</span></td>' +
@@ -1216,7 +1336,7 @@
                 }
 
                 $('table#related').html(
-                    '<tr id="message" style="height: 34px;">' +
+                    '<tr id="message" style="height: 23px;">' +
                         '<td></td>' +
                         '<td></td>' +
                         '<td><span>Searching...</span></td>' +
@@ -1273,12 +1393,12 @@
             })
 
             .on('click', '#mode', (event) => {
-                if ($('body').attr('id') === 'light') {
-                    $('body').attr('id', 'dark');
+                if (document.body.getAttribute('id') === 'light') {
+                    document.body.setAttribute('id', 'dark');
                     $(event.currentTarget).html('Light');
                     localStorage.setItem('mode', 'dark');
                 } else {
-                    $('body').attr('id', 'light');
+                    document.body.setAttribute('id', 'light');
                     $(event.currentTarget).html('Dark');
                     localStorage.setItem('mode', 'light');
                 }
@@ -1314,17 +1434,15 @@
                     }
 
                     for (const value of anime) {
-                        const
-                            c = Math.round(Math.random() * 255),
-                            parseFunction = (b) => {
-                                const parse = value.querySelector(b);
+                        const parseFunction = (b) => {
+                            const parse = value.querySelector(b);
 
-                                if (parse) {
-                                    return parse.textContent;
-                                }
+                            if (parse) {
+                                return parse.textContent;
+                            }
 
-                                return '';
-                            };
+                            return '';
+                        };
 
                         if (!parseFunction('series_animedb_id')) {
                             continue;
@@ -1332,14 +1450,22 @@
 
                         restore.push({
                             child: Number(parseFunction('series_child')) || 0,
-                            color: parseFunction('series_color') || `rgb(${c}, ${c}, ${c})`,
-                            episodes: Number(parseFunction('series_episodes')),
-                            myanimelist: `https://myanimelist.net/anime/${parseFunction('series_animedb_id')}`,
-                            parentanime: parseFunction('series_parent_title') || parseFunction('series_title'),
+                            color: parseFunction('series_color') || defaultcolorFunction(),
+                            comments: parseFunction('my_comments'),
+                            episodes: Number(parseFunction('series_episodes')) || 0,
+                            myanimelist:
+                                Number(parseFunction('series_animedb_id'))
+                                    ? `https://myanimelist.net/anime/${parseFunction('series_animedb_id')}`
+                                    : parseFunction('series_animedb_id'),
+                            parentanime: parseFunction('name') || parseFunction('series_parent_title') || parseFunction('series_title'),
                             parentmyanimelist:
-                                `https://myanimelist.net/anime/${
-                                    parseFunction('series_parent_animedb_id') || parseFunction('series_animedb_id')
-                                }`,
+                                parseFunction('series_parent_animedb_id')
+                                    ? Number(parseFunction('series_parent_animedb_id'))
+                                        ? `https://myanimelist.net/anime/${parseFunction('series_parent_animedb_id')}`
+                                        : parseFunction('series_parent_animedb_id')
+                                    : Number(parseFunction('series_animedb_id'))
+                                        ? `https://myanimelist.net/anime/${parseFunction('series_animedb_id')}`
+                                        : parseFunction('series_animedb_id'),
                             picture: parseFunction('series_picture'),
                             title: parseFunction('series_title'),
                             type: parseFunction('series_type'),
@@ -1352,6 +1478,10 @@
                 };
             });
 
+        /**
+         * Useless if ran in localhost;
+         * use service workers
+         */
         if (navigator.onLine) {
             return;
         }
@@ -1376,6 +1506,7 @@
                 [
                     'child',
                     'color',
+                    'comments',
                     'episodes',
                     'parentanime',
                     'parentmyanimelist',
@@ -1403,54 +1534,52 @@
             const d = data.data;
 
             for (const value of d) {
-                const m = value.sources.filter((s) => s.match(/myanimelist/gu));
+                const m = value.sources.filter((s) => s.match(/kitsu|myanimelist/gu));
 
                 if (!m.length) {
                     continue;
                 }
 
-                /**
-                 * Every title has only one MyAnimeList ID,
-                 * except Fate/Extra CCC Opening Animation:
-                 *      https://myanimelist.net/anime/41799
-                 *      https://myanimelist.net/anime/41800
-                 */
                 for (const value2 of m) {
+                    if (value2.match(/kitsu/gu) && m.filter((f) => f.match(/myanimelist/gu)).length) {
+                        continue;
+                    }
+
                     db.push({
                         episodes: value.episodes,
                         myanimelist: value2.toString(),
                         picture: value.picture,
-                        relations: value.relations.filter((r) => r.match(/myanimelist/gu)),
+                        relations: value.relations.filter((r) => r.match(/kitsu|myanimelist/gu)),
                         title: value.title,
                         type: value.type
                     });
                 }
-
-                document.querySelector('table#database').innerHTML =
-                    '<tr id="message" style="height: 34px;">' +
-                        '<td></td>' +
-                        '<td></td>' +
-                        '<td><span>Must have at least 3 characters to search</span></td>' +
-                        '<td></td>' +
-                        '<td></td>' +
-                    '</tr>';
-
-                document.querySelector('table#related').innerHTML =
-                    '<tr id="message" style="height: 34px;">' +
-                        '<td></td>' +
-                        '<td></td>' +
-                        '<td><span>From your Completed list, click on the Type column to find related titles</span></td>' +
-                        '<td></td>' +
-                        '<td></td>' +
-                    '</tr>';
             }
+
+            document.querySelector('table#database').innerHTML =
+                '<tr id="message" style="height: 23px;">' +
+                    '<td></td>' +
+                    '<td></td>' +
+                    '<td><span>Must have at least 3 characters to search</span></td>' +
+                    '<td></td>' +
+                    '<td></td>' +
+                '</tr>';
+
+            document.querySelector('table#related').innerHTML =
+                '<tr id="message" style="height: 23px;">' +
+                    '<td></td>' +
+                    '<td></td>' +
+                    '<td><span>From your Completed list, click on the Type column to find relations</span></td>' +
+                    '<td></td>' +
+                    '<td></td>' +
+                '</tr>';
         })
         .catch(() => {
             dialogFunction('Error fetching database');
 
             for (const value of ['table#database', 'table#related']) {
                 document.querySelector(value).innerHTML =
-                    '<tr id="message" style="height: 34px;">' +
+                    '<tr id="message" style="height: 23px;">' +
                         '<td></td>' +
                         '<td></td>' +
                         '<td><span>Error fetching database</span></td>' +
