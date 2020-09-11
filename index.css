@@ -275,25 +275,3 @@ a:hover {
 #message span {
     vertical-align: middle;
 }
-
-@keyframes octocat-wave {
-    0%, 50%, 100% {
-        transform: rotate(0);
-    }
-
-    25% {
-        transform: rotate(-20deg);
-    }
-
-    75% {
-        transform: rotate(10deg);
-    }
-}
-
-.github-corner .octo-arm {
-    animation: octocat-wave 300ms linear 2;
-}
-
-.github-corner:hover .octo-arm {
-    animation: octocat-wave 300ms linear infinite;
-}
