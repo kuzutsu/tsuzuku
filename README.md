@@ -1,7 +1,7 @@
 # Tsuzuku
 [__Tsuzuku__](https://kuzutsu.github.io/tsuzuku/) is an IndexedDB-based anime tracker<a id="1" href="#ref-1"><sup>[1]</sup></a> that uses MyAnimeList and Kitsu metadata from the [anime-offline-database](https://github.com/manami-project/anime-offline-database).
 
-![Preview](preview.png)
+![Preview](https://raw.githubusercontent.com/kuzutsu/tsuzuku/master/preview.png)
 
 ## Features
 * Dark mode
