@@ -43,4 +43,4 @@ More details soon
 
 ### Credits
 * Banner placeholder image from [Studio Ghibli](http://www.ghibli.jp/info/013251/)
-* Notes placeholder text from the *Nani the f\*\*\*?* copypasta
+* Notes placeholder text from the *Nani the F\*\*\*?* copypasta
