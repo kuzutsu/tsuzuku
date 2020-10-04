@@ -1,9 +1,14 @@
 # Tsuzuku
 [__Tsuzuku__](https://kuzutsu.github.io/tsuzuku/) is an IndexedDB-based anime tracker<a id="1" href="#ref-1"><sup>[1]</sup></a> that uses MyAnimeList and Kitsu metadata from the [anime-offline-database](https://github.com/manami-project/anime-offline-database).
 
+## 1.1.0 (current)
 ![Preview](https://raw.githubusercontent.com/kuzutsu/tsuzuku/master/preview.png)
+<p align="center"><em>From this...</em></p>
 
-## Features
+<details>
+<summary>More</summary>
+
+### Features
 * Dark mode
 * Dominant-color progress bar for titles currently watching
 * Export data in MyAnimeList XML format
@@ -16,15 +21,26 @@
 
 [Roadmap](https://github.com/kuzutsu/tsuzuku/projects/1)
 
-## Dependencies
+### Dependencies
 * anime-offline-database
 * [Color Thief](https://github.com/lokesh/color-thief)
 * [jQuery](https://github.com/jquery/jquery)<a id="6" href="#ref-6"><sup>[6]</sup></a>
 
-## Notes
+### Notes
 1. <a id="ref-1" href="#1">↑</a> Data is saved locally; no sign-up required
 1. <a id="ref-2" href="#2">↑</a> By clicking on the Type column
 1. <a id="ref-3" href="#3">↑</a> Will overwrite existing data
 1. <a id="ref-4" href="#4">↑</a> Will only import `<series_animedb_id>`, `<series_title>`, `<series_type>`, `<series_episodes>`, `<my_watched_episodes>`, `<my_status>`, and `<my_comments>`
 1. <a id="ref-5" href="#5">↑</a> By double-clicking on the Planning tab
 1. <a id="ref-6" href="#6">↑</a> Will be removed
+</details>
+
+## 2.0.0-alpha
+![Alpha preview](https://raw.githubusercontent.com/kuzutsu/tsuzuku/master/preview-alpha.png)
+<p align="center"><em>... to this</em></p>
+
+More details soon
+
+### Credits
+* Banner placeholder image from [Studio Ghibli](http://www.ghibli.jp/info/013251/)
+* Notes placeholder text from the *Nani the f\*\*\*?* copypasta
