@@ -1,0 +1,347 @@
+.light {
+    --background: #fff;
+    --background-hover: #e6e6e6;
+    --color: #000;
+    --selected: #9abcea;
+    --selected-hover: #769bcc;
+}
+
+.dark {
+    --background: #000;
+    --background-hover: #191919;
+    --color: #fff;
+    --selected: #9abcea;
+    --selected-hover: #769bcc;
+}
+
+* {
+    box-sizing: border-box !important;
+    font-family: Roboto, sans-serif;
+    color: var(--color);
+}
+
+body,
+html {
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+}
+
+a {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+#header {
+    background: var(--background);
+    height: 57px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    user-select: none;
+}
+
+svg {
+    fill: var(--color);
+}
+
+#random svg,
+#regex svg {
+    fill: #aaa;
+}
+
+#header-title {
+    color: var(--color);
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+#search-container {
+    width: 100%;
+    height: 49px;
+    display: none;
+    align-items: center;
+    background: var(--background);
+    overflow: auto;
+    user-select: none;
+    padding: 0 19px 0 19px;
+}
+
+#database-container {
+    height: auto;
+    max-height: calc(100% - 49px);
+    width: 100%;
+}
+
+#search {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    outline: none;
+    padding: 4px;
+    font-size: 14px;
+    background: var(--background);
+}
+
+.tabulator-header,
+.tabulator-col {
+    background: var(--background) !important;
+}
+
+main {
+    height: calc(100% - 57px);
+    width: 100%;
+    background: var(--background-hover);
+}
+
+.tabulator-tableHolder {
+    overflow-x: hidden !important;
+    height: 100%;
+}
+
+/**************************************************************************************/
+
+[tabulator-field="picture"] img {
+    pointer-events: none;
+    background: var(--background-hover);
+}
+
+.tabulator-cell {
+    height: auto !important;
+}
+
+.tabulator-selected [tabulator-field="picture"] .material-icons {
+    display: block !important;
+}
+
+.tabulator-col[tabulator-field="picture"] .tabulator-col-title,
+.tabulator-col[tabulator-field="sources"] .tabulator-col-title {
+    line-height: 0;
+}
+
+.tabulator-cell,
+.tabulator-col,
+.tabulator-header,
+.tabulator-row {
+    border: 0 !important;
+}
+
+.tabulator-row {
+    cursor: auto !important;
+}
+
+#header,
+.tabulator-header {
+    border-bottom: 1px solid var(--background-hover) !important;
+}
+
+.tabulator-row:not(:last-child) {
+    margin-bottom: 1px;
+}
+
+.tabulator,
+.tabulator-table {
+    background: var(--background-hover) !important;
+}
+
+.tabulator-col-title {
+    font-weight: 500 !important
+}
+
+.tabulator-col[aria-sort="none"] .tabulator-col-sorter span {
+    display: none;
+}
+
+.tabulator-col[aria-sort="none"] .tabulator-col-title {
+    padding-right: 0 !important;
+}
+
+.tabulator-col[aria-sort="asc"] .tabulator-col-sorter span {
+    display: block;
+}
+
+.tabulator-col[aria-sort="desc"] .tabulator-col-sorter span {
+    display: block;
+    transform: scaleY(-1);
+}
+
+.header-tabulator-selected {
+    background: #769bcc !important;
+}
+
+#header a:hover {
+    text-decoration: none;
+}
+
+.header-tabulator-selected a,
+.header-tabulator-selected #menu,
+.header-tabulator-selected #theme {
+    display: none !important;
+}
+
+.header-tabulator-selected #close {
+    display: flex !important;
+}
+
+.tabulator-cell[tabulator-field="sources"] a {
+    padding-left: 4px;
+    padding-right: 4px;
+}
+
+.tabulator-cell[tabulator-field="sources"] a:first-child {
+    padding-left: 0 !important;
+}
+
+.tabulator-cell[tabulator-field="sources"] a:last-child {
+    padding-right: 0 !important;
+}
+
+.tabulator-responsive-collapse {
+    border: 0 !important;
+}
+
+[tabulator-field="title"] a,
+[tabulator-field="notes"] a {
+    color: var(--color);
+}
+
+.markdown strong,
+.markdown h1,
+.markdown h2,
+.markdown h3,
+.markdown h4,
+.markdown h5,
+.markdown h6 {
+    font-weight: 500;
+}
+
+.markdown code {
+    font-family: monospace;
+    background: var(--background-hover);
+    padding: 0 4px 0 4px;
+}
+
+.markdown img,
+.markdown iframe {
+    max-height: 200px;
+    max-width: 100%;
+}
+
+/***************************************************************************************************/
+
+.tabulator-row {
+    --row-background: var(--background) !important;
+}
+
+.tabulator-row:hover {
+    --row-background: var(--background-hover) !important;
+}
+
+.tabulator-selected {
+    --row-background: var(--selected) !important;
+}
+
+.tabulator-selected:hover {
+    --row-background: var(--selected-hover) !important;
+}
+
+[data-status=""] {
+    background: var(--row-background) !important;
+}
+
+[data-status="Completed"] {
+    background: linear-gradient(to right, #8bc34a 4px, var(--row-background) 4px) !important;
+}
+
+[data-status="Rewatching"] {
+    background: linear-gradient(to right, #03a9f4 4px, var(--row-background) 4px) !important;
+}
+
+[data-status="Planning"] {
+    background: linear-gradient(to right, #9e9e9e 4px, var(--row-background) 4px) !important;
+}
+
+[data-status="Watching"] {
+    background: linear-gradient(to right, #3f51b5 4px, var(--row-background) 4px) !important;
+}
+
+[data-status="Dropped"] {
+    background: linear-gradient(to right, #f44336 4px, var(--row-background) 4px) !important;
+}
+
+[data-status="Paused"] {
+    background: linear-gradient(to right, #ff9800 4px, var(--row-background) 4px) !important;
+}
+
+/***************************************************************************************************/
+
+.tabulator-editing input,
+.tabulator-editing textarea {
+    font-size: 14px;
+    outline: none;
+}
+
+[tabulator-field="color"] {
+    height: 0 !important;
+    padding: 0 !important;
+}
+
+.tabulator-col {
+    height: 48px;
+    display: inline-flex !important;
+    align-items: center;
+}
+
+.tabulator-col[style*="display: none;"] {
+    display: none !important;
+}
+
+.tabulator-col-content {
+    width: 100%;
+}
+
+#number:disabled {
+    background: var(--background);
+    color: #aaa;
+}
+
+input {
+    background: var(--background);
+}
+
+/*****************************************************************/
+
+#progress {
+    background: var(--background-hover);
+    height: 4px;
+}
+
+#indicator {
+    background: #f44336;
+    height: 100%;
+    width: 0;
+}
+
+.found {
+    background: #4caf50 !important;
+}
+
+/*****************************************************************/
+
+@media (min-width: 1920px) {
+    #main {
+        margin: 0 12.5% 0 12.5%;
+    }
+
+    #view-source {
+        display: block !important;
+    }
+}
