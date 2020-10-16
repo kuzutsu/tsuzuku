@@ -2,7 +2,6 @@
     "name": "Tsuzuku",
     "short_name": "Tsuzuku",
     "start_url": "index.html",
-    "orientation": "any",
     "display": "standalone",
     "lang": "en",
     "background_color": "#fff",
