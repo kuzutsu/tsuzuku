@@ -1,7 +1,7 @@
 {
     "name": "Tsuzuku",
     "short_name": "Tsuzuku",
-    "start_url": "/",
+    "start_url": "index.html",
     "display": "standalone",
     "lang": "en",
     "background_color": "#fff",
