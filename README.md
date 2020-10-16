@@ -1,13 +1,17 @@
 # Tsuzuku
 ## [2.0.0 (alpha)](https://kuzutsu.github.io/tsuzuku/test/)
+This version is in development.
+
 ![](https://raw.githubusercontent.com/kuzutsu/tsuzuku/master/test/preview.png)
 
-More details soon
+[More](https://github.com/kuzutsu/tsuzuku/tree/master/test)
 
-### Credits
+### Disclaimer
 * Notes placeholder text from the *Nani the Fuck?* copypasta
 
 ## [1.1.0 (current)](https://kuzutsu.github.io/tsuzuku/)
+This version is only an IndexedDB-based<a id="1" href="#ref-1"><sup>[1]</sup></a> anime tracker.
+
 ![](https://raw.githubusercontent.com/kuzutsu/tsuzuku/master/preview.png)
 
 <details>
@@ -27,7 +31,7 @@ More details soon
 [Roadmap](https://github.com/kuzutsu/tsuzuku/projects/1)
 
 ### Dependencies
-* anime-offline-database
+* [anime-offline-database](https://github.com/manami-project/anime-offline-database)
 * [Color Thief](https://github.com/lokesh/color-thief)
 * [jQuery](https://github.com/jquery/jquery)<a id="6" href="#ref-6"><sup>[6]</sup></a>
 
