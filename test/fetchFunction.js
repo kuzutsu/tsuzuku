@@ -1,4 +1,5 @@
 import {
+    dark,
     dimension
 } from './index.js';
 
@@ -268,12 +269,19 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
 
                             document.querySelector('#header-title').innerHTML = column.getTable().getSelectedRows().length + ' selected';
                             document.querySelector('#header-version').style.display = 'none';
+                            document.head.querySelector('[name="theme-color"]').content = '#769bcc';
                         } else {
                             document.querySelector('#header').classList.remove('header-tabulator-selected');
                             column._column.titleElement.children[0].innerHTML = 'check_box_outline_blank';
                             column.getTable().deselectRow();
                             document.querySelector('#header-title').innerHTML = 'Tsuzuku';
                             document.querySelector('#header-version').style.display = 'block';
+
+                            if (dark) {
+                                document.head.querySelector('[name="theme-color"]').content = '#000';
+                            } else {
+                                document.head.querySelector('[name="theme-color"]').content = '#fff';
+                            }
                         }
                     },
                     cellClick: function (e, cell) {
@@ -315,16 +323,23 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                             document.querySelector('#header-title').innerHTML = 'Tsuzuku';
                             document.querySelector('#header-version').style.display = 'block';
                             cell.getColumn()._column.titleElement.children[0].innerHTML = 'check_box_outline_blank';
-                        } else if (cell.getTable().getSelectedRows().length === cell.getTable().getRows().length) {
-                            document.querySelector('#header').classList.add('header-tabulator-selected');
-                            document.querySelector('#header-title').innerHTML = cell.getTable().getSelectedRows().length + ' selected';
-                            document.querySelector('#header-version').style.display = 'none';
-                            cell.getColumn()._column.titleElement.children[0].innerHTML = 'check_box';
+
+                            if (dark) {
+                                document.head.querySelector('[name="theme-color"]').content = '#000';
+                            } else {
+                                document.head.querySelector('[name="theme-color"]').content = '#fff';
+                            }
                         } else {
                             document.querySelector('#header').classList.add('header-tabulator-selected');
                             document.querySelector('#header-title').innerHTML = cell.getTable().getSelectedRows().length + ' selected';
                             document.querySelector('#header-version').style.display = 'none';
-                            cell.getColumn()._column.titleElement.children[0].innerHTML = 'indeterminate_check_box';
+                            document.head.querySelector('[name="theme-color"]').content = '#769bcc';
+
+                            if (cell.getTable().getSelectedRows().length === cell.getTable().getRows().length) {
+                                cell.getColumn()._column.titleElement.children[0].innerHTML = 'check_box';
+                            } else {
+                                cell.getColumn()._column.titleElement.children[0].innerHTML = 'indeterminate_check_box';
+                            }
                         }
                     }
                 },

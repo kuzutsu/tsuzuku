@@ -70,7 +70,14 @@ $(function () {
     document.querySelector('#close').addEventListener('click', (e) => {
         document.querySelector('#header-title').innerHTML = 'Tsuzuku';
         document.querySelector('.header-tabulator-selected').classList.remove('header-tabulator-selected');
-        console.log(table.getColumn('picture'));
+        document.querySelector('#header-version').style.display = 'block';
+
+        if (dark) {
+            document.head.querySelector('[name="theme-color"]').content = '#000';
+        } else {
+            document.head.querySelector('[name="theme-color"]').content = '#fff';
+        }
+
         table.getColumn('picture')._column.titleElement.children[0].innerHTML = 'check_box_outline_blank';
         table.deselectRow();
     });
@@ -219,5 +226,6 @@ $(function () {
 });
 
 export {
+    dark,
     dimension
 };
