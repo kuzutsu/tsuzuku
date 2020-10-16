@@ -11,7 +11,8 @@ let over = false,
     last = '',
     lastRegex = false,
     lastRandom = false,
-    worker = null;
+    worker = null,
+    dimension = null;
 
 $(function () {
     if ('serviceWorker' in navigator) {
