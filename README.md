@@ -1,7 +1,14 @@
 # Tsuzuku
+## [2.0.0 (alpha)](https://kuzutsu.github.io/tsuzuku/test/)
+![](https://raw.githubusercontent.com/kuzutsu/tsuzuku/master/test/preview.png)
+
+More details soon
+
+### Credits
+* Notes placeholder text from the *Nani the Fuck?* copypasta
+
 ## [1.1.0 (current)](https://kuzutsu.github.io/tsuzuku/)
 ![](https://raw.githubusercontent.com/kuzutsu/tsuzuku/master/preview.png)
-<p align="center"><em>From this...</em></p>
 
 <details>
 <summary>More</summary>
@@ -32,12 +39,3 @@
 1. <a id="ref-5" href="#5">↑</a> By double-clicking on the Planning tab
 1. <a id="ref-6" href="#6">↑</a> Will be removed
 </details>
-
-## [2.0.0-alpha](https://kuzutsu.github.io/tsuzuku/test/)
-![](https://raw.githubusercontent.com/kuzutsu/tsuzuku/master/test/preview.png)
-<p align="center"><em>... to this</em></p>
-
-More details soon
-
-### Credits
-* Notes placeholder text from the *Nani the Fuck?* copypasta
