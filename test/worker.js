@@ -3,6 +3,14 @@ if (typeof Fuse === 'undefined') {
 }
 
 function is(value1, type, value2) {
+    if (!value1) {
+        if (value2.toLowerCase() === 'tba') {
+            return true;
+        }
+
+        return false;
+    }
+
     const
         v1 = Number(value1),
         v2 = Number(value2);
@@ -57,11 +65,10 @@ self.addEventListener('message', function (event) {
         v = v.replace(/\bscore:(&?(\<=|\>=|\<|\>)?(10|[0-9]{1})\b)+/gi, '');
     }
 
-    if (v.match(/\byear:(&?(\<=|\>=|\<|\>)?[1-9][0-9]{3}\b)+/gi)) {
-        year = v.match(/\byear:(&?(\<=|\>=|\<|\>)?[1-9][0-9]{3}\b)+/gi)[0].replace(/year:/gi, '').split('&');
-        v = v.replace(/\byear:(&?(\<=|\>=|\<|\>)?[1-9][0-9]{3}\b)+/gi, '');
+    if (v.match(/\byear:(tba\b|(&?(\<=|\>=|\<|\>)?[1-9][0-9]{3}\b)+)/gi)) {
+        year = v.match(/\byear:(tba\b|(&?(\<=|\>=|\<|\>)?[1-9][0-9]{3}\b)+)/gi)[0].replace(/year:/gi, '').split('&');
+        v = v.replace(/\byear:(tba\b|(&?(\<=|\>=|\<|\>)?[1-9][0-9]{3}\b)+)/gi, '');
     }
-
     
     if (v.match(/\btype:(,?(tv|movie|ova|ona|special)\b)+/gi)) {
         type = v.match(/\btype:(,?(tv|movie|ova|ona|special)\b)+/gi)[0].replace(/type:/gi, '').split(',');
@@ -102,7 +109,7 @@ self.addEventListener('message', function (event) {
 
         if (year) {
             for (const value of year) {
-                if (!is(d.season.substring(d.season.indexOf(' ') + 1), (value.match(/\<=|\>=|\<|\>/gi) || '=').toString(), value.match(/[1-9][0-9]{3}/gi).toString())) {
+                if (!is(d.season.substring(d.season.indexOf(' ') + 1), (value.match(/\<=|\>=|\<|\>/gi) || '=').toString(), value.match(/tba|[1-9][0-9]{3}/gi).toString())) {
                     return;
                 }
             }
