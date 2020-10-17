@@ -90,7 +90,13 @@ $(function () {
             $('#search').focus();
         } else {
             document.querySelector('#number').removeAttribute('disabled');
-            $('#random svg').css('fill', '#000');
+
+            if (dark) {
+                $('#random svg').css('fill', '#fff');
+            } else {
+                $('#random svg').css('fill', '#000');
+            }
+
             random = true;
             $('#number').focus();
         }
@@ -101,7 +107,12 @@ $(function () {
             $('#regex svg').css('fill', '#aaa');
             regex = false;
         } else {
-            $('#regex svg').css('fill', '#000');
+            if (dark) {
+                $('#random svg').css('fill', '#fff');
+            } else {
+                $('#random svg').css('fill', '#000');
+            }
+
             regex = true;
         }
 
