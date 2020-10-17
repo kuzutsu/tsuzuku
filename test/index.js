@@ -85,18 +85,12 @@ $(function () {
     document.querySelector('#random').addEventListener('click', (e) => {
         if (random) {
             document.querySelector('#number').setAttribute('disabled', '');
-            $('#random svg').css('fill', '#aaa');
+            $('#random svg').addClass('enabled');
             random = false;
             $('#search').focus();
         } else {
             document.querySelector('#number').removeAttribute('disabled');
-
-            if (dark) {
-                $('#random svg').css('fill', '#fff');
-            } else {
-                $('#random svg').css('fill', '#000');
-            }
-
+            $('#random svg').removeClass('enabled');
             random = true;
             $('#number').focus();
         }
@@ -104,15 +98,10 @@ $(function () {
 
     document.querySelector('#regex').addEventListener('click', (e) => {
         if (regex) {
-            $('#regex svg').css('fill', '#aaa');
+            $('#regex svg').addClass('enabled');
             regex = false;
         } else {
-            if (dark) {
-                $('#random svg').css('fill', '#fff');
-            } else {
-                $('#random svg').css('fill', '#000');
-            }
-
+            $('#regex svg').removeClass('enabled');
             regex = true;
         }
 

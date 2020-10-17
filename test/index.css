@@ -102,6 +102,10 @@ svg {
     fill: #aaa;
 }
 
+svg.enabled {
+    fill: var(--color);
+}
+
 #header-title {
     color: var(--color);
     font-weight: 500;
