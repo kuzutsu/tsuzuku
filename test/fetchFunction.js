@@ -183,6 +183,13 @@ $(function () {
                 layout: 'fitColumns',
                 sortOrderReverse: true,
                 resizableColumns: false,
+                dataLoading: function () {
+                    document.head.insertAdjacentHTML('beforeend',
+                        '<style>' +
+                            '@import url(https://cdn.jsdelivr.net/npm/tabulator-tables/dist/css/tabulator_simple.min.css);' +
+                        '</style>'
+                    );
+                },
                 dataFiltering: function () {
                     if (!r) {
                         return;
@@ -382,26 +389,29 @@ $(function () {
                         minWidth: 100,
                         editor: 'textarea',
                         formatter: function (cell) {
-                            var span = document.createElement('span');
+                            if (cell.getValue()) {
+                                const span = document.createElement('span');
 
-                            span.classList.add('markdown');
-                            span.style.overflowWrap = 'anywhere';
-                            span.style.whiteSpace = 'normal';
-                            span.style.width = 'inherit';
-
-                            span.innerHTML = markdownit({
-                                html: true
-                            //}).render(bbcodeToHTML(cell.getValue() || ''));
-                            }).render(cell.getValue() || '');
-
-                            if (span.querySelectorAll('a').length) {
-                                for (const value of span.querySelectorAll('a')) {
-                                    value.setAttribute('target', '_blank');
-                                    value.setAttribute('rel', 'noreferrer');
+                                span.classList.add('markdown');
+                                span.style.overflowWrap = 'anywhere';
+                                span.style.whiteSpace = 'normal';
+                                span.style.width = 'inherit';
+    
+                                span.innerHTML = markdownit({
+                                    html: true
+                                }).render(cell.getValue());
+    
+                                if (span.querySelectorAll('a').length) {
+                                    for (const value of span.querySelectorAll('a')) {
+                                        value.setAttribute('target', '_blank');
+                                        value.setAttribute('rel', 'noreferrer');
+                                    }
                                 }
+    
+                                return span.outerHTML;
                             }
 
-                            return span.outerHTML;
+                            return '<span class="nothing">Nothing here</span>';
                         }
                     },
                     {
