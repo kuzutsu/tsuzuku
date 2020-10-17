@@ -85,12 +85,12 @@ $(function () {
     document.querySelector('#random').addEventListener('click', (e) => {
         if (random) {
             document.querySelector('#number').setAttribute('disabled', '');
-            $('#random svg').addClass('enabled');
+            $('#random svg').addClass('disabled');
             random = false;
             $('#search').focus();
         } else {
             document.querySelector('#number').removeAttribute('disabled');
-            $('#random svg').removeClass('enabled');
+            $('#random svg').removeClass('disabled');
             random = true;
             $('#number').focus();
         }
@@ -98,10 +98,10 @@ $(function () {
 
     document.querySelector('#regex').addEventListener('click', (e) => {
         if (regex) {
-            $('#regex svg').addClass('enabled');
+            $('#regex svg').addClass('disabled');
             regex = false;
         } else {
-            $('#regex svg').removeClass('enabled');
+            $('#regex svg').removeClass('disabled');
             regex = true;
         }
 

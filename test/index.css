@@ -97,13 +97,9 @@ svg {
     fill: var(--color);
 }
 
-#random svg,
-#regex svg {
+#random svg.disabled,
+#regex svg.disabled {
     fill: #aaa;
-}
-
-svg.enabled {
-    fill: var(--color);
 }
 
 #header-title {
