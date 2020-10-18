@@ -6,7 +6,7 @@ What is this haiku?*
 Will update from time to time<br>
 Another haiku*
 
-# Tsuzuku-α
+# [Tsuzuku-α](https://kuzutsu.github.io/tsuzuku/test/)
 > Scores and statuses are at random while the tracking feature of Tsuzuku is in development.
 
 Tsuzuku is useful for anime watching challenges.
