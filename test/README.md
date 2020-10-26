@@ -22,9 +22,9 @@ Both searches are **not case-sensitive**.
 Using regular expressions, imagine searching for a title that:
 * only has 13 characters (`^.{13}$`)
 * only has 8 *i*'s (`^[^i]*(?:i[^i]*){8}$`)
-* has no spaces (`^[\S]+$`)
+* has no spaces (`^\S+$`)
 * has no vowels (`^[^aeiou]+$`)
-* ends with a number (`^.*[\d]$`)
+* ends with a number (`\d$`)
 * has *a* on the third position and *e* on the sixth (`^..a..e.*$`)
 
 ## Features
