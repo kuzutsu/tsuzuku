@@ -4,7 +4,7 @@ This version is in development.
 
 ![](https://raw.githubusercontent.com/kuzutsu/tsuzuku/master/test/preview.png)
 
-[More](https://github.com/kuzutsu/tsuzuku/tree/master/test)
+[More](https://github.com/kuzutsu/tsuzuku/tree/master/test#readme)
 
 ### Disclaimer
 * Notes placeholder text from the *Nani the Fuck?* copypasta
