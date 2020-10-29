@@ -44,7 +44,7 @@ $(function () {
 
     if ($('#search').val()) {
         $('#clear').css('visibility', 'visible');
-        $('#clear').show();
+        $('#clear').css('display', 'inline-flex');
     }
 
     document.querySelector('#clear').addEventListener('click', () => {
@@ -181,7 +181,7 @@ $(function () {
     }).on('input', '#search', function (e) {
         if ($(this).val()) {
             $('#clear').css('visibility', 'visible');
-            $('#clear').show();
+            $('#clear').css('display', 'inline-flex');
         } else {
             $('#clear').hide();
         }
@@ -189,7 +189,7 @@ $(function () {
     }).on('focus', '#search', function () {
         if ($(this).val()) {
             $('#clear').css('visibility', 'visible');
-            $('#clear').show();
+            $('#clear').css('display', 'inline-flex');
         } else {
             $('#clear').hide();
         }
