@@ -47,13 +47,13 @@ $(function () {
         $('#clear').show();
     }
 
-    document.querySelector('#clear').addEventListener('click', (e) => {
+    document.querySelector('#clear').addEventListener('click', () => {
         $('#clear').hide();
         $('#search').val('');
         $('#search').focus();
     });
 
-    document.querySelector('#theme').addEventListener('click', (e) => {
+    document.querySelector('#theme').addEventListener('click', () => {
         if (dark) {
             document.body.classList.remove('dark');
             document.body.classList.add('light');
@@ -67,7 +67,7 @@ $(function () {
         }
     });
 
-    document.querySelector('#close').addEventListener('click', (e) => {
+    document.querySelector('#close').addEventListener('click', () => {
         document.querySelector('#header-title').innerHTML = 'Tsuzuku';
         document.querySelector('.header-tabulator-selected').classList.remove('header-tabulator-selected');
         document.querySelector('#header-version').style.display = 'block';
@@ -78,11 +78,11 @@ $(function () {
             document.head.querySelector('[name="theme-color"]').content = '#fff';
         }
 
-        table.getColumn('picture')._column.titleElement.children[0].innerHTML = 'check_box_outline_blank';
+        table.getColumn('picture')._column.titleElement.children[0].innerHTML = '<path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"></path>';
         table.deselectRow();
     });
 
-    document.querySelector('#random').addEventListener('click', (e) => {
+    document.querySelector('#random').addEventListener('click', () => {
         if (random) {
             document.querySelector('#number').setAttribute('disabled', '');
             $('#random svg').addClass('disabled');
@@ -96,7 +96,7 @@ $(function () {
         }
     });
 
-    document.querySelector('#regex').addEventListener('click', (e) => {
+    document.querySelector('#regex').addEventListener('click', () => {
         if (regex) {
             $('#regex svg').addClass('disabled');
             regex = false;
@@ -185,7 +185,7 @@ $(function () {
         } else {
             $('#clear').hide();
         }
-    
+
     }).on('focus', '#search', function () {
         if ($(this).val()) {
             $('#clear').css('visibility', 'visible');

@@ -224,7 +224,10 @@ $(function () {
                     row.getElement().dataset.status = row.getData().status;
                 },
                 responsiveLayout: 'hide',
-                headerSortElement: '<span class="material-icons" style="font-size: 17px;">arrow_downward</span>',
+                headerSortElement:
+                    '<svg viewBox="0 0 24 24" width="17" height="17">' +
+                        '<path d="M20 12l-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8 8-8z"></path>' +
+                    '</svg>',
                 columns: [
                     {
                         field: 'color',
@@ -243,7 +246,11 @@ $(function () {
                     },
                     {
                         titleFormatter: function () {
-                            return '<span class="material-icons" style="font-size: 17px;">check_box_outline_blank</span>';
+                            return (
+                                '<svg viewBox="0 0 24 24" width="17" height="17">' +
+                                    '<path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"></path>' +
+                                '</svg>'
+                            );
                         },
                         field: 'picture',
                         headerHozAlign: 'center',
@@ -252,7 +259,12 @@ $(function () {
                         headerSort: false,
                         width: 50,
                         formatter: function (cell) {
-                            return '<span class="material-icons" style="font-size: 17px; position: absolute; cursor: default; display: none; user-select: none;">check_box</span><img src="' + cell.getValue() + '" loading="lazy" style="height: 40px; width: 40px; object-fit: cover; user-select: none;">';
+                            return (
+                                '<svg viewBox="0 0 24 24" width="17" height="17">' +
+                                    '<path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>' +
+                                '</svg>' +
+                                '<img src="' + cell.getValue() + '" loading="lazy" style="height: 40px; width: 40px; object-fit: cover; user-select: none;">'
+                            );
                         },
                         headerClick: function (e, column) {
                             if (!column.getTable().getSelectedRows().length) {
@@ -265,9 +277,9 @@ $(function () {
                                 document.querySelector('#header').classList.add('header-tabulator-selected');
 
                                 if (column.getTable().getSelectedRows().length === column.getTable().getRows().length) {
-                                    column._column.titleElement.children[0].innerHTML = 'check_box';
+                                    column._column.titleElement.children[0].innerHTML = '<path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>';
                                 } else {
-                                    column._column.titleElement.children[0].innerHTML = 'indeterminate_check_box';
+                                    column._column.titleElement.children[0].innerHTML = '<path d="M19,3H5C3.9,3,3,3.9,3,5v14c0,1.1,0.9,2,2,2h14c1.1,0,2-0.9,2-2V5C21,3.9,20.1,3,19,3z M17,13H7v-2h10V13z"></path>';
                                 }
 
                                 document.querySelector('#header-title').innerHTML = column.getTable().getSelectedRows().length + ' selected';
@@ -275,7 +287,7 @@ $(function () {
                                 document.head.querySelector('[name="theme-color"]').content = '#769bcc';
                             } else {
                                 document.querySelector('#header').classList.remove('header-tabulator-selected');
-                                column._column.titleElement.children[0].innerHTML = 'check_box_outline_blank';
+                                column._column.titleElement.children[0].innerHTML = '<path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"></path>';
                                 column.getTable().deselectRow();
                                 document.querySelector('#header-title').innerHTML = 'Tsuzuku';
                                 document.querySelector('#header-version').style.display = 'block';
@@ -295,7 +307,7 @@ $(function () {
                                 if (!lastRow) {
                                     lastRow = cell.getRow();
 
-                                    cell.getColumn()._column.titleElement.children[0].innerHTML = 'indeterminate_check_box';
+                                    cell.getColumn()._column.titleElement.children[0].innerHTML = '<path d="M19,3H5C3.9,3,3,3.9,3,5v14c0,1.1,0.9,2,2,2h14c1.1,0,2-0.9,2-2V5C21,3.9,20.1,3,19,3z M17,13H7v-2h10V13z"></path>';
                                     return;
                                 }
 
@@ -325,7 +337,7 @@ $(function () {
                                 document.querySelector('#header').classList.remove('header-tabulator-selected');
                                 document.querySelector('#header-title').innerHTML = 'Tsuzuku';
                                 document.querySelector('#header-version').style.display = 'block';
-                                cell.getColumn()._column.titleElement.children[0].innerHTML = 'check_box_outline_blank';
+                                cell.getColumn()._column.titleElement.children[0].innerHTML = '<path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"></path>';
 
                                 if (dark) {
                                     document.head.querySelector('[name="theme-color"]').content = '#000';
@@ -339,16 +351,20 @@ $(function () {
                                 document.head.querySelector('[name="theme-color"]').content = '#769bcc';
 
                                 if (cell.getTable().getSelectedRows().length === cell.getTable().getRows().length) {
-                                    cell.getColumn()._column.titleElement.children[0].innerHTML = 'check_box';
+                                    cell.getColumn()._column.titleElement.children[0].innerHTML = '<path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>';
                                 } else {
-                                    cell.getColumn()._column.titleElement.children[0].innerHTML = 'indeterminate_check_box';
+                                    cell.getColumn()._column.titleElement.children[0].innerHTML = '<path d="M19,3H5C3.9,3,3,3.9,3,5v14c0,1.1,0.9,2,2,2h14c1.1,0,2-0.9,2-2V5C21,3.9,20.1,3,19,3z M17,13H7v-2h10V13z"></path>';
                                 }
                             }
                         }
                     },
                     {
                         titleFormatter: function () {
-                            return '<span class="material-icons" style="font-size: 17px;">public</span>';
+                            return (
+                                '<svg viewBox="0 0 24 24" width="17" height="17">' +
+                                    '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"></path>' +
+                                '</svg>'
+                            );
                         },
                         field: 'sources',
                         headerHozAlign: 'center',
@@ -376,7 +392,7 @@ $(function () {
                         formatter: function (cell) {
                             return '<a href="' + cell.getRow().getCell('sources').getValue() + '" target="_blank" rel="noreferrer" style="overflow-wrap: anywhere; white-space: normal;">' + cell.getValue() + '</a>';
                         }
-                    },
+                    },/*
                     {
                         title: 'Notes',
                         field: 'notes',
@@ -408,6 +424,30 @@ $(function () {
 
                             return '<span class="nothing">Nothing here</span>';
                         }
+                    },*/
+                    {
+                        title: 'Type',
+                        headerHozAlign: 'center',
+                        hozAlign: 'center',
+                        vertAlign: 'middle',
+                        field: 'type',
+                        width: 100
+                    },
+                    {
+                        title: 'Episodes',
+                        headerHozAlign: 'center',
+                        hozAlign: 'center',
+                        vertAlign: 'middle',
+                        field: 'episodes',
+                        width: 100
+                    },
+                    {
+                        title: 'Season',
+                        headerHozAlign: 'center',
+                        hozAlign: 'center',
+                        vertAlign: 'middle',
+                        field: 'season',
+                        width: 100
                     },
                     {
                         title: 'Score*',
@@ -432,30 +472,6 @@ $(function () {
                                 10
                             ]
                         }
-                    },
-                    {
-                        title: 'Type',
-                        headerHozAlign: 'center',
-                        hozAlign: 'center',
-                        vertAlign: 'middle',
-                        field: 'type',
-                        width: 100
-                    },
-                    {
-                        title: 'Episodes',
-                        headerHozAlign: 'center',
-                        hozAlign: 'center',
-                        vertAlign: 'middle',
-                        field: 'episodes',
-                        width: 100
-                    },
-                    {
-                        title: 'Season',
-                        headerHozAlign: 'center',
-                        hozAlign: 'center',
-                        vertAlign: 'middle',
-                        field: 'season',
-                        width: 100
                     },
                     {
                         title: 'Status*',
