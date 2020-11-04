@@ -1,45 +1,33 @@
-# Tsuzuku
-## [2.0.0 (alpha)](https://kuzutsu.github.io/tsuzuku/test/)
-This version is in development.
+*Source code in chaos<br>
+Will update from time to time<br>
+What is this haiku?*
+
+*Also this README<br>
+Will update from time to time<br>
+Another haiku*
+
+# [Tsuzuku-α](https://kuzutsu.github.io/tsuzuku/test/)
+**Tsuzuku** is useful for anime watching challenges.
 
 ![](https://raw.githubusercontent.com/kuzutsu/tsuzuku/master/test/preview.png)
 
-[More](https://github.com/kuzutsu/tsuzuku/tree/master/test#readme)
+## Features
+### Fuzzy search (default, not case-sensitive)
+### Regular expression search (not case-sensitive)
+Examples:
+* Only 13 characters (`^.{13}$`)
+* Only 8 *i*'s (`^[^i]*(?:i[^i]*){8}$`)
+* No spaces (`^\S+$`)
+* No vowels (`^[^aeiou]+$`)
+* Ends with a number (`\d$`)
+* Has *a* on the third position and *e* on the sixth (`^..a..e.*$`)
 
-### Disclaimer
-* Notes placeholder text from the *Nani the Fuck?* copypasta
+### Randomly select *n* titles
 
-## [1.1.0 (current)](https://kuzutsu.github.io/tsuzuku/)
-This version is only an IndexedDB-based<a id="1" href="#ref-1"><sup>[1]</sup></a> anime tracker.
+## Bugs
+* Scrolling leaves a padding<br>
+**Workaround:** Tapping on search (on mobile) or resizing the window (on desktop)
 
-![](https://raw.githubusercontent.com/kuzutsu/tsuzuku/master/preview.png)
-
-<details>
-<summary>More</summary>
-
-### Features
-* Dark mode
-* Dominant-color progress bar for titles currently watching
-* Export data in MyAnimeList XML format
-* Find relations of completed titles<a id="2" href="#ref-2"><sup>[2]</sup></a>
-* Import data from MyAnimeList or Kitsu XML<a id="3" href="#ref-3"><sup>[3]</sup></a><a id="4" href="#ref-4"><sup>[4]</sup></a>
-* Letter-by-letter sorting
-* Nest titles
-* Select random title from planning-to-watch list<a id="5" href="#ref-5"><sup>[5]</sup></a>
-* Warn completed titles with mismatched episode count
-
-[Roadmap](https://github.com/kuzutsu/tsuzuku/projects/1)
-
-### Dependencies
-* [anime-offline-database](https://github.com/manami-project/anime-offline-database)
-* [Color Thief](https://github.com/lokesh/color-thief)
-* [jQuery](https://github.com/jquery/jquery)<a id="6" href="#ref-6"><sup>[6]</sup></a>
-
-### Notes
-1. <a id="ref-1" href="#1">↑</a> Data is saved locally; no sign-up required
-1. <a id="ref-2" href="#2">↑</a> By clicking on the Type column
-1. <a id="ref-3" href="#3">↑</a> Will overwrite existing data
-1. <a id="ref-4" href="#4">↑</a> Will only import `<series_animedb_id>`, `<series_title>`, `<series_type>`, `<series_episodes>`, `<my_watched_episodes>`, `<my_status>`, and `<my_comments>`
-1. <a id="ref-5" href="#5">↑</a> By double-clicking on the Planning tab
-1. <a id="ref-6" href="#6">↑</a> Will be removed
-</details>
+## Notes
+* Notes placeholder text in the preview is from the *Nani the Fuck?* copypasta
+* Scores and statuses are at random while the tracking feature of Tsuzuku is in development
