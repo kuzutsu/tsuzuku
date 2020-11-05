@@ -59,7 +59,7 @@ $(function () {
                             score: Math.round(Math.random() * 10) || '',
                             season: s + (d[i].animeSeason.year || ''),
                             sources: value,
-                            status: ['', 'Watching', 'Completed', 'Rewatching', 'Paused', 'Dropped', 'Planning'][Math.round(Math.random() * 5)],
+                            status: ['', 'Watching', 'Completed', 'Rewatching', 'Paused', 'Dropped', 'Planning'][Math.round(Math.random() * 6)],
                             synonyms: d[i].synonyms,
                             title: d[i].title,
                             type: d[i].type
@@ -279,7 +279,7 @@ $(function () {
                                 if (column.getTable().getSelectedRows().length === column.getTable().getRows().length) {
                                     column._column.titleElement.children[0].innerHTML = '<path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>';
                                 } else {
-                                    column._column.titleElement.children[0].innerHTML = '<path d="M19,3H5C3.9,3,3,3.9,3,5v14c0,1.1,0.9,2,2,2h14c1.1,0,2-0.9,2-2V5C21,3.9,20.1,3,19,3z M17,13H7v-2h10V13z"></path>';
+                                    column._column.titleElement.children[0].innerHTML = '<path d="M19 3H5C3.9 3 3 3.9 3 5v14c0 1.1 0.9 2 2 2h14c1.1 0 2-0.9 2-2V5C21 3.9 20.1 3 19 3z M17 13H7v-2h10V13z"></path>';
                                 }
 
                                 document.querySelector('#header-title').innerHTML = column.getTable().getSelectedRows().length + ' selected';
@@ -307,7 +307,7 @@ $(function () {
                                 if (!lastRow) {
                                     lastRow = cell.getRow();
 
-                                    cell.getColumn()._column.titleElement.children[0].innerHTML = '<path d="M19,3H5C3.9,3,3,3.9,3,5v14c0,1.1,0.9,2,2,2h14c1.1,0,2-0.9,2-2V5C21,3.9,20.1,3,19,3z M17,13H7v-2h10V13z"></path>';
+                                    cell.getColumn()._column.titleElement.children[0].innerHTML = '<path d="M19 3H5C3.9 3 3 3.9 3 5v14c0 1.1 0.9 2 2 2h14c1.1 0 2-0.9 2-2V5C21 3.9 20.1 3 19 3z M17 13H7v-2h10V13z"></path>';
                                     return;
                                 }
 
@@ -353,7 +353,7 @@ $(function () {
                                 if (cell.getTable().getSelectedRows().length === cell.getTable().getRows().length) {
                                     cell.getColumn()._column.titleElement.children[0].innerHTML = '<path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>';
                                 } else {
-                                    cell.getColumn()._column.titleElement.children[0].innerHTML = '<path d="M19,3H5C3.9,3,3,3.9,3,5v14c0,1.1,0.9,2,2,2h14c1.1,0,2-0.9,2-2V5C21,3.9,20.1,3,19,3z M17,13H7v-2h10V13z"></path>';
+                                    cell.getColumn()._column.titleElement.children[0].innerHTML = '<path d="M19 3H5C3.9 3 3 3.9 3 5v14c0 1.1 0.9 2 2 2h14c1.1 0 2-0.9 2-2V5C21 3.9 20.1 3 19 3z M17 13H7v-2h10V13z"></path>';
                                 }
                             }
                         }
