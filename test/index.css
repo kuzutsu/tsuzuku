@@ -65,7 +65,6 @@ main {
 }
 
 .tabulator-tableHolder {
-    overflow-x: hidden !important;
     height: 100%;
 }
 
