@@ -22,6 +22,29 @@ Examples:
 * Ends with a number (`\d$`)
 * Has *a* on the third position and *e* on the sixth (`^..a..e.*$`)
 
+### Advanced search
+#### Text-based
+Separate with OR operator (`,`), no spaces
+* `season:` (`winter`, `summer`, `spring`, `fall`, `tba`)
+* `status:` (`watching`, `rewatching`, `completed`, `paused`, `dropped`, `planning`)
+* `type:` (`tv`, `movie`, `ova`, `ona`, `special`)
+
+Examples:
+* From summer season only (`season:summer`)
+* Paused or dropped (`status:paused,dropped`)
+* Movies, OVAs, or ONAs only (`type:movie,ova,ONA`)
+
+#### Number-based
+Can use `<`, `<=`, `>`, or `>=`, separate with AND operator (`&`), no spaces
+* `episodes:`
+* `score:`
+* `year:`
+
+Examples:
+* Only 13 episodes (`episodes:13`)
+* Score higher than 4 but less than 7 (`score:>4&<7`)
+* On or before 2011 (`year:<=2011`)
+
 ### Randomly select *n* titles
 
 ## Bugs
