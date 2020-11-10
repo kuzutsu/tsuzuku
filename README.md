@@ -25,7 +25,7 @@ Examples:
 ### Advanced search
 #### Text-based
 Separate with OR operator (`,`), no spaces
-* `season:` (`winter`, `summer`, `spring`, `fall`, `tba`)
+* `season:` (`winter`, `spring`, `summer`, `fall`, `tba`)
 * `status:` (`watching`, `rewatching`, `completed`, `paused`, `dropped`, `planning`)
 * `type:` (`tv`, `movie`, `ova`, `ona`, `special`)
 
