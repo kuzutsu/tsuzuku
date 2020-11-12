@@ -11,11 +11,11 @@ Another haiku*
 
 ![](https://raw.githubusercontent.com/kuzutsu/tsuzuku/master/test/preview.png)
 
-Search providers are MyAnimeList (high priority) and Kitsu only
+Search providers are MyAnimeList (high priority) and Kitsu
 * If title is in MyAnimeList but not in Kitsu, this will be listed and MyAnimeList icon will be shown
 * If title is in Kitsu but not in MyAnimeList, this will be listed and Kitsu icon will be shown
 * If title is in MyAnimeList and same title is in Kitsu, only one title will be listed and MyAnimeList icon will be shown
-* If title is in MyAnimeList but different title in Kitsu, both titles will be listed and respective icons will be shown
+* If title is in MyAnimeList but different title is in Kitsu, both titles will be listed and respective icons will be shown
 
 ## Features
 ### Fuzzy search (default)
