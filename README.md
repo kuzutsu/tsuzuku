@@ -11,9 +11,23 @@ Another haiku*
 
 ![](https://raw.githubusercontent.com/kuzutsu/tsuzuku/master/test/preview.png)
 
+Search providers are MyAnimeList (high priority) and Kitsu only
+* If title is in MyAnimeList but not in Kitsu, this will be listed and MyAnimeList icon will be shown
+* If title is in Kitsu but not in MyAnimeList, this will be listed and Kitsu icon will be shown
+* If title is in MyAnimeList and same title is in Kitsu, only one title will be listed and MyAnimeList icon will be shown
+* If title is in MyAnimeList but different title in Kitsu, both titles will be listed and respective icons will be shown
+
 ## Features
-### Fuzzy search (default, not case-sensitive)
-### Regular expression search (not case-sensitive)
+### Fuzzy search (default)
+Search (not case-sensitive) in Romaji, English, Japanese, etc.
+
+Default sort by relevancy % (descending), then by titles (ascending)
+
+### Regular expression search
+Can only search (not case-sensitive) in Romaji
+
+Click on the dot-and-asterisk icon to toggle (will light up when enabled)
+
 Examples:
 * Only 13 characters (`^.{13}$`)
 * Only 8 *i*'s (`^[^i]*(?:i[^i]*){8}$`)
@@ -46,6 +60,19 @@ Examples:
 * On or before 2011 (`year:<=2011`)
 
 ### Randomly select *n* titles
+Click on the shuffle icon to toggle (will light up when enabled)
+
+Default is 1
+
+Press `Enter` in search box to randomize again
+
+### Multiple sort
+Desktop only
+
+Hold `Ctrl`, then click on the header titles (toggle between ascending and descending)
+
+### Dark mode
+Click on the sun icon to toggle
 
 ## Bugs
 * Scrolling leaves a padding<br>
