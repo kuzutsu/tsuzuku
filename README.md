@@ -79,5 +79,4 @@ Click on the sun icon to toggle
 **Workaround:** Tapping on search (on mobile) or resizing the window (on desktop)
 
 ## Notes
-* Notes placeholder text in the preview is from the *Nani the Fuck?* copypasta
 * Scores and statuses are at random while the tracking feature of Tsuzuku is in development
