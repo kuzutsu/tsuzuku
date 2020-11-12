@@ -21,7 +21,7 @@ Search providers are MyAnimeList (high priority) and Kitsu
 ### Fuzzy search (default)
 Search (not case-sensitive) in Romaji, English, Japanese, etc.
 
-Default sort by relevancy % (descending), then by titles (ascending)
+Default sort by relevancy % (descending), then by title (ascending)
 
 ### Regular expression search
 Can only search (not case-sensitive) in Romaji
