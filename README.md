@@ -6,10 +6,10 @@ What is this haiku?*
 Will update from time to time<br>
 Another haiku*
 
-# [Tsuzuku-α](https://kuzutsu.github.io/tsuzuku/test/)
+# [Tsuzuku-α](https://kuzutsu.github.io/tsuzuku/)
 **Tsuzuku** is useful for anime watching challenges.
 
-![](https://raw.githubusercontent.com/kuzutsu/tsuzuku/master/test/preview.png)
+![](https://raw.githubusercontent.com/kuzutsu/tsuzuku/master/preview.png)
 
 Search providers are MyAnimeList (high priority) and Kitsu
 * If title is in MyAnimeList but not in Kitsu, this will be listed and MyAnimeList icon will be shown
