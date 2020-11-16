@@ -3,175 +3,97 @@
     <head>
         <title>Tsuzuku</title>
         <meta charset="utf-8">
+        <meta name="description" content="Search anime using regular expressions ＼(￣▽￣)／">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="description" content="Track your anime progress instantly, without the sign-up hassle! ＼(￣▽￣)／">
-        <meta name="keywords" content="anime tracker, track anime, tsuzuku">
+        <meta name="theme-color" content="#fff">
+        <link rel="icon" href="logo-192.png">
+        <link rel="apple-touch-icon" href="logo-maskable-192.png">
+        <link rel="manifest" href="manifest.webmanifest">
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link rel="preconnect" href="https://cdn.jsdelivr.net">
+        <link rel="preconnect" href="https://raw.githubusercontent.com">
+        <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+        <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+        <link rel="dns-prefetch" href="https://raw.githubusercontent.com">
+        <link rel="dns-prefetch" href="https://myanimelist.net">
+        <link rel="dns-prefetch" href="https://kitsu.io">
+        <link rel="preload" href="fetchFunction.js" as="script" crossorigin>
+        <link rel="preload" href="https://fonts.gstatic.com/s/roboto/v20/KFOmCnqEu92Fr1Mu4mxKKTU1Kg.woff2" as="font" crossorigin>
+        <link rel="preload" href="https://fonts.gstatic.com/s/roboto/v20/KFOlCnqEu92Fr1MmEU9fBBc4AMP6lQ.woff2" as="font" crossorigin>
+        <link rel="preload" href="index.css" as="style">
         <link href="index.css" rel="stylesheet">
     </head>
-    <body id="light">
-        <dialog></dialog>
-        <svg width="60" height="60" viewBox="0 0 250 250" class="github-corner" style="position: absolute; top: 0; border: 0; right: 0; pointer-events: none;" aria-hidden="true">
-            <a href="https://github.com/kuzutsu/tsuzuku" aria-label="View source on GitHub" target="_blank" rel="noreferrer">
-                <path d="M0,0 L250,250 L250,0 Z" style="fill-opacity: 0; pointer-events: auto;"></path>
-            </a>
-            <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
-            <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
-            <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path>
-        </svg>
+    <body class="light">
         <noscript>
-            <dialog open>
-                <span>🔔</span>
-                <pre style="margin-top: 0;">Please enable JavaScript</pre>
-            </dialog>
+            <div style="height: 100%; width: 100%; background: #e6e6e6; position: absolute; display: flex; align-items: center; justify-content: center; user-select: none;">
+                <span style="font-size: 16px;">Tsuzuku can't run without JavaScript</span>
+            </div>
         </noscript>
-        <div id="top">
-            <table id="table">
-                <tr>
-                    <td>
-                        <button id="mode">Light</button>
-                    </td>
-                    <td></td>
-                    <td>
-                        <input type="text" id="search" placeholder="Search"></input>
-                    </td>
-                    <td>
-                        <button id="update">Update</button>
-                    </td>
-                    <td style="white-space: nowrap;">
-                        <button id="export">Export</button>
-                        <button id="reset">Reset</button>
-                        <button id="import">Import</button>
-                        <input type="file" id="file"></input>
-                    </td>
-                </tr>
-            </table>
-            <script>
-                if (localStorage.getItem('mode')) {
-                    document.body.setAttribute('id', localStorage.getItem('mode'));
-
-                    if (localStorage.getItem('mode') === 'dark') {
-                        document.querySelector('#mode').innerHTML = 'Light';
-                    } else {
-                        document.querySelector('#mode').innerHTML = 'Dark';
-                    }
-                } else {
-                    localStorage.setItem('mode', 'light');
-                }
-            </script>
-            <div id="when">
-                <table>
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td style="white-space: nowrap; overflow-x: auto;">
-                            <button id="divall">All (0)</button>
-                            <button id="divwatching" selected>Watching (0)</button>
-                            <button id="divcompleted">Completed (0)</button>
-                            <button id="divpaused">Paused (0)</button>
-                            <button id="divdropped">Dropped (0)</button>
-                            <button id="divplanning">Planning (0)</button>
-                        </td>
-                        <td>
-                            <button id="divrelated">Related</button>
-                        </td>
-                        <td></td>
-                    </tr>
-                </table>
+        <header id="header">
+            <div id="menu" style="height: 100%; padding: 0 19px 0 19px; display: inline-flex; align-items: center; cursor: pointer;">
+                <svg viewBox="0 0 24 24" width="19" height="19">
+                    <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path>
+                </svg>
             </div>
-        </div>
-        <div></div>
-        <div id="bottom">
-            <div id="database">
-                <table id="database">
-                    <tr id="message" style="height: 23px;">
-                        <td></td>
-                        <td></td>
-                        <td><span>Fetching...</span></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                </table>
+            <div id="close" style="height: 100%; padding: 0 19px 0 19px; display: inline-flex; align-items: center; cursor: pointer; display: none;">
+                <svg viewBox="0 0 24 24" width="19" height="19">
+                    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path>
+                </svg>
             </div>
-            <div id="all">
-                <table id="all">
-                    <tr id="message" style="height: 23px;">
-                        <td></td>
-                        <td></td>
-                        <td><span>Loading...</span></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                </table>
+            <span id="header-title">Tsuzuku</span>
+            <span id="header-version">-α</span>
+            <span style="width: 100%;"></span>
+            <a href="https://github.com/kuzutsu/tsuzuku/tree/master/test" title="View source on GitHub" target="_blank" rel="noreferrer" style="display: flex; align-items: center;">
+                <svg viewBox="-1 -1 18 18" height="19" width="19">
+                    <path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
+                </svg>
+                <span id="view-source" style="color: #000; margin-left: 8px; display: none; white-space: nowrap;">View source on GitHub</span>
+            </a>
+            <div id="theme" title="Toggle theme" style="height: 100%; padding: 0 19px 0 19px; display: inline-flex; align-items: center; cursor: pointer;">
+                <svg viewBox="0 0 24 24" width="19" height="19">
+                    <path d="M20 15.31L23.31 12 20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69zM12 18V6c3.31 0 6 2.69 6 6s-2.69 6-6 6z"></path>
+                </svg>
             </div>
-            <div id="watching">
-                <table id="watching">
-                    <tr id="message" style="height: 23px;">
-                        <td></td>
-                        <td></td>
-                        <td><span>Loading...</span></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                </table>
+        </header>
+        <main>
+            <div id="main" style="height: 100%; display: flex; flex-direction: column;">
+                <div id="search-container">
+                    <span style="padding: 4px; cursor: default; display: inline-flex; align-items: center;">
+                        <svg viewBox="0 0 24 24" width="19" height="19">
+                            <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path>
+                        </svg>
+                    </span>
+                    <input id="search" type="text" autocomplete="off" placeholder="Search">
+                    <span id="clear" class="material-icons" style="padding: 4px; display: none; align-items: center; visibility: visible;">
+                        <svg class="disabled" viewBox="0 0 24 24" width="19" height="19">
+                            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path>
+                        </svg>
+                    </span>
+                    <span id="regex" title="Use regular expression" style="display: inline-flex; align-items: center; padding: 4px;">
+                        <svg class="disabled" viewBox="2 2 22 22" width="17" height="17">
+                            <path d="M16,16.92C15.67,16.97 15.34,17 15,17C14.66,17 14.33,16.97 14,16.92V13.41L11.5,15.89C11,15.5 10.5,15 10.11,14.5L12.59,12H9.08C9.03,11.67 9,11.34 9,11C9,10.66 9.03,10.33 9.08,10H12.59L10.11,7.5C10.3,7.25 10.5,7 10.76,6.76V6.76C11,6.5 11.25,6.3 11.5,6.11L14,8.59V5.08C14.33,5.03 14.66,5 15,5C15.34,5 15.67,5.03 16,5.08V8.59L18.5,6.11C19,6.5 19.5,7 19.89,7.5L17.41,10H20.92C20.97,10.33 21,10.66 21,11C21,11.34 20.97,11.67 20.92,12H17.41L19.89,14.5C19.7,14.75 19.5,15 19.24,15.24V15.24C19,15.5 18.75,15.7 18.5,15.89L16,13.41V16.92H16V16.92M5,19A2,2 0 0,1 7,17A2,2 0 0,1 9,19A2,2 0 0,1 7,21A2,2 0 0,1 5,19H5Z"></path>
+                        </svg>
+                    </span>
+                    <span id="random" title="Randomize" class="material-icons" style="padding: 4px; display: inline-flex; align-items: center;">
+                        <svg class="disabled" viewBox="0 0 24 24" width="19" height="19">
+                            <path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"></path>
+                        </svg>
+                    </span>
+                    <input id="number" type="number" min="1" value="1" autocomplete="off" style="width: 50px; height: 100%; border: 0; outline: none; padding: 4px; font-size: 14px;" disabled>
+                </div>
+                <div id="database-container"></div>
             </div>
-            <div id="completed">
-                <table id="completed">
-                    <tr id="message" style="height: 23px;">
-                        <td></td>
-                        <td></td>
-                        <td><span>Loading...</span></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                </table>
-            </div>
-            <div id="paused">
-                <table id="paused">
-                    <tr id="message" style="height: 23px;">
-                        <td></td>
-                        <td></td>
-                        <td><span>Loading...</span></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                </table>
-            </div>
-            <div id="dropped">
-                <table id="dropped">
-                    <tr id="message" style="height: 23px;">
-                        <td></td>
-                        <td></td>
-                        <td><span>Loading...</span></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                </table>
-            </div>
-            <div id="planning">
-                <table id="planning">
-                    <tr id="message" style="height: 23px;">
-                        <td></td>
-                        <td></td>
-                        <td><span>Loading...</span></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                </table>
-            </div>
-            <div id="related">
-                <table id="related">
-                    <tr id="message" style="height: 23px;">
-                        <td></td>
-                        <td></td>
-                        <td><span>Fetching...</span></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                </table>
-            </div>
-        </div>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.2/color-thief.umd.min.js"></script>
-        <script src="index.js"></script>
+        </main>
+        <script defer src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.slim.min.js"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/tabulator-tables/dist/js/tabulator_core.min.js"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/tabulator-tables/dist/js/modules/edit.min.js"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/tabulator-tables/dist/js/modules/filter.min.js"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/tabulator-tables/dist/js/modules/format.min.js"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/tabulator-tables/dist/js/modules/keybindings.min.js"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/tabulator-tables/dist/js/modules/resize_table.min.js"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/tabulator-tables/dist/js/modules/select_row.min.js"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/tabulator-tables/dist/js/modules/sort.min.js"></script>
+        <!--<script defer src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>-->
+        <script defer type="module" src="index.js"></script>
     </body>
 </html>
