@@ -235,7 +235,8 @@ svg {
 }
 
 [tabulator-field="title"] a,
-[tabulator-field="notes"] a {
+[tabulator-field="notes"] a,
+#view-source {
     color: var(--color);
 }
 
