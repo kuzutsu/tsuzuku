@@ -206,7 +206,10 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                     }
                 }
 
-                document.querySelector('#progress').parentNode.removeChild('#progress');
+                if (document.querySelector('#progress')) {
+                    document.querySelector('#progress').parentNode.removeChild('#progress');
+                }
+
                 document.querySelector('.tabulator-tableHolder').style.display = '';
             },
             initialSort: [
