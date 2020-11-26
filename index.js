@@ -125,7 +125,7 @@ $('body').on('keydown', '#search, #number', function (e) {
     if (worker) {
         worker.terminate();
         worker = null;
-        document.querySelector('#progress').parentNode.removeChild('#progress');
+        document.querySelector('#progress').remove();
     }
 
     $('.tabulator-header').after(
