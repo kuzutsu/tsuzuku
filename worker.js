@@ -135,9 +135,19 @@ self.addEventListener('message', function (event) {
 
         if (v.trim()) {
             if (event.data.regex) {
-                if (!d.title.match(RegExp(v.trim(), 'gi'))) {
+                let r = 0;
+
+                for (const value of [d.title, ...d.synonyms]) {
+                    if (value.match(RegExp(v.trim(), 'gi'))) {
+                        r += 1;
+                    }
+                }
+
+                if (!r) {
                     return;
                 }
+
+                d.relevancy = 1;
             } else {
                 const result = new Fuse([d.title, ...d.synonyms], {
                     ignoreFieldNorm: true,

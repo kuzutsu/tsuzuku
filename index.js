@@ -26,7 +26,7 @@ if ('serviceWorker' in navigator) {
 }
 
 if (new URLSearchParams(location.search).get('query')) {
-    $('#search').val(decodeURIComponent(new URLSearchParams(location.search).get('query')));
+    document.querySelector('#search').value = decodeURIComponent(new URLSearchParams(location.search).get('query'));
 }
 
 if (new URLSearchParams(location.search).get('regex') === '1') {
@@ -37,19 +37,19 @@ if (new URLSearchParams(location.search).get('regex') === '1') {
 if (Number(new URLSearchParams(location.search).get('random')) > 0) {
     random = true;
     document.querySelector('#random svg').style.fill = '#000';
-    $('#number').removeAttr('disabled');
-    $('#number').val(Number(new URLSearchParams(location.search).get('random')));
+    document.querySelector('#number').removeAttribute('disabled');
+    document.querySelector('#number').value = Number(new URLSearchParams(location.search).get('random'));
 }
 
-if ($('#search').val()) {
+if (document.querySelector('#search').value) {
     document.querySelector('#clear').style.visibility = 'visible';
     document.querySelector('#clear').style.display = 'inline-flex';
 }
 
 document.querySelector('#clear').addEventListener('click', () => {
     document.querySelector('#clear').style.display = 'none';
-    $('#search').val('');
-    $('#search').focus();
+    document.querySelector('#search').value = '';
+    document.querySelector('#search').focus();
 });
 
 document.querySelector('#theme').addEventListener('click', () => {
@@ -86,12 +86,12 @@ document.querySelector('#random').addEventListener('click', () => {
         document.querySelector('#number').setAttribute('disabled', '');
         document.querySelector('#random svg').classList.add('disabled');
         random = false;
-        $('#search').focus();
+        document.querySelector('#search').focus();
     } else {
         document.querySelector('#number').removeAttribute('disabled');
         document.querySelector('#random svg').classList.remove('disabled');
         random = true;
-        $('#number').focus();
+        document.querySelector('#number').focus();
     }
 });
 
@@ -104,7 +104,7 @@ document.querySelector('#regex').addEventListener('click', () => {
         regex = true;
     }
 
-    $('#search').focus();
+    document.querySelector('#search').focus();
 });
 
 $('body').on('keydown', '#search, #number', function (e) {
@@ -112,11 +112,11 @@ $('body').on('keydown', '#search, #number', function (e) {
         return;
     }
 
-    if (last === $('#search').val() && !lastRandom && !random && lastRegex === regex) {
+    if (last === document.querySelector('#search').value && !lastRandom && !random && lastRegex === regex) {
         return;
     }
 
-    last = $('#search').val();
+    last = document.querySelector('#search').value;
     lastRandom = random;
     lastRegex = regex;
 
@@ -128,7 +128,7 @@ $('body').on('keydown', '#search, #number', function (e) {
         document.querySelector('#progress').remove();
     }
 
-    $('.tabulator-header').after(
+    document.querySelector('.tabulator-header').insertAdjacentHTML('afterend',
         '<div id="progress">' +
             '<div id="indicator"></div>' +
         '</div>'
@@ -139,9 +139,9 @@ $('body').on('keydown', '#search, #number', function (e) {
     worker.postMessage({
         data: table.getData(),
         random: random,
-        randomValue: Math.round(Math.abs($('#number').val())) || 1,
+        randomValue: Math.round(Math.abs(document.querySelector('#number').value)) || 1,
         regex: regex,
-        value: $('#search').val()
+        value: document.querySelector('#search').value
     });
 
     worker.addEventListener('message', function (event) {
@@ -149,9 +149,11 @@ $('body').on('keydown', '#search, #number', function (e) {
             case 'progress':
                 document.querySelector('#indicator').style.width = event.data.progress;
                 break;
+
             case 'found':
                 document.querySelector('#indicator').classList.add('found');
                 break;
+
             case 'done':
                 // delay to extend indicator to 100%
                 setTimeout(() => {
@@ -161,10 +163,12 @@ $('body').on('keydown', '#search, #number', function (e) {
                     worker = null;
                 }, 100);
                 break;
+
             case 'clear':
                 // fake load
                 document.querySelector('#indicator').classList.add('found');
                 document.querySelector('#indicator').style.width = '100%';
+
                 setTimeout(() => {
                     dimension = null;
                     table.clearFilter();
@@ -172,12 +176,13 @@ $('body').on('keydown', '#search, #number', function (e) {
                     worker = null;
                 }, 100);
                 break;
+
             default:
                 break;
         }
     });
 
-}).on('input', '#search', function (e) {
+}).on('input', '#search', function () {
     if ($(this).val()) {
         document.querySelector('#clear').style.visibility = 'visible';
         document.querySelector('#clear').style.display = 'inline-flex';
@@ -194,7 +199,7 @@ $('body').on('keydown', '#search, #number', function (e) {
     }
 
 }).on('blur', '#search', function () {
-    if (!$('#search').val()) {
+    if (!document.querySelector('#search').value) {
         return;
     }
 
@@ -205,7 +210,7 @@ $('body').on('keydown', '#search, #number', function (e) {
     document.querySelector('#clear').style.visibility = 'hidden';
 
 }).on('mouseover', '#search-container', function () {
-    if (!$('#search').val()) {
+    if (!document.querySelector('#search').value) {
         return;
     }
 
@@ -216,7 +221,7 @@ $('body').on('keydown', '#search, #number', function (e) {
 }).on('mouseout', '#search-container', function () {
     over = false;
 
-    if ($('#search').is(':focus')) {
+    if (document.querySelector('#search:focus')) {
         return;
     }
 

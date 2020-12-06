@@ -19,12 +19,12 @@ Search providers are MyAnimeList (high priority) and Kitsu
 
 ## Features
 ### Fuzzy search (default)
-Search in Romaji, English, Japanese, etc. (not case-sensitive)
+Not case-sensitive
 
 Default sort by relevancy % (descending), then by title (ascending)
 
 ### Regular expression search
-Can only search in Romaji (not case-sensitive)
+Not case-sensitive
 
 Click on the dot-and-asterisk icon to toggle (will light up when enabled)
 
@@ -40,7 +40,7 @@ Examples:
 #### Text-based
 Separate with OR operator (`,`), no spaces
 * `season:` (`winter`, `spring`, `summer`, `fall`, `tba`)
-* `status:` (`watching`, `rewatching`, `completed`, `paused`, `dropped`, `planning`)
+* `status:` (`watching`, `rewatching`, `completed`, `paused`, `dropped`, `planning`) (see [Notes](#notes))
 * `type:` (`tv`, `movie`, `ova`, `ona`, `special`)
 
 Examples:
@@ -51,7 +51,7 @@ Examples:
 #### Number-based
 Can use `<`, `<=`, `>`, or `>=`, separate with AND operator (`&`), no spaces
 * `episodes:`
-* `score:`
+* `score:` (see [Notes](#notes))
 * `year:`
 
 Examples:
