@@ -29,6 +29,22 @@
                 <span style="font-size: 16px;">Tsuzuku can't run without JavaScript</span>
             </div>
         </noscript>
+        <script>
+            switch (localStorage.getItem('theme')) {
+                case 'light':
+                    break;
+                
+                case 'dark':
+                    document.body.classList.remove('light');
+                    document.body.classList.add('dark');
+                    document.head.querySelector('[name="theme-color"]').content = '#000';
+                    break;
+                
+                default:
+                    localStorage.setItem('theme', 'light');
+                    break;
+            }
+        </script>
         <header id="header">
             <div id="menu" style="height: 100%; padding: 0 19px 0 19px; display: inline-flex; align-items: center; cursor: pointer;">
                 <svg viewBox="0 0 24 24" width="19" height="19">

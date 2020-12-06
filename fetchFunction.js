@@ -1,5 +1,4 @@
 import {
-    dark,
     dimension
 } from './index.js';
 
@@ -293,10 +292,10 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                             document.querySelector('#header-title').innerHTML = 'Tsuzuku';
                             document.querySelector('#header-version').style.display = 'block';
 
-                            if (dark) {
-                                document.head.querySelector('[name="theme-color"]').content = '#000';
-                            } else {
+                            if (localStorage.getItem('theme') === 'light') {
                                 document.head.querySelector('[name="theme-color"]').content = '#fff';
+                            } else {
+                                document.head.querySelector('[name="theme-color"]').content = '#000';
                             }
                         }
                     },
@@ -340,10 +339,10 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                             document.querySelector('#header-version').style.display = 'block';
                             cell.getColumn()._column.titleElement.children[0].innerHTML = '<path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"></path>';
 
-                            if (dark) {
-                                document.head.querySelector('[name="theme-color"]').content = '#000';
-                            } else {
+                            if (localStorage.getItem('theme') === 'light') {
                                 document.head.querySelector('[name="theme-color"]').content = '#fff';
+                            } else {
+                                document.head.querySelector('[name="theme-color"]').content = '#000';
                             }
                         } else {
                             document.querySelector('#header').classList.add('header-tabulator-selected');

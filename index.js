@@ -7,7 +7,6 @@ import {
 let over = false,
     random = false,
     regex = false,
-    dark = false,
     last = '',
     lastRegex = false,
     lastRandom = false,
@@ -53,16 +52,16 @@ document.querySelector('#clear').addEventListener('click', () => {
 });
 
 document.querySelector('#theme').addEventListener('click', () => {
-    if (dark) {
-        document.body.classList.remove('dark');
-        document.body.classList.add('light');
-        document.head.querySelector('[name="theme-color"]').content = '#fff';
-        dark = false;
-    } else {
+    if (localStorage.getItem('theme') === 'light') {
         document.body.classList.remove('light');
         document.body.classList.add('dark');
         document.head.querySelector('[name="theme-color"]').content = '#000';
-        dark = true;
+        localStorage.setItem('theme', 'dark');
+    } else {
+        document.body.classList.remove('dark');
+        document.body.classList.add('light');
+        document.head.querySelector('[name="theme-color"]').content = '#fff';
+        localStorage.setItem('theme', 'light');
     }
 });
 
@@ -71,10 +70,10 @@ document.querySelector('#close').addEventListener('click', () => {
     document.querySelector('.header-tabulator-selected').classList.remove('header-tabulator-selected');
     document.querySelector('#header-version').style.display = 'block';
 
-    if (dark) {
-        document.head.querySelector('[name="theme-color"]').content = '#000';
-    } else {
+    if (localStorage.getItem('theme') === 'light') {
         document.head.querySelector('[name="theme-color"]').content = '#fff';
+    } else {
+        document.head.querySelector('[name="theme-color"]').content = '#000';
     }
 
     table.getColumn('picture')._column.titleElement.children[0].innerHTML = '<path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"></path>';
@@ -229,6 +228,5 @@ $('body').on('keydown', '#search, #number', function (e) {
 });
 
 export {
-    dark,
     dimension
 };
