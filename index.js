@@ -52,16 +52,16 @@ document.querySelector('#clear').addEventListener('click', () => {
 });
 
 document.querySelector('#theme').addEventListener('click', () => {
-    if (localStorage.getItem('theme') === 'light') {
-        document.body.classList.remove('light');
-        document.body.classList.add('dark');
-        document.head.querySelector('[name="theme-color"]').content = '#000';
-        localStorage.setItem('theme', 'dark');
-    } else {
+    if (localStorage.getItem('theme') === 'dark') {
         document.body.classList.remove('dark');
         document.body.classList.add('light');
         document.head.querySelector('[name="theme-color"]').content = '#fff';
         localStorage.setItem('theme', 'light');
+    } else {
+        document.body.classList.remove('light');
+        document.body.classList.add('dark');
+        document.head.querySelector('[name="theme-color"]').content = '#000';
+        localStorage.setItem('theme', 'dark');
     }
 });
 
@@ -70,10 +70,10 @@ document.querySelector('#close').addEventListener('click', () => {
     document.querySelector('.header-tabulator-selected').classList.remove('header-tabulator-selected');
     document.querySelector('#header-version').style.display = 'block';
 
-    if (localStorage.getItem('theme') === 'light') {
-        document.head.querySelector('[name="theme-color"]').content = '#fff';
-    } else {
+    if (localStorage.getItem('theme') === 'dark') {
         document.head.querySelector('[name="theme-color"]').content = '#000';
+    } else {
+        document.head.querySelector('[name="theme-color"]').content = '#fff';
     }
 
     table.getColumn('picture')._column.titleElement.children[0].innerHTML = '<path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"></path>';
@@ -106,11 +106,7 @@ document.querySelector('#regex').addEventListener('click', () => {
     document.querySelector('#search').focus();
 });
 
-$('body').on('keydown', '#search, #number', function (e) {
-    if (e.key !== 'Enter') {
-        return;
-    }
-
+function searchFunction() {
     if (last === document.querySelector('#search').value && !lastRandom && !random && lastRegex === regex) {
         return;
     }
@@ -145,24 +141,6 @@ $('body').on('keydown', '#search, #number', function (e) {
 
     worker.addEventListener('message', function (event) {
         switch (event.data.message) {
-            case 'progress':
-                document.querySelector('#indicator').style.width = event.data.progress;
-                break;
-
-            case 'found':
-                document.querySelector('#indicator').classList.add('found');
-                break;
-
-            case 'done':
-                // delay to extend indicator to 100%
-                setTimeout(() => {
-                    dimension = event.data.update;
-                    table.setFilter('sources', 'in', event.data.filter);
-                    worker.terminate();
-                    worker = null;
-                }, 100);
-                break;
-
             case 'clear':
                 // fake load
                 document.querySelector('#indicator').classList.add('found');
@@ -176,28 +154,59 @@ $('body').on('keydown', '#search, #number', function (e) {
                 }, 100);
                 break;
 
+            case 'done':
+                // delay to extend indicator to 100%
+                setTimeout(() => {
+                    dimension = event.data.update;
+                    table.setFilter('sources', 'in', event.data.filter);
+                    worker.terminate();
+                    worker = null;
+                }, 100);
+                break;
+
+            case 'found':
+                document.querySelector('#indicator').classList.add('found');
+                break;
+
+            case 'progress':
+                document.querySelector('#indicator').style.width = event.data.progress;
+                break;
+
             default:
                 break;
         }
     });
+}
 
-}).on('input', '#search', function () {
-    if ($(this).val()) {
+document.querySelector('#search').addEventListener('keyup', (e) => {
+    if (e.key !== 'Enter') {
+        return;
+    }
+
+    searchFunction();
+});
+
+document.querySelector('#search').addEventListener('input', (e) => {
+    if (e.target.value) {
         document.querySelector('#clear').style.visibility = 'visible';
         document.querySelector('#clear').style.display = 'inline-flex';
     } else {
         document.querySelector('#clear').style.display = 'none';
     }
 
-}).on('focus', '#search', function () {
-    if ($(this).val()) {
+    searchFunction();
+});
+
+document.querySelector('#search').addEventListener('focus', (e) => {
+    if (e.target.value) {
         document.querySelector('#clear').style.visibility = 'visible';
         document.querySelector('#clear').style.display = 'inline-flex';
     } else {
         document.querySelector('#clear').style.display = 'none';
     }
+});
 
-}).on('blur', '#search', function () {
+document.querySelector('#search').addEventListener('blur', () => {
     if (!document.querySelector('#search').value) {
         return;
     }
@@ -207,8 +216,9 @@ $('body').on('keydown', '#search, #number', function (e) {
     }
     
     document.querySelector('#clear').style.visibility = 'hidden';
+});
 
-}).on('mouseover', '#search-container', function () {
+document.querySelector('#search-container').addEventListener('mouseover', () => {
     if (!document.querySelector('#search').value) {
         return;
     }
@@ -216,8 +226,9 @@ $('body').on('keydown', '#search, #number', function (e) {
     over = true;
 
     document.querySelector('#clear').style.visibility = 'visible';
+});
 
-}).on('mouseout', '#search-container', function () {
+document.querySelector('#search-container').addEventListener('mouseout', () => {
     over = false;
 
     if (document.querySelector('#search:focus')) {

@@ -368,15 +368,3 @@ input {
 .found {
     background: #4caf50 !important;
 }
-
-/*****************************************************************/
-
-@media (min-width: 1920px) {
-    #main {
-        margin: 0 12.5% 0 12.5%;
-    }
-
-    #view-source {
-        display: block !important;
-    }
-}

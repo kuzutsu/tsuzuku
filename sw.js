@@ -12,7 +12,6 @@ self.addEventListener('install', (event) => {
                 'https://cdn.jsdelivr.net/npm/jquery/dist/jquery.slim.min.js',
                 'https://cdn.jsdelivr.net/npm/tabulator-tables/dist/js/tabulator.min.js',
                 'https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.basic.min.js',
-                //'https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js',
                 'https://cdn.jsdelivr.net/npm/tabulator-tables/dist/css/tabulator_simple.min.css',
                 'https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap'
             ])

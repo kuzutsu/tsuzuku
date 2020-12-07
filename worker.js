@@ -150,8 +150,6 @@ self.addEventListener('message', function (event) {
                 d.relevancy = 1;
             } else {
                 const result = new Fuse([d.title, ...d.synonyms], {
-                    ignoreFieldNorm: true,
-                    ignoreLocation: true,
                     includeScore: true,
                     threshold: 1 / 3
                 }).search(v.trim());

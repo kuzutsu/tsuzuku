@@ -15,6 +15,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
         let database = [],
             lastRow = false;
 
+        document.querySelector('#loading').remove();
         document.querySelector('#search-container').style.display = 'flex';
 
         for (var i = 0; i < d.length; i++) {
@@ -23,8 +24,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
 
             if (m.length) {
                 switch (d[i].animeSeason.season) {
-                    case 'WINTER':
-                        s = 'Winter ';
+                    case 'FALL':
+                        s = 'Fall ';
                         break;
                     case 'SPRING':
                         s = 'Spring ';
@@ -32,8 +33,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                     case 'SUMMER':
                         s = 'Summer ';
                         break;
-                    case 'FALL':
-                        s = 'Fall ';
+                    case 'WINTER':
+                        s = 'Winter ';
                         break;
                     default:
                         s = '';
@@ -65,111 +66,6 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                 }
             }
         }
-/*
-        Tabulator.prototype.extendModule('edit', 'editors', {
-            'textarea': function (cell, onRendered, success, cancel, editorParams) {
-                var cellValue = cell.getValue(),
-                    vertNav = editorParams.verticalNavigation || 'hybrid',
-                    value = String(cellValue !== null && typeof cellValue !== 'undefined' ? cellValue : ''),
-                    input = document.createElement('textarea'),
-                    scrollHeight = 0;
-
-                input.style.display = 'block';
-                input.style.padding = '2px';
-                input.style.height = '100%';
-                input.style.width = '100%';
-                input.style.whiteSpace = 'pre-wrap';
-                input.style.resize = 'none';
-                input.style.overflowY = 'hidden';
-        
-                if (editorParams.elementAttributes && typeof editorParams.elementAttributes === 'object') {
-                    for (let key in editorParams.elementAttributes) {
-                        if (key.charAt(0) === '+') {
-                            key = key.slice(1);
-                            input.setAttribute(key, input.getAttribute(key) + editorParams.elementAttributes['+' + key]);
-                        } else {
-                            input.setAttribute(key, editorParams.elementAttributes[key]);
-                        }
-                    }
-                }
-        
-                input.value = value;
-        
-                onRendered(function () {
-                    input.focus({
-                        preventScroll: true
-                    });
-
-                    input.style.height = '';
-                    input.scrollHeight;
-                    input.style.height = input.scrollHeight + 2 + 'px';
-
-                    cell.getRow().normalizeHeight();
-                });
-
-                function onChange(e) {
-                    if (((cellValue === null || typeof cellValue === 'undefined') && input.value !== '') || input.value !== cellValue) {
-                        if (success(input.value)) {
-                            cellValue = input.value;
-                        }
-        
-                        setTimeout(function () {
-                            cell.getRow().normalizeHeight();
-                        }, 300);
-                    } else {
-                        cancel();
-                    }
-                }
-
-                input.addEventListener('change', onChange);
-                input.addEventListener('blur', onChange);
-                input.addEventListener('keyup', function () {
-                    input.style.height = '';
-
-                    var heightNow = input.scrollHeight;
-                    input.style.height = heightNow + 2 + 'px';
-
-                    if (heightNow !== scrollHeight) {
-                        scrollHeight = heightNow;
-                        cell.getRow().normalizeHeight();
-                    }
-                });
-        
-                input.addEventListener('keydown', function (e) {
-                    switch (e.keyCode) {
-                        case 27:
-                            cancel();
-                            break;
-                        case 38:
-                            if (vertNav === 'editor' || (vertNav === 'hybrid' && input.selectionStart)) {
-                                e.stopImmediatePropagation();
-                                e.stopPropagation();
-                            }
-
-                            break;
-                        case 40:
-                            if (vertNav === 'editor' || (vertNav === 'hybrid' && input.selectionStart !== input.value.length)) {
-                                e.stopImmediatePropagation();
-                                e.stopPropagation();
-                            }
-
-                            break;
-                        case 35:
-                        case 36:
-                            e.stopPropagation();
-                            break;
-                        default:
-                            break;
-                    }
-                });
-
-                if (editorParams.mask) {
-                    this.table.modules.edit.maskInput(input, editorParams);
-                }
-
-                return input;
-            }
-        });*/
 
         table = new Tabulator('#database-container', {
             data: database,
@@ -292,10 +188,10 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                             document.querySelector('#header-title').innerHTML = 'Tsuzuku';
                             document.querySelector('#header-version').style.display = 'block';
 
-                            if (localStorage.getItem('theme') === 'light') {
-                                document.head.querySelector('[name="theme-color"]').content = '#fff';
-                            } else {
+                            if (localStorage.getItem('theme') === 'dark') {
                                 document.head.querySelector('[name="theme-color"]').content = '#000';
+                            } else {
+                                document.head.querySelector('[name="theme-color"]').content = '#fff';
                             }
                         }
                     },
@@ -339,10 +235,10 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                             document.querySelector('#header-version').style.display = 'block';
                             cell.getColumn()._column.titleElement.children[0].innerHTML = '<path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"></path>';
 
-                            if (localStorage.getItem('theme') === 'light') {
-                                document.head.querySelector('[name="theme-color"]').content = '#fff';
-                            } else {
+                            if (localStorage.getItem('theme') === 'dark') {
                                 document.head.querySelector('[name="theme-color"]').content = '#000';
+                            } else {
+                                document.head.querySelector('[name="theme-color"]').content = '#fff';
                             }
                         } else {
                             document.querySelector('#header').classList.add('header-tabulator-selected');
@@ -392,39 +288,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                     formatter: function (cell) {
                         return '<a href="' + cell.getRow().getCell('sources').getValue() + '" target="_blank" rel="noreferrer" style="overflow-wrap: anywhere; white-space: normal;">' + cell.getValue() + '</a>';
                     }
-                },/*
-                {
-                    title: 'Notes',
-                    field: 'notes',
-                    vertAlign: 'middle',
-                    minWidth: 100,
-                    editor: 'textarea',
-                    formatter: function (cell) {
-                        if (cell.getValue()) {
-                            const span = document.createElement('span');
-
-                            span.classList.add('markdown');
-                            span.style.overflowWrap = 'anywhere';
-                            span.style.whiteSpace = 'normal';
-                            span.style.width = 'inherit';
-
-                            span.innerHTML = markdownit({
-                                html: true
-                            }).render(cell.getValue());
-
-                            if (span.querySelectorAll('a').length) {
-                                for (const value of span.querySelectorAll('a')) {
-                                    value.setAttribute('target', '_blank');
-                                    value.setAttribute('rel', 'noreferrer');
-                                }
-                            }
-
-                            return span.outerHTML;
-                        }
-
-                        return '<span class="nothing">Nothing here</span>';
-                    }
-                },*/
+                },
                 {
                     title: 'Type',
                     headerHozAlign: 'center',
