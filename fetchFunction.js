@@ -1,11 +1,17 @@
 import {
-    dimension
+    dimension,
+    searchFunction
 } from './index.js';
 
-let db = [],
-    r = null,
+let r = null,
     s = null,
-    table = null;
+    t = null,
+    title = document.title,
+    params = {
+        random: false,
+        randomValue: 1,
+        regex: false
+    };
 
 fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/master/anime-offline-database.json')
     .then(response => response.json())
@@ -14,9 +20,6 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
         
         let database = [],
             lastRow = false;
-
-        document.querySelector('#loading').remove();
-        document.querySelector('#search-container').style.display = 'flex';
 
         for (var i = 0; i < d.length; i++) {
             var m = d[i].sources.filter(s => s.match(/kitsu\.io|myanimelist\.net/g)),
@@ -50,15 +53,14 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                 for (const value of d[i].sources.filter(s => s.match(source))) {
                     database.push({
                         episodes: d[i].episodes || '',
-                        notes: '',
-                        nsfw: d[i].tags.filter(t => t.match(/hentai/g))[0] || '',
+                        //nsfw: d[i].tags.filter(t => t.match(/hentai/g))[0] || '',
                         picture: d[i].picture.match(/myanimelist\.net/g) ? d[i].picture.replace(d[i].picture.substr(d[i].picture.lastIndexOf('.')), '.webp') : d[i].picture,
-                        relations: d[i].relations.filter(r => r.match(/kitsu\.io|myanimelist\.net/g)),
+                        //relations: d[i].relations.filter(r => r.match(/kitsu\.io|myanimelist\.net/g)),
                         relevancy: 1,
-                        score: Math.round(Math.random() * 10) || '',
+                        score: '',
                         season: s + (d[i].animeSeason.year || ''),
                         sources: value,
-                        status: ['', 'Watching', 'Completed', 'Rewatching', 'Paused', 'Dropped', 'Planning'][Math.round(Math.random() * 6)],
+                        status: '',
                         synonyms: d[i].synonyms,
                         title: d[i].title,
                         type: d[i].type
@@ -67,11 +69,34 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
             }
         }
 
-        table = new Tabulator('#database-container', {
+        document.querySelector('#loading').remove();
+        document.querySelector('#search-container').style.display = 'flex';
+
+        t = new Tabulator('#database-container', {
             data: database,
             layout: 'fitColumns',
             sortOrderReverse: true,
             resizableColumns: false,
+            dataLoaded: function () {
+                if (new URLSearchParams(location.search).get('query')) {
+                    document.querySelector('#search').value = decodeURIComponent(new URLSearchParams(location.search).get('query'));
+                }
+
+                if (new URLSearchParams(location.search).get('regex') === '1') {
+                    params.regex = true;
+                    document.querySelector('#regex svg').classList.remove('disabled');
+                }
+
+                if (Math.round(Math.abs(Number(new URLSearchParams(location.search).get('random')))) > 0) {
+                    params.random = true;
+                    document.querySelector('#random svg').classList.remove('disabled');
+                    document.querySelector('#number').removeAttribute('disabled');
+                    document.querySelector('#number').value = Math.round(Math.abs(Number(new URLSearchParams(location.search).get('random'))));
+                    params.randomValue = document.querySelector('#number').value;
+                }
+
+                searchFunction(this);
+            },
             dataLoading: function () {
                 document.head.insertAdjacentHTML('beforeend',
                     '<style>' +
@@ -286,7 +311,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                     field: 'title',
                     minWidth: 100,
                     formatter: function (cell) {
-                        return '<a href="' + cell.getRow().getCell('sources').getValue() + '" target="_blank" rel="noreferrer" style="overflow-wrap: anywhere; white-space: normal;">' + cell.getValue() + '</a>';
+                        return '<a href="' + cell.getRow().getData().sources + '" target="_blank" rel="noreferrer" style="overflow-wrap: anywhere; white-space: normal;">' + cell.getValue() + '</a>';
                     }
                 },
                 {
@@ -376,6 +401,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
     });
 
 export {
-    db,
-    table
+    t,
+    title,
+    params
 };

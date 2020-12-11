@@ -1,17 +1,125 @@
 import {
-    table
+    t,
+    title,
+    params
 } from './fetchFunction.js';
 
 'use strict';
 
 let over = false,
-    random = false,
-    regex = false,
     last = '',
     lastRegex = false,
     lastRandom = false,
     worker = null,
     dimension = null;
+
+function searchFunction(tt) {
+    let table = tt || t;
+
+    if (last === document.querySelector('#search').value && !lastRandom && !params.random && lastRegex === params.regex) {
+        return;
+    }
+
+    last = document.querySelector('#search').value;
+    lastRandom = params.random;
+    lastRegex = params.regex;
+    params.randomValue = Math.round(Math.abs(document.querySelector('#number').value)) || 1;
+
+    document.querySelector('.tabulator-tableHolder').style.display = 'none';
+
+    if (worker) {
+        worker.terminate();
+        worker = null;
+        document.querySelector('#progress').remove();
+    }
+
+    document.querySelector('.tabulator-header').insertAdjacentHTML('afterend',
+        '<div id="progress">' +
+            '<div id="indicator"></div>' +
+        '</div>'
+    );
+
+    worker = new Worker('worker.js');
+
+    worker.postMessage({
+        data: table.getData(),
+        random: params.random,
+        randomValue: params.randomValue,
+        regex: params.regex,
+        value: document.querySelector('#search').value
+    });
+
+    worker.addEventListener('message', function (event) {
+        switch (event.data.message) {
+            case 'clear':
+                // fake load
+                document.querySelector('#indicator').classList.add('found');
+                document.querySelector('#indicator').style.width = '100%';
+
+                setTimeout(() => {
+                    dimension = null;
+                    table.clearFilter();
+                    worker.terminate();
+                    worker = null;
+
+                    const url = new URL(location.href.replace(location.search, ''));
+
+                    document.title = title;
+
+                    if (params.regex) {
+                        url.searchParams.set('regex', '1');
+                    }
+
+                    if (params.random) {
+                        url.searchParams.set('random', params.randomValue);
+                    }
+
+                    history.pushState({}, '', url);
+                }, 100);
+                break;
+
+            case 'done':
+                // delay to extend indicator to 100%
+                setTimeout(() => {
+                    dimension = event.data.update;
+                    table.setFilter('sources', 'in', event.data.filter);
+                    worker.terminate();
+                    worker = null;
+
+                    const url = new URL(location.href.replace(location.search, ''));
+
+                    if (last) {
+                        url.searchParams.set('query', encodeURIComponent(last));
+                        document.title = last + ' - ' + title;
+                    } else {
+                        document.title = title;
+                    }
+
+                    if (params.regex) {
+                        url.searchParams.set('regex', '1');
+                    }
+
+                    if (params.random) {
+                        url.searchParams.set('random', params.randomValue);
+                    }
+
+                    history.pushState({}, '', url);
+                }, 100);
+                break;
+
+            case 'found':
+                document.querySelector('#indicator').classList.add('found');
+                break;
+
+            case 'progress':
+                document.querySelector('#indicator').style.width = event.data.progress;
+                break;
+
+            default:
+                break;
+        }
+    });
+}
 
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker
@@ -24,22 +132,6 @@ if ('serviceWorker' in navigator) {
         });
 }
 
-if (new URLSearchParams(location.search).get('query')) {
-    document.querySelector('#search').value = decodeURIComponent(new URLSearchParams(location.search).get('query'));
-}
-
-if (new URLSearchParams(location.search).get('regex') === '1') {
-    regex = true;
-    document.querySelector('#regex svg').style.fill = '#000';
-}
-
-if (Number(new URLSearchParams(location.search).get('random')) > 0) {
-    random = true;
-    document.querySelector('#random svg').style.fill = '#000';
-    document.querySelector('#number').removeAttribute('disabled');
-    document.querySelector('#number').value = Number(new URLSearchParams(location.search).get('random'));
-}
-
 if (document.querySelector('#search').value) {
     document.querySelector('#clear').style.visibility = 'visible';
     document.querySelector('#clear').style.display = 'inline-flex';
@@ -49,6 +141,8 @@ document.querySelector('#clear').addEventListener('click', () => {
     document.querySelector('#clear').style.display = 'none';
     document.querySelector('#search').value = '';
     document.querySelector('#search').focus();
+
+    searchFunction();
 });
 
 document.querySelector('#theme').addEventListener('click', () => {
@@ -76,113 +170,49 @@ document.querySelector('#close').addEventListener('click', () => {
         document.head.querySelector('[name="theme-color"]').content = '#fff';
     }
 
-    table.getColumn('picture')._column.titleElement.children[0].innerHTML = '<path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"></path>';
-    table.deselectRow();
+    t.getColumn('picture')._column.titleElement.children[0].innerHTML = '<path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"></path>';
+    t.deselectRow();
 });
 
 document.querySelector('#random').addEventListener('click', () => {
-    if (random) {
+    if (params.random) {
         document.querySelector('#number').setAttribute('disabled', '');
         document.querySelector('#random svg').classList.add('disabled');
-        random = false;
+        params.random = false;
         document.querySelector('#search').focus();
     } else {
         document.querySelector('#number').removeAttribute('disabled');
         document.querySelector('#random svg').classList.remove('disabled');
-        random = true;
+        params.random = true;
         document.querySelector('#number').focus();
     }
+
+    searchFunction();
 });
 
 document.querySelector('#regex').addEventListener('click', () => {
-    if (regex) {
+    if (params.regex) {
         document.querySelector('#regex svg').classList.add('disabled');
-        regex = false;
+        params.regex = false;
     } else {
         document.querySelector('#regex svg').classList.remove('disabled');
-        regex = true;
+        params.regex = true;
     }
 
     document.querySelector('#search').focus();
+
+    searchFunction();
 });
-
-function searchFunction() {
-    if (last === document.querySelector('#search').value && !lastRandom && !random && lastRegex === regex) {
-        return;
-    }
-
-    last = document.querySelector('#search').value;
-    lastRandom = random;
-    lastRegex = regex;
-
-    document.querySelector('.tabulator-tableHolder').style.display = 'none';
-
-    if (worker) {
-        worker.terminate();
-        worker = null;
-        document.querySelector('#progress').remove();
-    }
-
-    document.querySelector('.tabulator-header').insertAdjacentHTML('afterend',
-        '<div id="progress">' +
-            '<div id="indicator"></div>' +
-        '</div>'
-    );
-
-    worker = new Worker('worker.js');
-
-    worker.postMessage({
-        data: table.getData(),
-        random: random,
-        randomValue: Math.round(Math.abs(document.querySelector('#number').value)) || 1,
-        regex: regex,
-        value: document.querySelector('#search').value
-    });
-
-    worker.addEventListener('message', function (event) {
-        switch (event.data.message) {
-            case 'clear':
-                // fake load
-                document.querySelector('#indicator').classList.add('found');
-                document.querySelector('#indicator').style.width = '100%';
-
-                setTimeout(() => {
-                    dimension = null;
-                    table.clearFilter();
-                    worker.terminate();
-                    worker = null;
-                }, 100);
-                break;
-
-            case 'done':
-                // delay to extend indicator to 100%
-                setTimeout(() => {
-                    dimension = event.data.update;
-                    table.setFilter('sources', 'in', event.data.filter);
-                    worker.terminate();
-                    worker = null;
-                }, 100);
-                break;
-
-            case 'found':
-                document.querySelector('#indicator').classList.add('found');
-                break;
-
-            case 'progress':
-                document.querySelector('#indicator').style.width = event.data.progress;
-                break;
-
-            default:
-                break;
-        }
-    });
-}
 
 document.querySelector('#search').addEventListener('keyup', (e) => {
     if (e.key !== 'Enter') {
         return;
     }
 
+    searchFunction();
+});
+
+document.querySelector('#enter').addEventListener('click', () => {
     searchFunction();
 });
 
@@ -239,5 +269,6 @@ document.querySelector('#search-container').addEventListener('mouseout', () => {
 });
 
 export {
-    dimension
+    dimension,
+    searchFunction
 };

@@ -50,12 +50,12 @@ body {
     display: flex;
     flex-direction: column;
     margin: 0;
+    background: var(--background-hover);
 }
 
 main {
     height: calc(100% - 57px);
     width: 100%;
-    background: var(--background-hover);
 }
 
 #database-container {
@@ -230,44 +230,8 @@ svg {
     padding-right: 0 !important;
 }
 
-.tabulator-responsive-collapse {
-    border: 0 !important;
-}
-
-[tabulator-field="title"] a,
-[tabulator-field="notes"] a,
-#view-source {
+[tabulator-field="title"] a {
     color: var(--color);
-}
-
-.markdown strong,
-.markdown h1,
-.markdown h2,
-.markdown h3,
-.markdown h4,
-.markdown h5,
-.markdown h6 {
-    font-weight: 500;
-}
-
-.markdown code {
-    font-family: monospace;
-    background: var(--background-hover);
-    padding: 0 4px 0 4px;
-}
-
-.markdown img,
-.markdown iframe {
-    max-height: 200px;
-    max-width: 100%;
-}
-
-.nothing {
-    color: #aaa;
-}
-
-textarea {
-    color: #000;
 }
 
 /***************************************************************************************************/
@@ -318,8 +282,7 @@ textarea {
 
 /***************************************************************************************************/
 
-.tabulator-editing input,
-.tabulator-editing textarea {
+.tabulator-editing input {
     font-size: 14px;
     outline: none;
 }

@@ -40,7 +40,7 @@ Examples:
 #### Text-based
 Separate with OR operator (`,`), no spaces
 * `season:` (`winter`, `spring`, `summer`, `fall`, `tba`)
-* `status:` (`watching`, `rewatching`, `completed`, `paused`, `dropped`, `planning`) (see [Notes](#notes))
+* `status:` (`watching`, `rewatching`, `completed`, `paused`, `dropped`, `planning`)
 * `type:` (`tv`, `movie`, `ova`, `ona`, `special`)
 
 Examples:
@@ -51,7 +51,7 @@ Examples:
 #### Number-based
 Can use `<`, `<=`, `>`, or `>=`, separate with AND operator (`&`), no spaces
 * `episodes:`
-* `score:` (see [Notes](#notes))
+* `score:`
 * `year:`
 
 Examples:
@@ -75,8 +75,5 @@ Hold `Ctrl`, then click on the header titles (toggle between ascending and desce
 Click on the sun icon to toggle
 
 ## Bugs
-* Scrolling leaves a padding<br>
+* Scrolling leaves a padding
 **Workaround:** Tapping on search (on mobile) or resizing the window (on desktop)
-
-## Notes
-* Scores and statuses are at random while the tracking feature of Tsuzuku is in development
