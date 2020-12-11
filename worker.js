@@ -135,15 +135,7 @@ self.addEventListener('message', function (event) {
 
         if (v.trim()) {
             if (event.data.regex) {
-                let r = 0;
-
-                for (const value of [d.title, ...d.synonyms]) {
-                    if (value.match(RegExp(v.trim(), 'gi'))) {
-                        r += 1;
-                    }
-                }
-
-                if (!r) {
+                if (!d.title.match(RegExp(v.trim(), 'gi'))) {
                     return;
                 }
 

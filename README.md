@@ -24,17 +24,17 @@ Not case-sensitive
 Default sort by relevancy % (descending), then by title (ascending)
 
 ### Regular expression search
-Not case-sensitive
+Romaji only, not case-sensitive
 
 Click on the dot-and-asterisk icon to toggle (will light up when enabled)
 
 Examples:
-* Only 13 characters (`^.{13}$`)
-* Only 8 *i*'s (`^[^i]*(?:i[^i]*){8}$`)
-* No spaces (`^\S+$`)
-* No vowels (`^[^aeiou]+$`)
-* Ends with a number (`\d$`)
-* Has *a* on the third position and *e* on the sixth (`^..a..e.*$`)
+* Only 13 characters ([`^.{13}$`](https://kuzutsu.github.io/tsuzuku/?query=%255E.%257B13%257D%2524&regex=1))
+* Only 8 *i*'s ([`^[^i]*(?:i[^i]*){8}$`](https://kuzutsu.github.io/tsuzuku/?query=%255E%255B%255Ei%255D*%28%253F%253Ai%255B%255Ei%255D*%29%257B8%257D%2524&regex=1))
+* No spaces ([`^\S+$`](https://kuzutsu.github.io/tsuzuku/?query=%255E%255CS%252B%2524&regex=1))
+* No vowels ([`^[^aeiou]+$`](https://kuzutsu.github.io/tsuzuku/?query=%255E%255B%255Eaeiou%255D%252B%2524&regex=1))
+* Ends with a number ([`\d$`](https://kuzutsu.github.io/tsuzuku/?query=%255Cd%2524&regex=1))
+* Has *a* on the third position and *e* on the sixth ([`^..a..e.*$`](https://kuzutsu.github.io/tsuzuku/?query=%255E..a..e.*%2524&regex=1))
 
 ### Advanced search
 #### Text-based
@@ -44,9 +44,9 @@ Separate with OR operator (`,`), no spaces
 * `type:` (`tv`, `movie`, `ova`, `ona`, `special`)
 
 Examples:
-* From summer season only (`season:summer`)
-* Paused or dropped (`status:paused,dropped`)
-* Movies, OVAs, or ONAs only (`type:movie,ova,ONA`)
+* From summer season only ([`season:summer`](https://kuzutsu.github.io/tsuzuku/?query=season%253Asummer))
+* Paused or dropped ([`status:paused,dropped`](https://kuzutsu.github.io/tsuzuku/?query=status%253Apaused%252Cdropped))
+* Movies, OVAs, or ONAs only ([`type:movie,ova,ONA`](https://kuzutsu.github.io/tsuzuku/?query=type%253Amovie%252Cova%252CONA))
 
 #### Number-based
 Can use `<`, `<=`, `>`, or `>=`, separate with AND operator (`&`), no spaces
@@ -55,9 +55,9 @@ Can use `<`, `<=`, `>`, or `>=`, separate with AND operator (`&`), no spaces
 * `year:`
 
 Examples:
-* Only 13 episodes (`episodes:13`)
-* Score higher than 4 but less than 7 (`score:>4&<7`)
-* On or before 2011 (`year:<=2011`)
+* Only 13 episodes ([`episodes:13`](https://kuzutsu.github.io/tsuzuku/?query=episodes%253A13))
+* Score higher than 4 but less than 7 ([`score:>4&<7`](https://kuzutsu.github.io/tsuzuku/?query=score%253A%253E4%2526%253C7))
+* On or before 2011 ([`year:<=2011`](https://kuzutsu.github.io/tsuzuku/?query=year%253A%253C%253D2011))
 
 ### Randomly select *n* titles
 Click on the shuffle icon to toggle (will light up when enabled)
