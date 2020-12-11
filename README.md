@@ -75,5 +75,5 @@ Hold `Ctrl`, then click on the header titles (toggle between ascending and desce
 Click on the sun icon to toggle
 
 ## Bugs
-* Scrolling leaves a padding
+* Scrolling leaves a padding<br>
 **Workaround:** Tapping on search (on mobile) or resizing the window (on desktop)
