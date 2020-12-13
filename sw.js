@@ -1,26 +1,36 @@
 self.addEventListener('install', (event) => {
-    console.log('Service worker installing');
-
     event.waitUntil(
-        caches.open('v1')
+        caches
+            .open('tsuzuku')
             .then((cache) => cache.addAll([
-                'index.html',
-                'worker.js',
-                'fetchFunction.js',
-                'index.js',
-                'index.css',
-                'https://cdn.jsdelivr.net/npm/jquery/dist/jquery.slim.min.js',
-                'https://cdn.jsdelivr.net/npm/tabulator-tables/dist/js/tabulator.min.js',
+                // local
+                '/',
+                '/fetchFunction.js',
+                '/index.css',
+                '/index.js',
+                '/logo-192.png',
+                '/logo-512.png',
+                '/logo-maskable-192.png',
+                '/logo-maskable-512.png',
+                '/manifest.webmanifest',
+                '/worker.js',
+
+                // third-party
                 'https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.basic.min.js',
                 'https://cdn.jsdelivr.net/npm/tabulator-tables/dist/css/tabulator_simple.min.css',
-                'https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap'
-            ])
-        )
+                'https://cdn.jsdelivr.net/npm/tabulator-tables/dist/js/modules/edit.min.js',
+                'https://cdn.jsdelivr.net/npm/tabulator-tables/dist/js/modules/filter.min.js',
+                'https://cdn.jsdelivr.net/npm/tabulator-tables/dist/js/modules/format.min.js',
+                'https://cdn.jsdelivr.net/npm/tabulator-tables/dist/js/modules/keybindings.min.js',
+                'https://cdn.jsdelivr.net/npm/tabulator-tables/dist/js/modules/resize_table.min.js',
+                'https://cdn.jsdelivr.net/npm/tabulator-tables/dist/js/modules/select_row.min.js',
+                'https://cdn.jsdelivr.net/npm/tabulator-tables/dist/js/modules/sort.min.js',
+                'https://cdn.jsdelivr.net/npm/tabulator-tables/dist/js/tabulator_core.min.js',
+                'https://fonts.gstatic.com/s/roboto/v20/KFOmCnqEu92Fr1Mu4mxKKTU1Kg.woff2',
+                'https://fonts.gstatic.com/s/roboto/v20/KFOlCnqEu92Fr1MmEU9fBBc4AMP6lQ.woff2',
+                'https://raw.githubusercontent.com/manami-project/anime-offline-database/master/anime-offline-database.json'
+            ]))
     );
-});
-
-self.addEventListener('activate', () => {
-    console.log('Service worker activating');
 });
 
 function cache(request, response) {
@@ -28,7 +38,7 @@ function cache(request, response) {
         return Promise.resolve();
     }
 
-    return caches.open('v1').then((cache) => cache.put(request, response.clone()));
+    return caches.open('tsuzuku').then((cache) => cache.put(request, response.clone()));
 }
 
 self.addEventListener('fetch', (event) => {
@@ -40,5 +50,10 @@ self.addEventListener('fetch', (event) => {
                 cache(event.request, response)
                     .then(() => response)
             )
+    );
+
+    event.waitUntil(
+        fetch(event.request)
+            .then((response) => cache(event.request, response))
     );
 });

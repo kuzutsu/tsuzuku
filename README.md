@@ -18,6 +18,9 @@ Search providers are MyAnimeList (high priority) and Kitsu
 * If title is in MyAnimeList but different title is in Kitsu, both titles will be listed and respective icons will be shown
 
 ## Features
+### Offline-ready
+Install as a Progressive Web App
+
 ### Fuzzy search (default)
 Not case-sensitive
 
@@ -64,7 +67,7 @@ Click on the shuffle icon to toggle (will light up when enabled)
 
 Default is 1
 
-Press `Enter` in search box to randomize again
+Press `Enter` in search box (or click on the search icon) to randomize again
 
 ### Multiple sort
 Desktop only

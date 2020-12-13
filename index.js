@@ -121,17 +121,6 @@ function searchFunction(tt) {
     });
 }
 
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker
-        .register('sw.js')
-        .then(sw => {
-            console.log('Service worker registered: ' + sw);
-        })
-        .catch(error => {
-            console.error('Error registering service worker: ' + error);
-        });
-}
-
 if (document.querySelector('#search').value) {
     document.querySelector('#clear').style.visibility = 'visible';
     document.querySelector('#clear').style.display = 'inline-flex';

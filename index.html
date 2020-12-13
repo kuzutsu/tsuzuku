@@ -3,7 +3,7 @@
     <head>
         <title>Tsuzuku</title>
         <meta charset="utf-8">
-        <meta name="description" content="Search anime using regular expressions ＼(￣▽￣)／">
+        <meta name="description" content="Search anime using regular expressions, even offline ＼(￣▽￣)／">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#fff">
         <link rel="icon" href="logo-192.png">
@@ -44,7 +44,11 @@
                     localStorage.setItem('theme', 'light');
                     break;
             }
-        </script>
+
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('sw.js');
+            }
+        </script> 
         <header id="header">
             <div id="menu" style="height: 100%; padding: 0 19px 0 19px; display: inline-flex; align-items: center; cursor: pointer;">
                 <svg viewBox="0 0 24 24" width="19" height="19">
