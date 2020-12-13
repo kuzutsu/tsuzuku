@@ -71,6 +71,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
 
         document.querySelector('#loading').remove();
         document.querySelector('#search-container').style.display = 'flex';
+        document.querySelector('#search').focus();
 
         t = new Tabulator('#database-container', {
             data: database,
@@ -80,6 +81,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
             dataLoaded: function () {
                 if (new URLSearchParams(location.search).get('query')) {
                     document.querySelector('#search').value = decodeURIComponent(new URLSearchParams(location.search).get('query'));
+                    document.querySelector('#clear').style.visibility = 'visible';
+                    document.querySelector('#clear').style.display = 'inline-flex';
                 }
 
                 if (new URLSearchParams(location.search).get('regex') === '1') {

@@ -64,8 +64,6 @@ function searchFunction(tt) {
 
                     const url = new URL(location.href.replace(location.search, ''));
 
-                    document.title = title;
-
                     if (params.regex) {
                         url.searchParams.set('regex', '1');
                     }
@@ -75,6 +73,8 @@ function searchFunction(tt) {
                     }
 
                     history.pushState({}, '', url);
+
+                    document.title = title;
                 }, 100);
                 break;
 
@@ -88,13 +88,6 @@ function searchFunction(tt) {
 
                     const url = new URL(location.href.replace(location.search, ''));
 
-                    if (last) {
-                        url.searchParams.set('query', encodeURIComponent(last));
-                        document.title = last + ' - ' + title;
-                    } else {
-                        document.title = title;
-                    }
-
                     if (params.regex) {
                         url.searchParams.set('regex', '1');
                     }
@@ -103,7 +96,17 @@ function searchFunction(tt) {
                         url.searchParams.set('random', params.randomValue);
                     }
 
+                    if (last) {
+                        url.searchParams.set('query', encodeURIComponent(last));
+                    }
+
                     history.pushState({}, '', url);
+
+                    if (last) {
+                        document.title = last + ' - ' + title;
+                    } else {
+                        document.title = title;
+                    }
                 }, 100);
                 break;
 
