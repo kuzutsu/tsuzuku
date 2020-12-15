@@ -205,6 +205,8 @@ document.querySelector('#search').addEventListener('keyup', (e) => {
 });
 
 document.querySelector('#enter').addEventListener('click', () => {
+    document.querySelector('#search').focus();
+
     searchFunction();
 });
 
@@ -259,6 +261,39 @@ document.querySelector('#search-container').addEventListener('mouseout', () => {
 
     document.querySelector('#clear').style.visibility = 'hidden';
 });
+
+onpopstate = () => {
+    if (new URLSearchParams(location.search).get('query')) {
+        document.querySelector('#search').value = decodeURIComponent(new URLSearchParams(location.search).get('query'));
+        document.querySelector('#clear').style.visibility = 'visible';
+        document.querySelector('#clear').style.display = 'inline-flex';
+    } else {
+        document.querySelector('#search').value = '';
+        document.querySelector('#clear').style.display = 'none';
+    }
+
+    if (new URLSearchParams(location.search).get('regex') === '1') {
+        params.regex = true;
+        document.querySelector('#regex svg').classList.remove('disabled');
+    } else {
+        params.regex = false;
+        document.querySelector('#regex svg').classList.add('disabled');
+    }
+
+    if (Math.round(Math.abs(Number(new URLSearchParams(location.search).get('random')))) > 0) {
+        params.random = true;
+        document.querySelector('#number').removeAttribute('disabled');
+        document.querySelector('#number').value = Math.round(Math.abs(Number(new URLSearchParams(location.search).get('random'))));
+        document.querySelector('#random svg').classList.remove('disabled');
+        params.randomValue = document.querySelector('#number').value;
+    } else {
+        params.random = false;
+        document.querySelector('#number').setAttribute('disabled', '');
+        document.querySelector('#random svg').classList.add('disabled');
+    }
+
+    searchFunction();
+}
 
 export {
     dimension,

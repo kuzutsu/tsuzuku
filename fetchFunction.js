@@ -389,7 +389,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                     }
                 },
                 {
-                    title: '%',
+                    title: 'Relevancy',
                     field: 'relevancy',
                     headerHozAlign: 'center',
                     hozAlign: 'center',

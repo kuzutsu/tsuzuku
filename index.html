@@ -46,7 +46,22 @@
             }
 
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('sw.js');
+                navigator
+                    .serviceWorker
+                    .register('sw.js')
+                    .then((registration) => {
+                        registration.addEventListener('updatefound', () => {
+                            let r = registration.installing;
+                            
+                            r.addEventListener('statechange', () => {
+                                if (r.state === 'installed') {
+                                    r.postMessage({
+                                        update: true
+                                    });
+                                }
+                            });
+                        });
+                    });
             }
         </script> 
         <header id="header">

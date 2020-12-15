@@ -33,6 +33,12 @@ self.addEventListener('install', (event) => {
     );
 });
 
+self.addEventListener('message', (event) => {
+    if (event.data.update) {
+        self.skipWaiting();
+    }
+});
+
 function cache(request, response) {
     if (response.type === 'error' || response.type === 'opaque') {
         return Promise.resolve();
@@ -44,7 +50,9 @@ function cache(request, response) {
 self.addEventListener('fetch', (event) => {
     event.respondWith(
         caches
-            .match(event.request)
+            .match(event.request, {
+                ignoreSearch: true
+            })
             .then((cached) => cached || fetch(event.request))
             .then((response) =>
                 cache(event.request, response)
