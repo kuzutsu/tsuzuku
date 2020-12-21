@@ -48,6 +48,10 @@ Can use `<`, `<=`, `>`, or `>=` for numerals, separate with `&`, no spaces
 * `episodes:`
 * `score:`
 * `tags:` (if with spaces, replace with `_`)
+  * MyAnimeList (`action`, `adventure`, etc.)
+  * Kitsu (`absurdist_humour`, `africa`, etc.)
+  * AniList (`achromatic`, `achronological_order`, etc.)
+  * Anime-Planet (`abstract`, `acting`, etc.)
 * `year:` (can use `tba`)
 
 Examples:
