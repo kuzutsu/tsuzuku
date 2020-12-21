@@ -1,11 +1,3 @@
-*Source code in chaos<br>
-Will update from time to time<br>
-What is this haiku?*
-
-*Also this README<br>
-Will update from time to time<br>
-Another haiku*
-
 # [Tsuzuku-α](https://kuzutsu.github.io/tsuzuku/)
 **Tsuzuku** is useful for anime watching challenges.
 
@@ -19,7 +11,7 @@ Search providers are MyAnimeList (high priority) and Kitsu
 
 ## Features
 ### Offline-ready
-Install as a Progressive Web App
+Install as PWA
 
 ### Fuzzy search (default)
 Not case-sensitive
@@ -29,7 +21,7 @@ Default sort by relevancy % (descending), then by title (ascending)
 ### Regular expression search
 Romaji only, not case-sensitive
 
-Click on the dot-and-asterisk icon to toggle (will light up when enabled)
+Click on dot-and-asterisk icon to toggle (will light up when enabled)
 
 Examples:
 * Only 13 characters ([`^.{13}$`](https://kuzutsu.github.io/tsuzuku/?query=%255E.%257B13%257D%2524&regex=1))
@@ -40,8 +32,8 @@ Examples:
 * Has *a* on the third position and *e* on the sixth ([`^..a..e.*$`](https://kuzutsu.github.io/tsuzuku/?query=%255E..a..e.*%2524&regex=1))
 
 ### Advanced search
-#### Text-based
-Separate with OR operator (`,`), no spaces
+#### OR-based
+Separate with `,`, no spaces
 * `season:` (`winter`, `spring`, `summer`, `fall`, `tba`)
 * `status:` (`watching`, `rewatching`, `completed`, `paused`, `dropped`, `planning`)
 * `type:` (`tv`, `movie`, `ova`, `ona`, `special`)
@@ -51,32 +43,39 @@ Examples:
 * Paused or dropped ([`status:paused,dropped`](https://kuzutsu.github.io/tsuzuku/?query=status%253Apaused%252Cdropped))
 * Movies, OVAs, or ONAs only ([`type:movie,ova,ONA`](https://kuzutsu.github.io/tsuzuku/?query=type%253Amovie%252Cova%252CONA))
 
-#### Number-based
-Can use `<`, `<=`, `>`, or `>=`, separate with AND operator (`&`), no spaces
+#### AND-based
+Can use `<`, `<=`, `>`, or `>=` for numerals, separate with `&`, no spaces
 * `episodes:`
 * `score:`
-* `year:`
+* `tags:` (if with spaces, replace with `_`)
+* `year:` (can use `tba`)
 
 Examples:
 * Only 13 episodes ([`episodes:13`](https://kuzutsu.github.io/tsuzuku/?query=episodes%253A13))
-* Score higher than 4 but less than 7 ([`score:>4&<7`](https://kuzutsu.github.io/tsuzuku/?query=score%253A%253E4%2526%253C7))
+* Score higher than 4 but lower than 7 ([`score:>4&<7`](https://kuzutsu.github.io/tsuzuku/?query=score%253A%253E4%2526%253C7))
+* Based on a manga and comedy ([`tags:based_on_a_manga&comedy`](https://kuzutsu.github.io/tsuzuku/?query=tags%253Abased_on_a_manga%2526comedy))
 * On or before 2011 ([`year:<=2011`](https://kuzutsu.github.io/tsuzuku/?query=year%253A%253C%253D2011))
 
 ### Randomly select *n* titles
-Click on the shuffle icon to toggle (will light up when enabled)
+Click on shuffle icon to toggle (will light up when enabled)
 
 Default is 1
 
-Press `Enter` in search box (or click on the search icon) to randomize again
+Press `Enter` in search box (or click on search icon) to randomize again
 
 ### Multiple sort
 Desktop only
 
-Hold `Ctrl`, then click on the header titles (toggle between ascending and descending)
+Hold `Ctrl`, then click on header titles (toggle between ascending and descending)
 
 ### Dark mode
-Click on the sun icon to toggle
+Click on sun icon to toggle
 
 ## Bugs
-* Scrolling leaves a padding<br>
-**Workaround:** Tapping on search (on mobile) or resizing the window (on desktop)
+* Scrolling breaks UI<br>
+**Workaround:** Tapping on search (on mobile) or resizing window (on desktop)
+
+## Dependencies
+* [anime-offline-database](https://github.com/manami-project/anime-offline-database)
+* [Fuse](https://github.com/krisk/fuse)
+* [Tabulator](https://github.com/olifolkerd/tabulator)

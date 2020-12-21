@@ -204,6 +204,14 @@ document.querySelector('#search').addEventListener('keyup', (e) => {
     searchFunction();
 });
 
+document.querySelector('#number').addEventListener('keyup', (e) => {
+    if (e.key !== 'Enter') {
+        return;
+    }
+
+    searchFunction();
+});
+
 document.querySelector('#enter').addEventListener('click', () => {
     document.querySelector('#search').focus();
 

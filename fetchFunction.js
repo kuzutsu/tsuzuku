@@ -53,15 +53,14 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                 for (const value of d[i].sources.filter(s => s.match(source))) {
                     database.push({
                         episodes: d[i].episodes || '',
-                        //nsfw: d[i].tags.filter(t => t.match(/hentai/g))[0] || '',
                         picture: d[i].picture.match(/myanimelist\.net/g) ? d[i].picture.replace(d[i].picture.substr(d[i].picture.lastIndexOf('.')), '.webp') : d[i].picture,
-                        //relations: d[i].relations.filter(r => r.match(/kitsu\.io|myanimelist\.net/g)),
                         relevancy: 1,
                         score: '',
                         season: s + (d[i].animeSeason.year || ''),
                         sources: value,
                         status: '',
                         synonyms: d[i].synonyms,
+                        tags: d[i].tags.map((t) => t.replace(/\s/g, '_')),
                         title: d[i].title,
                         type: d[i].type
                     });

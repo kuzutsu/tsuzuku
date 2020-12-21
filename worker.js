@@ -43,6 +43,7 @@ self.addEventListener('message', function (event) {
         type = null,
         status = null,
         season = null,
+        tags = null,
         ff = null,
         uu = null,
         found = false;
@@ -85,6 +86,11 @@ self.addEventListener('message', function (event) {
         v = v.replace(/\bseason:(,?(winter|spring|summer|fall)\b)+/gi, '');
     }
 
+    if (v.match(/\btags:(&?(\S+)\b)+/gi)) {
+        tags = v.match(/\btags:(&?(\S+)\b)+/gi)[0].replace(/tags:/gi, '').split('&');
+        v = v.replace(/\btags:(&?(\S+)\b)+/gi, '');
+    }
+
     event.data.data.forEach((d, i) => {
         postMessage({
             message: 'progress',
@@ -116,20 +122,28 @@ self.addEventListener('message', function (event) {
         }
 
         if (type) {
-            if (type.indexOf(d.type.toLowerCase()) === -1) {
+            if (type.toString().toLowerCase().split(',').indexOf(d.type.toLowerCase()) === -1) {
                 return;
             }
         }
 
         if (status) {
-            if (status.indexOf(d.status.toLowerCase()) === -1) {
+            if (status.toString().toLowerCase().split(',').indexOf(d.status.toLowerCase()) === -1) {
                 return;
             }
         }
 
         if (season) {
-            if (season.indexOf(d.season.substring(0, d.season.indexOf(' ')).toLowerCase()) === -1) {
+            if (season.toString().toLowerCase().split(',').indexOf(d.season.substring(0, d.season.indexOf(' ')).toLowerCase()) === -1) {
                 return;
+            }
+        }
+
+        if (tags) {
+            for (const value of tags) {
+                if (d.tags.indexOf(value.toLowerCase()) === -1) {
+                    return;
+                }
             }
         }
 
