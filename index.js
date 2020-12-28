@@ -1,4 +1,5 @@
 import {
+    r,
     t,
     title,
     params
@@ -31,6 +32,7 @@ function searchFunction(tt) {
         worker.terminate();
         worker = null;
         document.querySelector('#progress').remove();
+        document.querySelector('#searching').remove();
     }
 
     document.querySelector('.tabulator-header').insertAdjacentHTML('afterend',
@@ -39,10 +41,24 @@ function searchFunction(tt) {
         '</div>'
     );
 
+    document.querySelector('main').insertAdjacentHTML('beforeend',
+        '<span id="searching">Searching...</span>'
+    );
+
+    if (r) {
+        for (const value of r) {
+            value.update({
+                relevancy: 1,
+                alternative: value.getData().title
+            });
+        }
+    }
+
     worker = new Worker('worker.js');
 
     worker.postMessage({
         data: table.getData(),
+        selected: table.getSelectedData(),
         random: params.random,
         randomValue: params.randomValue,
         regex: params.regex,
@@ -268,6 +284,17 @@ document.querySelector('#search-container').addEventListener('mouseout', () => {
     }
 
     document.querySelector('#clear').style.visibility = 'hidden';
+});
+
+document.querySelector('#header-title').addEventListener('click', (e) => {
+    if (e.target.parentNode.classList[0] !== 'header-tabulator-selected') {
+        return;
+    }
+
+    document.querySelector('#search').value = 'is:selected ';
+    document.querySelector('#search').focus();
+
+    searchFunction();
 });
 
 onpopstate = () => {

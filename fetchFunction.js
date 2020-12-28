@@ -52,6 +52,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
 
                 for (const value of d[i].sources.filter(s => s.match(source))) {
                     database.push({
+                        alternative: d[i].title,
                         episodes: d[i].episodes || '',
                         picture: d[i].picture.match(/myanimelist\.net/g) ? d[i].picture.replace(d[i].picture.substr(d[i].picture.lastIndexOf('.')), '.webp') : d[i].picture,
                         relevancy: 1,
@@ -106,30 +107,24 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                     '</style>'
                 );
             },
-            dataFiltering: function () {
-                if (!r) {
-                    return;
-                }
-
-                for (const value of r) {
-                    value.update({
-                        relevancy: 1
-                    });
-                }
-            },
             dataFiltered: function (filters, rows) {
                 if (dimension) {
                     r = rows;
 
                     for (const value of rows) {
                         value.update({
-                            relevancy: dimension[dimension.findIndex((i) => i.source === value.getData().sources)].relevancy
+                            relevancy: dimension[dimension.findIndex((i) => i.source === value.getData().sources)].relevancy,
+                            alternative: dimension[dimension.findIndex((i) => i.source === value.getData().sources)].alternative
                         });
                     }
                 }
 
                 if (document.querySelector('#progress')) {
                     document.querySelector('#progress').remove();
+                }
+
+                if (document.querySelector('#searching')) {
+                    document.querySelector('#searching').remove();
                 }
 
                 document.querySelector('.tabulator-tableHolder').style.display = '';
@@ -140,7 +135,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                     dir: 'desc'
                 },
                 {
-                    column: 'title',
+                    column: 'alternative',
                     dir: 'asc'
                 }
             ],
@@ -155,17 +150,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                 {
                     field: 'color',
                     headerSort: false,
-                    minWidth: 4,
-                    width: 4
-                },
-                {
-                    title: '#',
-                    headerSort: false,
-                    headerHozAlign: 'center',
-                    hozAlign: 'center',
-                    vertAlign: 'middle',
-                    formatter: 'rownum',
-                    width: 50
+                    minWidth: 8,
+                    width: 8
                 },
                 {
                     titleFormatter: function () {
@@ -197,7 +183,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                 return;
                             }
 
-                            document.querySelector('#header').classList.add('header-tabulator-selected');
+                            document.querySelector('header').classList.add('header-tabulator-selected');
 
                             if (column.getTable().getSelectedRows().length === column.getTable().getRows().length) {
                                 column._column.titleElement.children[0].innerHTML = '<path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>';
@@ -209,7 +195,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                             document.querySelector('#header-version').style.display = 'none';
                             document.head.querySelector('[name="theme-color"]').content = '#769bcc';
                         } else {
-                            document.querySelector('#header').classList.remove('header-tabulator-selected');
+                            document.querySelector('header').classList.remove('header-tabulator-selected');
                             column._column.titleElement.children[0].innerHTML = '<path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"></path>';
                             column.getTable().deselectRow();
                             document.querySelector('#header-title').innerHTML = 'Tsuzuku';
@@ -257,7 +243,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                         lastRow = cell.getRow();
 
                         if (!cell.getTable().getSelectedRows().length) {
-                            document.querySelector('#header').classList.remove('header-tabulator-selected');
+                            document.querySelector('header').classList.remove('header-tabulator-selected');
                             document.querySelector('#header-title').innerHTML = 'Tsuzuku';
                             document.querySelector('#header-version').style.display = 'block';
                             cell.getColumn()._column.titleElement.children[0].innerHTML = '<path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"></path>';
@@ -268,7 +254,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                 document.head.querySelector('[name="theme-color"]').content = '#fff';
                             }
                         } else {
-                            document.querySelector('#header').classList.add('header-tabulator-selected');
+                            document.querySelector('header').classList.add('header-tabulator-selected');
                             document.querySelector('#header-title').innerHTML = cell.getTable().getSelectedRows().length + ' selected';
                             document.querySelector('#header-version').style.display = 'none';
                             document.head.querySelector('[name="theme-color"]').content = '#769bcc';
@@ -310,10 +296,10 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                 {
                     title: 'Title',
                     vertAlign: 'middle',
-                    field: 'title',
+                    field: 'alternative',
                     minWidth: 100,
                     formatter: function (cell) {
-                        return '<a href="' + cell.getRow().getData().sources + '" target="_blank" rel="noreferrer" style="overflow-wrap: anywhere; white-space: normal;">' + cell.getValue() + '</a>';
+                        return '<a href="' + cell.getRow().getData().sources + '" target="_blank" rel="noreferrer">' + cell.getValue() + '</a>';
                     }
                 },
                 {
@@ -330,7 +316,10 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                     hozAlign: 'center',
                     vertAlign: 'middle',
                     field: 'episodes',
-                    width: 100
+                    width: 100,
+                    sorterParams: {
+                        alignEmptyValues: 'bottom'
+                    }
                 },
                 {
                     title: 'Season',
@@ -338,15 +327,21 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                     hozAlign: 'center',
                     vertAlign: 'middle',
                     field: 'season',
-                    width: 100
+                    width: 100,
+                    sorterParams: {
+                        alignEmptyValues: 'bottom'
+                    }
                 },
                 {
-                    title: 'Score*',
+                    title: 'Score',
                     headerHozAlign: 'center',
                     hozAlign: 'center',
                     vertAlign: 'middle',
                     field: 'score',
                     width: 100,
+                    sorterParams: {
+                        alignEmptyValues: 'bottom'
+                    },
                     editor: 'select',
                     editorParams: {
                         values: [
@@ -365,12 +360,15 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                     }
                 },
                 {
-                    title: 'Status*',
+                    title: 'Status',
                     headerHozAlign: 'center',
                     hozAlign: 'center',
                     vertAlign: 'middle',
                     field: 'status',
                     width: 100,
+                    sorterParams: {
+                        alignEmptyValues: 'bottom'
+                    },
                     editor: 'select',
                     editorParams: {
                         values: [
@@ -403,6 +401,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
     });
 
 export {
+    r,
     t,
     title,
     params

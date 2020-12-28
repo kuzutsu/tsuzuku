@@ -3,7 +3,7 @@
 
 ![](https://raw.githubusercontent.com/kuzutsu/tsuzuku/master/preview.png)
 
-Search providers are MyAnimeList (high priority) and Kitsu
+It uses the [anime-offline-database](https://github.com/manami-project/anime-offline-database) (to minimize duplicates, it will only use titles from MyAnimeList or Kitsu) and [Tabulator](https://github.com/olifolkerd/tabulator).
 * If title is in MyAnimeList but not in Kitsu, this will be listed and MyAnimeList icon will be shown
 * If title is in Kitsu but not in MyAnimeList, this will be listed and Kitsu icon will be shown
 * If title is in MyAnimeList and same title is in Kitsu, only one title will be listed and MyAnimeList icon will be shown
@@ -14,22 +14,23 @@ Search providers are MyAnimeList (high priority) and Kitsu
 Install as PWA
 
 ### Fuzzy search (default)
+Uses [Fuse](https://github.com/krisk/fuse)
+
 Not case-sensitive
 
-Default sort by relevancy % (descending), then by title (ascending)
+Default sort by relevancy (descending), then by title (ascending)
 
 ### Regular expression search
-Romaji only, not case-sensitive
+Not case-sensitive
 
 Click on dot-and-asterisk icon to toggle (will light up when enabled)
 
 Examples:
+* Starts with *a* ([`^a`](https://kuzutsu.github.io/tsuzuku/?query=%255Ea&regex=1))
+* Ends with a number ([`\d$`](https://kuzutsu.github.io/tsuzuku/?query=%255Cd%2524&regex=1))
 * Only 13 characters ([`^.{13}$`](https://kuzutsu.github.io/tsuzuku/?query=%255E.%257B13%257D%2524&regex=1))
 * Only 8 *i*'s ([`^[^i]*(?:i[^i]*){8}$`](https://kuzutsu.github.io/tsuzuku/?query=%255E%255B%255Ei%255D*%28%253F%253Ai%255B%255Ei%255D*%29%257B8%257D%2524&regex=1))
 * No spaces ([`^\S+$`](https://kuzutsu.github.io/tsuzuku/?query=%255E%255CS%252B%2524&regex=1))
-* No vowels ([`^[^aeiou]+$`](https://kuzutsu.github.io/tsuzuku/?query=%255E%255B%255Eaeiou%255D%252B%2524&regex=1))
-* Ends with a number ([`\d$`](https://kuzutsu.github.io/tsuzuku/?query=%255Cd%2524&regex=1))
-* Has *a* on the third position and *e* on the sixth ([`^..a..e.*$`](https://kuzutsu.github.io/tsuzuku/?query=%255E..a..e.*%2524&regex=1))
 
 ### Advanced search
 #### OR-based
@@ -67,6 +68,11 @@ Default is 1
 
 Press `Enter` in search box (or click on search icon) to randomize again
 
+### Multiple select
+Desktop only
+
+Hold `Shift`, then click on thumbnail images
+
 ### Multiple sort
 Desktop only
 
@@ -77,9 +83,4 @@ Click on sun icon to toggle
 
 ## Bugs
 * Scrolling breaks UI<br>
-**Workaround:** Tapping on search (on mobile) or resizing window (on desktop)
-
-## Dependencies
-* [anime-offline-database](https://github.com/manami-project/anime-offline-database)
-* [Fuse](https://github.com/krisk/fuse)
-* [Tabulator](https://github.com/olifolkerd/tabulator)
+**Workaround:** Tapping on search box (on mobile) or resizing window (on desktop)

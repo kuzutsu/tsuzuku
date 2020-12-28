@@ -44,6 +44,7 @@ self.addEventListener('message', function (event) {
         status = null,
         season = null,
         tags = null,
+        dd = null,
         ff = null,
         uu = null,
         found = false;
@@ -56,50 +57,57 @@ self.addEventListener('message', function (event) {
         return;
     }
 
-    if (v.match(/\bepisodes:(&?(\<=|\>=|\<|\>)?(0|[1-9][0-9]*)\b)+/gi)) {
-        episodes = v.match(/\bepisodes:(&?(\<=|\>=|\<|\>)?(0|[1-9][0-9]*)\b)+/gi)[0].replace(/episodes:/gi, '').split('&');
-        v = v.replace(/\bepisodes:(&?(\<=|\>=|\<|\>)?(0|[1-9][0-9]*)\b)+/gi, '');
+    if (v.match(/\bepisodes:(&?(<=|>=|<|>)?(0|[1-9][0-9]*)\b)+/giu)) {
+        episodes = v.match(/\bepisodes:(&?(<=|>=|<|>)?(0|[1-9][0-9]*)\b)+/giu)[0].replace(/episodes:/giu, '').split('&');
+        v = v.replace(/\bepisodes:(&?(<=|>=|<|>)?(0|[1-9][0-9]*)\b)+/giu, '');
     }
 
-    if (v.match(/\bscore:(&?(\<=|\>=|\<|\>)?(10|[0-9]{1})\b)+/gi)) {
-        score = v.match(/\bscore:(&?(\<=|\>=|\<|\>)?(10|[0-9]{1})\b)+/gi)[0].replace(/score:/gi, '').split('&');
-        v = v.replace(/\bscore:(&?(\<=|\>=|\<|\>)?(10|[0-9]{1})\b)+/gi, '');
+    if (v.match(/\bscore:(&?(<=|>=|<|>)?(10|[0-9]{1})\b)+/giu)) {
+        score = v.match(/\bscore:(&?(<=|>=|<|>)?(10|[0-9]{1})\b)+/giu)[0].replace(/score:/giu, '').split('&');
+        v = v.replace(/\bscore:(&?(<=|>=|<|>)?(10|[0-9]{1})\b)+/giu, '');
     }
 
-    if (v.match(/\byear:(tba\b|(&?(\<=|\>=|\<|\>)?[1-9][0-9]{3}\b)+)/gi)) {
-        year = v.match(/\byear:(tba\b|(&?(\<=|\>=|\<|\>)?[1-9][0-9]{3}\b)+)/gi)[0].replace(/year:/gi, '').split('&');
-        v = v.replace(/\byear:(tba\b|(&?(\<=|\>=|\<|\>)?[1-9][0-9]{3}\b)+)/gi, '');
+    if (v.match(/\byear:(tba\b|(&?(<=|>=|<|>)?[1-9][0-9]{3}\b)+)/giu)) {
+        year = v.match(/\byear:(tba\b|(&?(<=|>=|<|>)?[1-9][0-9]{3}\b)+)/giu)[0].replace(/year:/giu, '').split('&');
+        v = v.replace(/\byear:(tba\b|(&?(<=|>=|<|>)?[1-9][0-9]{3}\b)+)/giu, '');
     }
     
-    if (v.match(/\btype:(,?(tv|movie|ova|ona|special)\b)+/gi)) {
-        type = v.match(/\btype:(,?(tv|movie|ova|ona|special)\b)+/gi)[0].replace(/type:/gi, '').split(',');
-        v = v.replace(/\btype:(,?(tv|movie|ova|ona|special)\b)+/gi, '');
+    if (v.match(/\btype:(,?(tv|movie|ova|ona|special)\b)+/giu)) {
+        type = v.match(/\btype:(,?(tv|movie|ova|ona|special)\b)+/giu)[0].replace(/type:/giu, '').split(',');
+        v = v.replace(/\btype:(,?(tv|movie|ova|ona|special)\b)+/giu, '');
     }
 
-    if (v.match(/\bstatus:(,?(watching|rewatching|completed|paused|dropped|planning)\b)+/gi)) {
-        status = v.match(/\bstatus:(,?(watching|rewatching|completed|paused|dropped|planning)\b)+/gi)[0].replace(/status:/gi, '').split(',');
-        v = v.replace(/\bstatus:(,?(watching|rewatching|completed|paused|dropped|planning)\b)+/gi, '');
+    if (v.match(/\bstatus:(,?(watching|rewatching|completed|paused|dropped|planning)\b)+/giu)) {
+        status = v.match(/\bstatus:(,?(watching|rewatching|completed|paused|dropped|planning)\b)+/giu)[0].replace(/status:/giu, '').split(',');
+        v = v.replace(/\bstatus:(,?(watching|rewatching|completed|paused|dropped|planning)\b)+/giu, '');
     }
 
-    if (v.match(/\bseason:(,?(winter|spring|summer|fall)\b)+/gi)) {
-        season = v.match(/\bseason:(,?(winter|spring|summer|fall)\b)+/gi)[0].replace(/season:/gi, '').split(',');
-        v = v.replace(/\bseason:(,?(winter|spring|summer|fall)\b)+/gi, '');
+    if (v.match(/\bseason:(,?(winter|spring|summer|fall)\b)+/giu)) {
+        season = v.match(/\bseason:(,?(winter|spring|summer|fall)\b)+/giu)[0].replace(/season:/giu, '').split(',');
+        v = v.replace(/\bseason:(,?(winter|spring|summer|fall)\b)+/giu, '');
     }
 
-    if (v.match(/\btags:(&?(\S+)\b)+/gi)) {
-        tags = v.match(/\btags:(&?(\S+)\b)+/gi)[0].replace(/tags:/gi, '').split('&');
-        v = v.replace(/\btags:(&?(\S+)\b)+/gi, '');
+    if (v.match(/\btags:(&?(\S+)\b)+/giu)) {
+        tags = v.match(/\btags:(&?(\S+)\b)+/giu)[0].replace(/tags:/giu, '').split('&');
+        v = v.replace(/\btags:(&?(\S+)\b)+/giu, '');
     }
 
-    event.data.data.forEach((d, i) => {
+    if (v.match(/\bis:selected\b/giu)) {
+        dd = 'selected';
+        v = v.replace(/\bis:selected\b/giu, '');
+    } else {
+        dd = 'data';
+    }
+
+    event.data[dd].forEach((d, i) => {
         postMessage({
             message: 'progress',
-            progress: (i + 1) / event.data.data.length * 100 + '%'
+            progress: (i + 1) / event.data[dd].length * 100 + '%'
         });
 
         if (episodes) {
             for (const value of episodes) {
-                if (!is(d.episodes, (value.match(/\<=|\>=|\<|\>/gi) || '=').toString(), value.match(/0|[1-9][0-9]*/gi).toString())) {
+                if (!is(d.episodes, (value.match(/<=|>=|<|>/giu) || '=').toString(), value.match(/0|[1-9][0-9]*/giu).toString())) {
                     return;
                 }
             }
@@ -107,7 +115,7 @@ self.addEventListener('message', function (event) {
 
         if (score) {
             for (const value of score) {
-                if (!is(d.score, (value.match(/\<=|\>=|\<|\>/gi) || '=').toString(), value.match(/10|[1-9]{1}/gi).toString())) {
+                if (!is(d.score, (value.match(/<=|>=|<|>/giu) || '=').toString(), value.match(/10|[1-9]{1}/giu).toString())) {
                     return;
                 }
             }
@@ -115,7 +123,7 @@ self.addEventListener('message', function (event) {
 
         if (year) {
             for (const value of year) {
-                if (!is(d.season.substring(d.season.indexOf(' ') + 1), (value.match(/\<=|\>=|\<|\>/gi) || '=').toString(), value.match(/tba|[1-9][0-9]{3}/gi).toString())) {
+                if (!is(d.season.substring(d.season.indexOf(' ') + 1), (value.match(/<=|>=|<|>/giu) || '=').toString(), value.match(/tba|[1-9][0-9]{3}/giu).toString())) {
                     return;
                 }
             }
@@ -149,7 +157,21 @@ self.addEventListener('message', function (event) {
 
         if (v.trim()) {
             if (event.data.regex) {
-                if (!d.title.match(RegExp(v.trim(), 'gi'))) {
+                let r = false;
+
+                for (const value of [d.title, ...d.synonyms]) {
+                    if (value.match(RegExp(v.trim(), 'giu'))) {
+                        r = true;
+
+                        if (value !== d.title) {
+                            d.alternative = value + ' <span class="title">' + d.title + '</span>';
+                        }
+
+                        break;
+                    }
+                }
+
+                if (!r) {
                     return;
                 }
 
@@ -165,6 +187,10 @@ self.addEventListener('message', function (event) {
                 }
     
                 d.relevancy = 1 - result[0].score;
+
+                if (result[0].item !== d.title) {
+                    d.alternative = result[0].item + ' <span class="title">' + d.title + '</span>';
+                }
             }
         }
 
@@ -179,7 +205,8 @@ self.addEventListener('message', function (event) {
         f.push(d.sources);
         u.push({
             source: d.sources,
-            relevancy: d.relevancy
+            relevancy: d.relevancy,
+            alternative: d.alternative
         });
     });
 

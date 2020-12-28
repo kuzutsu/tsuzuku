@@ -56,6 +56,8 @@ body {
 main {
     height: calc(100% - 57px);
     width: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 #database-container {
@@ -68,7 +70,7 @@ main {
     height: 100%;
 }
 
-#header {
+header {
     background: var(--background);
     height: 57px;
     width: 100%;
@@ -164,7 +166,7 @@ svg {
     cursor: auto !important;
 }
 
-#header,
+header,
 .tabulator-header {
     border-bottom: 1px solid var(--background-hover) !important;
 }
@@ -203,12 +205,12 @@ svg {
     background: #769bcc !important;
 }
 
-#header a:hover {
+header a:hover {
     text-decoration: none;
 }
 
 .header-tabulator-selected a,
-.header-tabulator-selected #menu,
+.header-tabulator-selected #network,
 .header-tabulator-selected #theme {
     display: none !important;
 }
@@ -230,8 +232,9 @@ svg {
     padding-right: 0 !important;
 }
 
-[tabulator-field="title"] a {
-    color: var(--color);
+[tabulator-field="alternative"] a {
+    overflow-wrap: anywhere;
+    white-space: normal;
 }
 
 /***************************************************************************************************/
@@ -330,4 +333,35 @@ input {
 
 .found {
     background: #4caf50 !important;
+}
+
+.title {
+    color: #aaa;
+}
+
+#loading,
+#searching {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+}
+
+#loading {
+    height: 100%;
+}
+
+#searching {
+    flex-grow: 1;
+}
+
+#noscript {
+    height: 100%;
+    width: 100%;
+    background: var(--background-hover);
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
 }
