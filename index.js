@@ -10,6 +10,7 @@ import {
 let over = false,
     last = '',
     lastRegex = false,
+    lastAlt = false,
     lastRandom = false,
     worker = null,
     dimension = null;
@@ -17,13 +18,14 @@ let over = false,
 function searchFunction(tt) {
     let table = tt || t;
 
-    if (last === document.querySelector('#search').value && !lastRandom && !params.random && lastRegex === params.regex) {
+    if (last === document.querySelector('#search').value && !lastRandom && !params.random && lastRegex === params.regex && lastAlt === params.alt) {
         return;
     }
 
     last = document.querySelector('#search').value;
-    lastRandom = params.random;
     lastRegex = params.regex;
+    lastAlt = params.alt;
+    lastRandom = params.random;
     params.randomValue = Math.round(Math.abs(document.querySelector('#number').value)) || 1;
 
     document.querySelector('.tabulator-tableHolder').style.display = 'none';
@@ -62,6 +64,7 @@ function searchFunction(tt) {
         random: params.random,
         randomValue: params.randomValue,
         regex: params.regex,
+        alt: params.alt,
         value: document.querySelector('#search').value
     });
 
@@ -82,6 +85,10 @@ function searchFunction(tt) {
 
                     if (params.regex) {
                         url.searchParams.set('regex', '1');
+                    }
+
+                    if (params.alt) {
+                        url.searchParams.set('alt', '1');
                     }
 
                     if (params.random) {
@@ -106,6 +113,10 @@ function searchFunction(tt) {
 
                     if (params.regex) {
                         url.searchParams.set('regex', '1');
+                    }
+
+                    if (params.alt) {
+                        url.searchParams.set('alt', '1');
                     }
 
                     if (params.random) {
@@ -145,7 +156,11 @@ if (document.querySelector('#search').value) {
     document.querySelector('#clear').style.display = 'inline-flex';
 }
 
-document.querySelector('#reload').addEventListener('click', () => {
+document.querySelector('#update').addEventListener('click', () => {
+    document.querySelector('body').insertAdjacentHTML('beforeend',  
+        '<span id="full">Updating...</span>'
+    );
+
     caches.open('tsuzuku').then((cache) => {
         cache.keys().then((keys) => {
             keys.forEach((request) => {
@@ -217,6 +232,20 @@ document.querySelector('#regex').addEventListener('click', () => {
     } else {
         document.querySelector('#regex svg').classList.remove('disabled');
         params.regex = true;
+    }
+
+    document.querySelector('#search').focus();
+
+    searchFunction();
+});
+
+document.querySelector('#alt').addEventListener('click', () => {
+    if (params.alt) {
+        document.querySelector('#alt svg').classList.add('disabled');
+        params.alt = false;
+    } else {
+        document.querySelector('#alt svg').classList.remove('disabled');
+        params.alt = true;
     }
 
     document.querySelector('#search').focus();
@@ -325,6 +354,14 @@ onpopstate = () => {
     } else {
         params.regex = false;
         document.querySelector('#regex svg').classList.add('disabled');
+    }
+
+    if (new URLSearchParams(location.search).get('alt') === '1') {
+        params.alt = true;
+        document.querySelector('#alt svg').classList.remove('disabled');
+    } else {
+        params.alt = false;
+        document.querySelector('#alt svg').classList.add('disabled');
     }
 
     if (Math.round(Math.abs(Number(new URLSearchParams(location.search).get('random')))) > 0) {

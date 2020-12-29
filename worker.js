@@ -157,9 +157,14 @@ self.addEventListener('message', function (event) {
 
         if (v.trim()) {
             if (event.data.regex) {
-                let r = false;
+                let r = false,
+                    t = [d.title];
+                
+                if (event.data.alt) {
+                    t.push(...d.synonyms);
+                }
 
-                for (const value of [d.title, ...d.synonyms]) {
+                for (const value of t) {
                     if (value.match(RegExp(v.trim(), 'giu'))) {
                         r = true;
 
@@ -177,7 +182,13 @@ self.addEventListener('message', function (event) {
 
                 d.relevancy = 1;
             } else {
-                const result = new Fuse([d.title, ...d.synonyms], {
+                let t = [d.title];
+
+                if (event.data.alt) {
+                    t.push(...d.synonyms);
+                }
+
+                const result = new Fuse(t, {
                     includeScore: true,
                     threshold: 1 / 3
                 }).search(v.trim());

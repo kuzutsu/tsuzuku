@@ -3,7 +3,7 @@
 
 ![](https://raw.githubusercontent.com/kuzutsu/tsuzuku/master/preview.png)
 
-It uses the [anime-offline-database](https://github.com/manami-project/anime-offline-database) (to minimize duplicates, it will only use titles from MyAnimeList or Kitsu) and [Tabulator](https://github.com/olifolkerd/tabulator).
+It uses the [anime-offline-database](https://github.com/manami-project/anime-offline-database) (to minimize duplicates, only titles from MyAnimeList or Kitsu will be used) and [Tabulator](https://github.com/olifolkerd/tabulator).
 * If title is in MyAnimeList but not in Kitsu, this will be listed and MyAnimeList icon will be shown
 * If title is in Kitsu but not in MyAnimeList, this will be listed and Kitsu icon will be shown
 * If title is in MyAnimeList and same title is in Kitsu, only one title will be listed and MyAnimeList icon will be shown
@@ -12,6 +12,8 @@ It uses the [anime-offline-database](https://github.com/manami-project/anime-off
 ## Features
 ### Offline-ready
 Install as PWA
+
+Click on update icon to force latest version
 
 ### Fuzzy search (default)
 Uses [Fuse](https://github.com/krisk/fuse)
@@ -32,7 +34,14 @@ Examples:
 * Only 8 *i*'s ([`^[^i]*(?:i[^i]*){8}$`](https://kuzutsu.github.io/tsuzuku/?query=%255E%255B%255Ei%255D*%28%253F%253Ai%255B%255Ei%255D*%29%257B8%257D%2524&regex=1))
 * No spaces ([`^\S+$`](https://kuzutsu.github.io/tsuzuku/?query=%255E%255CS%252B%2524&regex=1))
 
-### Advanced search
+### Synonym search
+Default is Romaji only
+
+Click on split-arrow icon to toggle (will light up when enabled)
+
+### Search syntaxes
+* `is:selected`
+
 #### OR-based
 Separate with `,`, no spaces
 * `season:` (`winter`, `spring`, `summer`, `fall`, `tba`)

@@ -8,6 +8,7 @@ let r = null,
     t = null,
     title = document.title,
     params = {
+        alt: false,
         random: false,
         randomValue: 1,
         regex: false
@@ -88,6 +89,11 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                 if (new URLSearchParams(location.search).get('regex') === '1') {
                     params.regex = true;
                     document.querySelector('#regex svg').classList.remove('disabled');
+                }
+
+                if (new URLSearchParams(location.search).get('alt') === '1') {
+                    params.alt = true;
+                    document.querySelector('#alt svg').classList.remove('disabled');
                 }
 
                 if (Math.round(Math.abs(Number(new URLSearchParams(location.search).get('random')))) > 0) {
@@ -193,7 +199,12 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
 
                             document.querySelector('#header-title').innerHTML = column.getTable().getSelectedRows().length + ' selected';
                             document.querySelector('#header-version').style.display = 'none';
-                            document.head.querySelector('[name="theme-color"]').content = '#769bcc';
+
+                            if (localStorage.getItem('theme') === 'dark') {
+                                document.head.querySelector('[name="theme-color"]').content = '#fff';
+                            } else {
+                                document.head.querySelector('[name="theme-color"]').content = '#000';
+                            }
                         } else {
                             document.querySelector('header').classList.remove('header-tabulator-selected');
                             column._column.titleElement.children[0].innerHTML = '<path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"></path>';
@@ -257,7 +268,12 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                             document.querySelector('header').classList.add('header-tabulator-selected');
                             document.querySelector('#header-title').innerHTML = cell.getTable().getSelectedRows().length + ' selected';
                             document.querySelector('#header-version').style.display = 'none';
-                            document.head.querySelector('[name="theme-color"]').content = '#769bcc';
+
+                            if (localStorage.getItem('theme') === 'dark') {
+                                document.head.querySelector('[name="theme-color"]').content = '#fff';
+                            } else {
+                                document.head.querySelector('[name="theme-color"]').content = '#000';
+                            }
 
                             if (cell.getTable().getSelectedRows().length === cell.getTable().getRows().length) {
                                 cell.getColumn()._column.titleElement.children[0].innerHTML = '<path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>';
