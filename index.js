@@ -145,6 +145,18 @@ if (document.querySelector('#search').value) {
     document.querySelector('#clear').style.display = 'inline-flex';
 }
 
+document.querySelector('#reload').addEventListener('click', () => {
+    caches.open('tsuzuku').then((cache) => {
+        cache.keys().then((keys) => {
+            keys.forEach((request) => {
+                cache.delete(request);
+            });
+        });
+    }).then(() => {
+        location.reload(true);
+    });
+});
+
 document.querySelector('#clear').addEventListener('click', () => {
     document.querySelector('#clear').style.display = 'none';
     document.querySelector('#search').value = '';
