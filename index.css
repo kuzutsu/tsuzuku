@@ -260,7 +260,7 @@ header a:hover {
     --row-background: var(--selected) !important;
 }
 
-.tabulator-selected * {
+.tabulator-selected *:not(.title) {
     color: var(--selected-color) !important;
 }
 

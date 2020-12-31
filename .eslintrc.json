@@ -1,0 +1,55 @@
+{
+    "env": {
+        "browser": true,
+        "es2021": true,
+        "worker": true
+    },
+    "globals": {
+        "Fuse": "readonly",
+        "Tabulator": "readonly"
+    },
+    "extends": "eslint:all",
+    "parserOptions": {
+        "ecmaVersion": 2021,
+        "sourceType": "module"
+    },
+    "rules": {
+        "array-element-newline": ["error", {
+            "minItems": 4
+        }],
+        "capitalized-comments": "off",
+        "complexity": "off",
+        "dot-location": "off",
+        "eol-last": "off",
+        "func-style": "off",
+        "function-call-argument-newline": "off",
+        "function-paren-newline": "off",
+        "id-length": "off",
+        "indent": ["error", 4, {
+            "SwitchCase": 1
+        }],
+        "max-depth": "off",
+        "max-len": "off",
+        "max-lines": "off",
+        "max-lines-per-function": "off",
+        "max-params": "off",
+        "max-statements": "off",
+        "multiline-comment-style": "off",
+        "newline-per-chained-call": "off",
+        "no-continue": "off",
+        "no-extra-parens": ["error", "all", {
+            "nestedBinaryExpressions": false
+        }],
+        "no-loop-func": "off",
+        "no-magic-numbers": "off",
+        "no-nested-ternary": "off",
+        "no-plusplus": "off",
+        "no-ternary": "off",
+        "no-underscore-dangle": "off",
+        "padded-blocks": "off",
+        "prefer-destructuring": "off",
+        "quote-props": "off",
+        "quotes": ["error", "single"],
+        "space-before-function-paren": "off"
+    }
+}

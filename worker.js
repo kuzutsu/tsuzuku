@@ -17,37 +17,37 @@ function is(value1, type, value2) {
 
     switch (type) {
         case '<=':
-            return v1 <= v2 ? true : false;
+            return v1 <= v2;
         case '>=':
-            return v1 >= v2 ? true : false;
+            return v1 >= v2;
         case '<':
-            return v1 < v2 ? true : false;
+            return v1 < v2;
         case '>':
-            return v1 > v2 ? true : false;
+            return v1 > v2;
         case '=':
-            return v1 === v2 ? true : false;
+            return v1 === v2;
         default:
             return false;
     }
 }
 
-self.addEventListener('message', function (event) {
+self.addEventListener('message', (event) => {
     const
         f = [],
         u = [];
-    
-    let v = event.data.value,
+
+    let dd = null,
         episodes = null,
-        score = null,
-        year = null,
-        type = null,
-        status = null,
-        season = null,
-        tags = null,
-        dd = null,
         ff = null,
+        found = false,
+        score = null,
+        season = null,
+        status = null,
+        tags = null,
+        type = null,
         uu = null,
-        found = false;
+        v = event.data.value,
+        year = null;
 
     if (!v.trim() && !event.data.random) {
         postMessage({
@@ -57,39 +57,39 @@ self.addEventListener('message', function (event) {
         return;
     }
 
-    if (v.match(/\bepisodes:(&?(<=|>=|<|>)?(0|[1-9][0-9]*)\b)+/giu)) {
-        episodes = v.match(/\bepisodes:(&?(<=|>=|<|>)?(0|[1-9][0-9]*)\b)+/giu)[0].replace(/episodes:/giu, '').split('&');
-        v = v.replace(/\bepisodes:(&?(<=|>=|<|>)?(0|[1-9][0-9]*)\b)+/giu, '');
+    if (v.match(/\bepisodes:(?:&?(?:<=|>=|<|>)?(?:0|[1-9][0-9]*)\b)+/giu)) {
+        episodes = v.match(/\bepisodes:(?:&?(?:<=|>=|<|>)?(?:0|[1-9][0-9]*)\b)+/giu)[0].replace(/episodes:/giu, '').split('&');
+        v = v.replace(/\bepisodes:(?:&?(?:<=|>=|<|>)?(?:0|[1-9][0-9]*)\b)+/giu, '');
     }
 
-    if (v.match(/\bscore:(&?(<=|>=|<|>)?(10|[0-9]{1})\b)+/giu)) {
-        score = v.match(/\bscore:(&?(<=|>=|<|>)?(10|[0-9]{1})\b)+/giu)[0].replace(/score:/giu, '').split('&');
-        v = v.replace(/\bscore:(&?(<=|>=|<|>)?(10|[0-9]{1})\b)+/giu, '');
+    if (v.match(/\bscore:(?:&?(?:<=|>=|<|>)?(?:10|[0-9]{1})\b)+/giu)) {
+        score = v.match(/\bscore:(?:&?(?:<=|>=|<|>)?(?:10|[0-9]{1})\b)+/giu)[0].replace(/score:/giu, '').split('&');
+        v = v.replace(/\bscore:(?:&?(?:<=|>=|<|>)?(?:10|[0-9]{1})\b)+/giu, '');
     }
 
-    if (v.match(/\byear:(tba\b|(&?(<=|>=|<|>)?[1-9][0-9]{3}\b)+)/giu)) {
-        year = v.match(/\byear:(tba\b|(&?(<=|>=|<|>)?[1-9][0-9]{3}\b)+)/giu)[0].replace(/year:/giu, '').split('&');
-        v = v.replace(/\byear:(tba\b|(&?(<=|>=|<|>)?[1-9][0-9]{3}\b)+)/giu, '');
-    }
-    
-    if (v.match(/\btype:(,?(tv|movie|ova|ona|special)\b)+/giu)) {
-        type = v.match(/\btype:(,?(tv|movie|ova|ona|special)\b)+/giu)[0].replace(/type:/giu, '').split(',');
-        v = v.replace(/\btype:(,?(tv|movie|ova|ona|special)\b)+/giu, '');
+    if (v.match(/\byear:(?:tba\b|(?:&?(?:<=|>=|<|>)?[1-9][0-9]{3}\b)+)/giu)) {
+        year = v.match(/\byear:(?:tba\b|(?:&?(?:<=|>=|<|>)?[1-9][0-9]{3}\b)+)/giu)[0].replace(/year:/giu, '').split('&');
+        v = v.replace(/\byear:(?:tba\b|(?:&?(?:<=|>=|<|>)?[1-9][0-9]{3}\b)+)/giu, '');
     }
 
-    if (v.match(/\bstatus:(,?(watching|rewatching|completed|paused|dropped|planning)\b)+/giu)) {
-        status = v.match(/\bstatus:(,?(watching|rewatching|completed|paused|dropped|planning)\b)+/giu)[0].replace(/status:/giu, '').split(',');
-        v = v.replace(/\bstatus:(,?(watching|rewatching|completed|paused|dropped|planning)\b)+/giu, '');
+    if (v.match(/\btype:(?:,?(?:tv|movie|ova|ona|special)\b)+/giu)) {
+        type = v.match(/\btype:(?:,?(?:tv|movie|ova|ona|special)\b)+/giu)[0].replace(/type:/giu, '').split(',');
+        v = v.replace(/\btype:(?:,?(?:tv|movie|ova|ona|special)\b)+/giu, '');
     }
 
-    if (v.match(/\bseason:(,?(winter|spring|summer|fall)\b)+/giu)) {
-        season = v.match(/\bseason:(,?(winter|spring|summer|fall)\b)+/giu)[0].replace(/season:/giu, '').split(',');
-        v = v.replace(/\bseason:(,?(winter|spring|summer|fall)\b)+/giu, '');
+    if (v.match(/\bstatus:(?:,?(?:watching|rewatching|completed|paused|dropped|planning)\b)+/giu)) {
+        status = v.match(/\bstatus:(?:,?(?:watching|rewatching|completed|paused|dropped|planning)\b)+/giu)[0].replace(/status:/giu, '').split(',');
+        v = v.replace(/\bstatus:(?:,?(?:watching|rewatching|completed|paused|dropped|planning)\b)+/giu, '');
     }
 
-    if (v.match(/\btags:(&?(\S+)\b)+/giu)) {
-        tags = v.match(/\btags:(&?(\S+)\b)+/giu)[0].replace(/tags:/giu, '').split('&');
-        v = v.replace(/\btags:(&?(\S+)\b)+/giu, '');
+    if (v.match(/\bseason:(?:,?(?:winter|spring|summer|fall)\b)+/giu)) {
+        season = v.match(/\bseason:(?:,?(?:winter|spring|summer|fall)\b)+/giu)[0].replace(/season:/giu, '').split(',');
+        v = v.replace(/\bseason:(?:,?(?:winter|spring|summer|fall)\b)+/giu, '');
+    }
+
+    if (v.match(/\btags:(?:&?\S+\b)+/giu)) {
+        tags = v.match(/\btags:(?:&?\S+\b)+/giu)[0].replace(/tags:/giu, '').split('&');
+        v = v.replace(/\btags:(?:&?\S+\b)+/giu, '');
     }
 
     if (v.match(/\bis:selected\b/giu)) {
@@ -102,7 +102,7 @@ self.addEventListener('message', function (event) {
     event.data[dd].forEach((d, i) => {
         postMessage({
             message: 'progress',
-            progress: (i + 1) / event.data[dd].length * 100 + '%'
+            progress: `${(i + 1) / event.data[dd].length * 100}%`
         });
 
         if (episodes) {
@@ -155,11 +155,12 @@ self.addEventListener('message', function (event) {
             }
         }
 
+        const t = [d.title];
+
         if (v.trim()) {
             if (event.data.regex) {
-                let r = false,
-                    t = [d.title];
-                
+                let r = false;
+
                 if (event.data.alt) {
                     t.push(...d.synonyms);
                 }
@@ -169,7 +170,7 @@ self.addEventListener('message', function (event) {
                         r = true;
 
                         if (value !== d.title) {
-                            d.alternative = value + ' <span class="title">' + d.title + '</span>';
+                            d.alternative = `${value} <span class="title">${d.title}</span>`;
                         }
 
                         break;
@@ -182,8 +183,6 @@ self.addEventListener('message', function (event) {
 
                 d.relevancy = 1;
             } else {
-                let t = [d.title];
-
                 if (event.data.alt) {
                     t.push(...d.synonyms);
                 }
@@ -192,15 +191,15 @@ self.addEventListener('message', function (event) {
                     includeScore: true,
                     threshold: 1 / 3
                 }).search(v.trim());
-    
+
                 if (!result.length) {
                     return;
                 }
-    
+
                 d.relevancy = 1 - result[0].score;
 
                 if (result[0].item !== d.title) {
-                    d.alternative = result[0].item + ' <span class="title">' + d.title + '</span>';
+                    d.alternative = `${result[0].item} <span class="title">${d.title}</span>`;
                 }
             }
         }
@@ -215,16 +214,16 @@ self.addEventListener('message', function (event) {
 
         f.push(d.sources);
         u.push({
-            source: d.sources,
+            alternative: d.alternative,
             relevancy: d.relevancy,
-            alternative: d.alternative
+            source: d.sources
         });
     });
 
     if (!found) {
         postMessage({
-            message: 'done',
-            filter: ['']
+            filter: [''],
+            message: 'done'
         });
 
         return;
@@ -235,7 +234,7 @@ self.addEventListener('message', function (event) {
         uu = [];
 
         while (event.data.randomValue--) {
-            let r = Math.round(Math.random() * (f.length - 1));
+            const r = Math.round(Math.random() * (f.length - 1));
 
             ff.push(f[r]);
             uu.push(u[r]);
@@ -246,8 +245,8 @@ self.addEventListener('message', function (event) {
     }
 
     postMessage({
-        message: 'done',
         filter: ff || f,
+        message: 'done',
         update: uu || u
     });
 });

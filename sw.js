@@ -1,8 +1,16 @@
+function cache(request, response) {
+    if (response.type === 'error' || response.type === 'opaque') {
+        return Promise.resolve();
+    }
+
+    return caches.open('tsuzuku').then((c) => c.put(request, response.clone()));
+}
+
 self.addEventListener('install', (event) => {
     event.waitUntil(
         caches
             .open('tsuzuku')
-            .then((cache) => cache.addAll([
+            .then((c) => c.addAll([
                 // local
                 './',
                 './fetchFunction.js',
@@ -39,14 +47,6 @@ self.addEventListener('message', (event) => {
     }
 });
 
-function cache(request, response) {
-    if (response.type === 'error' || response.type === 'opaque') {
-        return Promise.resolve();
-    }
-
-    return caches.open('tsuzuku').then((cache) => cache.put(request, response.clone()));
-}
-
 self.addEventListener('fetch', (event) => {
     event.respondWith(
         caches
@@ -54,10 +54,7 @@ self.addEventListener('fetch', (event) => {
                 ignoreSearch: true
             })
             .then((cached) => cached || fetch(event.request))
-            .then((response) =>
-                cache(event.request, response)
-                    .then(() => response)
-            )
+            .then((response) => cache(event.request, response).then(() => response))
     );
 
     event.waitUntil(

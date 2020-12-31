@@ -1,31 +1,29 @@
 import {
+    params,
     r,
     t,
-    title,
-    params
+    title
 } from './fetchFunction.js';
 
-'use strict';
-
-let over = false,
+let dimension = null,
     last = '',
-    lastRegex = false,
     lastAlt = false,
     lastRandom = false,
-    worker = null,
-    dimension = null;
+    lastRegex = false,
+    over = false,
+    worker = null;
 
 function searchFunction(tt) {
-    let table = tt || t;
+    const table = tt || t;
 
     if (last === document.querySelector('#search').value && !lastRandom && !params.random && lastRegex === params.regex && lastAlt === params.alt) {
         return;
     }
 
     last = document.querySelector('#search').value;
-    lastRegex = params.regex;
     lastAlt = params.alt;
     lastRandom = params.random;
+    lastRegex = params.regex;
     params.randomValue = Math.round(Math.abs(document.querySelector('#number').value)) || 1;
 
     document.querySelector('.tabulator-tableHolder').style.display = 'none';
@@ -50,8 +48,8 @@ function searchFunction(tt) {
     if (r) {
         for (const value of r) {
             value.update({
-                relevancy: 1,
-                alternative: value.getData().title
+                alternative: value.getData().title,
+                relevancy: 1
             });
         }
     }
@@ -59,16 +57,16 @@ function searchFunction(tt) {
     worker = new Worker('worker.js');
 
     worker.postMessage({
+        alt: params.alt,
         data: table.getData(),
-        selected: table.getSelectedData(),
         random: params.random,
         randomValue: params.randomValue,
         regex: params.regex,
-        alt: params.alt,
+        selected: table.getSelectedData(),
         value: document.querySelector('#search').value
     });
 
-    worker.addEventListener('message', function (event) {
+    worker.addEventListener('message', (event) => {
         switch (event.data.message) {
             case 'clear':
                 // fake load
@@ -130,7 +128,7 @@ function searchFunction(tt) {
                     history.pushState({}, '', url);
 
                     if (last) {
-                        document.title = last + ' - ' + title;
+                        document.title = `${last} - ${title}`;
                     } else {
                         document.title = title;
                     }
@@ -157,19 +155,21 @@ if (document.querySelector('#search').value) {
 }
 
 document.querySelector('#update').addEventListener('click', () => {
-    document.querySelector('body').insertAdjacentHTML('beforeend',  
+    document.querySelector('body').insertAdjacentHTML('beforeend',
         '<span id="full">Updating...</span>'
     );
 
-    caches.open('tsuzuku').then((cache) => {
-        cache.keys().then((keys) => {
-            keys.forEach((request) => {
-                cache.delete(request);
+    caches.open('tsuzuku')
+        .then((cache) => {
+            cache.keys().then((keys) => {
+                keys.forEach((request) => {
+                    cache.delete(request);
+                });
             });
+        })
+        .then(() => {
+            location.reload(true);
         });
-    }).then(() => {
-        location.reload(true);
-    });
 });
 
 document.querySelector('#clear').addEventListener('click', () => {
@@ -303,7 +303,7 @@ document.querySelector('#search').addEventListener('blur', () => {
     if (over) {
         return;
     }
-    
+
     document.querySelector('#clear').style.visibility = 'hidden';
 });
 
@@ -377,7 +377,7 @@ onpopstate = () => {
     }
 
     searchFunction();
-}
+};
 
 export {
     dimension,
