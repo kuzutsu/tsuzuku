@@ -40,6 +40,7 @@ Default is Romaji only
 Click on split-arrow icon to toggle (will light up when enabled)
 
 ### Search syntaxes
+* `is:airing`
 * `is:selected`
 
 #### OR-based
@@ -57,7 +58,7 @@ Examples:
 Can use `<`, `<=`, `>`, or `>=` for numerals, separate with `&`, no spaces
 * `episodes:`
 * `score:`
-* `tags:` (if with spaces, replace with `_`)
+* `tags:` (if with spaces, replace with `_`) (start with `-` to exclude)
   * MyAnimeList (`action`, `adventure`, etc.)
   * Kitsu (`absurdist_humour`, `africa`, etc.)
   * AniList (`achromatic`, `achronological_order`, etc.)
@@ -68,6 +69,7 @@ Examples:
 * Only 13 episodes ([`episodes:13`](https://kuzutsu.github.io/tsuzuku/?query=episodes%253A13))
 * Score higher than 4 but lower than 7 ([`score:>4&<7`](https://kuzutsu.github.io/tsuzuku/?query=score%253A%253E4%2526%253C7))
 * Based on a manga and comedy ([`tags:based_on_a_manga&comedy`](https://kuzutsu.github.io/tsuzuku/?query=tags%253Abased_on_a_manga%2526comedy))
+* Based on a light novel but not isekai ([`tags:based_on_a_light_novel&-isekai`](https://kuzutsu.github.io/tsuzuku/?query=tags%253Abased_on_a_light_novel%2526-isekai))
 * On or before 2011 ([`year:<=2011`](https://kuzutsu.github.io/tsuzuku/?query=year%253A%253C%253D2011))
 
 ### Randomly select *n* titles

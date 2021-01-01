@@ -151,6 +151,7 @@ svg.disabled {
     display: block !important;
 }
 
+.tabulator-col[tabulator-field="airing"] .tabulator-col-title,
 .tabulator-col[tabulator-field="picture"] .tabulator-col-title,
 .tabulator-col[tabulator-field="sources"] .tabulator-col-title {
     line-height: 0;
@@ -262,6 +263,10 @@ header a:hover {
 
 .tabulator-selected *:not(.title) {
     color: var(--selected-color) !important;
+}
+
+.tabulator-selected svg {
+    fill: var(--selected-color) !important;
 }
 
 .tabulator-selected:hover {

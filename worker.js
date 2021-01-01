@@ -36,7 +36,8 @@ self.addEventListener('message', (event) => {
         f = [],
         u = [];
 
-    let dd = null,
+    let airing = false,
+        dd = null,
         episodes = null,
         ff = null,
         found = false,
@@ -87,9 +88,9 @@ self.addEventListener('message', (event) => {
         v = v.replace(/\bseason:(?:,?(?:winter|spring|summer|fall)\b)+/giu, '');
     }
 
-    if (v.match(/\btags:(?:&?\S+\b)+/giu)) {
-        tags = v.match(/\btags:(?:&?\S+\b)+/giu)[0].replace(/tags:/giu, '').split('&');
-        v = v.replace(/\btags:(?:&?\S+\b)+/giu, '');
+    if (v.match(/\btags:\S+\b/giu)) {
+        tags = v.match(/\btags:\S+\b/giu)[0].replace(/tags:/giu, '').split('&');
+        v = v.replace(/\btags:\S+\b/giu, '');
     }
 
     if (v.match(/\bis:selected\b/giu)) {
@@ -97,6 +98,11 @@ self.addEventListener('message', (event) => {
         v = v.replace(/\bis:selected\b/giu, '');
     } else {
         dd = 'data';
+    }
+
+    if (v.match(/\bis:airing\b/giu)) {
+        airing = true;
+        v = v.replace(/\bis:airing\b/giu, '');
     }
 
     event.data[dd].forEach((d, i) => {
@@ -149,9 +155,21 @@ self.addEventListener('message', (event) => {
 
         if (tags) {
             for (const value of tags) {
-                if (d.tags.indexOf(value.toLowerCase()) === -1) {
-                    return;
+                if (value.match(/^-/giu)) {
+                    if (d.tags.indexOf(value.replace(/^-/giu, '').toLowerCase()) > -1) {
+                        return;
+                    }
+                } else {
+                    if (d.tags.indexOf(value.toLowerCase()) === -1) {
+                        return;
+                    }
                 }
+            }
+        }
+
+        if (airing) {
+            if (!d.airing) {
+                return;
             }
         }
 
