@@ -1,7 +1,7 @@
 {
     "env": {
         "browser": true,
-        "es2021": true,
+        "es2020": true,
         "worker": true
     },
     "globals": {
@@ -10,13 +10,11 @@
     },
     "extends": "eslint:all",
     "parserOptions": {
-        "ecmaVersion": 2021,
+        "ecmaVersion": 2020,
         "sourceType": "module"
     },
     "rules": {
-        "array-element-newline": ["error", {
-            "minItems": 4
-        }],
+        "array-element-newline": "off",
         "capitalized-comments": "off",
         "complexity": "off",
         "dot-location": "off",
@@ -40,6 +38,7 @@
         "no-extra-parens": ["error", "all", {
             "nestedBinaryExpressions": false
         }],
+        "no-lonely-if": "off",
         "no-loop-func": "off",
         "no-magic-numbers": "off",
         "no-nested-ternary": "off",

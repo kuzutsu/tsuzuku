@@ -83,9 +83,9 @@ self.addEventListener('message', (event) => {
         v = v.replace(/\bstatus:(?:,?(?:watching|rewatching|completed|paused|dropped|planning)\b)+/giu, '');
     }
 
-    if (v.match(/\bseason:(?:,?(?:winter|spring|summer|fall)\b)+/giu)) {
-        season = v.match(/\bseason:(?:,?(?:winter|spring|summer|fall)\b)+/giu)[0].replace(/season:/giu, '').split(',');
-        v = v.replace(/\bseason:(?:,?(?:winter|spring|summer|fall)\b)+/giu, '');
+    if (v.match(/\bseason:(?:,?(?:winter|spring|summer|fall|tba)\b)+/giu)) {
+        season = v.match(/\bseason:(?:,?(?:winter|spring|summer|fall|tba)\b)+/giu)[0].replace(/season:/giu, '').split(',');
+        v = v.replace(/\bseason:(?:,?(?:winter|spring|summer|fall|tba)\b)+/giu, '');
     }
 
     if (v.match(/\btags:\S+\b/giu)) {
@@ -148,7 +148,12 @@ self.addEventListener('message', (event) => {
         }
 
         if (season) {
-            if (season.toString().toLowerCase().split(',').indexOf(d.season.substring(0, d.season.indexOf(' ')).toLowerCase()) === -1) {
+            const s =
+                d.season.indexOf(' ') > -1
+                    ? d.season.substring(0, d.season.indexOf(' '))
+                    : 'tba';
+
+            if (season.toString().toLowerCase().split(',').indexOf(s.toLowerCase()) === -1) {
                 return;
             }
         }

@@ -6,27 +6,20 @@ import {
 } from './fetchFunction.js';
 
 let dimension = null,
-    last = '',
-    lastAlt = false,
-    lastRandom = false,
-    lastRegex = false,
-    over = false,
     worker = null;
 
 function searchFunction(tt) {
-    const table = tt || t;
+    const
+        query = document.querySelector('#search').value,
+        table = tt || t;
 
-    if (last === document.querySelector('#search').value && !lastRandom && !params.random && lastRegex === params.regex && lastAlt === params.alt) {
-        return;
-    }
-
-    last = document.querySelector('#search').value;
-    lastAlt = params.alt;
-    lastRandom = params.random;
-    lastRegex = params.regex;
     params.randomValue = Math.round(Math.abs(document.querySelector('#number').value)) || 1;
 
-    document.querySelector('.tabulator-tableHolder').style.display = 'none';
+    if (document.querySelector('#nothing')) {
+        document.querySelector('#nothing').remove();
+    } else {
+        document.querySelector('.tabulator-tableHolder').style.display = 'none';
+    }
 
     if (worker) {
         worker.terminate();
@@ -36,9 +29,7 @@ function searchFunction(tt) {
     }
 
     document.querySelector('.tabulator-header').insertAdjacentHTML('afterend',
-        '<div id="progress">' +
-            '<div id="indicator"></div>' +
-        '</div>'
+        '<div id="progress"></div>'
     );
 
     document.querySelector('main').insertAdjacentHTML('beforeend',
@@ -53,6 +44,8 @@ function searchFunction(tt) {
             });
         }
     }
+
+    document.querySelector('#search').focus();
 
     worker = new Worker('worker.js');
 
@@ -70,8 +63,8 @@ function searchFunction(tt) {
         switch (event.data.message) {
             case 'clear':
                 // fake load
-                document.querySelector('#indicator').classList.add('found');
-                document.querySelector('#indicator').style.width = '100%';
+                document.querySelector('#progress').classList.add('found');
+                document.querySelector('#progress').style.width = '100%';
 
                 setTimeout(() => {
                     dimension = null;
@@ -85,8 +78,8 @@ function searchFunction(tt) {
                         url.searchParams.set('regex', '1');
                     }
 
-                    if (params.alt) {
-                        url.searchParams.set('alt', '1');
+                    if (!params.alt) {
+                        url.searchParams.set('alt', '0');
                     }
 
                     if (params.random) {
@@ -100,7 +93,7 @@ function searchFunction(tt) {
                 break;
 
             case 'done':
-                // delay to extend indicator to 100%
+                // delay to extend progress to 100%
                 setTimeout(() => {
                     dimension = event.data.update;
                     table.setFilter('sources', 'in', event.data.filter);
@@ -113,22 +106,22 @@ function searchFunction(tt) {
                         url.searchParams.set('regex', '1');
                     }
 
-                    if (params.alt) {
-                        url.searchParams.set('alt', '1');
+                    if (!params.alt) {
+                        url.searchParams.set('alt', '0');
                     }
 
                     if (params.random) {
                         url.searchParams.set('random', params.randomValue);
                     }
 
-                    if (last) {
-                        url.searchParams.set('query', encodeURIComponent(last));
+                    if (query) {
+                        url.searchParams.set('query', encodeURIComponent(query));
                     }
 
                     history.pushState({}, '', url);
 
-                    if (last) {
-                        document.title = `${last} - ${title}`;
+                    if (query) {
+                        document.title = `${query} - ${title}`;
                     } else {
                         document.title = title;
                     }
@@ -136,11 +129,11 @@ function searchFunction(tt) {
                 break;
 
             case 'found':
-                document.querySelector('#indicator').classList.add('found');
+                document.querySelector('#progress').classList.add('found');
                 break;
 
             case 'progress':
-                document.querySelector('#indicator').style.width = event.data.progress;
+                document.querySelector('#progress').style.width = event.data.progress;
                 break;
 
             default:
@@ -175,20 +168,19 @@ document.querySelector('#update').addEventListener('click', () => {
 document.querySelector('#clear').addEventListener('click', () => {
     document.querySelector('#clear').style.display = 'none';
     document.querySelector('#search').value = '';
-    document.querySelector('#search').focus();
 
     searchFunction();
 });
 
 document.querySelector('#theme').addEventListener('click', () => {
     if (localStorage.getItem('theme') === 'dark') {
-        document.body.classList.remove('dark');
-        document.body.classList.add('light');
+        document.querySelector('html').classList.remove('dark');
+        document.querySelector('html').classList.add('light');
         document.head.querySelector('[name="theme-color"]').content = '#fff';
         localStorage.setItem('theme', 'light');
     } else {
-        document.body.classList.remove('light');
-        document.body.classList.add('dark');
+        document.querySelector('html').classList.remove('light');
+        document.querySelector('html').classList.add('dark');
         document.head.querySelector('[name="theme-color"]').content = '#000';
         localStorage.setItem('theme', 'dark');
     }
@@ -197,7 +189,8 @@ document.querySelector('#theme').addEventListener('click', () => {
 document.querySelector('#close').addEventListener('click', () => {
     document.querySelector('#header-title').innerHTML = 'Tsuzuku';
     document.querySelector('.header-tabulator-selected').classList.remove('header-tabulator-selected');
-    document.querySelector('#header-version').style.display = 'block';
+    document.querySelector('#header-score').remove();
+    document.querySelector('#header-status').remove();
 
     if (localStorage.getItem('theme') === 'dark') {
         document.head.querySelector('[name="theme-color"]').content = '#000';
@@ -214,12 +207,10 @@ document.querySelector('#random').addEventListener('click', () => {
         document.querySelector('#number').setAttribute('disabled', '');
         document.querySelector('#random svg').classList.add('disabled');
         params.random = false;
-        document.querySelector('#search').focus();
     } else {
         document.querySelector('#number').removeAttribute('disabled');
         document.querySelector('#random svg').classList.remove('disabled');
         params.random = true;
-        document.querySelector('#number').focus();
     }
 
     searchFunction();
@@ -234,8 +225,6 @@ document.querySelector('#regex').addEventListener('click', () => {
         params.regex = true;
     }
 
-    document.querySelector('#search').focus();
-
     searchFunction();
 });
 
@@ -247,8 +236,6 @@ document.querySelector('#alt').addEventListener('click', () => {
         document.querySelector('#alt svg').classList.remove('disabled');
         params.alt = true;
     }
-
-    document.querySelector('#search').focus();
 
     searchFunction();
 });
@@ -270,8 +257,6 @@ document.querySelector('#number').addEventListener('keyup', (e) => {
 });
 
 document.querySelector('#enter').addEventListener('click', () => {
-    document.querySelector('#search').focus();
-
     searchFunction();
 });
 
@@ -290,41 +275,7 @@ document.querySelector('#search').addEventListener('focus', (e) => {
     if (e.target.value) {
         document.querySelector('#clear').style.visibility = 'visible';
         document.querySelector('#clear').style.display = 'inline-flex';
-    } else {
-        document.querySelector('#clear').style.display = 'none';
     }
-});
-
-document.querySelector('#search').addEventListener('blur', () => {
-    if (!document.querySelector('#search').value) {
-        return;
-    }
-
-    if (over) {
-        return;
-    }
-
-    document.querySelector('#clear').style.visibility = 'hidden';
-});
-
-document.querySelector('#search-container').addEventListener('mouseover', () => {
-    if (!document.querySelector('#search').value) {
-        return;
-    }
-
-    over = true;
-
-    document.querySelector('#clear').style.visibility = 'visible';
-});
-
-document.querySelector('#search-container').addEventListener('mouseout', () => {
-    over = false;
-
-    if (document.querySelector('#search:focus')) {
-        return;
-    }
-
-    document.querySelector('#clear').style.visibility = 'hidden';
 });
 
 document.querySelector('#header-title').addEventListener('click', (e) => {
@@ -332,8 +283,7 @@ document.querySelector('#header-title').addEventListener('click', (e) => {
         return;
     }
 
-    document.querySelector('#search').value = 'is:selected ';
-    document.querySelector('#search').focus();
+    document.querySelector('#search').value = 'is:selected';
 
     searchFunction();
 });
@@ -356,12 +306,12 @@ onpopstate = () => {
         document.querySelector('#regex svg').classList.add('disabled');
     }
 
-    if (new URLSearchParams(location.search).get('alt') === '1') {
-        params.alt = true;
-        document.querySelector('#alt svg').classList.remove('disabled');
-    } else {
+    if (new URLSearchParams(location.search).get('alt') === '0') {
         params.alt = false;
         document.querySelector('#alt svg').classList.add('disabled');
+    } else {
+        params.alt = true;
+        document.querySelector('#alt svg').classList.remove('disabled');
     }
 
     if (Math.round(Math.abs(Number(new URLSearchParams(location.search).get('random')))) > 0) {

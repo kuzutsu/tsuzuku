@@ -1,13 +1,13 @@
-# [Tsuzuku-α](https://kuzutsu.github.io/tsuzuku/)
+# [Tsuzuku](https://kuzutsu.github.io/tsuzuku/)
 **Tsuzuku** is useful for anime watching challenges.
 
 ![](https://raw.githubusercontent.com/kuzutsu/tsuzuku/master/preview.png)
 
-It uses the [anime-offline-database](https://github.com/manami-project/anime-offline-database) (to minimize duplicates, only titles from MyAnimeList or Kitsu will be used) and [Tabulator](https://github.com/olifolkerd/tabulator).
-* If title is in MyAnimeList but not in Kitsu, this will be listed and MyAnimeList icon will be shown
-* If title is in Kitsu but not in MyAnimeList, this will be listed and Kitsu icon will be shown
-* If title is in MyAnimeList and same title is in Kitsu, only one title will be listed and MyAnimeList icon will be shown
-* If title is in MyAnimeList but different title is in Kitsu, both titles will be listed and respective icons will be shown
+It uses the [anime-offline-database](https://github.com/manami-project/anime-offline-database) (to minimize duplicates, only titles from MyAnimeList and Kitsu will be listed) and [Tabulator](https://github.com/olifolkerd/tabulator).
+* If title is in MyAnimeList but not in Kitsu, this will be listed and MyAnimeList icon will appear
+* If title is in Kitsu but not in MyAnimeList, this will be listed and Kitsu icon will appear
+* If title is in MyAnimeList and same title is in Kitsu, only one title will be listed and MyAnimeList icon will appear
+* If title is in MyAnimeList but different title is in Kitsu, both titles will be listed and respective icons will appear
 
 ## Features
 ### Offline-ready
@@ -20,7 +20,7 @@ Uses [Fuse](https://github.com/krisk/fuse)
 
 Not case-sensitive
 
-Default sort by relevancy (descending), then by title (ascending)
+Default sort by relevancy
 
 ### Regular expression search
 Not case-sensitive
@@ -28,16 +28,16 @@ Not case-sensitive
 Click on dot-and-asterisk icon to toggle (will light up when enabled)
 
 Examples:
-* Starts with *a* ([`^a`](https://kuzutsu.github.io/tsuzuku/?query=%255Ea&regex=1))
-* Ends with a number ([`\d$`](https://kuzutsu.github.io/tsuzuku/?query=%255Cd%2524&regex=1))
-* Only 13 characters ([`^.{13}$`](https://kuzutsu.github.io/tsuzuku/?query=%255E.%257B13%257D%2524&regex=1))
-* Only 8 *i*'s ([`^[^i]*(?:i[^i]*){8}$`](https://kuzutsu.github.io/tsuzuku/?query=%255E%255B%255Ei%255D*%28%253F%253Ai%255B%255Ei%255D*%29%257B8%257D%2524&regex=1))
-* No spaces ([`^\S+$`](https://kuzutsu.github.io/tsuzuku/?query=%255E%255CS%252B%2524&regex=1))
+* Starts with *a* ([`^a`](https://kuzutsu.github.io/tsuzuku/?query=%255Ea&regex=1&alt=0))
+* Ends with a number ([`\d$`](https://kuzutsu.github.io/tsuzuku/?query=%255Cd%2524&regex=1&alt=0))
+* Only 13 characters ([`^.{13}$`](https://kuzutsu.github.io/tsuzuku/?query=%255E.%257B13%257D%2524&regex=1&alt=0))
+* Only 8 *i*'s ([`^[^i]*(?:i[^i]*){8}$`](https://kuzutsu.github.io/tsuzuku/?query=%255E%255B%255Ei%255D*%28%253F%253Ai%255B%255Ei%255D*%29%257B8%257D%2524&regex=1&alt=0))
+* No spaces ([`^\S+$`](https://kuzutsu.github.io/tsuzuku/?query=%255E%255CS%252B%2524&regex=1&alt=0))
 
-### Synonym search
-Default is Romaji only
-
+### Include synonyms (enabled by default)
 Click on split-arrow icon to toggle (will light up when enabled)
+
+Recommended to disable when using regular expression search
 
 ### Search syntaxes
 * `is:airing`
@@ -58,7 +58,7 @@ Examples:
 Can use `<`, `<=`, `>`, or `>=` for numerals, separate with `&`, no spaces
 * `episodes:`
 * `score:`
-* `tags:` (if with spaces, replace with `_`) (start with `-` to exclude)
+* `tags:` (replace spaces with `_`, start with `-` to exclude)
   * MyAnimeList (`action`, `adventure`, etc.)
   * Kitsu (`absurdist_humour`, `africa`, etc.)
   * AniList (`achromatic`, `achronological_order`, etc.)
@@ -79,7 +79,7 @@ Default is 1
 
 Press `Enter` in search box (or click on search icon) to randomize again
 
-### Multiple select
+### Select range
 Desktop only
 
 Hold `Shift`, then click on thumbnail images
@@ -95,3 +95,5 @@ Click on sun icon to toggle
 ## Bugs
 * Scrolling breaks UI<br>
 **Workaround:** Tapping on search box (on mobile) or resizing window (on desktop)
+* Tracking not persistent<br>
+**Workaround:** None
