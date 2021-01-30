@@ -48,10 +48,6 @@ html {
     overflow: hidden;
 }
 
-html {
-    background: var(--background);
-}
-
 body {
     display: flex;
     flex-direction: column;
