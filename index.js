@@ -174,13 +174,13 @@ document.querySelector('#clear').addEventListener('click', () => {
 
 document.querySelector('#theme').addEventListener('click', () => {
     if (localStorage.getItem('theme') === 'dark') {
-        document.querySelector('html').classList.remove('dark');
-        document.querySelector('html').classList.add('light');
+        document.body.classList.remove('dark');
+        document.body.classList.add('light');
         document.head.querySelector('[name="theme-color"]').content = '#fff';
         localStorage.setItem('theme', 'light');
     } else {
-        document.querySelector('html').classList.remove('light');
-        document.querySelector('html').classList.add('dark');
+        document.body.classList.remove('light');
+        document.body.classList.add('dark');
         document.head.querySelector('[name="theme-color"]').content = '#000';
         localStorage.setItem('theme', 'dark');
     }

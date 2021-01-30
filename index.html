@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="light">
+<html lang="en">
     <head>
         <title>Tsuzuku</title>
         <meta charset="utf-8">
@@ -23,15 +23,15 @@
         <link rel="preload" href="index.css" as="style">
         <link href="index.css" rel="stylesheet">
     </head>
-    <body>
+    <body class="light">
         <noscript>
             <span id="full">Tsuzuku can't run without JavaScript</span>
         </noscript>
         <script>
             switch (localStorage.getItem('theme')) {
                 case 'dark':
-                    document.querySelector('html').classList.remove('light');
-                    document.querySelector('html').classList.add('dark');
+                    document.body.classList.remove('light');
+                    document.body.classList.add('dark');
                     document.head.querySelector('[name="theme-color"]').content = '#000';
                     break;
 
