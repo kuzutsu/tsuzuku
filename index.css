@@ -52,11 +52,11 @@ body {
     display: flex;
     flex-direction: column;
     margin: 0;
-    background: var(--background-hover);
+    background: var(--background);
 }
 
 main {
-    height: calc(100% - 57px);
+    height: calc(100% - 56px);
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -64,7 +64,7 @@ main {
 
 #database-container {
     height: auto;
-    max-height: calc(100% - 49px);
+    max-height: calc(100% - 48px);
     width: 100%;
 }
 
@@ -74,16 +74,17 @@ main {
 
 header {
     background: var(--background);
-    height: 57px;
+    height: 56px;
     width: 100%;
     display: flex;
     align-items: center;
     user-select: none;
+    overflow: auto;
 }
 
 #search-container {
     width: 100%;
-    height: 49px;
+    height: 48px;
     display: none;
     align-items: center;
     background: var(--background);
@@ -128,6 +129,7 @@ svg.disabled {
     padding: 4px;
     font-size: 14px;
     background: var(--background);
+    min-width: 100px;
 }
 
 .tabulator-header,
@@ -173,11 +175,14 @@ header,
     border-bottom: 1px solid var(--background-hover) !important;
 }
 
-.tabulator-row:not(:last-child) {
+.tabulator-row {
     margin-bottom: 1px;
 }
 
-.tabulator,
+.tabulator {
+    background: initial !important;
+}
+
 .tabulator-table {
     background: var(--background-hover) !important;
 }
@@ -227,19 +232,6 @@ header a:hover {
 
 .header-tabulator-selected #close {
     display: flex !important;
-}
-
-.tabulator-cell[tabulator-field="sources"] a {
-    padding-left: 4px;
-    padding-right: 4px;
-}
-
-.tabulator-cell[tabulator-field="sources"] a:first-child {
-    padding-left: 0 !important;
-}
-
-.tabulator-cell[tabulator-field="sources"] a:last-child {
-    padding-right: 0 !important;
 }
 
 [tabulator-field="alternative"] a {
@@ -303,11 +295,6 @@ header a:hover {
 
 /***************************************************************************************************/
 
-.tabulator-editing input {
-    font-size: 14px;
-    outline: none;
-}
-
 [tabulator-field="color"] {
     height: 0 !important;
     padding: 0 !important;
@@ -339,13 +326,8 @@ input {
 /*****************************************************************/
 
 #progress {
-    background: var(--background-hover);
-    height: 4px;
-}
-
-#indicator {
     background: #f44336;
-    height: 100%;
+    height: 4px;
     width: 0;
 }
 
@@ -358,17 +340,20 @@ input {
 }
 
 #loading,
+#nothing,
 #searching {
     display: flex;
     align-items: center;
     justify-content: center;
     user-select: none;
+    text-align: center;
 }
 
 #loading {
     height: 100%;
 }
 
+#nothing,
 #searching {
     flex-grow: 1;
 }
@@ -376,10 +361,65 @@ input {
 #full {
     height: 100%;
     width: 100%;
-    background: var(--background-hover);
+    background: var(--background);
     position: absolute;
     display: flex;
     align-items: center;
     justify-content: center;
     user-select: none;
+    text-align: center;
+}
+
+@media only screen and (min-width: 1251px) {
+    body {
+        margin: 0 10%;
+        box-shadow: 0 0 20px 0 var(--background-hover);
+    }
+}
+
+header select {
+    background: var(--selected);
+    border: 0;
+    color: var(--selected-color);
+    font-size: 16px;
+    outline: none;
+}
+
+header option {
+    background: var(--selected);
+    color: var(--selected-color);
+}
+
+header option[disabled] {
+    color: #aaa;
+}
+
+.tabulator-selected .tabulator-cell option,
+.tabulator-selected .tabulator-cell select {
+    background: var(--selected);
+    color: var(--selected-color);
+}
+
+.tabulator-selected:hover .tabulator-cell select {
+    background: var(--selected-hover);
+}
+
+.tabulator-cell select {
+    background: var(--background);
+    border: 0;
+    color: var(--color);
+    outline: none;
+}
+
+.tabulator-cell option {
+    background: var(--background);
+    color: var(--color);
+}
+
+.tabulator-row:hover select {
+    background: var(--background-hover);
+}
+
+.tabulator-cell[tabulator-field="picture"] {
+    padding: 0 !important;
 }
