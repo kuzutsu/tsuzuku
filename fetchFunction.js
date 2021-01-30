@@ -473,7 +473,14 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                 },
                 {
                     field: 'relevancy',
-                    visible: false
+                    formatter(cell) {
+                        return `${Number(cell.getValue() * 100).toFixed(1)}%`;
+                    },
+                    headerHozAlign: 'center',
+                    hozAlign: 'center',
+                    title: 'Relevancy',
+                    vertAlign: 'middle',
+                    width: 100
                 }
             ],
             data: database,
