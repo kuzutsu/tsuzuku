@@ -180,10 +180,6 @@ header,
     margin-bottom: 1px;
 }
 
-.tabulator {
-    background: var(--background) !important;
-}
-
 .tabulator-table {
     background: var(--background-hover) !important;
 }
