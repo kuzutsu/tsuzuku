@@ -69,10 +69,6 @@ main {
     width: 100%;
 }
 
-.tabulator-tableHolder {
-    height: 100%;
-}
-
 header {
     background: var(--background);
     height: 56px;
