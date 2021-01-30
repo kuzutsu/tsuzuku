@@ -52,7 +52,7 @@ Separate with `,`, no spaces
 Examples:
 * From summer season only ([`season:summer`](https://kuzutsu.github.io/tsuzuku/?query=season%253Asummer))
 * Paused or dropped ([`status:paused,dropped`](https://kuzutsu.github.io/tsuzuku/?query=status%253Apaused%252Cdropped))
-* Movies, OVAs, or ONAs only ([`type:movie,ova,ONA`](https://kuzutsu.github.io/tsuzuku/?query=type%253Amovie%252Cova%252CONA))
+* Movies, OVAs, or ONAs only ([`type:movie,ova,ona`](https://kuzutsu.github.io/tsuzuku/?query=type%253Amovie%252Cova%252Cona))
 
 #### AND-based
 Can use `<`, `<=`, `>`, or `>=` for numerals, separate with `&`, no spaces
