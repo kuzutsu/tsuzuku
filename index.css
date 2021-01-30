@@ -169,6 +169,7 @@ svg.disabled {
 
 .tabulator-row {
     cursor: auto !important;
+    min-height: 40px !important;
 }
 
 header,
@@ -235,11 +236,6 @@ header a:hover {
     display: flex !important;
 }
 
-[tabulator-field="alternative"] a {
-    overflow-wrap: anywhere;
-    white-space: normal;
-}
-
 /***************************************************************************************************/
 
 .tabulator-row {
@@ -259,7 +255,7 @@ header a:hover {
 }
 
 .tabulator-selected svg {
-    fill: var(--selected-color) !important;
+    fill: var(--selected) !important;
 }
 
 .tabulator-selected:hover {
@@ -422,5 +418,12 @@ header option[disabled] {
 }
 
 .tabulator-cell[tabulator-field="picture"] {
+    height: 40px !important;
     padding: 0 !important;
+}
+
+.tabulator-cell[tabulator-field="alternative"] {
+    display: inline-block !important;
+    overflow-wrap: anywhere;
+    white-space: normal !important;
 }

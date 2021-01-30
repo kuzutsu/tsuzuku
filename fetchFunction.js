@@ -5,6 +5,7 @@ import {
 
 const
     database = [],
+    database2 = {},
     params = {
         alt: true,
         random: false,
@@ -39,51 +40,77 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
             const m = d[i].sources.filter((sources) => sources.match(/kitsu\.io|myanimelist\.net/gu));
             let source = null;
 
-            if (m.length) {
-                switch (d[i].animeSeason.season) {
-                    case 'FALL':
-                        s = 'Fall ';
-                        break;
-                    case 'SPRING':
-                        s = 'Spring ';
-                        break;
-                    case 'SUMMER':
-                        s = 'Summer ';
-                        break;
-                    case 'WINTER':
-                        s = 'Winter ';
-                        break;
-                    default:
-                        s = '';
-                        break;
-                }
+            if (!m.length) {
+                continue;
+            }
 
-                if (d[i].sources.filter((sources) => sources.match(/myanimelist\.net/gu)).length) {
-                    source = /myanimelist\.net/gu;
-                } else {
-                    source = /kitsu\.io/gu;
-                }
+            switch (d[i].animeSeason.season) {
+                case 'FALL':
+                    s = 'Fall ';
+                    break;
+                case 'SPRING':
+                    s = 'Spring ';
+                    break;
+                case 'SUMMER':
+                    s = 'Summer ';
+                    break;
+                case 'WINTER':
+                    s = 'Winter ';
+                    break;
+                default:
+                    s = '';
+                    break;
+            }
 
-                for (const value of d[i].sources.filter((sources) => sources.match(source))) {
-                    database.push({
-                        airing: d[i].status === 'CURRENTLY',
-                        alternative: d[i].title,
-                        episodes: d[i].episodes || '',
-                        picture:
-                            d[i].picture.match(/myanimelist\.net/gu)
-                                ? d[i].picture.replace(d[i].picture.substr(d[i].picture.lastIndexOf('.')), '.webp')
-                                : d[i].picture,
-                        relevancy: 1,
+            if (d[i].sources.filter((sources) => sources.match(/myanimelist\.net/gu)).length) {
+                source = /myanimelist\.net/gu;
+            } else {
+                source = /kitsu\.io/gu;
+            }
+
+            for (const value of d[i].sources.filter((sources) => sources.match(source))) {
+                const children = [];
+
+                for (const value2 of d[i].tags.map((tags) => tags.replace(/\s/gu, '_'))) {
+                    if (database2[value2]) {
+                        database2[value2] += 1;
+                    } else {
+                        database2[value2] = 1;
+                    }
+
+                    children.push({
+                        airing: '',
+                        alternative: value2,
+                        episodes: '',
+                        picture: '',
+                        relevancy: '',
                         score: '',
-                        season: s + (d[i].animeSeason.year || ''),
-                        sources: value,
+                        season: '',
+                        sources: '',
                         status: '',
-                        synonyms: d[i].synonyms,
-                        tags: d[i].tags.map((tags) => tags.replace(/\s/gu, '_')),
-                        title: d[i].title,
-                        type: d[i].type
+                        type: ''
                     });
                 }
+
+                database.push({
+                    '_children': children,
+                    airing: d[i].status === 'CURRENTLY',
+                    alternative: d[i].title,
+                    episodes: d[i].episodes || '',
+                    picture:
+                        d[i].picture.match(/myanimelist\.net/gu)
+                            ? d[i].picture.replace(d[i].picture.substr(d[i].picture.lastIndexOf('.')), '.webp')
+                            : d[i].picture,
+                    relevancy: 1,
+                    score: '',
+                    season: s + (d[i].animeSeason.year || ''),
+                    sources: value,
+                    status: '',
+                    synonyms: d[i].synonyms,
+                    tags: d[i].tags.map((tags) => tags.replace(/\s/gu, '_')),
+                    title: d[i].title,
+                    type: d[i].type
+                });
             }
         }
 
@@ -97,6 +124,10 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                 },
                 {
                     cellClick(e, cell) {
+                        if (cell.getRow().getTreeParent()) {
+                            return;
+                        }
+
                         getSelection().removeAllRanges();
                         cell.getRow().toggleSelect();
 
@@ -205,6 +236,10 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                     },
                     field: 'picture',
                     formatter(cell) {
+                        if (cell.getRow().getTreeParent()) {
+                            return '';
+                        }
+
                         return (
                             '<svg viewBox="0 0 24 24" width="17" height="17">' +
                                 '<path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>' +
@@ -308,15 +343,19 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                 {
                     field: 'sources',
                     formatter(cell) {
-                        let sources = '<img src="';
-
-                        if (cell.getValue().match(/myanimelist\.net/gu)) {
-                            sources += 'https://myanimelist.net/img/common/pwa/launcher-icon-4x.png';
-                        } else {
-                            sources += 'https://kitsu.io/favicon-194x194-2f4dbec5ffe82b8f61a3c6d28a77bc6e.png';
+                        if (cell.getRow().getTreeParent()) {
+                            return '';
                         }
 
-                        return `${sources}" loading="lazy" style="user-select: none; height: 17px; width: 17px;">`;
+                        let sources = null;
+
+                        if (cell.getValue().match(/myanimelist\.net/gu)) {
+                            sources = 'https://myanimelist.net/img/common/pwa/launcher-icon-4x.png';
+                        } else {
+                            sources = 'https://kitsu.io/favicon-194x194-2f4dbec5ffe82b8f61a3c6d28a77bc6e.png';
+                        }
+
+                        return `<a href="${cell.getValue()}" target="_blank" rel="noreferrer"><img src="${sources}" loading="lazy" style="user-select: none; height: 17px; width: 17px;"></a>`;
                     },
                     headerHozAlign: 'center',
                     headerSort: false,
@@ -367,9 +406,22 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                     width: 50
                 },
                 {
+                    cellClick(e, cell) {
+                        if (cell.getRow().getTreeParent()) {
+                            document.querySelector('#search').value = `tags:${cell.getValue()}`;
+
+                            searchFunction(cell.getTable());
+                        } else {
+                            cell.getRow().treeToggle();
+                        }
+                    },
                     field: 'alternative',
                     formatter(cell) {
-                        return `<a href="${cell.getRow().getData().sources}" target="_blank" rel="noreferrer">${cell.getValue()}</a>`;
+                        if (cell.getRow().getTreeParent()) {
+                            return `${cell.getValue()} (${database2[cell.getValue()]})`;
+                        }
+
+                        return cell.getValue();
                     },
                     minWidth: 100,
                     title: 'Title',
@@ -377,6 +429,13 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                 },
                 {
                     field: 'type',
+                    formatter(cell) {
+                        if (cell.getRow().getTreeParent()) {
+                            return '';
+                        }
+
+                        return cell.getValue();
+                    },
                     headerHozAlign: 'center',
                     hozAlign: 'center',
                     title: 'Type',
@@ -385,6 +444,13 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                 },
                 {
                     field: 'episodes',
+                    formatter(cell) {
+                        if (cell.getRow().getTreeParent()) {
+                            return '';
+                        }
+
+                        return cell.getValue();
+                    },
                     headerHozAlign: 'center',
                     hozAlign: 'center',
                     sorterParams: {
@@ -396,6 +462,10 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                 },
                 {
                     cellClick(e, cell) {
+                        if (cell.getRow().getTreeParent()) {
+                            return;
+                        }
+
                         const value = cell.getValue();
 
                         if (value) {
@@ -413,6 +483,13 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                         searchFunction(cell.getTable());
                     },
                     field: 'season',
+                    formatter(cell) {
+                        if (cell.getRow().getTreeParent()) {
+                            return '';
+                        }
+
+                        return cell.getValue();
+                    },
                     headerHozAlign: 'center',
                     hozAlign: 'center',
                     sorterParams: {
@@ -425,6 +502,10 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                 {
                     field: 'score',
                     formatter(cell) {
+                        if (cell.getRow().getTreeParent()) {
+                            return '';
+                        }
+
                         const select = document.createElement('select');
 
                         select.innerHTML = scores;
@@ -450,6 +531,10 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                 {
                     field: 'status',
                     formatter(cell) {
+                        if (cell.getRow().getTreeParent()) {
+                            return '';
+                        }
+
                         const select = document.createElement('select');
 
                         select.innerHTML = statuses;
@@ -550,6 +635,10 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
 
                 this.setSort('relevancy', 'desc');
             },
+            dataTree: true,
+            dataTreeCollapseElement: '',
+            dataTreeFilter: false,
+            dataTreeSort: false,
             headerSortElement:
                 '<svg viewBox="0 0 24 24" width="17" height="17">' +
                     '<path d="M20 12l-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8 8-8z"></path>' +
