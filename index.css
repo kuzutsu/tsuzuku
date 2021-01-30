@@ -180,6 +180,10 @@ header,
     margin-bottom: 1px;
 }
 
+.tabulator {
+    background: initial !important;
+}
+
 .tabulator-table {
     background: var(--background-hover) !important;
 }
@@ -365,13 +369,6 @@ input {
     justify-content: center;
     user-select: none;
     text-align: center;
-}
-
-@media only screen and (min-width: 1251px) {
-    body {
-        margin: 0 10%;
-        box-shadow: 0 0 20px 0 var(--background-hover);
-    }
 }
 
 header select {
