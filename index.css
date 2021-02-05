@@ -298,7 +298,7 @@ header a:hover {
 }
 
 .tabulator-col {
-    height: 48px;
+    height: 40px;
     display: inline-flex !important;
     align-items: center;
 }

@@ -1,5 +1,5 @@
 import {
-    dimension,
+    index,
     searchFunction
 } from './index.js';
 
@@ -37,29 +37,20 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
         const d = data.data;
 
         for (let i = 0; i < d.length; i++) {
-            const m = d[i].sources.filter((sources) => sources.match(/kitsu\.io|myanimelist\.net/gu));
+            const
+                m = d[i].sources.filter((sources) => sources.match(/kitsu\.io|myanimelist\.net/gu)),
+                ss = d[i].animeSeason.season;
+
             let source = null;
 
             if (!m.length) {
                 continue;
             }
 
-            switch (d[i].animeSeason.season) {
-                case 'FALL':
-                    s = 'Fall ';
-                    break;
-                case 'SPRING':
-                    s = 'Spring ';
-                    break;
-                case 'SUMMER':
-                    s = 'Summer ';
-                    break;
-                case 'WINTER':
-                    s = 'Winter ';
-                    break;
-                default:
-                    s = '';
-                    break;
+            if (ss === 'UNDEFINED') {
+                s = '';
+            } else {
+                s = `${ss.replace(ss.substr(1), ss.substr(1).toLowerCase())} `;
             }
 
             if (d[i].sources.filter((sources) => sources.match(/myanimelist\.net/gu)).length) {
@@ -69,9 +60,11 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
             }
 
             for (const value of d[i].sources.filter((sources) => sources.match(source))) {
-                const children = [];
+                const
+                    children = [],
+                    tt = d[i].tags.map((tags) => tags.replace(/\s/gu, '_'));
 
-                for (const value2 of d[i].tags.map((tags) => tags.replace(/\s/gu, '_'))) {
+                for (const value2 of tt) {
                     if (database2[value2]) {
                         database2[value2] += 1;
                     } else {
@@ -101,13 +94,17 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                         d[i].picture.match(/myanimelist\.net/gu)
                             ? d[i].picture.replace(d[i].picture.substr(d[i].picture.lastIndexOf('.')), '.webp')
                             : d[i].picture,
+                    relations: [
+                        ...d[i].sources.filter((sources) => sources.match(source) && sources !== value),
+                        ...d[i].relations.filter((relations) => relations.match(/kitsu\.io|myanimelist\.net/gu))
+                    ],
                     relevancy: 1,
                     score: '',
                     season: s + (d[i].animeSeason.year || ''),
                     sources: value,
                     status: '',
                     synonyms: d[i].synonyms,
-                    tags: d[i].tags.map((tags) => tags.replace(/\s/gu, '_')),
+                    tags: tt,
                     title: d[i].title,
                     type: d[i].type
                 });
@@ -180,7 +177,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
 
                             hscore.id = 'header-score';
                             hscore.innerHTML =
-                                '<select>' +
+                                '<select title="Score">' +
                                     `<option selected disabled>Score</option>${scores}` +
                                 '</select>';
                             hscore.addEventListener('change', (event) => {
@@ -194,7 +191,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                             hstatus.id = 'header-status';
                             hstatus.style.padding = '0 19px 0 19px';
                             hstatus.innerHTML =
-                                '<select>' +
+                                '<select title="Status">' +
                                     `<option selected disabled>Status</option>${statuses}` +
                                 '</select>';
                             hstatus.addEventListener('change', (event) => {
@@ -244,7 +241,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                             '<svg viewBox="0 0 24 24" width="17" height="17">' +
                                 '<path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>' +
                             '</svg>' +
-                            `<img src="${cell.getValue()}" loading="lazy" style="height: 40px; width: 40px; object-fit: cover; user-select: none;">`
+                            `<img src="${cell.getValue()}" loading="lazy" alt style="height: 40px; width: 40px; object-fit: cover; user-select: none;">`
                         );
                     },
                     headerClick(e, column) {
@@ -355,7 +352,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                             sources = 'https://kitsu.io/favicon-194x194-2f4dbec5ffe82b8f61a3c6d28a77bc6e.png';
                         }
 
-                        return `<a href="${cell.getValue()}" target="_blank" rel="noreferrer"><img src="${sources}" loading="lazy" style="user-select: none; height: 17px; width: 17px;"></a>`;
+                        return `<a href="${cell.getValue()}" target="_blank" rel="noreferrer"><img src="${sources}" loading="lazy" alt style="user-select: none; height: 17px; width: 17px;"></a>`;
                     },
                     headerHozAlign: 'center',
                     headerSort: false,
@@ -407,13 +404,92 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                 },
                 {
                     cellClick(e, cell) {
-                        if (cell.getRow().getTreeParent()) {
-                            document.querySelector('#search').value = `tags:${cell.getValue()}`;
+                        const
+                            temp = [...cell.getRow().getData().relations],
+                            temp2 = [cell.getRow().getData().sources, ...temp];
 
-                            searchFunction(cell.getTable());
-                        } else {
-                            cell.getRow().treeToggle();
+                        if (!document.querySelector('#enter .disabled')) {
+                            document.querySelector('#enter svg').classList.add('disabled');
                         }
+
+                        if (document.querySelector('#default').style.display === 'inline-flex') {
+                            document.querySelector('#default').style.display = 'none';
+                            document.querySelector('#related').style.display = 'inline-flex';
+                        }
+
+                        document.querySelector('#related-title').innerHTML = cell.getRow().getData().title;
+                        document.querySelector('.tabulator').style.display = 'none';
+
+                        document.querySelector('#search-container').insertAdjacentHTML('afterend',
+                            '<div id="progress"></div>'
+                        );
+
+                        document.querySelector('main').insertAdjacentHTML('beforeend',
+                            '<span id="searching">Searching...</span>'
+                        );
+
+                        function tempFunction() {
+                            temp.forEach((ttt) => {
+                                const m = cell.getTable().getData().find((i) => i.sources === ttt);
+                                let rr = null;
+
+                                temp.splice(temp.indexOf(ttt), 1);
+
+                                if (!m) {
+                                    temp2.splice(temp2.indexOf(ttt), 1);
+                                    return;
+                                }
+
+                                rr = m.relations.filter((i) => {
+                                    const f = cell.getTable().getData().find((ii) => ii.sources === i);
+
+                                    if (f && temp2.indexOf(i) === -1) {
+                                        return true;
+                                    }
+
+                                    return false;
+                                });
+
+                                temp.push(...rr);
+                                temp2.push(...rr);
+                            });
+
+                            if (temp.length) {
+                                tempFunction();
+                            } else {
+                                cell.getTable().blockRedraw();
+
+                                if (r) {
+                                    for (const value of r) {
+                                        value.update({
+                                            alternative: value.getData().title,
+                                            relevancy: 1
+                                        });
+                                    }
+                                }
+
+                                index.dimension = null;
+                                temp2.splice(temp2.indexOf(cell.getRow().getData().sources), 1);
+
+                                if (temp2.length) {
+                                    document.querySelector('#progress').classList.add('found');
+                                }
+
+                                document.querySelector('#progress').style.width = '100%';
+
+                                setTimeout(() => {
+                                    cell.getTable().setFilter('sources', 'in',
+                                        temp2.length
+                                            ? temp2
+                                            : ['']
+                                    );
+
+                                    cell.getTable().restoreRedraw();
+                                }, 100);
+                            }
+                        }
+
+                        setTimeout(tempFunction, 100);
                     },
                     field: 'alternative',
                     formatter(cell) {
@@ -510,6 +586,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
 
                         select.innerHTML = scores;
                         select.value = cell.getValue();
+                        select.title = 'Score';
                         select.addEventListener('change', () => {
                             cell.getRow().update({
                                 score: select.value
@@ -539,6 +616,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
 
                         select.innerHTML = statuses;
                         select.value = cell.getValue();
+                        select.title = 'Status';
                         select.addEventListener('change', () => {
                             cell.getRow().update({
                                 status: select.value
@@ -563,15 +641,19 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
             ],
             data: database,
             dataFiltered(filters, rows) {
-                if (dimension) {
+                if (index.dimension) {
                     r = rows;
+
+                    this.blockRedraw();
 
                     for (const value of rows) {
                         value.update({
-                            alternative: dimension[dimension.findIndex((i) => i.source === value.getData().sources)].alternative,
-                            relevancy: dimension[dimension.findIndex((i) => i.source === value.getData().sources)].relevancy
+                            alternative: index.dimension.find((i) => i.source === value.getData().sources).alternative,
+                            relevancy: index.dimension.find((i) => i.source === value.getData().sources).relevancy
                         });
                     }
+
+                    this.restoreRedraw();
                 }
 
                 if (document.querySelector('#progress')) {
@@ -583,7 +665,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                 }
 
                 if (rows.length) {
-                    document.querySelector('.tabulator-tableHolder').style.display = '';
+                    document.querySelector('.tabulator').style.display = '';
                 } else {
                     document.querySelector('main').insertAdjacentHTML('beforeend',
                         '<span id="nothing">Nothing found</span>'
@@ -628,8 +710,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                     '</style>'
                 );
             },
-            dataSorted() {
-                if (this.getSorters().length) {
+            dataSorted(sorters) {
+                if (sorters.length) {
                     return;
                 }
 

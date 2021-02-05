@@ -105,143 +105,150 @@ self.addEventListener('message', (event) => {
         v = v.replace(/\bis:airing\b/giu, '');
     }
 
-    event.data[dd].forEach((d, i) => {
+    if (dd === 'selected' && !event.data[dd].length) {
         postMessage({
             message: 'progress',
-            progress: `${(i + 1) / event.data[dd].length * 100}%`
+            progress: '100%'
         });
-
-        if (episodes) {
-            for (const value of episodes) {
-                if (!is(d.episodes, (value.match(/<=|>=|<|>/giu) || '=').toString(), value.match(/0|[1-9][0-9]*/giu).toString())) {
-                    return;
-                }
-            }
-        }
-
-        if (score) {
-            for (const value of score) {
-                if (!is(d.score, (value.match(/<=|>=|<|>/giu) || '=').toString(), value.match(/10|[1-9]{1}/giu).toString())) {
-                    return;
-                }
-            }
-        }
-
-        if (year) {
-            for (const value of year) {
-                if (!is(d.season.substring(d.season.indexOf(' ') + 1), (value.match(/<=|>=|<|>/giu) || '=').toString(), value.match(/tba|[1-9][0-9]{3}/giu).toString())) {
-                    return;
-                }
-            }
-        }
-
-        if (type) {
-            if (type.toString().toLowerCase().split(',').indexOf(d.type.toLowerCase()) === -1) {
-                return;
-            }
-        }
-
-        if (status) {
-            if (status.toString().toLowerCase().split(',').indexOf(d.status.toLowerCase()) === -1) {
-                return;
-            }
-        }
-
-        if (season) {
-            const s =
-                d.season.indexOf(' ') > -1
-                    ? d.season.substring(0, d.season.indexOf(' '))
-                    : 'tba';
-
-            if (season.toString().toLowerCase().split(',').indexOf(s.toLowerCase()) === -1) {
-                return;
-            }
-        }
-
-        if (tags) {
-            for (const value of tags) {
-                if (value.match(/^-/giu)) {
-                    if (d.tags.indexOf(value.replace(/^-/giu, '').toLowerCase()) > -1) {
-                        return;
-                    }
-                } else {
-                    if (d.tags.indexOf(value.toLowerCase()) === -1) {
-                        return;
-                    }
-                }
-            }
-        }
-
-        if (airing) {
-            if (!d.airing) {
-                return;
-            }
-        }
-
-        const t = [d.title];
-
-        if (v.trim()) {
-            if (event.data.regex) {
-                let r = false;
-
-                if (event.data.alt) {
-                    t.push(...d.synonyms);
-                }
-
-                for (const value of t) {
-                    if (value.match(RegExp(v.trim(), 'giu'))) {
-                        r = true;
-
-                        if (value !== d.title) {
-                            d.alternative = `${value} <span class="title">${d.title}</span>`;
-                        }
-
-                        break;
-                    }
-                }
-
-                if (!r) {
-                    return;
-                }
-
-                d.relevancy = 1;
-            } else {
-                if (event.data.alt) {
-                    t.push(...d.synonyms);
-                }
-
-                const result = new Fuse(t, {
-                    includeScore: true,
-                    threshold: 1 / 3
-                }).search(v.trim());
-
-                if (!result.length) {
-                    return;
-                }
-
-                d.relevancy = 1 - result[0].score;
-
-                if (result[0].item !== d.title) {
-                    d.alternative = `${result[0].item} <span class="title">${d.title}</span>`;
-                }
-            }
-        }
-
-        if (!found) {
+    } else {
+        event.data[dd].forEach((d, i) => {
             postMessage({
-                message: 'found'
+                message: 'progress',
+                progress: `${(i + 1) / event.data[dd].length * 100}%`
             });
 
-            found = true;
-        }
+            if (episodes) {
+                for (const value of episodes) {
+                    if (!is(d.episodes, (value.match(/<=|>=|<|>/giu) || '=').toString(), value.match(/0|[1-9][0-9]*/giu).toString())) {
+                        return;
+                    }
+                }
+            }
 
-        f.push(d.sources);
-        u.push({
-            alternative: d.alternative,
-            relevancy: d.relevancy,
-            source: d.sources
+            if (score) {
+                for (const value of score) {
+                    if (!is(d.score, (value.match(/<=|>=|<|>/giu) || '=').toString(), value.match(/10|[1-9]{1}/giu).toString())) {
+                        return;
+                    }
+                }
+            }
+
+            if (year) {
+                for (const value of year) {
+                    if (!is(d.season.substring(d.season.indexOf(' ') + 1), (value.match(/<=|>=|<|>/giu) || '=').toString(), value.match(/tba|[1-9][0-9]{3}/giu).toString())) {
+                        return;
+                    }
+                }
+            }
+
+            if (type) {
+                if (type.toString().toLowerCase().split(',').indexOf(d.type.toLowerCase()) === -1) {
+                    return;
+                }
+            }
+
+            if (status) {
+                if (status.toString().toLowerCase().split(',').indexOf(d.status.toLowerCase()) === -1) {
+                    return;
+                }
+            }
+
+            if (season) {
+                const s =
+                    d.season.indexOf(' ') > -1
+                        ? d.season.substring(0, d.season.indexOf(' '))
+                        : 'tba';
+
+                if (season.toString().toLowerCase().split(',').indexOf(s.toLowerCase()) === -1) {
+                    return;
+                }
+            }
+
+            if (tags) {
+                for (const value of tags) {
+                    if (value.match(/^-/giu)) {
+                        if (d.tags.indexOf(value.replace(/^-/giu, '').toLowerCase()) > -1) {
+                            return;
+                        }
+                    } else {
+                        if (d.tags.indexOf(value.toLowerCase()) === -1) {
+                            return;
+                        }
+                    }
+                }
+            }
+
+            if (airing) {
+                if (!d.airing) {
+                    return;
+                }
+            }
+
+            const t = [d.title];
+
+            if (v.trim()) {
+                if (event.data.regex) {
+                    let r = false;
+
+                    if (event.data.alt) {
+                        t.push(...d.synonyms);
+                    }
+
+                    for (const value of t) {
+                        if (value.match(RegExp(v.trim(), 'giu'))) {
+                            r = true;
+
+                            if (value !== d.title) {
+                                d.alternative = `${value} <span class="title">${d.title}</span>`;
+                            }
+
+                            break;
+                        }
+                    }
+
+                    if (!r) {
+                        return;
+                    }
+
+                    d.relevancy = 1;
+                } else {
+                    if (event.data.alt) {
+                        t.push(...d.synonyms);
+                    }
+
+                    const result = new Fuse(t, {
+                        includeScore: true,
+                        threshold: 1 / 4
+                    }).search(v.trim());
+
+                    if (!result.length) {
+                        return;
+                    }
+
+                    d.relevancy = 1 - result[0].score;
+
+                    if (result[0].item !== d.title) {
+                        d.alternative = `${result[0].item} <span class="title">${d.title}</span>`;
+                    }
+                }
+            }
+
+            if (!found) {
+                postMessage({
+                    message: 'found'
+                });
+
+                found = true;
+            }
+
+            f.push(d.sources);
+            u.push({
+                alternative: d.alternative,
+                relevancy: d.relevancy,
+                source: d.sources
+            });
         });
-    });
+    }
 
     if (!found) {
         postMessage({

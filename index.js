@@ -5,8 +5,11 @@ import {
     title
 } from './fetchFunction.js';
 
-let dimension = null,
-    worker = null;
+const index = {
+    dimension: null
+};
+
+let worker = null;
 
 function searchFunction(tt) {
     const
@@ -18,7 +21,7 @@ function searchFunction(tt) {
     if (document.querySelector('#nothing')) {
         document.querySelector('#nothing').remove();
     } else {
-        document.querySelector('.tabulator-tableHolder').style.display = 'none';
+        document.querySelector('.tabulator').style.display = 'none';
     }
 
     if (worker) {
@@ -28,13 +31,22 @@ function searchFunction(tt) {
         document.querySelector('#searching').remove();
     }
 
-    document.querySelector('.tabulator-header').insertAdjacentHTML('afterend',
+    if (document.querySelector('#enter .disabled')) {
+        document.querySelector('#enter .disabled').classList.remove('disabled');
+        document.querySelector('#default').style.display = 'inline-flex';
+        document.querySelector('#related').style.display = 'none';
+        document.querySelector('#related-title').innerHTML = '';
+    }
+
+    document.querySelector('#search-container').insertAdjacentHTML('afterend',
         '<div id="progress"></div>'
     );
 
     document.querySelector('main').insertAdjacentHTML('beforeend',
         '<span id="searching">Searching...</span>'
     );
+
+    table.blockRedraw();
 
     if (r) {
         for (const value of r) {
@@ -67,8 +79,9 @@ function searchFunction(tt) {
                 document.querySelector('#progress').style.width = '100%';
 
                 setTimeout(() => {
-                    dimension = null;
+                    index.dimension = null;
                     table.clearFilter();
+                    table.restoreRedraw();
                     worker.terminate();
                     worker = null;
 
@@ -95,8 +108,9 @@ function searchFunction(tt) {
             case 'done':
                 // delay to extend progress to 100%
                 setTimeout(() => {
-                    dimension = event.data.update;
+                    index.dimension = event.data.update;
                     table.setFilter('sources', 'in', event.data.filter);
+                    table.restoreRedraw();
                     worker.terminate();
                     worker = null;
 
@@ -330,6 +344,6 @@ onpopstate = () => {
 };
 
 export {
-    dimension,
+    index,
     searchFunction
 };
