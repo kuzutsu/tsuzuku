@@ -14,6 +14,14 @@ const
     },
     score = ['', 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
     status = ['', 'Completed', 'Dropped', 'Paused', 'Planning', 'Rewatching', 'Watching'],
+    svg = {
+        arrow: '<path d="M20 12l-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8 8-8z"></path>',
+        blank: '<path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"></path>',
+        check: '<path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>',
+        globe: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"></path>',
+        indeterminate: '<path d="M19 3H5C3.9 3 3 3.9 3 5v14c0 1.1 0.9 2 2 2h14c1.1 0 2-0.9 2-2V5C21 3.9 20.1 3 19 3z M17 13H7v-2h10V13z"></path>',
+        play: '<path d="M8 5v14l11-7z"></path>'
+    },
     title = document.title;
 
 let lastRow = false,
@@ -132,7 +140,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                             if (!lastRow) {
                                 lastRow = cell.getRow();
 
-                                cell.getColumn()._column.titleElement.children[0].innerHTML = '<path d="M19 3H5C3.9 3 3 3.9 3 5v14c0 1.1 0.9 2 2 2h14c1.1 0 2-0.9 2-2V5C21 3.9 20.1 3 19 3z M17 13H7v-2h10V13z"></path>';
+                                cell.getColumn()._column.titleElement.children[0].innerHTML = svg.indeterminate;
                                 return;
                             }
 
@@ -212,9 +220,9 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                             }
 
                             if (cell.getTable().getSelectedRows().length === cell.getTable().getRows().length) {
-                                cell.getColumn()._column.titleElement.children[0].innerHTML = '<path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>';
+                                cell.getColumn()._column.titleElement.children[0].innerHTML = svg.check;
                             } else {
-                                cell.getColumn()._column.titleElement.children[0].innerHTML = '<path d="M19 3H5C3.9 3 3 3.9 3 5v14c0 1.1 0.9 2 2 2h14c1.1 0 2-0.9 2-2V5C21 3.9 20.1 3 19 3z M17 13H7v-2h10V13z"></path>';
+                                cell.getColumn()._column.titleElement.children[0].innerHTML = svg.indeterminate;
                             }
                         } else {
                             document.querySelector('header').classList.remove('header-tabulator-selected');
@@ -222,7 +230,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                             document.querySelector('#header-score').remove();
                             document.querySelector('#header-status').remove();
 
-                            cell.getColumn()._column.titleElement.children[0].innerHTML = '<path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"></path>';
+                            cell.getColumn()._column.titleElement.children[0].innerHTML = svg.blank;
 
                             if (localStorage.getItem('theme') === 'dark') {
                                 document.head.querySelector('[name="theme-color"]').content = '#000';
@@ -238,16 +246,14 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                         }
 
                         return (
-                            '<svg viewBox="0 0 24 24" width="17" height="17">' +
-                                '<path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>' +
-                            '</svg>' +
+                            `<svg viewBox="0 0 24 24" width="17" height="17">${svg.checked}</svg>` +
                             `<img src="${cell.getValue()}" loading="lazy" alt style="height: 40px; width: 40px; object-fit: cover; user-select: none;">`
                         );
                     },
                     headerClick(e, column) {
                         if (column.getTable().getSelectedRows().length) {
                             document.querySelector('header').classList.remove('header-tabulator-selected');
-                            column._column.titleElement.children[0].innerHTML = '<path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"></path>';
+                            column._column.titleElement.children[0].innerHTML = svg.blank;
                             column.getTable().deselectRow();
                             document.querySelector('#header-title').innerHTML = 'Tsuzuku';
                             document.querySelector('#header-score').remove();
@@ -268,9 +274,9 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                             document.querySelector('header').classList.add('header-tabulator-selected');
 
                             if (column.getTable().getSelectedRows().length === column.getTable().getRows().length) {
-                                column._column.titleElement.children[0].innerHTML = '<path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>';
+                                column._column.titleElement.children[0].innerHTML = svg.check;
                             } else {
-                                column._column.titleElement.children[0].innerHTML = '<path d="M19 3H5C3.9 3 3 3.9 3 5v14c0 1.1 0.9 2 2 2h14c1.1 0 2-0.9 2-2V5C21 3.9 20.1 3 19 3z M17 13H7v-2h10V13z"></path>';
+                                column._column.titleElement.children[0].innerHTML = svg.indeterminate;
                             }
 
                             document.querySelector('#header-title').innerHTML = `${column.getTable().getSelectedRows().length} selected`;
@@ -328,11 +334,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                     headerSort: false,
                     hozAlign: 'center',
                     titleFormatter() {
-                        return (
-                            '<svg viewBox="0 0 24 24" width="17" height="17">' +
-                                '<path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"></path>' +
-                            '</svg>'
-                        );
+                        return `<svg viewBox="0 0 24 24" width="17" height="17">${svg.blank}</svg>`;
                     },
                     vertAlign: 'middle',
                     width: 50
@@ -358,11 +360,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                     headerSort: false,
                     hozAlign: 'center',
                     titleFormatter() {
-                        return (
-                            '<svg viewBox="0 0 24 24" width="17" height="17">' +
-                                '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"></path>' +
-                            '</svg>'
-                        );
+                        return `<svg viewBox="0 0 24 24" width="17" height="17">${svg.globe}</svg>`;
                     },
                     vertAlign: 'middle',
                     width: 50
@@ -384,20 +382,16 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                         }
 
                         return (
-                            '<svg viewBox="3 2 20 20" width="17" height="17">' +
-                                '<path d="M8 5v14l11-7z"></path>' +
-                            '</svg>'
+                            '<span title="Airing" style="line-height: 0;">' +
+                                `<svg viewBox="3 2 20 20" width="17" height="17">${svg.play}</svg>` +
+                            '</span>'
                         );
                     },
                     headerHozAlign: 'center',
                     headerSort: false,
                     hozAlign: 'center',
                     titleFormatter() {
-                        return (
-                            '<svg viewBox="3 2 20 20" width="17" height="17">' +
-                                '<path d="M8 5v14l11-7z"></path>' +
-                            '</svg>'
-                        );
+                        return `<svg viewBox="3 2 20 20" width="17" height="17">${svg.play}</svg>`;
                     },
                     vertAlign: 'middle',
                     width: 50
@@ -721,10 +715,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
             dataTreeCollapseElement: '',
             dataTreeFilter: false,
             dataTreeSort: false,
-            headerSortElement:
-                '<svg viewBox="0 0 24 24" width="17" height="17">' +
-                    '<path d="M20 12l-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8 8-8z"></path>' +
-                '</svg>',
+            headerSortElement: `<svg viewBox="0 0 24 24" width="17" height="17">${svg.arrow}</svg>`,
             headerSortTristate: true,
             initialSort: [
                 {
@@ -742,8 +733,9 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
     });
 
 export {
+    params,
     r,
+    svg,
     t,
-    title,
-    params
+    title
 };

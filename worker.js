@@ -218,7 +218,7 @@ self.addEventListener('message', (event) => {
 
                     const result = new Fuse(t, {
                         includeScore: true,
-                        threshold: 1 / 4
+                        threshold: 0.25
                     }).search(v.trim());
 
                     if (!result.length) {
