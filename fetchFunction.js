@@ -246,7 +246,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                         }
 
                         return (
-                            `<svg viewBox="0 0 24 24" width="17" height="17">${svg.checked}</svg>` +
+                            `<svg viewBox="0 0 24 24" width="17" height="17">${svg.check}</svg>` +
                             `<img src="${cell.getValue()}" loading="lazy" alt style="height: 40px; width: 40px; object-fit: cover; user-select: none;">`
                         );
                     },
