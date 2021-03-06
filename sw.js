@@ -53,8 +53,11 @@ self.addEventListener('fetch', (event) => {
             .match(event.request, {
                 ignoreSearch: true
             })
-            .then((cached) => fetch(event.request)
-                .then((response) => cache(event.request, response).then(() => response))
-                .catch(() => cached))
+            .then((cached) => cached || fetch(event.request))
+    );
+
+    event.waitUntil(
+        fetch(event.request)
+            .then((response) => cache(event.request, response))
     );
 });
