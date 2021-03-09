@@ -81,6 +81,7 @@ header {
     align-items: center;
     user-select: none;
     overflow: auto;
+    white-space: nowrap;
 }
 
 #search-container {
