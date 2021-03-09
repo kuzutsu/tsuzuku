@@ -227,7 +227,6 @@ header a:hover {
 }
 
 .header-tabulator-selected a,
-.header-tabulator-selected #update,
 .header-tabulator-selected #theme {
     display: none !important;
 }
