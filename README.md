@@ -13,8 +13,6 @@ It uses the [anime-offline-database](https://github.com/manami-project/anime-off
 ### Offline-ready
 Install as PWA
 
-Click on update icon to force latest version
-
 ### Fuzzy search (default)
 Uses [Fuse](https://github.com/krisk/fuse)
 
@@ -72,7 +70,7 @@ Examples:
 * Based on a light novel but not isekai ([`tags:based_on_a_light_novel&-isekai`](https://kuzutsu.github.io/tsuzuku/?query=tags%253Abased_on_a_light_novel%2526-isekai))
 * On or before 2011 ([`year:<=2011`](https://kuzutsu.github.io/tsuzuku/?query=year%253A%253C%253D2011))
 
-### Randomly select *n* titles
+### Random select
 Click on shuffle icon to toggle (will light up when enabled)
 
 Default is 1
@@ -84,16 +82,9 @@ Desktop only
 
 Hold `Shift`, then click on thumbnail images
 
-### Multiple sort
-Desktop only
-
-Hold `Ctrl`, then click on header titles (toggle between ascending and descending)
-
 ### Dark mode
 Click on sun icon to toggle
 
 ## Bugs
 * Scrolling breaks UI<br>
 **Workaround:** Tapping on search box (on mobile) or resizing window (on desktop)
-* Tracking not persistent<br>
-**Workaround:** None
