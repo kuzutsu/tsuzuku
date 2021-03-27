@@ -3,7 +3,7 @@
     <head>
         <title>Tsuzuku</title>
         <meta charset="utf-8">
-        <meta name="description" content="Search anime using regular expression, even when offline!">
+        <meta name="description" content="Search anime metadata, even when offline!">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#fff">
         <link rel="icon" href="logo-192.png">
@@ -12,15 +12,15 @@
         <link rel="preconnect" href="https://fonts.gstatic.com">
         <link rel="preconnect" href="https://cdn.jsdelivr.net">
         <link rel="preconnect" href="https://raw.githubusercontent.com">
+        <link rel="preconnect" href="https://myanimelist.net">
+        <link rel="preconnect" href="https://kitsu.io">
         <link rel="dns-prefetch" href="https://fonts.gstatic.com">
         <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
         <link rel="dns-prefetch" href="https://raw.githubusercontent.com">
         <link rel="dns-prefetch" href="https://myanimelist.net">
         <link rel="dns-prefetch" href="https://kitsu.io">
-        <link rel="preload" href="fetchFunction.js" as="script" crossorigin>
         <link rel="preload" href="https://fonts.gstatic.com/s/roboto/v20/KFOmCnqEu92Fr1Mu4mxKKTU1Kg.woff2" as="font" crossorigin>
         <link rel="preload" href="https://fonts.gstatic.com/s/roboto/v20/KFOlCnqEu92Fr1MmEU9fBBc4AMP6lQ.woff2" as="font" crossorigin>
-        <link rel="preload" href="index.css" as="style">
         <link href="index.css" rel="stylesheet">
     </head>
     <body class="light">
@@ -63,16 +63,18 @@
             }
         </script> 
         <header>
-            <div id="close" style="margin-left: 19px; display: inline-flex; align-items: center; cursor: pointer; display: none;">
+            <div id="close" style="display: inline-flex; align-items: center; display: none;">
                 <svg viewBox="0 0 24 24" width="19" height="19">
                     <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path>
                 </svg>
             </div>
-            <span id="header-title" style="margin-left: 19px;">Tsuzuku</span>
-            <a href="https://kuzutsu.github.io/tsuzuku-games/" target="_blank" rel="noreferrer" style="display: flex; align-items: center; margin-left: 19px; color: #aaa;">Games</a>
-            <span style="width: 100%;"></span>
-            <a href="https://github.com/kuzutsu/tsuzuku" target="_blank" rel="noreferrer" style="display: flex; align-items: center; margin-right: 19px; color: #aaa;">View on GitHub</a>
-            <div id="theme" title="Toggle theme" style="margin-right: 19px; display: inline-flex; align-items: center; cursor: pointer;">
+            <span id="header-title">Tsuzuku</span>
+            <span class="flex-separator"></span>
+            <a href="https://kuzutsu.github.io/tsuzuku-games/" target="_blank" rel="noreferrer" style="display: flex; align-items: center;">Games</a>
+            <span class="separator"></span>
+            <a href="https://github.com/kuzutsu/tsuzuku" target="_blank" rel="noreferrer" style="display: flex; align-items: center;">GitHub</a>
+            <span class="separator"></span>
+            <div id="theme" title="Toggle theme" style="display: inline-flex; align-items: center;">
                 <svg viewBox="0 0 24 24" width="19" height="19">
                     <path d="M20 15.31L23.31 12 20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69zM12 18V6c3.31 0 6 2.69 6 6s-2.69 6-6 6z"></path>
                 </svg>
@@ -120,9 +122,9 @@
             <div id="database-container"></div>
         </main>
         <script defer src="https://cdn.jsdelivr.net/npm/tabulator-tables/dist/js/tabulator_core.min.js"></script>
-        <script defer src="https://cdn.jsdelivr.net/npm/tabulator-tables/dist/js/modules/data_tree.min.js"></script>
         <script defer src="https://cdn.jsdelivr.net/npm/tabulator-tables/dist/js/modules/edit.min.js"></script>
         <script defer src="https://cdn.jsdelivr.net/npm/tabulator-tables/dist/js/modules/filter.min.js"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/tabulator-tables/dist/js/modules/frozen_columns.min.js"></script>
         <script defer src="https://cdn.jsdelivr.net/npm/tabulator-tables/dist/js/modules/format.min.js"></script>
         <script defer src="https://cdn.jsdelivr.net/npm/tabulator-tables/dist/js/modules/resize_table.min.js"></script>
         <script defer src="https://cdn.jsdelivr.net/npm/tabulator-tables/dist/js/modules/select_row.min.js"></script>

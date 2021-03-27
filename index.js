@@ -25,6 +25,11 @@ function searchFunction(tt) {
         document.querySelector('.tabulator').style.display = 'none';
     }
 
+    if (document.querySelector('#search').value) {
+        document.querySelector('#clear').style.visibility = 'visible';
+        document.querySelector('#clear').style.display = 'inline-flex';
+    }
+
     if (worker) {
         worker.terminate();
         worker = null;
@@ -47,8 +52,6 @@ function searchFunction(tt) {
         '<span id="searching">Searching...</span>'
     );
 
-    table.blockRedraw();
-
     if (r) {
         for (const value of r) {
             value.update({
@@ -57,8 +60,6 @@ function searchFunction(tt) {
             });
         }
     }
-
-    document.querySelector('#search').focus();
 
     worker = new Worker('worker.js');
 
@@ -82,7 +83,6 @@ function searchFunction(tt) {
                 setTimeout(() => {
                     index.dimension = null;
                     table.clearFilter();
-                    table.restoreRedraw();
                     worker.terminate();
                     worker = null;
 
@@ -90,6 +90,13 @@ function searchFunction(tt) {
 
                     if (params.regex) {
                         url.searchParams.set('regex', '1');
+                        table.setSort('alternative', 'asc');
+                    } else {
+                        if (query) {
+                            table.setSort('relevancy', 'desc');
+                        } else {
+                            table.setSort('alternative', 'asc');
+                        }
                     }
 
                     if (!params.alt) {
@@ -103,7 +110,7 @@ function searchFunction(tt) {
                     history.pushState({}, '', url);
 
                     document.title = title;
-                }, 100);
+                }, 1);
                 break;
 
             case 'done':
@@ -111,7 +118,6 @@ function searchFunction(tt) {
                 setTimeout(() => {
                     index.dimension = event.data.update;
                     table.setFilter('sources', 'in', event.data.filter);
-                    table.restoreRedraw();
                     worker.terminate();
                     worker = null;
 
@@ -119,6 +125,13 @@ function searchFunction(tt) {
 
                     if (params.regex) {
                         url.searchParams.set('regex', '1');
+                        table.setSort('alternative', 'asc');
+                    } else {
+                        if (query) {
+                            table.setSort('relevancy', 'desc');
+                        } else {
+                            table.setSort('alternative', 'asc');
+                        }
                     }
 
                     if (!params.alt) {
@@ -140,7 +153,7 @@ function searchFunction(tt) {
                     } else {
                         document.title = title;
                     }
-                }, 100);
+                }, 1);
                 break;
 
             case 'found':
@@ -155,11 +168,6 @@ function searchFunction(tt) {
                 break;
         }
     });
-}
-
-if (document.querySelector('#search').value) {
-    document.querySelector('#clear').style.visibility = 'visible';
-    document.querySelector('#clear').style.display = 'inline-flex';
 }
 
 document.querySelector('#clear').addEventListener('click', () => {
@@ -188,6 +196,9 @@ document.querySelector('#close').addEventListener('click', () => {
     document.querySelector('.header-tabulator-selected').classList.remove('header-tabulator-selected');
     document.querySelector('#header-score').remove();
     document.querySelector('#header-status').remove();
+    document.querySelectorAll('.separator-selected').forEach((element) => {
+        element.remove();
+    });
 
     if (localStorage.getItem('theme') === 'dark') {
         document.head.querySelector('[name="theme-color"]').content = '#000';
@@ -264,8 +275,6 @@ document.querySelector('#search').addEventListener('input', (e) => {
     } else {
         document.querySelector('#clear').style.display = 'none';
     }
-
-    searchFunction();
 });
 
 document.querySelector('#search').addEventListener('focus', (e) => {
@@ -298,9 +307,16 @@ onpopstate = () => {
     if (new URLSearchParams(location.search).get('regex') === '1') {
         params.regex = true;
         document.querySelector('#regex svg').classList.remove('disabled');
+        t.setSort('alternative', 'asc');
     } else {
         params.regex = false;
         document.querySelector('#regex svg').classList.add('disabled');
+
+        if (new URLSearchParams(location.search).get('query')) {
+            t.setSort('relevancy', 'desc');
+        } else {
+            t.setSort('alternative', 'asc');
+        }
     }
 
     if (new URLSearchParams(location.search).get('alt') === '0') {

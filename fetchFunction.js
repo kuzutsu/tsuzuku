@@ -6,14 +6,16 @@ import {
 const
     database = [],
     database2 = {},
+    db = indexedDB.open('tsuzuku', 1),
     params = {
         alt: true,
         random: false,
         randomValue: 1,
         regex: false
     },
+    promises = [],
     score = ['', 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-    status = ['', 'Completed', 'Dropped', 'Paused', 'Planning', 'Rewatching', 'Watching'],
+    status = ['', 'Completed', 'Dropped', 'Paused', 'Planning', 'Watching'],
     svg = {
         arrow: '<path d="M20 12l-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8 8-8z"></path>',
         blank: '<path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"></path>',
@@ -31,706 +33,747 @@ let lastRow = false,
     statuses = '',
     t = null;
 
-for (let i = 0; i < score.length; i++) {
-    scores += `<option>${score[i]}</option>`;
-}
+db.onupgradeneeded = (event) => {
+    const
+        index2 = [
+            'episodes',
+            'progress',
+            'score',
+            'season',
+            'status',
+            'title'
+        ],
+        storage = event.currentTarget.result.createObjectStore('tsuzuku', {
+            keyPath: 'source'
+        });
 
-for (let ii = 0; ii < status.length; ii++) {
-    statuses += `<option>${status[ii]}</option>`;
-}
+    for (const value of index2) {
+        storage.createIndex(value, value, {
+            unique: false
+        });
+    }
+};
 
-fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/master/anime-offline-database.json')
-    .then((response) => response.json())
-    .then((data) => {
-        const d = data.data;
+db.onsuccess = (event3) => {
+    fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/master/anime-offline-database.json')
+        .then((response) => response.json())
+        .then((data) => {
+            const d = data.data;
 
-        for (let i = 0; i < d.length; i++) {
-            const
-                m = d[i].sources.filter((sources) => sources.match(/kitsu\.io|myanimelist\.net/gu)),
-                ss = d[i].animeSeason.season;
-
-            let source = null;
-
-            if (!m.length) {
-                continue;
+            function db2() {
+                return event3.target.result.transaction('tsuzuku', 'readwrite').objectStore('tsuzuku');
             }
 
-            if (ss === 'UNDEFINED') {
-                s = '';
-            } else {
-                s = `${ss.replace(ss.substr(1), ss.substr(1).toLowerCase())} `;
+            for (let i = 0; i < score.length; i++) {
+                scores += `<option>${score[i]}</option>`;
             }
 
-            if (d[i].sources.filter((sources) => sources.match(/myanimelist\.net/gu)).length) {
-                source = /myanimelist\.net/gu;
-            } else {
-                source = /kitsu\.io/gu;
+            for (let ii = 0; ii < status.length; ii++) {
+                statuses += `<option>${status[ii]}</option>`;
             }
 
-            for (const value of d[i].sources.filter((sources) => sources.match(source))) {
-                const
-                    children = [],
-                    tt = d[i].tags.map((tags) => tags.replace(/\s/gu, '_'));
+            for (let i = 0; i < d.length; i++) {
+                let source = null;
 
-                for (const value2 of tt) {
-                    if (database2[value2]) {
-                        database2[value2] += 1;
-                    } else {
-                        database2[value2] = 1;
-                    }
-
-                    children.push({
-                        airing: '',
-                        alternative: value2,
-                        episodes: '',
-                        picture: '',
-                        relevancy: '',
-                        score: '',
-                        season: '',
-                        sources: '',
-                        status: '',
-                        type: ''
-                    });
+                if (d[i].sources.filter((sources) => sources.match(/myanimelist\.net/gu)).length) {
+                    source = /myanimelist\.net/gu;
+                } else if (d[i].sources.filter((sources) => sources.match(/kitsu\.io/gu)).length) {
+                    source = /kitsu\.io/gu;
+                } else {
+                    continue;
                 }
 
-                database.push({
-                    '_children': children,
-                    airing: d[i].status === 'CURRENTLY',
-                    alternative: d[i].title,
-                    episodes: d[i].episodes || '',
-                    picture:
-                        d[i].picture.match(/myanimelist\.net/gu)
-                            ? d[i].picture.replace(d[i].picture.substr(d[i].picture.lastIndexOf('.')), '.webp')
-                            : d[i].picture,
-                    relations: [
-                        ...d[i].sources.filter((sources) => sources.match(source) && sources !== value),
-                        ...d[i].relations.filter((relations) => relations.match(/kitsu\.io|myanimelist\.net/gu))
-                    ],
-                    relevancy: 1,
-                    score: '',
-                    season: s + (d[i].animeSeason.year || ''),
-                    sources: value,
-                    status: '',
-                    synonyms: d[i].synonyms,
-                    tags: tt,
-                    title: d[i].title,
-                    type: d[i].type
-                });
+                for (const value of d[i].sources.filter((sources) => sources.match(source))) {
+                    promises.push(
+                        new Promise((resolve) => {
+                            db2().get(value).onsuccess = (event) => resolve(event.currentTarget.result);
+                        }).then((result) => {
+                            const
+                                ss = d[i].animeSeason.season,
+                                tt = d[i].tags.map((tags) => tags.replace(/\s/gu, '_'));
+
+                            if (ss === 'UNDEFINED') {
+                                s = '';
+                            } else {
+                                s = `${ss.replace(ss.substr(1), ss.substr(1).toLowerCase())} `;
+                            }
+
+                            for (const value2 of tt) {
+                                if (database2[value2]) {
+                                    database2[value2] += 1;
+                                } else {
+                                    database2[value2] = 1;
+                                }
+                            }
+
+                            database.push({
+                                airing: d[i].status === 'CURRENTLY',
+                                alternative: d[i].title,
+                                episodes: d[i].episodes || '',
+                                picture:
+                                    d[i].picture.match(/myanimelist\.net/gu)
+                                        ? d[i].picture.replace(d[i].picture.substr(d[i].picture.lastIndexOf('.')), '.webp')
+                                        : d[i].picture,
+                                relations: [
+                                    ...d[i].sources.filter((sources) => sources.match(source) && sources !== value),
+                                    ...d[i].relations.filter((relations) => relations.match(/kitsu\.io|myanimelist\.net/gu))
+                                ],
+                                relevancy: 1,
+                                score:
+                                    result
+                                        ? result.score
+                                        : '',
+                                season: s + (d[i].animeSeason.year || ''),
+                                sources: value,
+                                status:
+                                    result
+                                        ? result.status
+                                        : '',
+                                synonyms: d[i].synonyms,
+                                tags: tt,
+                                title: d[i].title,
+                                type: d[i].type
+                            });
+                        })
+                    );
+                }
             }
-        }
 
-        t = new Tabulator('#database-container', {
-            columns: [
-                {
-                    field: 'color',
-                    headerSort: false,
-                    minWidth: 8,
-                    width: 8
-                },
-                {
-                    cellClick(e, cell) {
-                        if (cell.getRow().getTreeParent()) {
-                            return;
-                        }
+            Promise.all(promises).then(() => {
+                t = new Tabulator('#database-container', {
+                    columnHeaderSortMulti: false,
+                    columns: [
+                        {
+                            // padding
+                            frozen: true,
+                            headerSort: false,
+                            minWidth: 8,
+                            width: 8
+                        },
+                        {
+                            cellClick(e, cell) {
+                                getSelection().removeAllRanges();
+                                cell.getRow().toggleSelect();
 
-                        getSelection().removeAllRanges();
-                        cell.getRow().toggleSelect();
+                                if (e.shiftKey) {
+                                    if (!lastRow) {
+                                        lastRow = cell.getRow();
 
-                        if (e.shiftKey) {
-                            if (!lastRow) {
+                                        cell.getColumn()._column.titleElement.children[0].innerHTML = svg.indeterminate;
+                                        return;
+                                    }
+
+                                    const
+                                        lastPosition = lastRow.getPosition(true),
+                                        position = cell.getRow().getPosition(true);
+
+                                    if (lastPosition < position) {
+                                        let prevRow = cell.getRow().getPrevRow();
+
+                                        while (prevRow.getPosition(true) > lastPosition) {
+                                            prevRow.toggleSelect();
+                                            prevRow = prevRow.getPrevRow();
+                                        }
+                                    } else {
+                                        let nextRow = cell.getRow().getNextRow();
+
+                                        while (nextRow.getPosition(true) < lastPosition) {
+                                            nextRow.toggleSelect();
+                                            nextRow = nextRow.getNextRow();
+                                        }
+                                    }
+                                }
+
                                 lastRow = cell.getRow();
 
-                                cell.getColumn()._column.titleElement.children[0].innerHTML = svg.indeterminate;
-                                return;
-                            }
+                                if (cell.getTable().getSelectedRows().length) {
+                                    document.querySelector('header').classList.add('header-tabulator-selected');
+                                    document.querySelector('#header-title').innerHTML = `${cell.getTable().getSelectedRows().length} selected`;
 
-                            const
-                                lastPosition = lastRow.getPosition(true),
-                                position = cell.getRow().getPosition(true);
+                                    if (document.querySelector('#header-score')) {
+                                        document.querySelector('#header-score').remove();
+                                    }
 
-                            if (lastPosition < position) {
-                                let prevRow = cell.getRow().getPrevRow();
+                                    if (document.querySelector('#header-status')) {
+                                        document.querySelector('#header-status').remove();
+                                    }
 
-                                while (prevRow.getPosition(true) > lastPosition) {
-                                    prevRow.toggleSelect();
-                                    prevRow = prevRow.getPrevRow();
-                                }
-                            } else {
-                                let nextRow = cell.getRow().getNextRow();
+                                    if (document.querySelector('.separator-selected')) {
+                                        document.querySelectorAll('.separator-selected').forEach((element) => {
+                                            element.remove();
+                                        });
+                                    }
 
-                                while (nextRow.getPosition(true) < lastPosition) {
-                                    nextRow.toggleSelect();
-                                    nextRow = nextRow.getNextRow();
-                                }
-                            }
-                        }
+                                    const
+                                        hscore = document.createElement('div'),
+                                        hstatus = document.createElement('div');
 
-                        lastRow = cell.getRow();
+                                    hscore.id = 'header-score';
+                                    hscore.innerHTML =
+                                        '<select title="Score">' +
+                                            `<option selected disabled>Score</option>${scores}` +
+                                        '</select>';
+                                    hscore.addEventListener('change', (event) => {
+                                        for (const value of cell.getTable().getSelectedRows()) {
+                                            const d2 = db2().add({
+                                                episodes: value._row.data.episodes,
+                                                score: event.target.value,
+                                                season: value._row.data.season,
+                                                source: value._row.data.sources,
+                                                status: value._row.data.status,
+                                                title: value._row.data.title
+                                            });
 
-                        if (cell.getTable().getSelectedRows().length) {
-                            document.querySelector('header').classList.add('header-tabulator-selected');
-                            document.querySelector('#header-title').innerHTML = `${cell.getTable().getSelectedRows().length} selected`;
+                                            d2.onsuccess = () => {
+                                                value.update({
+                                                    score: event.target.value
+                                                });
+                                            };
 
-                            if (document.querySelector('#header-score')) {
-                                document.querySelector('#header-score').remove();
-                            }
-
-                            if (document.querySelector('#header-status')) {
-                                document.querySelector('#header-status').remove();
-                            }
-
-                            const
-                                hscore = document.createElement('div'),
-                                hstatus = document.createElement('div');
-
-                            hscore.id = 'header-score';
-                            hscore.innerHTML =
-                                '<select title="Score">' +
-                                    `<option selected disabled>Score</option>${scores}` +
-                                '</select>';
-                            hscore.addEventListener('change', (event) => {
-                                for (const value of cell.getTable().getSelectedRows()) {
-                                    value.update({
-                                        score: event.target.value
+                                            d2.onerror = () => {
+                                                db2().get(value._row.data.sources).onsuccess = (event2) => {
+                                                    const result = event2.currentTarget.result;
+                                                    result.score = event.target.value;
+                                                    db2().put(result).onsuccess = () => {
+                                                        value.update({
+                                                            score: event.target.value
+                                                        });
+                                                    };
+                                                };
+                                            };
+                                        }
                                     });
-                                }
-                            });
 
-                            hstatus.id = 'header-status';
-                            hstatus.style.padding = '0 19px 0 19px';
-                            hstatus.innerHTML =
-                                '<select title="Status">' +
-                                    `<option selected disabled>Status</option>${statuses}` +
-                                '</select>';
-                            hstatus.addEventListener('change', (event) => {
-                                for (const value of cell.getTable().getSelectedRows()) {
-                                    value.update({
-                                        status: event.target.value
+                                    hstatus.id = 'header-status';
+                                    hstatus.innerHTML =
+                                        '<select title="Status">' +
+                                            `<option selected disabled>Status</option>${statuses}` +
+                                        '</select>';
+                                    hstatus.addEventListener('change', (event) => {
+                                        for (const value of cell.getTable().getSelectedRows()) {
+                                            const d2 = db2().add({
+                                                episodes: value._row.data.episodes,
+                                                score: value._row.data.score,
+                                                season: value._row.data.season,
+                                                source: value._row.data.sources,
+                                                status: event.target.value,
+                                                title: value._row.data.title
+                                            });
+
+                                            d2.onsuccess = () => {
+                                                value.update({
+                                                    status: event.target.value
+                                                });
+                                            };
+
+                                            d2.onerror = () => {
+                                                db2().get(value._row.data.sources).onsuccess = (event2) => {
+                                                    const result = event2.currentTarget.result;
+                                                    result.status = event.target.value;
+                                                    db2().put(result).onsuccess = () => {
+                                                        value.update({
+                                                            status: event.target.value
+                                                        });
+                                                    };
+                                                };
+                                            };
+                                        }
                                     });
-                                }
-                            });
 
-                            document.querySelector('header').insertAdjacentElement('beforeend', hscore);
-                            document.querySelector('header').insertAdjacentElement('beforeend', hstatus);
+                                    document.querySelector('#close').insertAdjacentHTML('afterend', '<span class="separator-selected"></span>');
+                                    document.querySelector('header').insertAdjacentElement('beforeend', hscore);
+                                    document.querySelector('header').insertAdjacentElement('beforeend', hscore);
+                                    document.querySelector('header').insertAdjacentHTML('beforeend', '<span class="separator-selected"></span>');
+                                    document.querySelector('header').insertAdjacentElement('beforeend', hstatus);
 
-                            if (localStorage.getItem('theme') === 'dark') {
-                                document.head.querySelector('[name="theme-color"]').content = '#fff';
-                            } else {
-                                document.head.querySelector('[name="theme-color"]').content = '#000';
-                            }
+                                    if (localStorage.getItem('theme') === 'dark') {
+                                        document.head.querySelector('[name="theme-color"]').content = '#fff';
+                                    } else {
+                                        document.head.querySelector('[name="theme-color"]').content = '#000';
+                                    }
 
-                            if (cell.getTable().getSelectedRows().length === cell.getTable().getRows().length) {
-                                cell.getColumn()._column.titleElement.children[0].innerHTML = svg.check;
-                            } else {
-                                cell.getColumn()._column.titleElement.children[0].innerHTML = svg.indeterminate;
-                            }
-                        } else {
-                            document.querySelector('header').classList.remove('header-tabulator-selected');
-                            document.querySelector('#header-title').innerHTML = 'Tsuzuku';
-                            document.querySelector('#header-score').remove();
-                            document.querySelector('#header-status').remove();
-
-                            cell.getColumn()._column.titleElement.children[0].innerHTML = svg.blank;
-
-                            if (localStorage.getItem('theme') === 'dark') {
-                                document.head.querySelector('[name="theme-color"]').content = '#000';
-                            } else {
-                                document.head.querySelector('[name="theme-color"]').content = '#fff';
-                            }
-                        }
-                    },
-                    field: 'picture',
-                    formatter(cell) {
-                        if (cell.getRow().getTreeParent()) {
-                            return '';
-                        }
-
-                        return (
-                            `<svg viewBox="0 0 24 24" width="17" height="17">${svg.check}</svg>` +
-                            `<img src="${cell.getValue()}" loading="lazy" alt style="height: 40px; width: 40px; object-fit: cover; user-select: none;">`
-                        );
-                    },
-                    headerClick(e, column) {
-                        if (column.getTable().getSelectedRows().length) {
-                            document.querySelector('header').classList.remove('header-tabulator-selected');
-                            column._column.titleElement.children[0].innerHTML = svg.blank;
-                            column.getTable().deselectRow();
-                            document.querySelector('#header-title').innerHTML = 'Tsuzuku';
-                            document.querySelector('#header-score').remove();
-                            document.querySelector('#header-status').remove();
-
-                            if (localStorage.getItem('theme') === 'dark') {
-                                document.head.querySelector('[name="theme-color"]').content = '#000';
-                            } else {
-                                document.head.querySelector('[name="theme-color"]').content = '#fff';
-                            }
-                        } else {
-                            column.getTable().selectRow('active');
-
-                            if (!column.getTable().getSelectedRows().length) {
-                                return;
-                            }
-
-                            document.querySelector('header').classList.add('header-tabulator-selected');
-
-                            if (column.getTable().getSelectedRows().length === column.getTable().getRows().length) {
-                                column._column.titleElement.children[0].innerHTML = svg.check;
-                            } else {
-                                column._column.titleElement.children[0].innerHTML = svg.indeterminate;
-                            }
-
-                            document.querySelector('#header-title').innerHTML = `${column.getTable().getSelectedRows().length} selected`;
-
-                            if (document.querySelector('#header-score')) {
-                                document.querySelector('#header-score').remove();
-                            }
-
-                            if (document.querySelector('#header-status')) {
-                                document.querySelector('#header-status').remove();
-                            }
-
-                            const
-                                hscore = document.createElement('div'),
-                                hstatus = document.createElement('div');
-
-                            hscore.id = 'header-score';
-                            hscore.innerHTML =
-                                '<select>' +
-                                    `<option selected disabled>Score</option>${scores}` +
-                                '</select>';
-                            hscore.addEventListener('change', (event) => {
-                                for (const value of column.getTable().getSelectedRows()) {
-                                    value.update({
-                                        score: event.target.value
+                                    if (cell.getTable().getSelectedRows().length === cell.getTable().getRows().length) {
+                                        cell.getColumn()._column.titleElement.children[0].innerHTML = svg.check;
+                                    } else {
+                                        cell.getColumn()._column.titleElement.children[0].innerHTML = svg.indeterminate;
+                                    }
+                                } else {
+                                    document.querySelector('header').classList.remove('header-tabulator-selected');
+                                    document.querySelector('#header-title').innerHTML = 'Tsuzuku';
+                                    document.querySelector('#header-score').remove();
+                                    document.querySelector('#header-status').remove();
+                                    document.querySelectorAll('.separator-selected').forEach((element) => {
+                                        element.remove();
                                     });
-                                }
-                            });
 
-                            hstatus.id = 'header-status';
-                            hstatus.style.padding = '0 19px 0 19px';
-                            hstatus.innerHTML =
-                                '<select>' +
-                                    `<option selected disabled>Status</option>${statuses}` +
-                                '</select>';
-                            hstatus.addEventListener('change', (event) => {
-                                for (const value of column.getTable().getSelectedRows()) {
-                                    value.update({
-                                        status: event.target.value
+                                    cell.getColumn()._column.titleElement.children[0].innerHTML = svg.blank;
+
+                                    if (localStorage.getItem('theme') === 'dark') {
+                                        document.head.querySelector('[name="theme-color"]').content = '#000';
+                                    } else {
+                                        document.head.querySelector('[name="theme-color"]').content = '#fff';
+                                    }
+                                }
+                            },
+                            field: 'picture',
+                            formatter(cell) {
+                                return (
+                                    `<svg viewBox="0 0 24 24" width="17" height="17">${svg.check}</svg>` +
+                                    `<img src="${cell.getValue()}" loading="lazy" alt style="height: 40px; width: 40px; object-fit: cover; user-select: none;">`
+                                );
+                            },
+                            frozen: true,
+                            headerClick(e, column) {
+                                if (column.getTable().getSelectedRows().length) {
+                                    document.querySelector('header').classList.remove('header-tabulator-selected');
+                                    column._column.titleElement.children[0].innerHTML = svg.blank;
+                                    column.getTable().deselectRow();
+                                    document.querySelector('#header-title').innerHTML = 'Tsuzuku';
+                                    document.querySelector('#header-score').remove();
+                                    document.querySelector('#header-status').remove();
+                                    document.querySelectorAll('.separator-selected').forEach((element) => {
+                                        element.remove();
                                     });
+
+                                    if (localStorage.getItem('theme') === 'dark') {
+                                        document.head.querySelector('[name="theme-color"]').content = '#000';
+                                    } else {
+                                        document.head.querySelector('[name="theme-color"]').content = '#fff';
+                                    }
+                                } else {
+                                    column.getTable().selectRow('active');
+
+                                    if (!column.getTable().getSelectedRows().length) {
+                                        return;
+                                    }
+
+                                    document.querySelector('header').classList.add('header-tabulator-selected');
+
+                                    if (column.getTable().getSelectedRows().length === column.getTable().getRows().length) {
+                                        column._column.titleElement.children[0].innerHTML = svg.check;
+                                    } else {
+                                        column._column.titleElement.children[0].innerHTML = svg.indeterminate;
+                                    }
+
+                                    document.querySelector('#header-title').innerHTML = `${column.getTable().getSelectedRows().length} selected`;
+
+                                    if (document.querySelector('#header-score')) {
+                                        document.querySelector('#header-score').remove();
+                                    }
+
+                                    if (document.querySelector('#header-status')) {
+                                        document.querySelector('#header-status').remove();
+                                    }
+
+                                    if (document.querySelector('.separator-selected')) {
+                                        document.querySelectorAll('.separator-selected').forEach((element) => {
+                                            element.remove();
+                                        });
+                                    }
+
+                                    const
+                                        hscore = document.createElement('div'),
+                                        hstatus = document.createElement('div');
+
+                                    hscore.id = 'header-score';
+                                    hscore.innerHTML =
+                                        '<select title="Score">' +
+                                            `<option selected disabled>Score</option>${scores}` +
+                                        '</select>';
+                                    hscore.addEventListener('change', (event) => {
+                                        for (const value of column.getTable().getSelectedRows()) {
+                                            const d2 = db2().add({
+                                                episodes: value._row.data.episodes,
+                                                score: event.target.value,
+                                                season: value._row.data.season,
+                                                source: value._row.data.sources,
+                                                status: value._row.data.status,
+                                                title: value._row.data.title
+                                            });
+
+                                            d2.onsuccess = () => {
+                                                value.update({
+                                                    score: event.target.value
+                                                });
+                                            };
+
+                                            d2.onerror = () => {
+                                                db2().get(value._row.data.sources).onsuccess = (event2) => {
+                                                    const result = event2.currentTarget.result;
+                                                    result.score = event.target.value;
+                                                    db2().put(result).onsuccess = () => {
+                                                        value.update({
+                                                            score: event.target.value
+                                                        });
+                                                    };
+                                                };
+                                            };
+                                        }
+                                    });
+
+                                    hstatus.id = 'header-status';
+                                    hstatus.innerHTML =
+                                        '<select title="Status">' +
+                                            `<option selected disabled>Status</option>${statuses}` +
+                                        '</select>';
+                                    hstatus.addEventListener('change', (event) => {
+                                        for (const value of column.getTable().getSelectedRows()) {
+                                            const d2 = db2().add({
+                                                episodes: value._row.data.episodes,
+                                                score: value._row.data.score,
+                                                season: value._row.data.season,
+                                                source: value._row.data.sources,
+                                                status: event.target.value,
+                                                title: value._row.data.title
+                                            });
+
+                                            d2.onsuccess = () => {
+                                                value.update({
+                                                    status: event.target.value
+                                                });
+                                            };
+
+                                            d2.onerror = () => {
+                                                db2().get(value._row.data.sources).onsuccess = (event2) => {
+                                                    const result = event2.currentTarget.result;
+                                                    result.status = event.target.value;
+                                                    db2().put(result).onsuccess = () => {
+                                                        value.update({
+                                                            status: event.target.value
+                                                        });
+                                                    };
+                                                };
+                                            };
+                                        }
+                                    });
+
+                                    document.querySelector('#close').insertAdjacentHTML('afterend', '<span class="separator-selected"></span>');
+                                    document.querySelector('header').insertAdjacentElement('beforeend', hscore);
+                                    document.querySelector('header').insertAdjacentHTML('beforeend', '<span class="separator-selected"></span>');
+                                    document.querySelector('header').insertAdjacentElement('beforeend', hstatus);
+
+                                    if (localStorage.getItem('theme') === 'dark') {
+                                        document.head.querySelector('[name="theme-color"]').content = '#fff';
+                                    } else {
+                                        document.head.querySelector('[name="theme-color"]').content = '#000';
+                                    }
                                 }
-                            });
+                            },
+                            headerHozAlign: 'center',
+                            headerSort: false,
+                            hozAlign: 'center',
+                            titleFormatter() {
+                                return `<svg viewBox="0 0 24 24" width="17" height="17">${svg.blank}</svg>`;
+                            },
+                            vertAlign: 'middle',
+                            width: 50
+                        },
+                        {
+                            field: 'sources',
+                            formatter(cell) {
+                                let sources = null;
 
-                            document.querySelector('header').insertAdjacentElement('beforeend', hscore);
-                            document.querySelector('header').insertAdjacentElement('beforeend', hstatus);
+                                if (cell.getValue().match(/myanimelist\.net/gu)) {
+                                    sources = 'https://myanimelist.net/img/common/pwa/launcher-icon-4x.png';
+                                } else {
+                                    sources = 'https://kitsu.io/favicon-194x194-2f4dbec5ffe82b8f61a3c6d28a77bc6e.png';
+                                }
 
-                            if (localStorage.getItem('theme') === 'dark') {
-                                document.head.querySelector('[name="theme-color"]').content = '#fff';
-                            } else {
-                                document.head.querySelector('[name="theme-color"]').content = '#000';
-                            }
-                        }
-                    },
-                    headerHozAlign: 'center',
-                    headerSort: false,
-                    hozAlign: 'center',
-                    titleFormatter() {
-                        return `<svg viewBox="0 0 24 24" width="17" height="17">${svg.blank}</svg>`;
-                    },
-                    vertAlign: 'middle',
-                    width: 50
-                },
-                {
-                    field: 'sources',
-                    formatter(cell) {
-                        if (cell.getRow().getTreeParent()) {
-                            return '';
-                        }
+                                return `<a href="${cell.getValue()}" target="_blank" rel="noreferrer"><img src="${sources}" loading="lazy" alt style="user-select: none; height: 17px; width: 17px;"></a>`;
+                            },
+                            headerHozAlign: 'center',
+                            headerSort: false,
+                            hozAlign: 'center',
+                            titleFormatter() {
+                                return `<svg viewBox="0 0 24 24" width="17" height="17">${svg.globe}</svg>`;
+                            },
+                            vertAlign: 'middle',
+                            width: 50
+                        },
+                        {
+                            field: 'alternative',
+                            formatter(cell) {
+                                return cell.getValue();
+                            },
+                            minWidth: 150,
+                            title: 'Title',
+                            vertAlign: 'middle'
+                        },
+                        {
+                            field: 'type',
+                            headerHozAlign: 'center',
+                            hozAlign: 'center',
+                            title: 'Type',
+                            vertAlign: 'middle',
+                            width: 100
+                        },
+                        {
+                            field: 'episodes',
+                            headerHozAlign: 'center',
+                            hozAlign: 'center',
+                            sorterParams: {
+                                alignEmptyValues: 'bottom'
+                            },
+                            title: 'Episodes',
+                            vertAlign: 'middle',
+                            width: 100
+                        },
+                        {
+                            cellClick(e, cell) {
+                                const value = cell.getValue();
 
-                        let sources = null;
+                                if (value) {
+                                    if (value.indexOf(' ') > -1) {
+                                        const split = value.split(' ');
 
-                        if (cell.getValue().match(/myanimelist\.net/gu)) {
-                            sources = 'https://myanimelist.net/img/common/pwa/launcher-icon-4x.png';
-                        } else {
-                            sources = 'https://kitsu.io/favicon-194x194-2f4dbec5ffe82b8f61a3c6d28a77bc6e.png';
-                        }
+                                        document.querySelector('#search').value = `season:${split[0].toLowerCase()} year:${split[1]}`;
+                                    } else {
+                                        document.querySelector('#search').value = `season:tba year:${value}`;
+                                    }
+                                } else {
+                                    document.querySelector('#search').value = 'year:tba';
+                                }
 
-                        return `<a href="${cell.getValue()}" target="_blank" rel="noreferrer"><img src="${sources}" loading="lazy" alt style="user-select: none; height: 17px; width: 17px;"></a>`;
-                    },
-                    headerHozAlign: 'center',
-                    headerSort: false,
-                    hozAlign: 'center',
-                    titleFormatter() {
-                        return `<svg viewBox="0 0 24 24" width="17" height="17">${svg.globe}</svg>`;
-                    },
-                    vertAlign: 'middle',
-                    width: 50
-                },
-                {
-                    cellClick(e, cell) {
-                        if (!cell.getValue()) {
-                            return;
-                        }
+                                searchFunction(cell.getTable());
+                            },
+                            field: 'season',
+                            headerHozAlign: 'center',
+                            hozAlign: 'center',
+                            sorterParams: {
+                                alignEmptyValues: 'bottom'
+                            },
+                            title: 'Season',
+                            vertAlign: 'middle',
+                            width: 100
+                        },
+                        {
+                            field: 'score',
+                            formatter(cell) {
+                                const select = document.createElement('select');
 
-                        document.querySelector('#search').value = 'is:airing';
+                                select.innerHTML = scores;
+                                select.value = cell.getValue();
+                                select.title = 'Score';
+                                select.addEventListener('change', () => {
+                                    const d2 = db2().add({
+                                        episodes: cell.getRow().getData().episodes,
+                                        score: select.value,
+                                        season: cell.getRow().getData().season,
+                                        source: cell.getRow().getData().sources,
+                                        status: cell.getRow().getData().status,
+                                        title: cell.getRow().getData().title
+                                    });
 
-                        searchFunction(cell.getTable());
-                    },
-                    field: 'airing',
-                    formatter(cell) {
-                        if (!cell.getValue()) {
-                            return '';
-                        }
+                                    d2.onsuccess = () => {
+                                        cell.getRow().update({
+                                            score: select.value
+                                        });
+                                    };
 
-                        return (
-                            '<span title="Airing" style="line-height: 0;">' +
-                                `<svg viewBox="3 2 20 20" width="17" height="17">${svg.play}</svg>` +
-                            '</span>'
-                        );
-                    },
-                    headerHozAlign: 'center',
-                    headerSort: false,
-                    hozAlign: 'center',
-                    titleFormatter() {
-                        return `<svg viewBox="3 2 20 20" width="17" height="17">${svg.play}</svg>`;
-                    },
-                    vertAlign: 'middle',
-                    width: 50
-                },
-                {
-                    cellClick(e, cell) {
-                        const
-                            temp = [...cell.getRow().getData().relations],
-                            temp2 = [cell.getRow().getData().sources, ...temp];
+                                    d2.onerror = () => {
+                                        db2().get(cell.getRow().getData().sources).onsuccess = (event) => {
+                                            const result = event.currentTarget.result;
+                                            result.score = select.value;
+                                            db2().put(result).onsuccess = () => {
+                                                cell.getRow().update({
+                                                    score: select.value
+                                                });
+                                            };
+                                        };
+                                    };
+                                });
 
-                        if (!document.querySelector('#enter .disabled')) {
-                            document.querySelector('#enter svg').classList.add('disabled');
-                        }
+                                return select;
+                            },
+                            headerHozAlign: 'center',
+                            hozAlign: 'center',
+                            sorter: 'number',
+                            sorterParams: {
+                                alignEmptyValues: 'bottom'
+                            },
+                            title: 'Score',
+                            vertAlign: 'middle',
+                            width: 100
+                        },
+                        {
+                            field: 'status',
+                            formatter(cell) {
+                                const select = document.createElement('select');
 
-                        if (document.querySelector('#default').style.display === 'inline-flex') {
-                            document.querySelector('#default').style.display = 'none';
-                            document.querySelector('#related').style.display = 'inline-flex';
-                        }
+                                select.innerHTML = statuses;
+                                select.value = cell.getValue();
+                                select.title = 'Status';
+                                select.addEventListener('change', () => {
+                                    const d2 = db2().add({
+                                        episodes: cell.getRow().getData().episodes,
+                                        score: cell.getRow().getData().score,
+                                        season: cell.getRow().getData().season,
+                                        source: cell.getRow().getData().sources,
+                                        status: select.value,
+                                        title: cell.getRow().getData().title
+                                    });
 
-                        document.querySelector('#related-title').innerHTML = cell.getRow().getData().title;
-                        document.querySelector('.tabulator').style.display = 'none';
+                                    d2.onsuccess = () => {
+                                        cell.getRow().update({
+                                            status: select.value
+                                        });
+                                    };
 
-                        document.querySelector('#search-container').insertAdjacentHTML('afterend',
-                            '<div id="progress"></div>'
-                        );
+                                    d2.onerror = () => {
+                                        db2().get(cell.getRow().getData().sources).onsuccess = (event) => {
+                                            const result = event.currentTarget.result;
+                                            result.status = select.value;
+                                            db2().put(result).onsuccess = () => {
+                                                cell.getRow().update({
+                                                    status: select.value
+                                                });
+                                            };
+                                        };
+                                    };
+                                });
 
-                        document.querySelector('main').insertAdjacentHTML('beforeend',
-                            '<span id="searching">Searching...</span>'
-                        );
-
-                        function tempFunction() {
-                            temp.forEach((ttt) => {
-                                const m = cell.getTable().getData().find((i) => i.sources === ttt);
-                                let rr = null;
-
-                                temp.splice(temp.indexOf(ttt), 1);
-
-                                if (!m) {
-                                    temp2.splice(temp2.indexOf(ttt), 1);
+                                return select;
+                            },
+                            headerHozAlign: 'center',
+                            hozAlign: 'center',
+                            sorterParams: {
+                                alignEmptyValues: 'bottom'
+                            },
+                            title: 'Status',
+                            vertAlign: 'middle',
+                            width: 100
+                        },
+                        {
+                            cellClick(e, cell) {
+                                if (!cell.getValue()) {
                                     return;
                                 }
 
-                                rr = m.relations.filter((i) => {
-                                    const f = cell.getTable().getData().find((ii) => ii.sources === i);
+                                document.querySelector('#search').value = 'is:airing';
 
-                                    if (f && temp2.indexOf(i) === -1) {
-                                        return true;
-                                    }
+                                searchFunction(cell.getTable());
+                            },
+                            field: 'airing',
+                            formatter(cell) {
+                                if (!cell.getValue()) {
+                                    return '';
+                                }
 
-                                    return false;
+                                return (
+                                    '<span title="Airing" style="line-height: 0;">' +
+                                        `<svg viewBox="3 2 20 20" width="17" height="17">${svg.play}</svg>` +
+                                    '</span>'
+                                );
+                            },
+                            headerHozAlign: 'center',
+                            headerSort: false,
+                            hozAlign: 'center',
+                            titleFormatter() {
+                                return `<svg viewBox="3 2 20 20" width="17" height="17">${svg.play}</svg>`;
+                            },
+                            vertAlign: 'middle',
+                            width: 50
+                        },
+                        {
+                            field: 'relevancy',
+                            visible: false
+                        },
+                        {
+                            // padding
+                            headerSort: false,
+                            minWidth: 8,
+                            width: 8
+                        }
+                    ],
+                    data: database,
+                    dataFiltered(filters, rows) {
+                        if (index.dimension) {
+                            r = rows;
+
+                            for (const value of rows) {
+                                value.update({
+                                    alternative: index.dimension.find((i) => i.source === value.getData().sources).alternative,
+                                    relevancy: index.dimension.find((i) => i.source === value.getData().sources).relevancy
                                 });
-
-                                temp.push(...rr);
-                                temp2.push(...rr);
-                            });
-
-                            if (temp.length) {
-                                tempFunction();
-                            } else {
-                                cell.getTable().blockRedraw();
-
-                                if (r) {
-                                    for (const value of r) {
-                                        value.update({
-                                            alternative: value.getData().title,
-                                            relevancy: 1
-                                        });
-                                    }
-                                }
-
-                                index.dimension = null;
-                                temp2.splice(temp2.indexOf(cell.getRow().getData().sources), 1);
-
-                                if (temp2.length) {
-                                    document.querySelector('#progress').classList.add('found');
-                                }
-
-                                document.querySelector('#progress').style.width = '100%';
-
-                                setTimeout(() => {
-                                    cell.getTable().setFilter('sources', 'in',
-                                        temp2.length
-                                            ? temp2
-                                            : ['']
-                                    );
-
-                                    cell.getTable().restoreRedraw();
-                                }, 100);
                             }
                         }
 
-                        setTimeout(tempFunction, 100);
-                    },
-                    field: 'alternative',
-                    formatter(cell) {
-                        if (cell.getRow().getTreeParent()) {
-                            return `${cell.getValue()} (${database2[cell.getValue()]})`;
+                        if (document.querySelector('#progress')) {
+                            document.querySelector('#progress').remove();
                         }
 
-                        return cell.getValue();
-                    },
-                    minWidth: 100,
-                    title: 'Title',
-                    vertAlign: 'middle'
-                },
-                {
-                    field: 'type',
-                    formatter(cell) {
-                        if (cell.getRow().getTreeParent()) {
-                            return '';
+                        if (document.querySelector('#searching')) {
+                            document.querySelector('#searching').remove();
                         }
 
-                        return cell.getValue();
+                        if (rows.length) {
+                            document.querySelector('.tabulator').style.display = '';
+                        } else {
+                            document.querySelector('main').insertAdjacentHTML('beforeend',
+                                '<span id="nothing">Nothing found</span>'
+                            );
+
+                        }
                     },
-                    headerHozAlign: 'center',
-                    hozAlign: 'center',
-                    title: 'Type',
-                    vertAlign: 'middle',
-                    width: 100
-                },
-                {
-                    field: 'episodes',
-                    formatter(cell) {
-                        if (cell.getRow().getTreeParent()) {
-                            return '';
+                    dataLoaded() {
+                        document.querySelector('#loading').remove();
+                        document.querySelector('#search-container').style.display = 'flex';
+
+                        if (new URLSearchParams(location.search).get('query')) {
+                            document.querySelector('#search').value = decodeURIComponent(new URLSearchParams(location.search).get('query'));
+                            document.querySelector('#clear').style.visibility = 'visible';
+                            document.querySelector('#clear').style.display = 'inline-flex';
                         }
 
-                        return cell.getValue();
+                        if (new URLSearchParams(location.search).get('regex') === '1') {
+                            params.regex = true;
+                            document.querySelector('#regex svg').classList.remove('disabled');
+                        }
+
+                        if (new URLSearchParams(location.search).get('alt') === '0') {
+                            params.alt = false;
+                            document.querySelector('#alt svg').classList.add('disabled');
+                        }
+
+                        if (Math.round(Math.abs(Number(new URLSearchParams(location.search).get('random')))) > 0) {
+                            params.random = true;
+                            document.querySelector('#random svg').classList.remove('disabled');
+                            document.querySelector('#number').removeAttribute('disabled');
+                            document.querySelector('#number').value = Math.round(Math.abs(Number(new URLSearchParams(location.search).get('random'))));
+                            params.randomValue = document.querySelector('#number').value;
+                        }
+
+                        searchFunction(this);
                     },
-                    headerHozAlign: 'center',
-                    hozAlign: 'center',
-                    sorterParams: {
-                        alignEmptyValues: 'bottom'
-                    },
-                    title: 'Episodes',
-                    vertAlign: 'middle',
-                    width: 100
-                },
-                {
-                    cellClick(e, cell) {
-                        if (cell.getRow().getTreeParent()) {
+                    dataSorted(sorters) {
+                        if (sorters.length) {
                             return;
                         }
 
-                        const value = cell.getValue();
-
-                        if (value) {
-                            if (value.indexOf(' ') > -1) {
-                                const split = value.split(' ');
-
-                                document.querySelector('#search').value = `season:${split[0].toLowerCase()} year:${split[1]}`;
-                            } else {
-                                document.querySelector('#search').value = `season:tba year:${value}`;
-                            }
+                        if (new URLSearchParams(location.search).get('regex') === '1') {
+                            this.setSort('alternative', 'asc');
                         } else {
-                            document.querySelector('#search').value = 'year:tba';
+                            if (new URLSearchParams(location.search).get('query')) {
+                                this.setSort('relevancy', 'desc');
+                            } else {
+                                this.setSort('alternative', 'asc');
+                            }
                         }
-
-                        searchFunction(cell.getTable());
                     },
-                    field: 'season',
-                    formatter(cell) {
-                        if (cell.getRow().getTreeParent()) {
-                            return '';
+                    headerSortElement: `<svg viewBox="0 0 24 24" width="17" height="17">${svg.arrow}</svg>`,
+                    headerSortTristate: true,
+                    initialSort: [
+                        {
+                            column: 'alternative',
+                            dir: 'asc'
                         }
-
-                        return cell.getValue();
-                    },
-                    headerHozAlign: 'center',
-                    hozAlign: 'center',
-                    sorterParams: {
-                        alignEmptyValues: 'bottom'
-                    },
-                    title: 'Season',
-                    vertAlign: 'middle',
-                    width: 100
-                },
-                {
-                    field: 'score',
-                    formatter(cell) {
-                        if (cell.getRow().getTreeParent()) {
-                            return '';
-                        }
-
-                        const select = document.createElement('select');
-
-                        select.innerHTML = scores;
-                        select.value = cell.getValue();
-                        select.title = 'Score';
-                        select.addEventListener('change', () => {
-                            cell.getRow().update({
-                                score: select.value
-                            });
-                        });
-
-                        return select;
-                    },
-                    headerHozAlign: 'center',
-                    hozAlign: 'center',
-                    sorter: 'number',
-                    sorterParams: {
-                        alignEmptyValues: 'bottom'
-                    },
-                    title: 'Score',
-                    vertAlign: 'middle',
-                    width: 100
-                },
-                {
-                    field: 'status',
-                    formatter(cell) {
-                        if (cell.getRow().getTreeParent()) {
-                            return '';
-                        }
-
-                        const select = document.createElement('select');
-
-                        select.innerHTML = statuses;
-                        select.value = cell.getValue();
-                        select.title = 'Status';
-                        select.addEventListener('change', () => {
-                            cell.getRow().update({
-                                status: select.value
-                            });
-                        });
-
-                        return select;
-                    },
-                    headerHozAlign: 'center',
-                    hozAlign: 'center',
-                    sorterParams: {
-                        alignEmptyValues: 'bottom'
-                    },
-                    title: 'Status',
-                    vertAlign: 'middle',
-                    width: 100
-                },
-                {
-                    field: 'relevancy',
-                    visible: false
-                }
-            ],
-            data: database,
-            dataFiltered(filters, rows) {
-                if (index.dimension) {
-                    r = rows;
-
-                    this.blockRedraw();
-
-                    for (const value of rows) {
-                        value.update({
-                            alternative: index.dimension.find((i) => i.source === value.getData().sources).alternative,
-                            relevancy: index.dimension.find((i) => i.source === value.getData().sources).relevancy
-                        });
-                    }
-
-                    this.restoreRedraw();
-                }
-
-                if (document.querySelector('#progress')) {
-                    document.querySelector('#progress').remove();
-                }
-
-                if (document.querySelector('#searching')) {
-                    document.querySelector('#searching').remove();
-                }
-
-                if (rows.length) {
-                    document.querySelector('.tabulator').style.display = '';
-                } else {
-                    document.querySelector('main').insertAdjacentHTML('beforeend',
-                        '<span id="nothing">Nothing found</span>'
-                    );
-
-                }
-            },
-            dataLoaded() {
-                document.querySelector('#loading').remove();
-                document.querySelector('#search-container').style.display = 'flex';
-
-                if (new URLSearchParams(location.search).get('query')) {
-                    document.querySelector('#search').value = decodeURIComponent(new URLSearchParams(location.search).get('query'));
-                    document.querySelector('#clear').style.visibility = 'visible';
-                    document.querySelector('#clear').style.display = 'inline-flex';
-                }
-
-                if (new URLSearchParams(location.search).get('regex') === '1') {
-                    params.regex = true;
-                    document.querySelector('#regex svg').classList.remove('disabled');
-                }
-
-                if (new URLSearchParams(location.search).get('alt') === '0') {
-                    params.alt = false;
-                    document.querySelector('#alt svg').classList.add('disabled');
-                }
-
-                if (Math.round(Math.abs(Number(new URLSearchParams(location.search).get('random')))) > 0) {
-                    params.random = true;
-                    document.querySelector('#random svg').classList.remove('disabled');
-                    document.querySelector('#number').removeAttribute('disabled');
-                    document.querySelector('#number').value = Math.round(Math.abs(Number(new URLSearchParams(location.search).get('random'))));
-                    params.randomValue = document.querySelector('#number').value;
-                }
-
-                searchFunction(this);
-            },
-            dataLoading() {
-                document.head.insertAdjacentHTML('beforeend',
-                    '<style>' +
-                        '@import url(https://cdn.jsdelivr.net/npm/tabulator-tables/dist/css/tabulator_simple.min.css);' +
-                    '</style>'
-                );
-            },
-            dataSorted(sorters) {
-                if (sorters.length) {
-                    return;
-                }
-
-                this.setSort('relevancy', 'desc');
-            },
-            dataTree: true,
-            dataTreeCollapseElement: '',
-            dataTreeFilter: false,
-            dataTreeSort: false,
-            headerSortElement: `<svg viewBox="0 0 24 24" width="17" height="17">${svg.arrow}</svg>`,
-            headerSortTristate: true,
-            initialSort: [
-                {
-                    column: 'relevancy',
-                    dir: 'desc'
-                }
-            ],
-            layout: 'fitColumns',
-            resizableColumns: false,
-            rowFormatter(row) {
-                row.getElement().dataset.status = row.getData().status;
-            },
-            sortOrderReverse: true
+                    ],
+                    layout: 'fitColumns',
+                    resizableColumns: false
+                });
+            });
         });
-    });
+};
 
 export {
     params,
