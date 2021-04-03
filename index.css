@@ -37,7 +37,7 @@
 }
 
 * {
-    box-sizing: border-box !important;
+    box-sizing: border-box;
     font-family: Roboto, sans-serif;
     color: var(--color);
 }
@@ -74,7 +74,6 @@ main {
 }
 
 header {
-    background: var(--background);
     height: 56px;
     width: 100%;
     display: flex;
@@ -90,7 +89,6 @@ header {
     height: 48px;
     display: none;
     align-items: center;
-    background: var(--background);
     overflow: auto;
     user-select: none;
     padding: 0 19px;
@@ -113,7 +111,47 @@ header {
 }
 
 .tabulator-cell {
-    height: auto !important;
+    height: 100% !important;
+}
+
+.tabulator-frozen {
+    background: var(--background);
+}
+
+.tabulator-row:hover .tabulator-frozen {
+    background: var(--background-hover);
+}
+
+.tabulator-selected .tabulator-frozen {
+    background: var(--selected);
+}
+
+.tabulator-selected:hover .tabulator-frozen {
+    background: var(--selected-hover);
+}
+
+[data-status="Completed"] {
+    background: #8bc34a !important;
+}
+
+[data-status="Rewatching"] {
+    background: #03a9f4 !important;
+}
+
+[data-status="Planning"] {
+    background: #9e9e9e !important;
+}
+
+[data-status="Watching"] {
+    background: #3f51b5 !important;
+}
+
+[data-status="Dropped"] {
+    background: #f44336 !important;
+}
+
+[data-status="Paused"] {
+    background: #ff9800 !important;
 }
 
 /***********************************************************************************/
@@ -148,16 +186,9 @@ svg.disabled {
     width: 100%;
     height: 100%;
     border: 0;
-    outline: none;
     padding: 4px;
     font-size: 14px;
-    background: var(--background);
     min-width: 100px;
-}
-
-.tabulator-header,
-.tabulator-col {
-    background: var(--background) !important;
 }
 
 /**************************************************************************************/
@@ -186,12 +217,11 @@ svg.disabled {
 .tabulator-col,
 .tabulator-header,
 .tabulator-row {
-    border: 0 !important;
+    border: 0;
 }
 
 .tabulator-row {
-    cursor: auto !important;
-    min-height: 40px !important;
+    min-height: 40px;
 }
 
 header,
@@ -203,24 +233,16 @@ header,
     margin-bottom: 1px;
 }
 
-.tabulator {
-    background: initial !important;
-}
-
 .tabulator-table {
-    background: var(--background-hover) !important;
+    background: var(--background-hover);
 }
 
 .tabulator-col-title {
-    font-weight: 500 !important
+    font-weight: 500;
 }
 
 .tabulator-col[aria-sort="none"] .tabulator-col-sorter svg {
     display: none;
-}
-
-.tabulator-col[aria-sort="none"] .tabulator-col-title {
-    padding-right: 0 !important;
 }
 
 .tabulator-col[aria-sort="asc"] .tabulator-col-sorter svg {
@@ -273,6 +295,10 @@ header,
 }
 
 .tabulator-selected svg {
+    fill: var(--selected-color) !important;
+}
+
+.tabulator-selected [tabulator-field="picture"] svg {
     fill: var(--selected) !important;
 }
 
@@ -288,7 +314,6 @@ header,
 
 .tabulator-col {
     height: 40px;
-    display: inline-flex !important;
     align-items: center;
 }
 
@@ -301,8 +326,10 @@ header,
     color: #aaa;
 }
 
-input {
+input,
+select {
     background: var(--background);
+    outline: none;
 }
 
 /*****************************************************************/
@@ -364,7 +391,6 @@ header select {
     border: 0;
     color: var(--selected-color);
     font-size: 16px;
-    outline: none;
 }
 
 header option {
@@ -376,30 +402,32 @@ header option[disabled] {
     color: #aaa;
 }
 
-.tabulator-selected .tabulator-cell option,
-.tabulator-selected .tabulator-cell select {
-    background: var(--selected);
-    color: var(--selected-color);
-}
-
-.tabulator-selected:hover .tabulator-cell select {
-    background: var(--selected-hover);
-}
-
-.tabulator-cell select {
-    background: var(--background);
-    border: 0;
-    color: var(--color);
-    outline: none;
-}
-
 .tabulator-cell option {
     background: var(--background);
     color: var(--color);
 }
 
+.tabulator-selected input,
+.tabulator-selected option,
+.tabulator-selected select {
+    background: var(--selected);
+    color: var(--selected-color);
+}
+
+.tabulator-row:hover input,
 .tabulator-row:hover select {
     background: var(--background-hover);
+}
+
+.tabulator-selected:hover input,
+.tabulator-selected:hover select {
+    background: var(--selected-hover);
+}
+
+.tabulator-cell input,
+.tabulator-cell select {
+    border: 0;
+    color: var(--color);
 }
 
 .tabulator-cell[tabulator-field="alternative"] {
@@ -426,6 +454,7 @@ header option[disabled] {
 }
 
 .tabulator-col {
+    display: inline-flex;
     vertical-align: middle;
 }
 
@@ -438,10 +467,6 @@ header option[disabled] {
 
 .tabulator-col-content {
     position: relative;
-}
-
-.tabulator-cell[tabulator-field="alternative"] {
-    display: inline-block !important;
 }
 
 .tabulator-cell {
@@ -461,6 +486,10 @@ header option[disabled] {
     user-select: none;
 }
 
+.tabulator-cell input {
+    width: 50px;
+}
+
 /* frozen */
 
 .tabulator-header,
@@ -475,4 +504,8 @@ header option[disabled] {
 
 .tabulator-frozen {
     z-index: 1;
+}
+
+.tabulator-cell select {
+    font-size: 14px;
 }

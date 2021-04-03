@@ -42,20 +42,20 @@ Recommended to disable when using regular expression search
 * `is:selected`
 
 #### OR-based
-Separate with `,`, no spaces
+Separate with `|`, no spaces
 * `season:` (`winter`, `spring`, `summer`, `fall`, `tba`)
-* `status:` (`watching`, `rewatching`, `completed`, `paused`, `dropped`, `planning`)
+* `status:` (`completed`, `dropped`, `paused`, `planning`, `rewatching`, `watching`)
 * `type:` (`tv`, `movie`, `ova`, `ona`, `special`)
 
 Examples:
 * From summer season only ([`season:summer`](https://kuzutsu.github.io/tsuzuku/?query=season%253Asummer))
-* Paused or dropped ([`status:paused,dropped`](https://kuzutsu.github.io/tsuzuku/?query=status%253Apaused%252Cdropped))
-* Movies, OVAs, or ONAs only ([`type:movie,ova,ona`](https://kuzutsu.github.io/tsuzuku/?query=type%253Amovie%252Cova%252Cona))
+* Paused or dropped ([`status:paused|dropped`](https://kuzutsu.github.io/tsuzuku/?query=status%253Apaused%257Cdropped))
+* Movies, OVAs, or ONAs only ([`type:movie|ova|ona`](https://kuzutsu.github.io/tsuzuku/?query=type%253Amovie%257Cova%257Cona))
 
 #### AND-based
 Can use `<`, `<=`, `>`, or `>=` for numerals, separate with `&`, no spaces
 * `episodes:`
-* `score:`
+* `progress:`
 * `tags:` (replace spaces with `_`, start with `-` to exclude)
   * MyAnimeList (`action`, `adventure`, etc.)
   * Kitsu (`absurdist_humour`, `africa`, etc.)
@@ -65,7 +65,7 @@ Can use `<`, `<=`, `>`, or `>=` for numerals, separate with `&`, no spaces
 
 Examples:
 * Only 13 episodes ([`episodes:13`](https://kuzutsu.github.io/tsuzuku/?query=episodes%253A13))
-* Score higher than 4 but lower than 7 ([`score:>4&<7`](https://kuzutsu.github.io/tsuzuku/?query=score%253A%253E4%2526%253C7))
+* Progress higher than 4 but lower than 7 ([`progress:>4&<7`](https://kuzutsu.github.io/tsuzuku/?query=progress%253A%253E4%2526%253C7))
 * Based on a manga and comedy ([`tags:based_on_a_manga&comedy`](https://kuzutsu.github.io/tsuzuku/?query=tags%253Abased_on_a_manga%2526comedy))
 * Based on a light novel but not isekai ([`tags:based_on_a_light_novel&-isekai`](https://kuzutsu.github.io/tsuzuku/?query=tags%253Abased_on_a_light_novel%2526-isekai))
 * On or before 2011 ([`year:<=2011`](https://kuzutsu.github.io/tsuzuku/?query=year%253A%253C%253D2011))
@@ -84,7 +84,3 @@ Hold `Shift`, then click on thumbnail images
 
 ### Dark mode
 Click on sun icon to toggle
-
-## Bugs
-* Scrolling breaks UI<br>
-**Workaround:** Tapping on search box (on mobile) or resizing window (on desktop)

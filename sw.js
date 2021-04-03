@@ -16,12 +16,15 @@ self.addEventListener('install', (event) => {
                 './fetchFunction.js',
                 './index.css',
                 './index.js',
+                './logo-192.png',
+                './logo-512.png',
+                './logo-maskable-192.png',
+                './logo-maskable-512.png',
                 './manifest.webmanifest',
                 './worker.js',
 
                 // third-party
                 'https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.basic.min.js',
-                'https://cdn.jsdelivr.net/npm/tabulator-tables/dist/js/modules/edit.min.js',
                 'https://cdn.jsdelivr.net/npm/tabulator-tables/dist/js/modules/filter.min.js',
                 'https://cdn.jsdelivr.net/npm/tabulator-tables/dist/js/modules/format.min.js',
                 'https://cdn.jsdelivr.net/npm/tabulator-tables/dist/js/modules/frozen_columns.min.js',

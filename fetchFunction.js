@@ -14,8 +14,7 @@ const
         regex: false
     },
     promises = [],
-    score = ['', 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-    status = ['', 'Completed', 'Dropped', 'Paused', 'Planning', 'Watching'],
+    status = ['', 'Completed', 'Dropped', 'Paused', 'Planning', 'Rewatching', 'Watching'],
     svg = {
         arrow: '<path d="M20 12l-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8 8-8z"></path>',
         blank: '<path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"></path>',
@@ -26,10 +25,8 @@ const
     },
     title = document.title;
 
-let lastRow = false,
-    r = null,
+let r = null,
     s = null,
-    scores = '',
     statuses = '',
     t = null;
 
@@ -38,7 +35,6 @@ db.onupgradeneeded = (event) => {
         index2 = [
             'episodes',
             'progress',
-            'score',
             'season',
             'status',
             'title'
@@ -62,10 +58,6 @@ db.onsuccess = (event3) => {
 
             function db2() {
                 return event3.target.result.transaction('tsuzuku', 'readwrite').objectStore('tsuzuku');
-            }
-
-            for (let i = 0; i < score.length; i++) {
-                scores += `<option>${score[i]}</option>`;
             }
 
             for (let ii = 0; ii < status.length; ii++) {
@@ -114,15 +106,15 @@ db.onsuccess = (event3) => {
                                     d[i].picture.match(/myanimelist\.net/gu)
                                         ? d[i].picture.replace(d[i].picture.substr(d[i].picture.lastIndexOf('.')), '.webp')
                                         : d[i].picture,
+                                progress:
+                                    result
+                                        ? result.progress
+                                        : '',
                                 relations: [
                                     ...d[i].sources.filter((sources) => sources.match(source) && sources !== value),
                                     ...d[i].relations.filter((relations) => relations.match(/kitsu\.io|myanimelist\.net/gu))
                                 ],
                                 relevancy: 1,
-                                score:
-                                    result
-                                        ? result.score
-                                        : '',
                                 season: s + (d[i].animeSeason.year || ''),
                                 sources: value,
                                 status:
@@ -145,26 +137,27 @@ db.onsuccess = (event3) => {
                     columns: [
                         {
                             // padding
+                            field: 'color',
                             frozen: true,
                             headerSort: false,
-                            minWidth: 8,
-                            width: 8
+                            minWidth: 4,
+                            width: 4
                         },
                         {
-                            cellClick(e, cell) {
+                            // padding
+                            frozen: true,
+                            headerSort: false,
+                            minWidth: 4,
+                            width: 4
+                        },
+                        {
+                            cellClick: function (e, cell) {
                                 getSelection().removeAllRanges();
                                 cell.getRow().toggleSelect();
 
-                                if (e.shiftKey) {
-                                    if (!lastRow) {
-                                        lastRow = cell.getRow();
-
-                                        cell.getColumn()._column.titleElement.children[0].innerHTML = svg.indeterminate;
-                                        return;
-                                    }
-
+                                if (e.shiftKey && index.lastRow) {
                                     const
-                                        lastPosition = lastRow.getPosition(true),
+                                        lastPosition = index.lastRow.getPosition(true),
                                         position = cell.getRow().getPosition(true);
 
                                     if (lastPosition < position) {
@@ -184,15 +177,11 @@ db.onsuccess = (event3) => {
                                     }
                                 }
 
-                                lastRow = cell.getRow();
-
                                 if (cell.getTable().getSelectedRows().length) {
+                                    index.lastRow = cell.getRow();
+
                                     document.querySelector('header').classList.add('header-tabulator-selected');
                                     document.querySelector('#header-title').innerHTML = `${cell.getTable().getSelectedRows().length} selected`;
-
-                                    if (document.querySelector('#header-score')) {
-                                        document.querySelector('#header-score').remove();
-                                    }
 
                                     if (document.querySelector('#header-status')) {
                                         document.querySelector('#header-status').remove();
@@ -205,44 +194,7 @@ db.onsuccess = (event3) => {
                                     }
 
                                     const
-                                        hscore = document.createElement('div'),
                                         hstatus = document.createElement('div');
-
-                                    hscore.id = 'header-score';
-                                    hscore.innerHTML =
-                                        '<select title="Score">' +
-                                            `<option selected disabled>Score</option>${scores}` +
-                                        '</select>';
-                                    hscore.addEventListener('change', (event) => {
-                                        for (const value of cell.getTable().getSelectedRows()) {
-                                            const d2 = db2().add({
-                                                episodes: value._row.data.episodes,
-                                                score: event.target.value,
-                                                season: value._row.data.season,
-                                                source: value._row.data.sources,
-                                                status: value._row.data.status,
-                                                title: value._row.data.title
-                                            });
-
-                                            d2.onsuccess = () => {
-                                                value.update({
-                                                    score: event.target.value
-                                                });
-                                            };
-
-                                            d2.onerror = () => {
-                                                db2().get(value._row.data.sources).onsuccess = (event2) => {
-                                                    const result = event2.currentTarget.result;
-                                                    result.score = event.target.value;
-                                                    db2().put(result).onsuccess = () => {
-                                                        value.update({
-                                                            score: event.target.value
-                                                        });
-                                                    };
-                                                };
-                                            };
-                                        }
-                                    });
 
                                     hstatus.id = 'header-status';
                                     hstatus.innerHTML =
@@ -253,7 +205,7 @@ db.onsuccess = (event3) => {
                                         for (const value of cell.getTable().getSelectedRows()) {
                                             const d2 = db2().add({
                                                 episodes: value._row.data.episodes,
-                                                score: value._row.data.score,
+                                                progress: value._row.data.progress,
                                                 season: value._row.data.season,
                                                 source: value._row.data.sources,
                                                 status: event.target.value,
@@ -281,9 +233,6 @@ db.onsuccess = (event3) => {
                                     });
 
                                     document.querySelector('#close').insertAdjacentHTML('afterend', '<span class="separator-selected"></span>');
-                                    document.querySelector('header').insertAdjacentElement('beforeend', hscore);
-                                    document.querySelector('header').insertAdjacentElement('beforeend', hscore);
-                                    document.querySelector('header').insertAdjacentHTML('beforeend', '<span class="separator-selected"></span>');
                                     document.querySelector('header').insertAdjacentElement('beforeend', hstatus);
 
                                     if (localStorage.getItem('theme') === 'dark') {
@@ -298,9 +247,10 @@ db.onsuccess = (event3) => {
                                         cell.getColumn()._column.titleElement.children[0].innerHTML = svg.indeterminate;
                                     }
                                 } else {
+                                    index.lastRow = null;
+
                                     document.querySelector('header').classList.remove('header-tabulator-selected');
                                     document.querySelector('#header-title').innerHTML = 'Tsuzuku';
-                                    document.querySelector('#header-score').remove();
                                     document.querySelector('#header-status').remove();
                                     document.querySelectorAll('.separator-selected').forEach((element) => {
                                         element.remove();
@@ -316,37 +266,21 @@ db.onsuccess = (event3) => {
                                 }
                             },
                             field: 'picture',
-                            formatter(cell) {
+                            formatter: function (cell) {
                                 return (
                                     `<svg viewBox="0 0 24 24" width="17" height="17">${svg.check}</svg>` +
                                     `<img src="${cell.getValue()}" loading="lazy" alt style="height: 40px; width: 40px; object-fit: cover; user-select: none;">`
                                 );
                             },
                             frozen: true,
-                            headerClick(e, column) {
+                            headerClick: function (e, column) {
+                                index.lastRow = null;
+
+                                for (const value of r) {
+                                    value.toggleSelect();
+                                }
+
                                 if (column.getTable().getSelectedRows().length) {
-                                    document.querySelector('header').classList.remove('header-tabulator-selected');
-                                    column._column.titleElement.children[0].innerHTML = svg.blank;
-                                    column.getTable().deselectRow();
-                                    document.querySelector('#header-title').innerHTML = 'Tsuzuku';
-                                    document.querySelector('#header-score').remove();
-                                    document.querySelector('#header-status').remove();
-                                    document.querySelectorAll('.separator-selected').forEach((element) => {
-                                        element.remove();
-                                    });
-
-                                    if (localStorage.getItem('theme') === 'dark') {
-                                        document.head.querySelector('[name="theme-color"]').content = '#000';
-                                    } else {
-                                        document.head.querySelector('[name="theme-color"]').content = '#fff';
-                                    }
-                                } else {
-                                    column.getTable().selectRow('active');
-
-                                    if (!column.getTable().getSelectedRows().length) {
-                                        return;
-                                    }
-
                                     document.querySelector('header').classList.add('header-tabulator-selected');
 
                                     if (column.getTable().getSelectedRows().length === column.getTable().getRows().length) {
@@ -356,10 +290,6 @@ db.onsuccess = (event3) => {
                                     }
 
                                     document.querySelector('#header-title').innerHTML = `${column.getTable().getSelectedRows().length} selected`;
-
-                                    if (document.querySelector('#header-score')) {
-                                        document.querySelector('#header-score').remove();
-                                    }
 
                                     if (document.querySelector('#header-status')) {
                                         document.querySelector('#header-status').remove();
@@ -372,44 +302,7 @@ db.onsuccess = (event3) => {
                                     }
 
                                     const
-                                        hscore = document.createElement('div'),
                                         hstatus = document.createElement('div');
-
-                                    hscore.id = 'header-score';
-                                    hscore.innerHTML =
-                                        '<select title="Score">' +
-                                            `<option selected disabled>Score</option>${scores}` +
-                                        '</select>';
-                                    hscore.addEventListener('change', (event) => {
-                                        for (const value of column.getTable().getSelectedRows()) {
-                                            const d2 = db2().add({
-                                                episodes: value._row.data.episodes,
-                                                score: event.target.value,
-                                                season: value._row.data.season,
-                                                source: value._row.data.sources,
-                                                status: value._row.data.status,
-                                                title: value._row.data.title
-                                            });
-
-                                            d2.onsuccess = () => {
-                                                value.update({
-                                                    score: event.target.value
-                                                });
-                                            };
-
-                                            d2.onerror = () => {
-                                                db2().get(value._row.data.sources).onsuccess = (event2) => {
-                                                    const result = event2.currentTarget.result;
-                                                    result.score = event.target.value;
-                                                    db2().put(result).onsuccess = () => {
-                                                        value.update({
-                                                            score: event.target.value
-                                                        });
-                                                    };
-                                                };
-                                            };
-                                        }
-                                    });
 
                                     hstatus.id = 'header-status';
                                     hstatus.innerHTML =
@@ -420,7 +313,7 @@ db.onsuccess = (event3) => {
                                         for (const value of column.getTable().getSelectedRows()) {
                                             const d2 = db2().add({
                                                 episodes: value._row.data.episodes,
-                                                score: value._row.data.score,
+                                                progress: value._row.data.progress,
                                                 season: value._row.data.season,
                                                 source: value._row.data.sources,
                                                 status: event.target.value,
@@ -448,8 +341,6 @@ db.onsuccess = (event3) => {
                                     });
 
                                     document.querySelector('#close').insertAdjacentHTML('afterend', '<span class="separator-selected"></span>');
-                                    document.querySelector('header').insertAdjacentElement('beforeend', hscore);
-                                    document.querySelector('header').insertAdjacentHTML('beforeend', '<span class="separator-selected"></span>');
                                     document.querySelector('header').insertAdjacentElement('beforeend', hstatus);
 
                                     if (localStorage.getItem('theme') === 'dark') {
@@ -457,12 +348,26 @@ db.onsuccess = (event3) => {
                                     } else {
                                         document.head.querySelector('[name="theme-color"]').content = '#000';
                                     }
+                                } else {
+                                    document.querySelector('header').classList.remove('header-tabulator-selected');
+                                    column._column.titleElement.children[0].innerHTML = svg.blank;
+                                    document.querySelector('#header-title').innerHTML = 'Tsuzuku';
+                                    document.querySelector('#header-status').remove();
+                                    document.querySelectorAll('.separator-selected').forEach((element) => {
+                                        element.remove();
+                                    });
+
+                                    if (localStorage.getItem('theme') === 'dark') {
+                                        document.head.querySelector('[name="theme-color"]').content = '#000';
+                                    } else {
+                                        document.head.querySelector('[name="theme-color"]').content = '#fff';
+                                    }
                                 }
                             },
                             headerHozAlign: 'center',
                             headerSort: false,
                             hozAlign: 'center',
-                            titleFormatter() {
+                            titleFormatter: function () {
                                 return `<svg viewBox="0 0 24 24" width="17" height="17">${svg.blank}</svg>`;
                             },
                             vertAlign: 'middle',
@@ -470,7 +375,7 @@ db.onsuccess = (event3) => {
                         },
                         {
                             field: 'sources',
-                            formatter(cell) {
+                            formatter: function (cell) {
                                 let sources = null;
 
                                 if (cell.getValue().match(/myanimelist\.net/gu)) {
@@ -484,7 +389,7 @@ db.onsuccess = (event3) => {
                             headerHozAlign: 'center',
                             headerSort: false,
                             hozAlign: 'center',
-                            titleFormatter() {
+                            titleFormatter: function () {
                                 return `<svg viewBox="0 0 24 24" width="17" height="17">${svg.globe}</svg>`;
                             },
                             vertAlign: 'middle',
@@ -492,8 +397,8 @@ db.onsuccess = (event3) => {
                         },
                         {
                             field: 'alternative',
-                            formatter(cell) {
-                                return cell.getValue();
+                            formatter: function (cell) {
+                                return `<span>${cell.getValue()}</span>`;
                             },
                             minWidth: 150,
                             title: 'Title',
@@ -519,7 +424,7 @@ db.onsuccess = (event3) => {
                             width: 100
                         },
                         {
-                            cellClick(e, cell) {
+                            cellClick: function (e, cell) {
                                 const value = cell.getValue();
 
                                 if (value) {
@@ -547,17 +452,19 @@ db.onsuccess = (event3) => {
                             width: 100
                         },
                         {
-                            field: 'score',
-                            formatter(cell) {
-                                const select = document.createElement('select');
+                            field: 'progress',
+                            formatter: function (cell) {
+                                const input = document.createElement('input');
 
-                                select.innerHTML = scores;
-                                select.value = cell.getValue();
-                                select.title = 'Score';
-                                select.addEventListener('change', () => {
+                                input.type = 'number';
+                                input.min = 1;
+                                input.autocomplete = 'off';
+                                input.value = cell.getValue();
+                                input.title = 'Progress';
+                                input.addEventListener('change', () => {
                                     const d2 = db2().add({
                                         episodes: cell.getRow().getData().episodes,
-                                        score: select.value,
+                                        progress: input.value,
                                         season: cell.getRow().getData().season,
                                         source: cell.getRow().getData().sources,
                                         status: cell.getRow().getData().status,
@@ -566,38 +473,37 @@ db.onsuccess = (event3) => {
 
                                     d2.onsuccess = () => {
                                         cell.getRow().update({
-                                            score: select.value
+                                            progress: input.value
                                         });
                                     };
 
                                     d2.onerror = () => {
                                         db2().get(cell.getRow().getData().sources).onsuccess = (event) => {
                                             const result = event.currentTarget.result;
-                                            result.score = select.value;
+                                            result.progress = input.value;
                                             db2().put(result).onsuccess = () => {
                                                 cell.getRow().update({
-                                                    score: select.value
+                                                    progress: input.value
                                                 });
                                             };
                                         };
                                     };
                                 });
 
-                                return select;
+                                return input;
                             },
                             headerHozAlign: 'center',
                             hozAlign: 'center',
-                            sorter: 'number',
                             sorterParams: {
                                 alignEmptyValues: 'bottom'
                             },
-                            title: 'Score',
+                            title: 'Progress',
                             vertAlign: 'middle',
                             width: 100
                         },
                         {
                             field: 'status',
-                            formatter(cell) {
+                            formatter: function (cell) {
                                 const select = document.createElement('select');
 
                                 select.innerHTML = statuses;
@@ -606,7 +512,7 @@ db.onsuccess = (event3) => {
                                 select.addEventListener('change', () => {
                                     const d2 = db2().add({
                                         episodes: cell.getRow().getData().episodes,
-                                        score: cell.getRow().getData().score,
+                                        progress: cell.getRow().getData().progress,
                                         season: cell.getRow().getData().season,
                                         source: cell.getRow().getData().sources,
                                         status: select.value,
@@ -644,7 +550,7 @@ db.onsuccess = (event3) => {
                             width: 100
                         },
                         {
-                            cellClick(e, cell) {
+                            cellClick: function (e, cell) {
                                 if (!cell.getValue()) {
                                     return;
                                 }
@@ -654,7 +560,7 @@ db.onsuccess = (event3) => {
                                 searchFunction(cell.getTable());
                             },
                             field: 'airing',
-                            formatter(cell) {
+                            formatter: function (cell) {
                                 if (!cell.getValue()) {
                                     return '';
                                 }
@@ -668,7 +574,7 @@ db.onsuccess = (event3) => {
                             headerHozAlign: 'center',
                             headerSort: false,
                             hozAlign: 'center',
-                            titleFormatter() {
+                            titleFormatter: function () {
                                 return `<svg viewBox="3 2 20 20" width="17" height="17">${svg.play}</svg>`;
                             },
                             vertAlign: 'middle',
@@ -686,10 +592,10 @@ db.onsuccess = (event3) => {
                         }
                     ],
                     data: database,
-                    dataFiltered(filters, rows) {
-                        if (index.dimension) {
-                            r = rows;
+                    dataFiltered: function (filters, rows) {
+                        r = rows;
 
+                        if (index.dimension) {
                             for (const value of rows) {
                                 value.update({
                                     alternative: index.dimension.find((i) => i.source === value.getData().sources).alternative,
@@ -714,8 +620,10 @@ db.onsuccess = (event3) => {
                             );
 
                         }
+
+                        this.redraw();
                     },
-                    dataLoaded() {
+                    dataLoaded: function () {
                         document.querySelector('#loading').remove();
                         document.querySelector('#search-container').style.display = 'flex';
 
@@ -745,7 +653,7 @@ db.onsuccess = (event3) => {
 
                         searchFunction(this);
                     },
-                    dataSorted(sorters) {
+                    dataSorted: function (sorters) {
                         if (sorters.length) {
                             return;
                         }
@@ -759,6 +667,8 @@ db.onsuccess = (event3) => {
                                 this.setSort('alternative', 'asc');
                             }
                         }
+
+                        this.redraw();
                     },
                     headerSortElement: `<svg viewBox="0 0 24 24" width="17" height="17">${svg.arrow}</svg>`,
                     headerSortTristate: true,
@@ -769,7 +679,10 @@ db.onsuccess = (event3) => {
                         }
                     ],
                     layout: 'fitColumns',
-                    resizableColumns: false
+                    resizableColumns: false,
+                    rowFormatter: function (row) {
+                        row.getCell('color').getElement().dataset.status = row.getData().status;
+                    }
                 });
             });
         });

@@ -7,7 +7,8 @@ import {
 } from './fetchFunction.js';
 
 const index = {
-    dimension: null
+    dimension: null,
+    lastRow: null
 };
 
 let worker = null;
@@ -110,7 +111,7 @@ function searchFunction(tt) {
                     history.pushState({}, '', url);
 
                     document.title = title;
-                }, 1);
+                }, 100);
                 break;
 
             case 'done':
@@ -153,7 +154,7 @@ function searchFunction(tt) {
                     } else {
                         document.title = title;
                     }
-                }, 1);
+                }, 100);
                 break;
 
             case 'found':
@@ -192,9 +193,10 @@ document.querySelector('#theme').addEventListener('click', () => {
 });
 
 document.querySelector('#close').addEventListener('click', () => {
+    index.lastRow = null;
+
     document.querySelector('#header-title').innerHTML = 'Tsuzuku';
     document.querySelector('.header-tabulator-selected').classList.remove('header-tabulator-selected');
-    document.querySelector('#header-score').remove();
     document.querySelector('#header-status').remove();
     document.querySelectorAll('.separator-selected').forEach((element) => {
         element.remove();

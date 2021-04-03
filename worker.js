@@ -41,7 +41,7 @@ self.addEventListener('message', (event) => {
         episodes = null,
         ff = null,
         found = false,
-        score = null,
+        progress = null,
         season = null,
         status = null,
         tags = null,
@@ -63,9 +63,9 @@ self.addEventListener('message', (event) => {
         v = v.replace(/\bepisodes:(?:&?(?:<=|>=|<|>)?(?:0|[1-9][0-9]*)\b)+/giu, '');
     }
 
-    if (v.match(/\bscore:(?:&?(?:<=|>=|<|>)?(?:10|[0-9]{1})\b)+/giu)) {
-        score = v.match(/\bscore:(?:&?(?:<=|>=|<|>)?(?:10|[0-9]{1})\b)+/giu)[0].replace(/score:/giu, '').split('&');
-        v = v.replace(/\bscore:(?:&?(?:<=|>=|<|>)?(?:10|[0-9]{1})\b)+/giu, '');
+    if (v.match(/\bprogress:(?:&?(?:<=|>=|<|>)?(?:0|[1-9][0-9]*)\b)+/giu)) {
+        progress = v.match(/\bprogress:(?:&?(?:<=|>=|<|>)?(?:0|[1-9][0-9]*)\b)+/giu)[0].replace(/progress:/giu, '').split('&');
+        v = v.replace(/\bprogress:(?:&?(?:<=|>=|<|>)?(?:0|[1-9][0-9]*)\b)+/giu, '');
     }
 
     if (v.match(/\byear:(?:tba\b|(?:&?(?:<=|>=|<|>)?[1-9][0-9]{3}\b)+)/giu)) {
@@ -73,19 +73,19 @@ self.addEventListener('message', (event) => {
         v = v.replace(/\byear:(?:tba\b|(?:&?(?:<=|>=|<|>)?[1-9][0-9]{3}\b)+)/giu, '');
     }
 
-    if (v.match(/\btype:(?:,?(?:tv|movie|ova|ona|special)\b)+/giu)) {
-        type = v.match(/\btype:(?:,?(?:tv|movie|ova|ona|special)\b)+/giu)[0].replace(/type:/giu, '').split(',');
-        v = v.replace(/\btype:(?:,?(?:tv|movie|ova|ona|special)\b)+/giu, '');
+    if (v.match(/\btype:(?:\|?(?:tv|movie|ova|ona|special)\b)+/giu)) {
+        type = v.match(/\btype:(?:\|?(?:tv|movie|ova|ona|special)\b)+/giu)[0].replace(/type:/giu, '').split('|');
+        v = v.replace(/\btype:(?:\|?(?:tv|movie|ova|ona|special)\b)+/giu, '');
     }
 
-    if (v.match(/\bstatus:(?:,?(?:watching|rewatching|completed|paused|dropped|planning)\b)+/giu)) {
-        status = v.match(/\bstatus:(?:,?(?:watching|rewatching|completed|paused|dropped|planning)\b)+/giu)[0].replace(/status:/giu, '').split(',');
-        v = v.replace(/\bstatus:(?:,?(?:watching|rewatching|completed|paused|dropped|planning)\b)+/giu, '');
+    if (v.match(/\bstatus:(?:\|?(?:watching|rewatching|completed|paused|dropped|planning)\b)+/giu)) {
+        status = v.match(/\bstatus:(?:\|?(?:watching|rewatching|completed|paused|dropped|planning)\b)+/giu)[0].replace(/status:/giu, '').split('|');
+        v = v.replace(/\bstatus:(?:\|?(?:watching|rewatching|completed|paused|dropped|planning)\b)+/giu, '');
     }
 
-    if (v.match(/\bseason:(?:,?(?:winter|spring|summer|fall|tba)\b)+/giu)) {
-        season = v.match(/\bseason:(?:,?(?:winter|spring|summer|fall|tba)\b)+/giu)[0].replace(/season:/giu, '').split(',');
-        v = v.replace(/\bseason:(?:,?(?:winter|spring|summer|fall|tba)\b)+/giu, '');
+    if (v.match(/\bseason:(?:\|?(?:winter|spring|summer|fall|tba)\b)+/giu)) {
+        season = v.match(/\bseason:(?:\|?(?:winter|spring|summer|fall|tba)\b)+/giu)[0].replace(/season:/giu, '').split('|');
+        v = v.replace(/\bseason:(?:\|?(?:winter|spring|summer|fall|tba)\b)+/giu, '');
     }
 
     if (v.match(/\btags:\S+\b/giu)) {
@@ -125,9 +125,9 @@ self.addEventListener('message', (event) => {
                 }
             }
 
-            if (score) {
-                for (const value of score) {
-                    if (!is(d.score, (value.match(/<=|>=|<|>/giu) || '=').toString(), value.match(/10|[1-9]{1}/giu).toString())) {
+            if (progress) {
+                for (const value of progress) {
+                    if (!is(d.progress, (value.match(/<=|>=|<|>/giu) || '=').toString(), value.match(/0|[1-9][0-9]*/giu).toString())) {
                         return;
                     }
                 }
