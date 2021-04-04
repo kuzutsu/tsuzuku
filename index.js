@@ -296,6 +296,11 @@ document.querySelector('#header-title').addEventListener('click', (e) => {
     searchFunction();
 });
 
+// chromium bug when using change
+onbeforeunload = () => {
+    document.querySelector('#search').focus();
+};
+
 onpopstate = () => {
     if (new URLSearchParams(location.search).get('query')) {
         document.querySelector('#search').value = decodeURIComponent(new URLSearchParams(location.search).get('query'));

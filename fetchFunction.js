@@ -461,7 +461,9 @@ db.onsuccess = (event3) => {
                                 input.autocomplete = 'off';
                                 input.value = cell.getValue();
                                 input.title = 'Progress';
-                                input.addEventListener('change', () => {
+
+                                // chromium bug when using change
+                                input.addEventListener('blur', () => {
                                     const d2 = db2().add({
                                         episodes: cell.getRow().getData().episodes,
                                         progress: input.value,
