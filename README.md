@@ -23,8 +23,6 @@ Default sort by relevancy
 ### Regular expression search
 Not case-sensitive
 
-Click on dot-and-asterisk icon to toggle (will light up when enabled)
-
 Examples:
 * Starts with *a* ([`^a`](https://kuzutsu.github.io/tsuzuku/?query=%255Ea&regex=1&alt=0))
 * Ends with a number ([`\d$`](https://kuzutsu.github.io/tsuzuku/?query=%255Cd%2524&regex=1&alt=0))
@@ -32,9 +30,7 @@ Examples:
 * Only 8 *i*'s ([`^[^i]*(?:i[^i]*){8}$`](https://kuzutsu.github.io/tsuzuku/?query=%255E%255B%255Ei%255D*%28%253F%253Ai%255B%255Ei%255D*%29%257B8%257D%2524&regex=1&alt=0))
 * No spaces ([`^\S+$`](https://kuzutsu.github.io/tsuzuku/?query=%255E%255CS%252B%2524&regex=1&alt=0))
 
-### Include synonyms (enabled by default)
-Click on split-arrow icon to toggle (will light up when enabled)
-
+### Include alternative titles (enabled by default)
 Recommended to disable when using regular expression search
 
 ### Search syntaxes
@@ -71,16 +67,15 @@ Examples:
 * On or before 2011 ([`year:<=2011`](https://kuzutsu.github.io/tsuzuku/?query=year%253A%253C%253D2011))
 
 ### Random select
-Click on shuffle icon to toggle (will light up when enabled)
-
 Default is 1
 
-Press `Enter` in search box (or click on search icon) to randomize again
+### Invert select
+Click on thumbnail header
 
 ### Select range
 Desktop only
 
-Hold `Shift`, then click on thumbnail images
+Hold `Shift`, then click on thumbnails
 
 ### Dark mode
 Click on sun icon to toggle
