@@ -78,7 +78,7 @@ db.onsuccess = (event3) => {
                 for (const value of d[i].sources.filter((sources) => sources.match(source))) {
                     promises.push(
                         new Promise((resolve) => {
-                            db2().get(value).onsuccess = (event) => resolve(event.currentTarget.result);
+                            db2().get(value).onsuccess = (event) => resolve(event.target.result);
                         }).then((result) => {
                             const
                                 ss = d[i].animeSeason.season,
@@ -627,30 +627,46 @@ db.onsuccess = (event3) => {
                     },
                     dataLoaded: function () {
                         document.querySelector('#loading').remove();
-                        document.querySelector('#search-container').style.display = 'flex';
+                        document.querySelector('#search-container').style.display = 'inline-flex';
 
                         if (new URLSearchParams(location.search).get('query')) {
                             document.querySelector('#search').value = decodeURIComponent(new URLSearchParams(location.search).get('query'));
                             document.querySelector('#clear').style.visibility = 'visible';
                             document.querySelector('#clear').style.display = 'inline-flex';
+                        } else {
+                            document.querySelector('#search').value = '';
+                            document.querySelector('#clear').style.display = 'none';
                         }
 
                         if (new URLSearchParams(location.search).get('regex') === '1') {
-                            params.regex = true;
-                            document.querySelector('#regex svg').classList.remove('disabled');
+                            document.querySelector('#regex').checked = true;
+
+                            this.setSort('alternative', 'asc');
+                        } else {
+                            document.querySelector('#regex').checked = false;
+
+                            if (new URLSearchParams(location.search).get('query')) {
+                                this.setSort('relevancy', 'desc');
+                            } else {
+                                this.setSort('alternative', 'asc');
+                            }
                         }
 
                         if (new URLSearchParams(location.search).get('alt') === '0') {
-                            params.alt = false;
-                            document.querySelector('#alt svg').classList.add('disabled');
+                            document.querySelector('#alt').checked = false;
+                        } else {
+                            document.querySelector('#alt').checked = true;
                         }
 
-                        if (Math.round(Math.abs(Number(new URLSearchParams(location.search).get('random')))) > 0) {
-                            params.random = true;
-                            document.querySelector('#random svg').classList.remove('disabled');
+                        if (Math.round(Math.abs(Number(new URLSearchParams(location.search).get('random'))))) {
+                            document.querySelector('#random').checked = true;
+                            document.querySelector('[for="number"]').style.color = '';
                             document.querySelector('#number').removeAttribute('disabled');
-                            document.querySelector('#number').value = Math.round(Math.abs(Number(new URLSearchParams(location.search).get('random'))));
-                            params.randomValue = document.querySelector('#number').value;
+                            document.querySelector('#number').value = params.randomValue;
+                        } else {
+                            document.querySelector('#random').checked = false;
+                            document.querySelector('[for="number"]').style.color = '#aaa';
+                            document.querySelector('#number').setAttribute('disabled', '');
                         }
 
                         searchFunction(this);

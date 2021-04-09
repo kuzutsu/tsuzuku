@@ -25,6 +25,7 @@ self.addEventListener('install', (event) => {
 
                 // third-party
                 'https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.basic.min.js',
+                'https://cdn.jsdelivr.net/npm/tabulator-tables/dist/js/modules/edit.min.js',
                 'https://cdn.jsdelivr.net/npm/tabulator-tables/dist/js/modules/filter.min.js',
                 'https://cdn.jsdelivr.net/npm/tabulator-tables/dist/js/modules/format.min.js',
                 'https://cdn.jsdelivr.net/npm/tabulator-tables/dist/js/modules/frozen_columns.min.js',

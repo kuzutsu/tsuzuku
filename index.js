@@ -13,12 +13,30 @@ const index = {
 
 let worker = null;
 
-function searchFunction(tt) {
+function searchFunction(tt, qq, p, s) {
     const
-        query = document.querySelector('#search').value,
+        query = qq || document.querySelector('#search').value,
         table = tt || t;
 
-    params.randomValue = Math.round(Math.abs(document.querySelector('#number').value)) || 1;
+    if (document.querySelector('#regex').checked) {
+        params.regex = true;
+    } else {
+        params.regex = false;
+    }
+
+    if (document.querySelector('#alt').checked) {
+        params.alt = true;
+    } else {
+        params.alt = false;
+    }
+
+    if (document.querySelector('#random').checked) {
+        params.random = true;
+        params.randomValue = Math.round(Math.abs(document.querySelector('#number').value)) || 1;
+    } else {
+        params.random = false;
+        params.randomValue = 1;
+    }
 
     if (document.querySelector('#nothing')) {
         document.querySelector('#nothing').remove();
@@ -29,6 +47,10 @@ function searchFunction(tt) {
     if (document.querySelector('#search').value) {
         document.querySelector('#clear').style.visibility = 'visible';
         document.querySelector('#clear').style.display = 'inline-flex';
+    }
+
+    if (!s && document.querySelector('.selected-tab')) {
+        document.querySelector('.selected-tab').classList.remove('selected-tab');
     }
 
     if (worker) {
@@ -71,7 +93,7 @@ function searchFunction(tt) {
         randomValue: params.randomValue,
         regex: params.regex,
         selected: table.getSelectedData(),
-        value: document.querySelector('#search').value
+        value: query
     });
 
     worker.addEventListener('message', (event) => {
@@ -108,7 +130,9 @@ function searchFunction(tt) {
                         url.searchParams.set('random', params.randomValue);
                     }
 
-                    history.pushState({}, '', url);
+                    if (!p) {
+                        history.pushState({}, '', url);
+                    }
 
                     document.title = title;
                 }, 100);
@@ -147,7 +171,9 @@ function searchFunction(tt) {
                         url.searchParams.set('query', encodeURIComponent(query));
                     }
 
-                    history.pushState({}, '', url);
+                    if (!p) {
+                        history.pushState({}, '', url);
+                    }
 
                     if (query) {
                         document.title = `${query} - ${title}`;
@@ -174,6 +200,7 @@ function searchFunction(tt) {
 document.querySelector('#clear').addEventListener('click', () => {
     document.querySelector('#clear').style.display = 'none';
     document.querySelector('#search').value = '';
+    document.querySelector('#search').focus();
 
     searchFunction();
 });
@@ -212,62 +239,62 @@ document.querySelector('#close').addEventListener('click', () => {
     t.deselectRow();
 });
 
-document.querySelector('#random').addEventListener('click', () => {
-    if (params.random) {
-        document.querySelector('#number').setAttribute('disabled', '');
-        document.querySelector('#random svg').classList.add('disabled');
-        params.random = false;
-    } else {
-        document.querySelector('#number').removeAttribute('disabled');
-        document.querySelector('#random svg').classList.remove('disabled');
-        params.random = true;
-    }
-
-    searchFunction();
-});
-
-document.querySelector('#regex').addEventListener('click', () => {
-    if (params.regex) {
-        document.querySelector('#regex svg').classList.add('disabled');
-        params.regex = false;
-    } else {
-        document.querySelector('#regex svg').classList.remove('disabled');
-        params.regex = true;
-    }
-
-    searchFunction();
-});
-
-document.querySelector('#alt').addEventListener('click', () => {
-    if (params.alt) {
-        document.querySelector('#alt svg').classList.add('disabled');
-        params.alt = false;
-    } else {
-        document.querySelector('#alt svg').classList.remove('disabled');
-        params.alt = true;
-    }
-
-    searchFunction();
-});
-
 document.querySelector('#search').addEventListener('keyup', (e) => {
     if (e.key !== 'Enter') {
         return;
     }
 
-    searchFunction();
-});
-
-document.querySelector('#number').addEventListener('keyup', (e) => {
-    if (e.key !== 'Enter') {
-        return;
-    }
-
+    e.target.blur();
     searchFunction();
 });
 
 document.querySelector('#enter').addEventListener('click', () => {
+    if (document.querySelector('#default').style.display === 'inline-flex') {
+        document.querySelector('#default').style.display = 'none';
+        document.querySelector('.tabs').style.display = 'inline-flex';
+        document.querySelector('#enter svg').style.fill = '#aaa';
+
+        if (document.querySelector('.settings-container').style.display === 'inline-flex') {
+            document.querySelector('.settings-container').style.display = 'none';
+            document.querySelector('#settings svg').style.fill = '#aaa';
+            document.querySelector('#database-container').style.maxHeight = 'calc(100% - 48px)';
+
+            t.redraw();
+        }
+    } else {
+        document.querySelector('#default').style.display = 'inline-flex';
+        document.querySelector('#search').focus();
+        document.querySelector('.tabs').style.display = 'none';
+        document.querySelector('#enter svg').style.fill = '';
+    }
+});
+
+document.querySelector('#enter2').addEventListener('click', () => {
     searchFunction();
+});
+
+document.querySelector('#random').addEventListener('change', (e) => {
+    if (e.target.checked) {
+        document.querySelector('[for="number"]').style.color = '';
+        document.querySelector('#number').removeAttribute('disabled');
+    } else {
+        document.querySelector('[for="number"]').style.color = '#aaa';
+        document.querySelector('#number').setAttribute('disabled', '');
+    }
+});
+
+document.querySelector('#settings').addEventListener('click', () => {
+    if (document.querySelector('.settings-container').style.display === 'inline-flex') {
+        document.querySelector('.settings-container').style.display = 'none';
+        document.querySelector('#settings svg').style.fill = '#aaa';
+        document.querySelector('#database-container').style.maxHeight = 'calc(100% - 48px)';
+    } else {
+        document.querySelector('.settings-container').style.display = 'inline-flex';
+        document.querySelector('#settings svg').style.fill = '';
+        document.querySelector('#database-container').style.maxHeight = 'calc(100% - 208px)';
+    }
+
+    t.redraw();
 });
 
 document.querySelector('#search').addEventListener('input', (e) => {
@@ -286,6 +313,18 @@ document.querySelector('#search').addEventListener('focus', (e) => {
     }
 });
 
+document.querySelectorAll('.tab').forEach((element) => {
+    element.addEventListener('click', (e) => {
+        if (document.querySelector('.selected-tab')) {
+            document.querySelector('.selected-tab').classList.remove('selected-tab');
+        }
+
+        e.target.classList.add('selected-tab');
+        document.querySelector('#search').value = e.target.dataset.query;
+        searchFunction(null, e.target.dataset.query, null, true);
+    });
+});
+
 document.querySelector('#header-title').addEventListener('click', (e) => {
     if (e.target.parentNode.classList[0] !== 'header-tabulator-selected') {
         return;
@@ -298,7 +337,7 @@ document.querySelector('#header-title').addEventListener('click', (e) => {
 
 // chromium bug when using change
 onbeforeunload = () => {
-    document.querySelector('#search').focus();
+    document.activeElement.blur();
 };
 
 onpopstate = () => {
@@ -312,12 +351,11 @@ onpopstate = () => {
     }
 
     if (new URLSearchParams(location.search).get('regex') === '1') {
-        params.regex = true;
-        document.querySelector('#regex svg').classList.remove('disabled');
+        document.querySelector('#regex').checked = true;
+
         t.setSort('alternative', 'asc');
     } else {
-        params.regex = false;
-        document.querySelector('#regex svg').classList.add('disabled');
+        document.querySelector('#regex').checked = false;
 
         if (new URLSearchParams(location.search).get('query')) {
             t.setSort('relevancy', 'desc');
@@ -327,26 +365,23 @@ onpopstate = () => {
     }
 
     if (new URLSearchParams(location.search).get('alt') === '0') {
-        params.alt = false;
-        document.querySelector('#alt svg').classList.add('disabled');
+        document.querySelector('#alt').checked = false;
     } else {
-        params.alt = true;
-        document.querySelector('#alt svg').classList.remove('disabled');
+        document.querySelector('#alt').checked = true;
     }
 
-    if (Math.round(Math.abs(Number(new URLSearchParams(location.search).get('random')))) > 0) {
-        params.random = true;
+    if (Math.round(Math.abs(Number(new URLSearchParams(location.search).get('random'))))) {
+        document.querySelector('#random').checked = true;
+        document.querySelector('[for="number"]').style.color = '';
         document.querySelector('#number').removeAttribute('disabled');
-        document.querySelector('#number').value = Math.round(Math.abs(Number(new URLSearchParams(location.search).get('random'))));
-        document.querySelector('#random svg').classList.remove('disabled');
-        params.randomValue = document.querySelector('#number').value;
+        document.querySelector('#number').value = params.randomValue;
     } else {
-        params.random = false;
+        document.querySelector('#random').checked = false;
+        document.querySelector('[for="number"]').style.color = '#aaa';
         document.querySelector('#number').setAttribute('disabled', '');
-        document.querySelector('#random svg').classList.add('disabled');
     }
 
-    searchFunction();
+    searchFunction(null, null, true);
 };
 
 export {
