@@ -201,8 +201,6 @@ document.querySelector('#clear').addEventListener('click', () => {
     document.querySelector('#clear').style.display = 'none';
     document.querySelector('#search').value = '';
     document.querySelector('#search').focus();
-
-    searchFunction();
 });
 
 document.querySelector('#theme').addEventListener('click', () => {
