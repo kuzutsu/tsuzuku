@@ -257,7 +257,7 @@ document.querySelector('#enter').addEventListener('click', () => {
         if (document.querySelector('.settings-container').style.display === 'inline-flex') {
             document.querySelector('.settings-container').style.display = 'none';
             document.querySelector('#settings svg').style.fill = '#aaa';
-            document.querySelector('#database-container').style.maxHeight = 'calc(100% - 48px)';
+            document.querySelector('#database-container').style.maxHeight = '';
 
             t.redraw();
         }
@@ -287,7 +287,7 @@ document.querySelector('#settings').addEventListener('click', () => {
     if (document.querySelector('.settings-container').style.display === 'inline-flex') {
         document.querySelector('.settings-container').style.display = 'none';
         document.querySelector('#settings svg').style.fill = '#aaa';
-        document.querySelector('#database-container').style.maxHeight = 'calc(100% - 48px)';
+        document.querySelector('#database-container').style.maxHeight = '';
     } else {
         document.querySelector('.settings-container').style.display = 'inline-flex';
         document.querySelector('#settings svg').style.fill = '';
