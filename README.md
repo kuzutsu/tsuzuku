@@ -34,7 +34,7 @@ Examples:
 Recommended to disable when using regular expression search
 
 ### Search syntaxes
-* `is:airing`
+* `is:ongoing`
 * `is:selected`
 
 #### OR-based
