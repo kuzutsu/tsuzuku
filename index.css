@@ -200,7 +200,7 @@ svg.disabled {
     display: block !important;
 }
 
-.tabulator-col[tabulator-field="airing"] .tabulator-col-title,
+.tabulator-col[tabulator-field="ongoing"] .tabulator-col-title,
 .tabulator-col[tabulator-field="picture"] .tabulator-col-title,
 .tabulator-col[tabulator-field="sources"] .tabulator-col-title {
     line-height: 0;

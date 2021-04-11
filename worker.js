@@ -36,11 +36,11 @@ self.addEventListener('message', (event) => {
         f = [],
         u = [];
 
-    let airing = false,
-        dd = null,
+    let dd = null,
         episodes = null,
         ff = null,
         found = false,
+        ongoing = false,
         progress = null,
         season = null,
         status = null,
@@ -100,9 +100,9 @@ self.addEventListener('message', (event) => {
         dd = 'data';
     }
 
-    if (v.match(/\bis:airing\b/giu)) {
-        airing = true;
-        v = v.replace(/\bis:airing\b/giu, '');
+    if (v.match(/\bis:ongoing\b/giu)) {
+        ongoing = true;
+        v = v.replace(/\bis:ongoing\b/giu, '');
     }
 
     if (dd === 'selected' && !event.data[dd].length) {
@@ -178,8 +178,8 @@ self.addEventListener('message', (event) => {
                 }
             }
 
-            if (airing) {
-                if (!d.airing) {
+            if (ongoing) {
+                if (!d.ongoing) {
                     return;
                 }
             }
@@ -217,8 +217,9 @@ self.addEventListener('message', (event) => {
                     }
 
                     const result = new Fuse(t, {
+                        ignoreLocation: true,
                         includeScore: true,
-                        threshold: 0.25
+                        threshold: 0.2
                     }).search(v.trim());
 
                     if (!result.length) {
