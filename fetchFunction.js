@@ -25,6 +25,7 @@ const
     title = document.title;
 
 let r = null,
+    resize = null,
     s = null,
     statuses = '',
     t = null;
@@ -449,8 +450,14 @@ db.onsuccess = (event3) => {
                             input.value = cell.getValue();
                             input.title = 'Progress';
 
+                            input.addEventListener('focus', () => {
+                                resize.unobserve(document.body);
+                            });
+
                             // chromium bug when using change
                             input.addEventListener('blur', () => {
+                                resize.observe(document.body);
+
                                 const d2 = db2().add({
                                     episodes: cell.getRow().getData().episodes,
                                     progress: input.value,
@@ -671,9 +678,11 @@ db.onsuccess = (event3) => {
                             document.querySelector('#loading').remove();
                             document.querySelector('#search-container').style.display = 'inline-flex';
 
-                            new ResizeObserver(() => {
+                            resize = new ResizeObserver(() => {
                                 this.redraw();
-                            }).observe(document.body);
+                            });
+
+                            resize.observe(document.body);
 
                             searchFunction(this);
                         }
