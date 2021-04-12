@@ -679,6 +679,7 @@ db.onsuccess = (event3) => {
                             document.querySelector('#search-container').style.display = 'inline-flex';
 
                             resize = new ResizeObserver(() => {
+                                document.activeElement.blur();
                                 this.redraw();
                             });
 
