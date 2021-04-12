@@ -673,7 +673,7 @@ db.onsuccess = (event3) => {
 
                             new ResizeObserver(() => {
                                 this.redraw();
-                            }).observe(this.element);
+                            }).observe(document.body);
 
                             searchFunction(this);
                         }
