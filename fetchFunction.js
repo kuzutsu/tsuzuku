@@ -402,6 +402,7 @@ db.onsuccess = (event3) => {
                         field: 'episodes',
                         headerHozAlign: 'center',
                         hozAlign: 'center',
+                        sorter: 'number',
                         sorterParams: {
                             alignEmptyValues: 'bottom'
                         },
@@ -490,6 +491,7 @@ db.onsuccess = (event3) => {
                         },
                         headerHozAlign: 'center',
                         hozAlign: 'center',
+                        sorter: 'number',
                         sorterParams: {
                             alignEmptyValues: 'bottom'
                         },
@@ -634,16 +636,8 @@ db.onsuccess = (event3) => {
 
                     if (new URLSearchParams(location.search).get('regex') === '1') {
                         document.querySelector('#regex').checked = true;
-
-                        this.setSort('alternative', 'asc');
                     } else {
                         document.querySelector('#regex').checked = false;
-
-                        if (new URLSearchParams(location.search).get('query')) {
-                            this.setSort('relevancy', 'desc');
-                        } else {
-                            this.setSort('alternative', 'asc');
-                        }
                     }
 
                     if (new URLSearchParams(location.search).get('alt') === '0') {
@@ -656,7 +650,7 @@ db.onsuccess = (event3) => {
                         document.querySelector('#random').checked = true;
                         document.querySelector('[for="number"]').style.color = '';
                         document.querySelector('#number').removeAttribute('disabled');
-                        document.querySelector('#number').value = params.randomValue;
+                        document.querySelector('#number').value = Math.round(Math.abs(Number(new URLSearchParams(location.search).get('random'))));
                     } else {
                         document.querySelector('#random').checked = false;
                         document.querySelector('[for="number"]').style.color = '#aaa';
@@ -677,6 +671,10 @@ db.onsuccess = (event3) => {
                             document.querySelector('#loading').remove();
                             document.querySelector('#search-container').style.display = 'inline-flex';
 
+                            new ResizeObserver(() => {
+                                this.redraw();
+                            }).observe(this.element);
+
                             searchFunction(this);
                         }
                     };
@@ -689,7 +687,7 @@ db.onsuccess = (event3) => {
                     if (new URLSearchParams(location.search).get('regex') === '1') {
                         this.setSort('alternative', 'asc');
                     } else {
-                        if (new URLSearchParams(location.search).get('query')) {
+                        if (index.query) {
                             this.setSort('relevancy', 'desc');
                         } else {
                             this.setSort('alternative', 'asc');

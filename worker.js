@@ -278,6 +278,7 @@ self.addEventListener('message', (event) => {
     postMessage({
         filter: ff || f,
         message: 'done',
+        query: v.trim(),
         update: uu || u
     });
 });

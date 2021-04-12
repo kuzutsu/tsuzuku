@@ -28,7 +28,6 @@ self.addEventListener('install', (event) => {
                 'https://cdn.jsdelivr.net/npm/tabulator-tables/dist/js/modules/filter.min.js',
                 'https://cdn.jsdelivr.net/npm/tabulator-tables/dist/js/modules/format.min.js',
                 'https://cdn.jsdelivr.net/npm/tabulator-tables/dist/js/modules/frozen_columns.min.js',
-                'https://cdn.jsdelivr.net/npm/tabulator-tables/dist/js/modules/resize_table.min.js',
                 'https://cdn.jsdelivr.net/npm/tabulator-tables/dist/js/modules/select_row.min.js',
                 'https://cdn.jsdelivr.net/npm/tabulator-tables/dist/js/modules/sort.min.js',
                 'https://cdn.jsdelivr.net/npm/tabulator-tables/dist/js/tabulator_core.min.js',

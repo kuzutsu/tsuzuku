@@ -184,6 +184,13 @@ svg.disabled {
     min-width: 100px;
 }
 
+#full,
+#loading,
+#nothing,
+#searching {
+    font-size: 14px;
+}
+
 /**************************************************************************************/
 
 [tabulator-field="picture"] img {

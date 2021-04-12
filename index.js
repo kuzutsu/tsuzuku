@@ -32,7 +32,7 @@ function searchFunction(tt, qq, p, s) {
 
     if (document.querySelector('#random').checked) {
         params.random = true;
-        params.randomValue = Math.round(Math.abs(document.querySelector('#number').value)) || 1;
+        params.randomValue = Math.round(Math.abs(Number(document.querySelector('#number').value))) || 1;
     } else {
         params.random = false;
         params.randomValue = 1;
@@ -113,13 +113,6 @@ function searchFunction(tt, qq, p, s) {
 
                     if (params.regex) {
                         url.searchParams.set('regex', '1');
-                        table.setSort('alternative', 'asc');
-                    } else {
-                        if (query) {
-                            table.setSort('relevancy', 'desc');
-                        } else {
-                            table.setSort('alternative', 'asc');
-                        }
                     }
 
                     if (!params.alt) {
@@ -129,6 +122,8 @@ function searchFunction(tt, qq, p, s) {
                     if (params.random) {
                         url.searchParams.set('random', params.randomValue);
                     }
+
+                    table.setSort('alternative', 'asc');
 
                     if (!p) {
                         history.pushState({}, '', url);
@@ -142,6 +137,7 @@ function searchFunction(tt, qq, p, s) {
                 // delay to extend progress to 100%
                 setTimeout(() => {
                     index.dimension = event.data.update;
+                    index.query = event.data.query;
                     table.setFilter('sources', 'in', event.data.filter);
                     worker.terminate();
                     worker = null;
@@ -152,7 +148,7 @@ function searchFunction(tt, qq, p, s) {
                         url.searchParams.set('regex', '1');
                         table.setSort('alternative', 'asc');
                     } else {
-                        if (query) {
+                        if (event.data.query) {
                             table.setSort('relevancy', 'desc');
                         } else {
                             table.setSort('alternative', 'asc');
@@ -350,16 +346,8 @@ onpopstate = () => {
 
     if (new URLSearchParams(location.search).get('regex') === '1') {
         document.querySelector('#regex').checked = true;
-
-        t.setSort('alternative', 'asc');
     } else {
         document.querySelector('#regex').checked = false;
-
-        if (new URLSearchParams(location.search).get('query')) {
-            t.setSort('relevancy', 'desc');
-        } else {
-            t.setSort('alternative', 'asc');
-        }
     }
 
     if (new URLSearchParams(location.search).get('alt') === '0') {
@@ -372,7 +360,7 @@ onpopstate = () => {
         document.querySelector('#random').checked = true;
         document.querySelector('[for="number"]').style.color = '';
         document.querySelector('#number').removeAttribute('disabled');
-        document.querySelector('#number').value = params.randomValue;
+        document.querySelector('#number').value = Math.round(Math.abs(Number(new URLSearchParams(location.search).get('random'))));
     } else {
         document.querySelector('#random').checked = false;
         document.querySelector('[for="number"]').style.color = '#aaa';
