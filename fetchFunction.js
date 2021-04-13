@@ -27,8 +27,7 @@ const
 let r = null,
     s = null,
     statuses = '',
-    t = null/*,
-    width = innerWidth*/;
+    t = null;
 
 db.onupgradeneeded = (event) => {
     const
@@ -671,16 +670,6 @@ db.onsuccess = (event3) => {
                         } else {
                             document.querySelector('#loading').remove();
                             document.querySelector('#search-container').style.display = 'inline-flex';
-
-                            new ResizeObserver(() => {/*
-                                if (width !== innerWidth) {
-                                    width = innerWidth;
-                                    this.redraw();
-                                }*/
-
-                                document.querySelector('.tabulator-tableHolder').style.height = `${innerHeight - 56 - 48 - 41}px`;
-                            }).observe(document.body);
-
                             searchFunction(this);
                         }
                     };
