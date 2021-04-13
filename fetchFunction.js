@@ -678,7 +678,7 @@ db.onsuccess = (event3) => {
                                     this.redraw();
                                 }
 
-                                document.querySelector('.tabulator-tableHolder').style.height = `${innerHeight - 56 - 48 - 41}px`;
+                                //document.querySelector('.tabulator-tableHolder').style.height = `${innerHeight - 56 - 48 - 41}px`;
                             }).observe(document.body);
 
                             searchFunction(this);
