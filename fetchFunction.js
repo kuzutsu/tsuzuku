@@ -27,8 +27,8 @@ const
 let r = null,
     s = null,
     statuses = '',
-    t = null,
-    width = innerWidth;
+    t = null/*,
+    width = innerWidth*/;
 
 db.onupgradeneeded = (event) => {
     const
@@ -672,13 +672,13 @@ db.onsuccess = (event3) => {
                             document.querySelector('#loading').remove();
                             document.querySelector('#search-container').style.display = 'inline-flex';
 
-                            new ResizeObserver(() => {
+                            new ResizeObserver(() => {/*
                                 if (width !== innerWidth) {
                                     width = innerWidth;
                                     this.redraw();
-                                }
+                                }*/
 
-                                //document.querySelector('.tabulator-tableHolder').style.height = `${innerHeight - 56 - 48 - 41}px`;
+                                document.querySelector('.tabulator-tableHolder').style.height = `${innerHeight - 56 - 48 - 41}px`;
                             }).observe(document.body);
 
                             searchFunction(this);
