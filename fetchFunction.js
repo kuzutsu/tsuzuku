@@ -206,7 +206,7 @@ db.onsuccess = (event3) => {
 
                                         d2.onerror = () => {
                                             db2().get(value._row.data.sources).onsuccess = (event2) => {
-                                                const result = event2.currentTarget.result;
+                                                const result = event2.target.result;
                                                 result.status = event.target.value;
                                                 db2().put(result).onsuccess = () => {
                                                     value.update({
@@ -314,7 +314,7 @@ db.onsuccess = (event3) => {
 
                                         d2.onerror = () => {
                                             db2().get(value._row.data.sources).onsuccess = (event2) => {
-                                                const result = event2.currentTarget.result;
+                                                const result = event2.target.result;
                                                 result.status = event.target.value;
                                                 db2().put(result).onsuccess = () => {
                                                     value.update({
@@ -444,37 +444,53 @@ db.onsuccess = (event3) => {
                             const input = document.createElement('input');
 
                             input.type = 'number';
+                            input.disabled = true;
                             input.min = 1;
                             input.autocomplete = 'off';
                             input.value = cell.getValue();
                             input.title = 'Progress';
 
-                            // chromium bug when using change
-                            input.addEventListener('blur', () => {
-                                const d2 = db2().add({
-                                    episodes: cell.getRow().getData().episodes,
-                                    progress: input.value,
-                                    season: cell.getRow().getData().season,
-                                    source: cell.getRow().getData().sources,
-                                    status: cell.getRow().getData().status,
-                                    title: cell.getRow().getData().title
-                                });
+                            input.addEventListener('input', () => {
+                                if (input.value < cell.getRow().getData().episodes) {
+                                    if (cell.getRow().getData().status === 'Watching') {
+                                        return;
+                                    }
 
-                                d2.onsuccess = () => {
-                                    cell.getRow().update({
-                                        progress: input.value
-                                    });
-                                };
-
-                                d2.onerror = () => {
                                     db2().get(cell.getRow().getData().sources).onsuccess = (event) => {
-                                        const result = event.currentTarget.result;
-                                        result.progress = input.value;
+                                        const result = event.target.result;
+                                        result.status = 'Watching';
                                         db2().put(result).onsuccess = () => {
                                             cell.getRow().update({
-                                                progress: input.value
+                                                status: 'Watching'
                                             });
                                         };
+                                    };
+                                } else {
+                                    if (cell.getRow().getData().status === 'Completed') {
+                                        return;
+                                    }
+
+                                    db2().get(cell.getRow().getData().sources).onsuccess = (event) => {
+                                        const result = event.target.result;
+                                        result.status = 'Completed';
+                                        db2().put(result).onsuccess = () => {
+                                            cell.getRow().update({
+                                                status: 'Completed'
+                                            });
+                                        };
+                                    };
+                                }
+                            });
+
+                            // chromium bug when using change to cell.getRow().update(progress)
+                            input.addEventListener('blur', () => {
+                                db2().get(cell.getRow().getData().sources).onsuccess = (event) => {
+                                    const result = event.target.result;
+                                    result.progress = input.value;
+                                    db2().put(result).onsuccess = () => {
+                                        cell.getRow().update({
+                                            progress: input.value
+                                        });
                                     };
                                 };
                             });
@@ -525,7 +541,7 @@ db.onsuccess = (event3) => {
 
                                 d2.onerror = () => {
                                     db2().get(cell.getRow().getData().sources).onsuccess = (event) => {
-                                        const result = event.currentTarget.result;
+                                        const result = event.target.result;
                                         result.status = select.value;
                                         db2().put(result).onsuccess = () => {
                                             cell.getRow().update({
@@ -703,6 +719,12 @@ db.onsuccess = (event3) => {
                 layout: 'fitColumns',
                 resizableColumns: false,
                 rowFormatter: function (row) {
+                    if (row.getData().status) {
+                        row.getCell('progress').getElement().querySelector('input').disabled = false;
+                    } else {
+                        row.getCell('progress').getElement().querySelector('input').disabled = true;
+                    }
+
                     row.getCell('color').getElement().dataset.status = row.getData().status;
                 }
             });

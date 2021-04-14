@@ -329,7 +329,7 @@ document.querySelector('#header-title').addEventListener('click', (e) => {
     searchFunction();
 });
 
-// chromium bug when using change
+// chromium bug when using change to cell.getRow().update(progress)
 onbeforeunload = () => {
     document.activeElement.blur();
 };
