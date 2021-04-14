@@ -445,12 +445,17 @@ db.onsuccess = (event3) => {
 
                             input.type = 'number';
                             input.disabled = true;
-                            input.min = 1;
+                            input.min = 0;
+                            input.max = cell.getRow().getData().episodes;
                             input.autocomplete = 'off';
                             input.value = cell.getValue();
                             input.title = 'Progress';
 
                             input.addEventListener('input', () => {
+                                if (!cell.getRow().getData().episodes) {
+                                    return;
+                                }
+
                                 if (input.value < cell.getRow().getData().episodes) {
                                     if (cell.getRow().getData().status === 'Watching') {
                                         return;
@@ -524,32 +529,65 @@ db.onsuccess = (event3) => {
                             select.value = cell.getValue();
                             select.title = 'Status';
                             select.addEventListener('change', () => {
-                                const d2 = db2().add({
-                                    episodes: cell.getRow().getData().episodes,
-                                    progress: cell.getRow().getData().progress,
-                                    season: cell.getRow().getData().season,
-                                    source: cell.getRow().getData().sources,
-                                    status: select.value,
-                                    title: cell.getRow().getData().title
-                                });
-
-                                d2.onsuccess = () => {
-                                    cell.getRow().update({
-                                        status: select.value
+                                if (select.value) {
+                                    const d2 = db2().add({
+                                        episodes: cell.getRow().getData().episodes,
+                                        progress:
+                                            select.value === 'Completed' && cell.getRow().getData().episodes
+                                                ? cell.getRow().getData().episodes
+                                                : '0',
+                                        season: cell.getRow().getData().season,
+                                        source: cell.getRow().getData().sources,
+                                        status: select.value,
+                                        title: cell.getRow().getData().title
                                     });
-                                };
 
-                                d2.onerror = () => {
-                                    db2().get(cell.getRow().getData().sources).onsuccess = (event) => {
-                                        const result = event.target.result;
-                                        result.status = select.value;
-                                        db2().put(result).onsuccess = () => {
+                                    d2.onsuccess = () => {
+                                        if (select.value === 'Completed' && cell.getRow().getData().episodes) {
                                             cell.getRow().update({
+                                                progress: cell.getRow().getData().episodes,
                                                 status: select.value
                                             });
+                                        } else {
+                                            cell.getRow().update({
+                                                progress: '0',
+                                                status: select.value
+                                            });
+                                        }
+                                    };
+
+                                    d2.onerror = () => {
+                                        db2().get(cell.getRow().getData().sources).onsuccess = (event) => {
+                                            const result = event.target.result;
+
+                                            if (select.value === 'Completed' && cell.getRow().getData().episodes) {
+                                                result.progress = cell.getRow().getData().episodes;
+                                            }
+
+                                            result.status = select.value;
+
+                                            db2().put(result).onsuccess = () => {
+                                                if (select.value === 'Completed' && cell.getRow().getData().episodes) {
+                                                    cell.getRow().update({
+                                                        progress: cell.getRow().getData().episodes,
+                                                        status: select.value
+                                                    });
+                                                } else {
+                                                    cell.getRow().update({
+                                                        status: select.value
+                                                    });
+                                                }
+                                            };
                                         };
                                     };
-                                };
+                                } else {
+                                    db2().delete(cell.getRow().getData().sources).onsuccess = () => {
+                                        cell.getRow().update({
+                                            progress: '',
+                                            status: ''
+                                        });
+                                    };
+                                }
                             });
 
                             return select;
