@@ -1,5 +1,5 @@
 if (typeof Fuse === 'undefined') {
-    importScripts('https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.basic.min.js');
+    importScripts('https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.min.js');
 }
 
 function is(value1, type, value2) {
@@ -184,7 +184,13 @@ self.addEventListener('message', (event) => {
                 }
             }
 
-            const t = [d.title];
+            const
+                s = [],
+                t = [
+                    {
+                        title: d.title
+                    }
+                ];
 
             if (v.trim()) {
                 if (event.data.regex) {
@@ -213,23 +219,51 @@ self.addEventListener('message', (event) => {
                     d.relevancy = 1;
                 } else {
                     if (event.data.alt) {
-                        t.push(...d.synonyms);
+                        for (const value of d.synonyms) {
+                            t.push({
+                                title: value
+                            });
+                        }
                     }
 
-                    const result = new Fuse(t, {
+                    let result = new Fuse(t, {
                         ignoreLocation: true,
                         includeScore: true,
-                        threshold: 0.2
+                        keys: ['title'],
+                        threshold: 0.25
                     }).search(v.trim());
 
-                    if (!result.length) {
-                        return;
+                    if (result.length) {
+                        d.relevancy = 2 - result[0].score;
+                    } else {
+                        if (v.trim().split(' ').length === 1) {
+                            return;
+                        }
+
+                        for (const value of v.trim().split(' ')) {
+                            s.push({
+                                title: value
+                            });
+                        }
+
+                        result = new Fuse(t, {
+                            ignoreLocation: true,
+                            includeScore: true,
+                            keys: ['title'],
+                            threshold: 0.25
+                        }).search({
+                            $and: s
+                        });
+
+                        if (result.length) {
+                            d.relevancy = 1 - result[0].score;
+                        } else {
+                            return;
+                        }
                     }
 
-                    d.relevancy = 1 - result[0].score;
-
-                    if (result[0].item !== d.title) {
-                        d.alternative = `${result[0].item} <span class="title">${d.title}</span>`;
+                    if (result[0].item.title !== d.title) {
+                        d.alternative = `${result[0].item.title} <span class="title">${d.title}</span>`;
                     }
                 }
             }
