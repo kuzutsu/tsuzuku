@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Tsuzuku Games</title>
+        <meta charset="utf-8">
+        <meta name="description" content="Play anime metadata games, even when offline!">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#fff">
+        <link rel="icon" href="../logo-192.png">
+        <link rel="apple-touch-icon" href="../logo-maskable-192.png">
+        <link rel="manifest" href="../manifest.webmanifest">
+        <link rel="preload" href="https://fonts.gstatic.com/s/roboto/v20/KFOmCnqEu92Fr1Mu4mxKKTU1Kg.woff2" as="font" crossorigin>
+        <link rel="preload" href="https://fonts.gstatic.com/s/roboto/v20/KFOlCnqEu92Fr1MmEU9fBBc4AMP6lQ.woff2" as="font" crossorigin>
+        <link href="index.css" rel="stylesheet">
+    </head>
+    <body class="light">
+        <noscript>
+            <span class="full">Tsuzuku Games can't run without JavaScript</span>
+        </noscript>
+        <script>
+            switch (localStorage.getItem('theme')) {
+                case 'dark':
+                    document.body.classList.remove('light');
+                    document.body.classList.add('dark');
+                    document.head.querySelector('[name="theme-color"]').content = '#000';
+                    break;
+
+                case 'light':
+                    break;
+
+                default:
+                    localStorage.setItem('theme', 'light');
+                    break;
+            }
+
+            if (!localStorage.getItem('thumbnails')) {
+                localStorage.setItem('thumbnails', 'enable');
+            }
+
+            if (!localStorage.getItem('choices')) {
+                localStorage.setItem('choices', 4);
+            }
+
+            if (!localStorage.getItem('type')) {
+                localStorage.setItem('type', 'tags');
+            }
+
+            if (!localStorage.getItem('score')) {
+                localStorage.setItem('score', 0);
+            }
+
+            if (!localStorage.getItem('high')) {
+                localStorage.setItem('high', 0);
+            }
+
+            if (!localStorage.getItem('random')) {
+                localStorage.setItem('random', 'disable');
+            }
+
+            if (!localStorage.getItem('negative')) {
+                localStorage.setItem('negative', 'enable');
+            }
+
+            if (!localStorage.getItem('selection')) {
+                localStorage.setItem('selection', 'single');
+            }
+
+            if (!localStorage.getItem('reset-incorrect')) {
+                localStorage.setItem('reset-incorrect', 'disable');
+            }
+        </script>
+        <header>
+            <a href="../" rel="noreferrer">Tsuzuku</a>
+            <span class="half-separator"></span>
+            <span>/</span>
+            <span class="half-separator"></span>
+            <span class="bold">Games</span>
+            <span class="flex-separator"></span>
+            <a href="https://github.com/kuzutsu/tsuzuku" target="_blank" rel="noreferrer">GitHub</a>
+            <span class="separator"></span>
+            <span class="theme" title="Toggle theme">
+                <svg viewBox="0 0 24 24" width="19" height="19">
+                    <path d="M20 15.31L23.31 12 20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69zM12 18V6c3.31 0 6 2.69 6 6s-2.69 6-6 6z"></path>
+                </svg>
+            </span>
+        </header>
+        <main>
+            <div class="menu">
+                <span class="settings">Toggle settings</span>
+                <span style="width: 100%; min-width: 14px;"></span>
+                <span>High</span>
+                <span class="half-separator"></span>
+                <span class="high bold"></span>
+                <span class="separator"></span>
+                <span>Score</span>
+                <span class="half-separator"></span>
+                <span class="score bold"></span>
+            </div>
+            <div class="setting">
+                <span>Selection</span>
+                <span class="flex-separator"></span>
+                <select class="selection" title="Selection">
+                    <option>single</option>
+                    <option>multiple</option>
+                </select>
+            </div>
+            <div class="setting">
+                <span>Toggle thumbnails</span>
+                <span class="flex-separator"></span>
+                <select class="thumbnails" title="Toggle thumbnails">
+                    <option>enable</option>
+                    <option>disable</option>
+                </select>
+            </div>
+            <div class="setting">
+                <span>Type</span>
+                <span class="flex-separator"></span>
+                <select class="type" title="Type">
+                    <option>tags</option>
+                    <option>year (without operators)</option>
+                    <option>year (with operators)</option>
+                    <option>episodes (without operators)</option>
+                    <option>episodes (with operators)</option>
+                    <option>season</option>
+                    <option>random</option>
+                </select>
+            </div>
+            <div class="setting">
+                <span>Number of choices</span>
+                <span class="flex-separator"></span>
+                <select class="choices" title="Number of choices">
+                    <option>2</option>
+                    <option>3</option>
+                    <option>4</option>
+                    <option>5</option>
+                    <option>10</option>
+                </select>
+            </div>
+            <div class="setting">
+                <span>Toggle negative score</span>
+                <span class="flex-separator"></span>
+                <select class="negative" title="Toggle negative score">
+                    <option>enable</option>
+                    <option>disable</option>
+                </select>
+            </div>
+            <div class="setting">
+                <span>Reset score when incorrect</span>
+                <span class="flex-separator"></span>
+                <select class="reset-incorrect" title="Reset score when incorrect">
+                    <option>enable</option>
+                    <option>disable</option>
+                </select>
+            </div>
+            <div class="query">
+                <span class="reload" title="Reload">
+                    <svg viewBox="0 0 24 24" width="19" height="19">
+                        <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"></path>
+                    </svg>
+                </span>
+                <span class="separator"></span>
+                <a href target="_blank" rel="noreferrer"></a>
+                <span class="flex-separator"></span>
+                <span class="submit bold">Submit</span>
+            </div>
+            <div class="choice"></div>
+        </main>
+        <script>
+            document.querySelector('.thumbnails').value = localStorage.getItem('thumbnails');
+            document.querySelector('.choices').value = localStorage.getItem('choices');
+            document.querySelector('.selection').value = localStorage.getItem('selection');
+            document.querySelector('.negative').value = localStorage.getItem('negative');
+            document.querySelector('.reset-incorrect').value = localStorage.getItem('reset-incorrect');
+
+            if (localStorage.getItem('random') === 'enable') {
+                document.querySelector('.type').value = 'random';
+            } else {
+                document.querySelector('.type').value = localStorage.getItem('type');
+            }
+
+            if ('serviceWorker' in navigator) {
+                navigator
+                    .serviceWorker
+                    .register('../sw.js')
+                    .then((registration) => {
+                        registration.addEventListener('updatefound', () => {
+                            let r = registration.installing;
+                            
+                            r.addEventListener('statechange', () => {
+                                if (r.state === 'installed') {
+                                    r.postMessage({
+                                        update: true
+                                    });
+                                }
+                            });
+                        });
+                    });
+            }
+
+            document.querySelector('.theme svg').addEventListener('click', () => {
+                if (localStorage.getItem('theme') === 'dark') {
+                    document.body.classList.remove('dark');
+                    document.body.classList.add('light');
+                    document.head.querySelector('[name="theme-color"]').content = '#fff';
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    document.body.classList.remove('light');
+                    document.body.classList.add('dark');
+                    document.head.querySelector('[name="theme-color"]').content = '#000';
+                    localStorage.setItem('theme', 'dark');
+                }
+            });
+        </script>
+        <script defer type="module" src="index.js"></script>
+    </body>
+</html>
