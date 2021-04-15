@@ -190,17 +190,18 @@ self.addEventListener('message', (event) => {
                     {
                         title: d.title
                     }
-                ];
+                ],
+                tt = [d.title];
 
             if (v.trim()) {
                 if (event.data.regex) {
                     let r = false;
 
                     if (event.data.alt) {
-                        t.push(...d.synonyms);
+                        tt.push(...d.synonyms);
                     }
 
-                    for (const value of t) {
+                    for (const value of tt) {
                         if (value.match(RegExp(v.trim(), 'giu'))) {
                             r = true;
 
