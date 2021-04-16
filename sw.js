@@ -23,6 +23,11 @@ self.addEventListener('install', (event) => {
                 './manifest.webmanifest',
                 './worker.js',
 
+                // games
+                './games/',
+                './games/index.css',
+                './games/index.js',
+
                 // third-party
                 'https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.min.js',
                 'https://cdn.jsdelivr.net/npm/tabulator-tables/dist/js/modules/filter.min.js',

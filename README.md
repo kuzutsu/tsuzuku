@@ -79,3 +79,6 @@ Hold `Shift`, then click on thumbnails
 
 ### Dark mode
 Click on sun icon to toggle
+
+### Games
+Play games
