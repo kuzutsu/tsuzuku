@@ -3,7 +3,7 @@
 
 ![](https://raw.githubusercontent.com/kuzutsu/tsuzuku/master/preview.png)
 
-It uses the [anime-offline-database](https://github.com/manami-project/anime-offline-database) (to minimize duplicates, only titles from MyAnimeList and Kitsu will be listed) and [Tabulator](https://github.com/olifolkerd/tabulator).
+It uses [Tabulator](https://github.com/olifolkerd/tabulator) and the [anime-offline-database](https://github.com/manami-project/anime-offline-database) (to minimize duplicates, only titles from MyAnimeList and Kitsu will be listed).
 * If title is in MyAnimeList but not in Kitsu, this will be listed and MyAnimeList icon will appear
 * If title is in Kitsu but not in MyAnimeList, this will be listed and Kitsu icon will appear
 * If title is in MyAnimeList and same title is in Kitsu, only one title will be listed and MyAnimeList icon will appear

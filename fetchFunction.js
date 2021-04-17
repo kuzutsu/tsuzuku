@@ -118,6 +118,14 @@ db.onsuccess = (event3) => {
                 }
             }
 
+            // disable edit module dependency
+            Tabulator.prototype.registerModule('edit', function () {
+                this.cancelEdit = function () {
+                    // empty
+                };
+                this.currentCell = false;
+            });
+
             t = new Tabulator('#database-container', {
                 columnHeaderSortMulti: false,
                 columns: [
@@ -179,42 +187,72 @@ db.onsuccess = (event3) => {
                                     });
                                 }
 
-                                const
-                                    hstatus = document.createElement('div');
+                                const hstatus = document.createElement('select');
 
                                 hstatus.id = 'header-status';
-                                hstatus.innerHTML =
-                                    '<select title="Status">' +
-                                        `<option selected disabled>Status</option>${statuses}` +
-                                    '</select>';
-                                hstatus.addEventListener('change', (event) => {
+                                hstatus.title = 'Status';
+                                hstatus.innerHTML = `<option selected disabled>Status</option>${statuses}`;
+                                hstatus.addEventListener('change', () => {
                                     for (const value of cell.getTable().getSelectedRows()) {
-                                        const d2 = db2().add({
-                                            episodes: value._row.data.episodes,
-                                            progress: value._row.data.progress,
-                                            season: value._row.data.season,
-                                            source: value._row.data.sources,
-                                            status: event.target.value,
-                                            title: value._row.data.title
-                                        });
-
-                                        d2.onsuccess = () => {
-                                            value.update({
-                                                status: event.target.value
+                                        if (hstatus.value) {
+                                            const d2 = db2().add({
+                                                episodes: value._row.data.episodes,
+                                                progress:
+                                                    hstatus.value === 'Completed' && value._row.data.episodes
+                                                        ? value._row.data.episodes
+                                                        : '0',
+                                                season: value._row.data.season,
+                                                source: value._row.data.sources,
+                                                status: hstatus.value,
+                                                title: value._row.data.title
                                             });
-                                        };
 
-                                        d2.onerror = () => {
-                                            db2().get(value._row.data.sources).onsuccess = (event2) => {
-                                                const result = event2.target.result;
-                                                result.status = event.target.value;
-                                                db2().put(result).onsuccess = () => {
+                                            d2.onsuccess = () => {
+                                                if (hstatus.value === 'Completed' && value._row.data.episodes) {
                                                     value.update({
-                                                        status: event.target.value
+                                                        progress: value._row.data.episodes,
+                                                        status: hstatus.value
                                                     });
+                                                } else {
+                                                    value.update({
+                                                        progress: '0',
+                                                        status: hstatus.value
+                                                    });
+                                                }
+                                            };
+
+                                            d2.onerror = () => {
+                                                db2().get(value._row.data.sources).onsuccess = (event) => {
+                                                    const result = event.target.result;
+
+                                                    if (hstatus.value === 'Completed' && value._row.data.episodes) {
+                                                        result.progress = value._row.data.episodes;
+                                                    }
+
+                                                    result.status = hstatus.value;
+
+                                                    db2().put(result).onsuccess = () => {
+                                                        if (hstatus.value === 'Completed' && value._row.data.episodes) {
+                                                            value.update({
+                                                                progress: value._row.data.episodes,
+                                                                status: hstatus.value
+                                                            });
+                                                        } else {
+                                                            value.update({
+                                                                status: hstatus.value
+                                                            });
+                                                        }
+                                                    };
                                                 };
                                             };
-                                        };
+                                        } else {
+                                            db2().delete(value._row.data.sources).onsuccess = () => {
+                                                value.update({
+                                                    progress: '',
+                                                    status: ''
+                                                });
+                                            };
+                                        }
                                     }
                                 });
 
@@ -287,42 +325,72 @@ db.onsuccess = (event3) => {
                                     });
                                 }
 
-                                const
-                                    hstatus = document.createElement('div');
+                                const hstatus = document.createElement('select');
 
                                 hstatus.id = 'header-status';
-                                hstatus.innerHTML =
-                                    '<select title="Status">' +
-                                        `<option selected disabled>Status</option>${statuses}` +
-                                    '</select>';
-                                hstatus.addEventListener('change', (event) => {
+                                hstatus.title = 'Status';
+                                hstatus.innerHTML = `<option selected disabled>Status</option>${statuses}`;
+                                hstatus.addEventListener('change', () => {
                                     for (const value of column.getTable().getSelectedRows()) {
-                                        const d2 = db2().add({
-                                            episodes: value._row.data.episodes,
-                                            progress: value._row.data.progress,
-                                            season: value._row.data.season,
-                                            source: value._row.data.sources,
-                                            status: event.target.value,
-                                            title: value._row.data.title
-                                        });
-
-                                        d2.onsuccess = () => {
-                                            value.update({
-                                                status: event.target.value
+                                        if (hstatus.value) {
+                                            const d2 = db2().add({
+                                                episodes: value._row.data.episodes,
+                                                progress:
+                                                    hstatus.value === 'Completed' && value._row.data.episodes
+                                                        ? value._row.data.episodes
+                                                        : '0',
+                                                season: value._row.data.season,
+                                                source: value._row.data.sources,
+                                                status: hstatus.value,
+                                                title: value._row.data.title
                                             });
-                                        };
 
-                                        d2.onerror = () => {
-                                            db2().get(value._row.data.sources).onsuccess = (event2) => {
-                                                const result = event2.target.result;
-                                                result.status = event.target.value;
-                                                db2().put(result).onsuccess = () => {
+                                            d2.onsuccess = () => {
+                                                if (hstatus.value === 'Completed' && value._row.data.episodes) {
                                                     value.update({
-                                                        status: event.target.value
+                                                        progress: value._row.data.episodes,
+                                                        status: hstatus.value
                                                     });
+                                                } else {
+                                                    value.update({
+                                                        progress: '0',
+                                                        status: hstatus.value
+                                                    });
+                                                }
+                                            };
+
+                                            d2.onerror = () => {
+                                                db2().get(value._row.data.sources).onsuccess = (event) => {
+                                                    const result = event.target.result;
+
+                                                    if (hstatus.value === 'Completed' && value._row.data.episodes) {
+                                                        result.progress = value._row.data.episodes;
+                                                    }
+
+                                                    result.status = hstatus.value;
+
+                                                    db2().put(result).onsuccess = () => {
+                                                        if (hstatus.value === 'Completed' && value._row.data.episodes) {
+                                                            value.update({
+                                                                progress: value._row.data.episodes,
+                                                                status: hstatus.value
+                                                            });
+                                                        } else {
+                                                            value.update({
+                                                                status: hstatus.value
+                                                            });
+                                                        }
+                                                    };
                                                 };
                                             };
-                                        };
+                                        } else {
+                                            db2().delete(value._row.data.sources).onsuccess = () => {
+                                                value.update({
+                                                    progress: '',
+                                                    status: ''
+                                                });
+                                            };
+                                        }
                                     }
                                 });
 
@@ -362,15 +430,18 @@ db.onsuccess = (event3) => {
                     {
                         field: 'sources',
                         formatter: function (cell) {
-                            let sources = null;
+                            let sources = null,
+                                ss = null;
 
                             if (cell.getValue().match(/myanimelist\.net/gu)) {
                                 sources = 'https://myanimelist.net/img/common/pwa/launcher-icon-4x.png';
+                                ss = 'MyAnimeList';
                             } else {
                                 sources = 'https://kitsu.io/favicon-194x194-2f4dbec5ffe82b8f61a3c6d28a77bc6e.png';
+                                ss = 'Kitsu';
                             }
 
-                            return `<a href="${cell.getValue()}" target="_blank" rel="noreferrer"><img src="${sources}" loading="lazy" alt style="user-select: none; height: 17px; width: 17px;"></a>`;
+                            return `<a href="${cell.getValue()}" target="_blank" rel="noreferrer" title="${ss}"><img src="${sources}" loading="lazy" alt style="user-select: none; height: 17px; width: 17px;"></a>`;
                         },
                         headerHozAlign: 'center',
                         headerSort: false,

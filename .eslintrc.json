@@ -39,6 +39,7 @@
         "no-extra-parens": ["error", "all", {
             "nestedBinaryExpressions": false
         }],
+        "no-invalid-this": "off",
         "no-lonely-if": "off",
         "no-loop-func": "off",
         "no-magic-numbers": "off",

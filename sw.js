@@ -1,12 +1,4 @@
-function cache(request, response) {
-    if (response.type === 'error' || response.type === 'opaque') {
-        return Promise.resolve();
-    }
-
-    return caches.open('tsuzuku').then((c) => c.put(request, response.clone()));
-}
-
-self.addEventListener('install', (event) => {
+addEventListener('install', (event) => {
     event.waitUntil(
         caches
             .open('tsuzuku')
@@ -44,13 +36,13 @@ self.addEventListener('install', (event) => {
     );
 });
 
-self.addEventListener('message', (event) => {
+addEventListener('message', (event) => {
     if (event.data.update) {
         self.skipWaiting();
     }
 });
 
-self.addEventListener('fetch', (event) => {
+addEventListener('fetch', (event) => {
     event.respondWith(
         caches
             .match(event.request, {
@@ -61,6 +53,13 @@ self.addEventListener('fetch', (event) => {
 
     event.waitUntil(
         fetch(event.request)
-            .then((response) => cache(event.request, response))
+            .then((response) => {
+                if (response.type === 'error' || response.type === 'opaque') {
+                    return Promise.resolve();
+                }
+
+                return caches.open('tsuzuku').then((cache) => cache.put(event.request, response.clone()));
+            })
+            .catch(() => Promise.resolve())
     );
 });
