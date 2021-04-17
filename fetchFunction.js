@@ -118,14 +118,6 @@ db.onsuccess = (event3) => {
                 }
             }
 
-            // disable edit module dependency
-            Tabulator.prototype.registerModule('edit', function () {
-                this.cancelEdit = function () {
-                    // empty
-                };
-                this.currentCell = false;
-            });
-
             t = new Tabulator('#database-container', {
                 columnHeaderSortMulti: false,
                 columns: [
