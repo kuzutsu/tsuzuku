@@ -220,6 +220,7 @@ header,
     min-width: 40px;
     object-fit: cover;
     user-select: none;
+    pointer-events: none;
 }
 
 .dim {
