@@ -6,9 +6,23 @@
         <meta name="description" content="Play anime metadata games, even when offline!">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#fff">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-title" content="Tsuzuku">
+        <meta name="apple-mobile-web-app-status-bar-style" content="default">
         <link rel="icon" href="../logo-192.png">
-        <link rel="apple-touch-icon" href="../logo-maskable-192.png">
+        <link rel="mask-icon" href="../logo.svg" color="#000">
+        <link rel="apple-touch-icon" href="../logo-180.png">
         <link rel="manifest" href="../manifest.webmanifest">
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link rel="preconnect" href="https://cdn.jsdelivr.net">
+        <link rel="preconnect" href="https://raw.githubusercontent.com">
+        <link rel="preconnect" href="https://myanimelist.net">
+        <link rel="preconnect" href="https://kitsu.io">
+        <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+        <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+        <link rel="dns-prefetch" href="https://raw.githubusercontent.com">
+        <link rel="dns-prefetch" href="https://myanimelist.net">
+        <link rel="dns-prefetch" href="https://kitsu.io">
         <link rel="preload" href="https://fonts.gstatic.com/s/roboto/v20/KFOmCnqEu92Fr1Mu4mxKKTU1Kg.woff2" as="font" crossorigin>
         <link rel="preload" href="https://fonts.gstatic.com/s/roboto/v20/KFOlCnqEu92Fr1MmEU9fBBc4AMP6lQ.woff2" as="font" crossorigin>
         <link href="index.css" rel="stylesheet">
@@ -33,16 +47,12 @@
                     break;
             }
 
-            if (!localStorage.getItem('thumbnails')) {
-                localStorage.setItem('thumbnails', 'enable');
-            }
-
             if (!localStorage.getItem('choices')) {
                 localStorage.setItem('choices', 4);
             }
 
             if (!localStorage.getItem('type')) {
-                localStorage.setItem('type', 'tags');
+                localStorage.setItem('type', 'tag');
             }
 
             if (!localStorage.getItem('score')) {
@@ -105,18 +115,10 @@
                 </select>
             </div>
             <div class="setting">
-                <span>Toggle thumbnails</span>
-                <span class="flex-separator"></span>
-                <select class="thumbnails" title="Toggle thumbnails">
-                    <option>enable</option>
-                    <option>disable</option>
-                </select>
-            </div>
-            <div class="setting">
                 <span>Type</span>
                 <span class="flex-separator"></span>
                 <select class="type" title="Type">
-                    <option>tags</option>
+                    <option>tag</option>
                     <option>year (without operators)</option>
                     <option>year (with operators)</option>
                     <option>episodes (without operators)</option>
@@ -159,14 +161,15 @@
                     </svg>
                 </span>
                 <span class="separator"></span>
-                <a href rel="noreferrer"></a>
+                <div class="query-container">
+                    <a href rel="noreferrer"></a>
+                </div>
                 <span class="flex-separator"></span>
                 <span class="submit bold">Submit</span>
             </div>
             <div class="choice"></div>
         </main>
         <script>
-            document.querySelector('.thumbnails').value = localStorage.getItem('thumbnails');
             document.querySelector('.choices').value = localStorage.getItem('choices');
             document.querySelector('.selection').value = localStorage.getItem('selection');
             document.querySelector('.negative').value = localStorage.getItem('negative');

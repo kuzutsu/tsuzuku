@@ -18,20 +18,20 @@
 
 .light {
     --background: #fff;
-    --background-hover: #e6e6e6;
+    --background-hover: #eee;
     --color: #000;
     --selected: #000;
     --selected-color: #fff;
-    --selected-hover: #191919;
+    --selected-hover: #111;
 }
 
 .dark {
     --background: #000;
-    --background-hover: #191919;
+    --background-hover: #111;
     --color: #fff;
     --selected: #fff;
     --selected-color: #000;
-    --selected-hover: #e6e6e6;
+    --selected-hover: #eee;
 }
 
 * {
@@ -109,7 +109,6 @@ a:hover {
 
 .choice div {
     align-items: center;
-    border-bottom: 1px solid var(--background-hover);
     display: flex;
     padding: 0 19px;
 }
@@ -136,7 +135,6 @@ header,
 .menu,
 .query,
 .setting {
-    border-bottom: 1px solid var(--background-hover);
     align-items: center;
     padding: 0 19px;
     white-space: nowrap;
@@ -150,10 +148,11 @@ header,
 
 .setting {
     display: none;
+    height: 40px;
 }
 
 header {
-    height: 56px;
+    height: 50px;
 }
 
 main {
@@ -163,9 +162,8 @@ main {
 }
 
 .menu,
-.query,
-.setting {
-    height: 49px;
+.query {
+    height: 48px;
 }
 
 header,
@@ -204,12 +202,7 @@ header,
     min-width: 40px;
 }
 
-.choice {
-    will-change: transform;
-}
-
 .choices,
-.thumbnails,
 .type {
     font-size: 14px;
 }
@@ -230,7 +223,7 @@ header,
 }
 
 .dim {
-    opacity: 0.2;
+    opacity: 0.1;
 }
 
 .source {
@@ -248,9 +241,8 @@ header,
     padding: 4px 0;
 }
 
-.no-picture {
-    height: 40px;
-    width: 40px;
-    min-height: 40px;
-    min-width: 40px;
+.query-container {
+    width: 100%;
+    min-width: 100px;
+    overflow: auto;
 }

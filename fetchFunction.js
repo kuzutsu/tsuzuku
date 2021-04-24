@@ -16,15 +16,16 @@ const
     status = ['', 'Completed', 'Dropped', 'Paused', 'Planning', 'Rewatching', 'Watching'],
     svg = {
         arrow: '<path d="M20 12l-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8 8-8z"></path>',
-        blank: '<path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"></path>',
         check: '<path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>',
         globe: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"></path>',
         indeterminate: '<path d="M19 3H5C3.9 3 3 3.9 3 5v14c0 1.1 0.9 2 2 2h14c1.1 0 2-0.9 2-2V5C21 3.9 20.1 3 19 3z M17 13H7v-2h10V13z"></path>',
+        picture: '<path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"></path>',
         play: '<path d="M8 5v14l11-7z"></path>'
     },
     title = document.title;
 
-let r = null,
+let db2 = null,
+    r = null,
     s = null,
     statuses = '',
     t = null;
@@ -36,7 +37,8 @@ db.onupgradeneeded = (event) => {
             'progress',
             'season',
             'status',
-            'title'
+            'title',
+            'type'
         ],
         storage = event.target.result.createObjectStore('tsuzuku', {
             keyPath: 'source'
@@ -55,29 +57,54 @@ db.onsuccess = (event3) => {
         .then((data) => {
             const d = data.data;
 
-            function db2() {
+            db2 = function () {
                 return event3.target.result.transaction('tsuzuku', 'readwrite').objectStore('tsuzuku');
-            }
+            };
 
             for (let ii = 0; ii < status.length; ii++) {
                 statuses += `<option>${status[ii]}</option>`;
             }
 
             for (let i = 0; i < d.length; i++) {
-                let source = null;
+                let source = null,
+                    source2 = null;
 
                 if (d[i].sources.filter((sources) => sources.match(/myanimelist\.net/gu)).length) {
                     source = /myanimelist\.net/gu;
                 } else if (d[i].sources.filter((sources) => sources.match(/kitsu\.io/gu)).length) {
                     source = /kitsu\.io/gu;
+                } else if (d[i].sources.filter((sources) => sources.match(/anilist\.co/gu)).length) {
+                    source = /anilist\.co/gu;
                 } else {
                     continue;
                 }
 
                 for (const value of d[i].sources.filter((sources) => sources.match(source))) {
                     const
+                        anilist = d[i].sources.filter((sources) => sources.match(/anilist\.co/gu)),
+                        kitsu = d[i].sources.filter((sources) => sources.match(/kitsu\.io/gu)),
                         ss = d[i].animeSeason.season,
                         tt = d[i].tags.map((tags) => tags.replace(/\s/gu, '_'));
+
+                    if (d[i].sources.filter((sources) => sources.match(/myanimelist\.net/gu)).length) {
+                        source2 = [
+                            value,
+                            kitsu[0] || '',
+                            anilist[0] || ''
+                        ];
+                    } else if (d[i].sources.filter((sources) => sources.match(/kitsu\.io/gu)).length) {
+                        source2 = [
+                            '',
+                            value,
+                            anilist[0] || ''
+                        ];
+                    } else {
+                        source2 = [
+                            '',
+                            '',
+                            anilist[0] || ''
+                        ];
+                    }
 
                     if (ss === 'UNDEFINED') {
                         s = '';
@@ -97,18 +124,16 @@ db.onsuccess = (event3) => {
                         alternative: d[i].title,
                         episodes: d[i].episodes || '',
                         ongoing: d[i].status === 'CURRENTLY',
-                        picture:
-                            d[i].picture.match(/myanimelist\.net/gu)
-                                ? d[i].picture.replace(d[i].picture.substr(d[i].picture.lastIndexOf('.')), '.webp')
-                                : d[i].picture,
+                        picture: d[i].picture,
                         progress: '',
                         relations: [
                             ...d[i].sources.filter((sources) => sources.match(source) && sources !== value),
-                            ...d[i].relations.filter((relations) => relations.match(/kitsu\.io|myanimelist\.net/gu))
+                            ...d[i].relations.filter((relations) => relations.match(/anilist\.co|kitsu\.io|myanimelist\.net/gu))
                         ],
                         relevancy: 1,
                         season: s + (d[i].animeSeason.year || ''),
                         sources: value,
+                        sources2: source2,
                         status: '',
                         synonyms: d[i].synonyms,
                         tags: tt,
@@ -196,7 +221,8 @@ db.onsuccess = (event3) => {
                                                 season: value._row.data.season,
                                                 source: value._row.data.sources,
                                                 status: hstatus.value,
-                                                title: value._row.data.title
+                                                title: value._row.data.title,
+                                                type: value._row.data.type
                                             });
 
                                             d2.onsuccess = () => {
@@ -256,12 +282,6 @@ db.onsuccess = (event3) => {
                                 } else {
                                     document.head.querySelector('[name="theme-color"]').content = '#000';
                                 }
-
-                                if (cell.getTable().getSelectedRows().length === cell.getTable().getRows().length) {
-                                    cell.getColumn()._column.titleElement.children[0].innerHTML = svg.check;
-                                } else {
-                                    cell.getColumn()._column.titleElement.children[0].innerHTML = svg.indeterminate;
-                                }
                             } else {
                                 index.lastRow = null;
 
@@ -271,8 +291,6 @@ db.onsuccess = (event3) => {
                                 document.querySelectorAll('.separator-selected').forEach((element) => {
                                     element.remove();
                                 });
-
-                                cell.getColumn()._column.titleElement.children[0].innerHTML = svg.blank;
 
                                 if (localStorage.getItem('theme') === 'dark') {
                                     document.head.querySelector('[name="theme-color"]').content = '#000';
@@ -298,13 +316,6 @@ db.onsuccess = (event3) => {
 
                             if (column.getTable().getSelectedRows().length) {
                                 document.querySelector('header').classList.add('header-tabulator-selected');
-
-                                if (column.getTable().getSelectedRows().length === column.getTable().getRows().length) {
-                                    column._column.titleElement.children[0].innerHTML = svg.check;
-                                } else {
-                                    column._column.titleElement.children[0].innerHTML = svg.indeterminate;
-                                }
-
                                 document.querySelector('#header-title').innerHTML = `${column.getTable().getSelectedRows().length} selected`;
 
                                 if (document.querySelector('#header-status')) {
@@ -334,7 +345,8 @@ db.onsuccess = (event3) => {
                                                 season: value._row.data.season,
                                                 source: value._row.data.sources,
                                                 status: hstatus.value,
-                                                title: value._row.data.title
+                                                title: value._row.data.title,
+                                                type: value._row.data.type
                                             });
 
                                             d2.onsuccess = () => {
@@ -396,7 +408,6 @@ db.onsuccess = (event3) => {
                                 }
                             } else {
                                 document.querySelector('header').classList.remove('header-tabulator-selected');
-                                column._column.titleElement.children[0].innerHTML = svg.blank;
                                 document.querySelector('#header-title').innerHTML = 'Tsuzuku';
                                 document.querySelector('#header-status').remove();
                                 document.querySelectorAll('.separator-selected').forEach((element) => {
@@ -414,7 +425,7 @@ db.onsuccess = (event3) => {
                         headerSort: false,
                         hozAlign: 'center',
                         titleFormatter: function () {
-                            return `<svg viewBox="0 0 24 24" width="17" height="17">${svg.blank}</svg>`;
+                            return `<svg viewBox="0 0 24 24" width="17" height="17">${svg.picture}</svg>`;
                         },
                         vertAlign: 'middle',
                         width: 50
@@ -428,12 +439,20 @@ db.onsuccess = (event3) => {
                             if (cell.getValue().match(/myanimelist\.net/gu)) {
                                 sources = 'https://myanimelist.net/img/common/pwa/launcher-icon-4x.png';
                                 ss = 'MyAnimeList';
-                            } else {
+                            } else if (cell.getValue().match(/kitsu\.io/gu)) {
                                 sources = 'https://kitsu.io/favicon-194x194-2f4dbec5ffe82b8f61a3c6d28a77bc6e.png';
                                 ss = 'Kitsu';
+                            } else {
+                                sources = 'https://anilist.co/img/icons/android-chrome-192x192.png';
+                                ss = 'AniList';
                             }
 
-                            return `<a href="${cell.getValue()}" target="_blank" rel="noreferrer" title="${ss}"><img src="${sources}" loading="lazy" alt style="user-select: none; height: 17px; width: 17px;"></a>`;
+                            return `<a href="${cell.getValue()}" target="_blank" rel="noreferrer" title="${ss}" style="background: url(${sources}); background-size: contain; height: 17px; width: 17px;"></a>`;
+                        },
+                        headerClick: function (e, column) {
+                            column.hide();
+                            column.getTable().getColumn('sources2').show();
+                            column.getTable().redraw();
                         },
                         headerHozAlign: 'center',
                         headerSort: false,
@@ -443,6 +462,48 @@ db.onsuccess = (event3) => {
                         },
                         vertAlign: 'middle',
                         width: 50
+                    },
+                    {
+                        field: 'sources2',
+                        formatter: function (cell) {
+                            let sources = '';
+
+                            if (cell.getValue()[0]) {
+                                sources += `<a href="${cell.getValue()[0]}" target="_blank" rel="noreferrer" title="MyAnimeList" style="background: url(https://myanimelist.net/img/common/pwa/launcher-icon-4x.png); background-size: contain; height: 17px; width: 17px;"></a>`;
+                            } else {
+                                sources += '<span style="height: 17px; width: 17px;"></span>';
+                            }
+
+                            sources += '<span class="separator "></span>';
+
+                            if (cell.getValue()[1]) {
+                                sources += `<a href="${cell.getValue()[1]}" target="_blank" rel="noreferrer" title="Kitsu" style="background: url(https://kitsu.io/favicon-194x194-2f4dbec5ffe82b8f61a3c6d28a77bc6e.png); background-size: contain; height: 17px; width: 17px;"></a>`;
+                            } else {
+                                sources += '<span style="height: 17px; width: 17px;"></span>';
+                            }
+
+                            sources += '<span class="separator"></span>';
+
+                            if (cell.getValue()[2]) {
+                                sources += `<a href="${cell.getValue()[2]}" target="_blank" rel="noreferrer" title="AniList" style="background: url(https://anilist.co/img/icons/android-chrome-192x192.png); background-size: contain; height: 17px; width: 17px;"></a>`;
+                            } else {
+                                sources += '<span style="height: 17px; width: 17px;"></span>';
+                            }
+
+                            return sources;
+                        },
+                        headerClick: function (e, column) {
+                            column.hide();
+                            column.getTable().getColumn('sources').show();
+                            column.getTable().redraw();
+                        },
+                        headerHozAlign: 'center',
+                        headerSort: false,
+                        hozAlign: 'center',
+                        title: 'Source',
+                        vertAlign: 'middle',
+                        visible: false,
+                        width: 122
                     },
                     {
                         field: 'alternative',
@@ -520,7 +581,7 @@ db.onsuccess = (event3) => {
                                 }
 
                                 if (input.value < cell.getRow().getData().episodes) {
-                                    if (cell.getRow().getData().status === 'Watching') {
+                                    if (cell.getRow().getData().status === 'Rewatching' || cell.getRow().getData().status === 'Watching') {
                                         return;
                                     }
 
@@ -602,7 +663,8 @@ db.onsuccess = (event3) => {
                                         season: cell.getRow().getData().season,
                                         source: cell.getRow().getData().sources,
                                         status: select.value,
-                                        title: cell.getRow().getData().title
+                                        title: cell.getRow().getData().title,
+                                        type: cell.getRow().getData().type
                                     });
 
                                     d2.onsuccess = () => {
@@ -731,7 +793,7 @@ db.onsuccess = (event3) => {
                         document.querySelector('.tabulator').style.display = '';
                     } else {
                         document.querySelector('main').insertAdjacentHTML('beforeend',
-                            '<span id="nothing">Nothing found</span>'
+                            '<div id="nothing">Nothing found</div>'
                         );
 
                     }
@@ -833,9 +895,9 @@ db.onsuccess = (event3) => {
 };
 
 export {
+    db2,
     params,
     r,
-    svg,
     t,
     title
 };

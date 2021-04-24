@@ -8,6 +8,8 @@ addEventListener('install', (event) => {
                 './fetchFunction.js',
                 './index.css',
                 './index.js',
+                './logo.svg',
+                './logo-180.png',
                 './logo-192.png',
                 './logo-512.png',
                 './logo-maskable-192.png',

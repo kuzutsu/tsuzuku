@@ -20,20 +20,20 @@
 
 .light {
     --background: #fff;
-    --background-hover: #e6e6e6;
+    --background-hover: #eee;
     --color: #000;
     --selected: #000;
     --selected-color: #fff;
-    --selected-hover: #191919;
+    --selected-hover: #111;
 }
 
 .dark {
     --background: #000;
-    --background-hover: #191919;
+    --background-hover: #111;
     --color: #fff;
     --selected: #fff;
     --selected-color: #000;
-    --selected-hover: #e6e6e6;
+    --selected-hover: #eee;
 }
 
 * {
@@ -57,7 +57,7 @@ body {
 }
 
 main {
-    height: calc(100% - 56px);
+    height: calc(100% - 50px);
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -74,7 +74,7 @@ main {
 }
 
 header {
-    height: 56px;
+    height: 50px;
     width: 100%;
     display: flex;
     align-items: center;
@@ -89,7 +89,6 @@ header {
     display: none;
     align-items: center;
     user-select: none;
-    padding: 0 19px;
     overflow: auto;
 }
 
@@ -178,13 +177,12 @@ svg.disabled {
 
 #search {
     width: 100%;
-    height: 100%;
     border: 0;
-    font-size: 14px;
     min-width: 100px;
 }
 
 #full,
+.importing,
 #loading,
 #nothing,
 #searching {
@@ -221,16 +219,8 @@ svg.disabled {
 }
 
 .tabulator-row {
+    margin-top: 1px;
     min-height: 40px;
-}
-
-header,
-.tabulator-header {
-    border-bottom: 1px solid var(--background-hover) !important;
-}
-
-.tabulator-row {
-    margin-bottom: 1px;
 }
 
 .tabulator-table {
@@ -348,6 +338,7 @@ select {
     color: #aaa;
 }
 
+.importing,
 #loading,
 #nothing,
 #searching {
@@ -359,12 +350,15 @@ select {
 }
 
 #loading {
+    position: relative;
     height: 100%;
 }
 
+.importing,
 #nothing,
 #searching {
     flex-grow: 1;
+    position: relative;
 }
 
 #full {
@@ -471,7 +465,6 @@ header option[disabled] {
 
 .tabulator-cell {
     position: relative;
-    vertical-align: middle;
 }
 
 .tabulator-col[aria-sort="none"] .tabulator-col-title {
@@ -482,7 +475,8 @@ header option[disabled] {
     display: inline-block;
 }
 
-.tabulator-cell:not([tabulator-field]) {
+.tabulator-cell:not([tabulator-field]),
+.tabulator-cell[tabulator-field="color"] {
     user-select: none;
 }
 
@@ -517,5 +511,11 @@ header option[disabled] {
 }
 
 input {
+    font-size: 14px;
     padding: 0;
+}
+
+.search2-container,
+.settings-container {
+    padding: 0 19px;
 }

@@ -2,6 +2,7 @@ const
     choice = [],
     database = [],
     episodes = [],
+    episodes2 = new Map(),
     green = '#2e7d32',
     max = {
         episode: null,
@@ -15,8 +16,10 @@ const
     red = '#c62828',
     seasons = ['fall', 'spring', 'summer', 'winter'],
     tags = [],
-    types = ['tags', 'episodes (with operators)', 'year (with operators)', 'season'],
-    years = [];
+    tags2 = new Map(),
+    types = ['tag', 'episodes (with operators)', 'year (with operators)', 'season'],
+    years = [],
+    years2 = new Map();
 
 fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/master/anime-offline-database.json')
     .then((response) => response.json())
@@ -26,7 +29,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
         for (let i = 0; i < d.length; i++) {
             const
                 e = d[i].episodes,
-                m = d[i].sources.filter((sources) => sources.match(/kitsu\.io|myanimelist\.net/gu)),
+                m = d[i].sources.filter((sources) => sources.match(/anilist\.co|kitsu\.io|myanimelist\.net/gu)),
                 y = d[i].animeSeason.year;
 
             let source = null;
@@ -41,39 +44,49 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
 
             if (d[i].sources.filter((sources) => sources.match(/myanimelist\.net/gu)).length) {
                 source = /myanimelist\.net/gu;
-            } else {
+            } else if (d[i].sources.filter((sources) => sources.match(/kitsu\.io/gu)).length) {
                 source = /kitsu\.io/gu;
+            } else {
+                source = /anilist\.co/gu;
             }
 
             for (const value of d[i].sources.filter((sources) => sources.match(source))) {
                 const tt = d[i].tags.map((t) => t.replace(/\s/gu, '_'));
 
                 for (const value2 of tt) {
-                    if (tags.indexOf(value2) === -1) {
+                    if (tags2.has(value2)) {
+                        tags2.set(value2, tags2.get(value2) + 1);
+                    } else {
+                        tags2.set(value2, 1);
                         tags.push(value2);
                     }
                 }
 
-                if (years.indexOf(y) === -1) {
+                if (years2.has(y)) {
+                    years2.set(y, years2.get(y) + 1);
+                } else {
+                    years2.set(y, 1);
                     years.push(y);
                 }
 
-                if (episodes.indexOf(e) === -1) {
+                if (episodes2.has(e)) {
+                    episodes2.set(e, episodes2.get(e) + 1);
+                } else {
+                    episodes2.set(e, 1);
                     episodes.push(e);
                 }
 
                 database.push({
                     episodes: e,
                     link: value,
-                    picture:
-                        d[i].picture.match(/myanimelist\.net/gu)
-                            ? d[i].picture.replace(d[i].picture.substr(d[i].picture.lastIndexOf('.')), '.webp')
-                            : d[i].picture,
+                    picture: d[i].thumbnail,
                     season: d[i].animeSeason.season.toLowerCase(),
                     source:
                         value.match(/myanimelist\.net/gu)
                             ? 'https://myanimelist.net/img/common/pwa/launcher-icon-4x.png'
-                            : 'https://kitsu.io/favicon-194x194-2f4dbec5ffe82b8f61a3c6d28a77bc6e.png',
+                            : value.match(/kitsu\.io/gu)
+                                ? 'https://kitsu.io/favicon-194x194-2f4dbec5ffe82b8f61a3c6d28a77bc6e.png'
+                                : 'https://anilist.co/img/icons/android-chrome-192x192.png',
                     tags: tt,
                     title: d[i].title,
                     year: y
@@ -94,6 +107,47 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
 
         years.push(null);
 
+        function operate(operator, map, value) {
+            let count = 0;
+
+            for (const [key, value2] of map) {
+                if (!key) {
+                    continue;
+                }
+
+                switch (operator) {
+                    case '<':
+                        if (key < value) {
+                            count += value2;
+                        }
+                        break;
+
+                    case '>':
+                        if (key > value) {
+                            count += value2;
+                        }
+                        break;
+
+                    case '<=':
+                        if (key <= value) {
+                            count += value2;
+                        }
+                        break;
+
+                    case '>=':
+                        if (key >= value) {
+                            count += value2;
+                        }
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+
+            return count;
+        }
+
         function game() {
             document.querySelector('.score').innerHTML = localStorage.getItem('score');
             document.querySelector('.high').innerHTML = localStorage.getItem('high');
@@ -111,9 +165,10 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                     localStorage.getItem('selection') === 'single'
                         ? 1
                         : Math.round(Math.random() * Number(localStorage.getItem('choices'))),
+                choices2 = [],
+                choices3 = Number(localStorage.getItem('choices')),
                 operator = operators[Math.round(Math.random() * (operators.length - 1))],
-                season = seasons[Math.round(Math.random() * (seasons.length - 1))],
-                tag = tags[Math.round(Math.random() * (tags.length - 1))];
+                season = seasons[Math.round(Math.random() * (seasons.length - 1))];
 
             choice.splice(0);
 
@@ -130,12 +185,17 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
             }
 
             let episode = episodes[Math.round(Math.random() * (episodes.length - 1))],
+                tag = tags[Math.round(Math.random() * (tags.length - 1))],
                 year = years[Math.round(Math.random() * (years.length - 1))];
 
-            document.querySelector('.query a').href = 'https://kuzutsu.github.io/tsuzuku/?query=';
+            document.querySelector('.query a').href = '../?query=';
 
             switch (localStorage.getItem('type')) {
                 case 'episodes (without operators)':
+                    while (episodes2.get(episode) < choices) {
+                        episode = episodes[Math.round(Math.random() * (episodes.length - 1))];
+                    }
+
                     document.querySelector('.query a').href += encodeURIComponent(`episodes:${episode}`);
                     document.querySelector('.query a').innerHTML = `episodes:<span class="bold">${episode}</span>`;
                     break;
@@ -143,20 +203,33 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                 case 'episodes (with operators)':
                     switch (operator) {
                         case '<':
-                        case '>=':
-                            while (episode === min.episode) {
+                            while (episode === min.episode || operate(operator, episodes2, episode) < choices || operate('>=', episodes2, episode) < (choices3 - choices)) {
                                 episode = episodes[Math.round(Math.random() * (episodes.length - 1))];
                             }
                             break;
 
                         case '>':
+                            while (episode === max.episode || operate(operator, episodes2, episode) < choices || operate('<=', episodes2, episode) < (choices3 - choices)) {
+                                episode = episodes[Math.round(Math.random() * (episodes.length - 1))];
+                            }
+                            break;
+
                         case '<=':
-                            while (episode === max.episode) {
+                            while (episode === max.episode || operate(operator, episodes2, episode) < choices || operate('>', episodes2, episode) < (choices3 - choices)) {
+                                episode = episodes[Math.round(Math.random() * (episodes.length - 1))];
+                            }
+                            break;
+
+                        case '>=':
+                            while (episode === min.episode || operate(operator, episodes2, episode) < choices || operate('<', episodes2, episode) < (choices3 - choices)) {
                                 episode = episodes[Math.round(Math.random() * (episodes.length - 1))];
                             }
                             break;
 
                         default:
+                            while (episodes2.get(episode) < choices) {
+                                episode = episodes[Math.round(Math.random() * (episodes.length - 1))];
+                            }
                             break;
                     }
 
@@ -170,6 +243,10 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                     break;
 
                 case 'year (without operators)':
+                    while (years2.get(year) < choices) {
+                        year = years[Math.round(Math.random() * (years.length - 1))];
+                    }
+
                     document.querySelector('.query a').href += encodeURIComponent(`year:${year || 'tba'}`);
                     document.querySelector('.query a').innerHTML = `year:<span class="bold">${year || 'tba'}</span>`;
                     break;
@@ -177,20 +254,33 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                 case 'year (with operators)':
                     switch (operator) {
                         case '<':
-                        case '>=':
-                            while (year === min.year) {
+                            while (!year || year === min.year || operate(operator, years2, year) < choices || operate('>=', years2, year) < (choices3 - choices)) {
                                 year = years[Math.round(Math.random() * (years.length - 1))];
                             }
                             break;
 
                         case '>':
+                            while (!year || year === max.year || operate(operator, years2, year) < choices || operate('<=', years2, year) < (choices3 - choices)) {
+                                year = years[Math.round(Math.random() * (years.length - 1))];
+                            }
+                            break;
+
                         case '<=':
-                            while (year === max.year) {
+                            while (!year || year === max.year || operate(operator, years2, year) < choices || operate('>', years2, year) < (choices3 - choices)) {
+                                year = years[Math.round(Math.random() * (years.length - 1))];
+                            }
+                            break;
+
+                        case '>=':
+                            while (!year || year === min.year || operate(operator, years2, year) < choices || operate('<', years2, year) < (choices3 - choices)) {
                                 year = years[Math.round(Math.random() * (years.length - 1))];
                             }
                             break;
 
                         default:
+                            while (years2.get(year) < choices) {
+                                year = years[Math.round(Math.random() * (years.length - 1))];
+                            }
                             break;
                     }
 
@@ -209,8 +299,12 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                     break;
 
                 default:
-                    document.querySelector('.query a').href += encodeURIComponent(`tags:${tag}`);
-                    document.querySelector('.query a').innerHTML = `tags:<span class="bold">${tag}</span>`;
+                    while (tags2.get(tag) < choices) {
+                        tag = tags[Math.round(Math.random() * (tags.length - 1))];
+                    }
+
+                    document.querySelector('.query a').href += encodeURIComponent(`tag:${tag}`);
+                    document.querySelector('.query a').innerHTML = `tag:<span class="bold">${tag}</span>`;
                     break;
             }
 
@@ -221,7 +315,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                 if (choice.indexOf(i) > -1) {
                     switch (localStorage.getItem('type')) {
                         case 'episodes (without operators)':
-                            while (database[random].episodes !== episode) {
+                            while (database[random].episodes !== episode || choices2.indexOf(database[random].link) > -1) {
                                 random = Math.round(Math.random() * (database.length - 1));
                             }
                             break;
@@ -229,31 +323,31 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                         case 'episodes (with operators)':
                             switch (operator) {
                                 case '<':
-                                    while (database[random].episodes >= episode) {
+                                    while (database[random].episodes >= episode || choices2.indexOf(database[random].link) > -1) {
                                         random = Math.round(Math.random() * (database.length - 1));
                                     }
                                     break;
 
                                 case '>':
-                                    while (database[random].episodes <= episode) {
+                                    while (database[random].episodes <= episode || choices2.indexOf(database[random].link) > -1) {
                                         random = Math.round(Math.random() * (database.length - 1));
                                     }
                                     break;
 
                                 case '<=':
-                                    while (database[random].episodes > episode) {
+                                    while (database[random].episodes > episode || choices2.indexOf(database[random].link) > -1) {
                                         random = Math.round(Math.random() * (database.length - 1));
                                     }
                                     break;
 
                                 case '>=':
-                                    while (database[random].episodes < episode) {
+                                    while (database[random].episodes < episode || choices2.indexOf(database[random].link) > -1) {
                                         random = Math.round(Math.random() * (database.length - 1));
                                     }
                                     break;
 
                                 default:
-                                    while (database[random].episodes !== episode) {
+                                    while (database[random].episodes !== episode || choices2.indexOf(database[random].link) > -1) {
                                         random = Math.round(Math.random() * (database.length - 1));
                                     }
                                     break;
@@ -261,13 +355,13 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                             break;
 
                         case 'season':
-                            while (database[random].season !== season) {
+                            while (database[random].season !== season || choices2.indexOf(database[random].link) > -1) {
                                 random = Math.round(Math.random() * (database.length - 1));
                             }
                             break;
 
                         case 'year (without operators)':
-                            while (database[random].year !== year) {
+                            while (database[random].year !== year || choices2.indexOf(database[random].link) > -1) {
                                 random = Math.round(Math.random() * (database.length - 1));
                             }
                             break;
@@ -275,31 +369,31 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                         case 'year (with operators)':
                             switch (operator) {
                                 case '<':
-                                    while (!database[random].year || database[random].year >= year) {
+                                    while (!database[random].year || database[random].year >= year || choices2.indexOf(database[random].link) > -1) {
                                         random = Math.round(Math.random() * (database.length - 1));
                                     }
                                     break;
 
                                 case '>':
-                                    while (database[random].year <= year) {
+                                    while (database[random].year <= year || choices2.indexOf(database[random].link) > -1) {
                                         random = Math.round(Math.random() * (database.length - 1));
                                     }
                                     break;
 
                                 case '<=':
-                                    while (!database[random].year || database[random].year > year) {
+                                    while (!database[random].year || database[random].year > year || choices2.indexOf(database[random].link) > -1) {
                                         random = Math.round(Math.random() * (database.length - 1));
                                     }
                                     break;
 
                                 case '>=':
-                                    while (database[random].year < year) {
+                                    while (database[random].year < year || choices2.indexOf(database[random].link) > -1) {
                                         random = Math.round(Math.random() * (database.length - 1));
                                     }
                                     break;
 
                                 default:
-                                    while (database[random].year !== year) {
+                                    while (database[random].year !== year || choices2.indexOf(database[random].link) > -1) {
                                         random = Math.round(Math.random() * (database.length - 1));
                                     }
                                     break;
@@ -307,7 +401,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                             break;
 
                         default:
-                            while (database[random].tags.indexOf(tag) === -1) {
+                            while (database[random].tags.indexOf(tag) === -1 || choices2.indexOf(database[random].link) > -1) {
                                 random = Math.round(Math.random() * (database.length - 1));
                             }
                             break;
@@ -315,7 +409,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                 } else {
                     switch (localStorage.getItem('type')) {
                         case 'episodes (without operators)':
-                            while (database[random].episodes === episode) {
+                            while (database[random].episodes === episode || choices2.indexOf(database[random].link) > -1) {
                                 random = Math.round(Math.random() * (database.length - 1));
                             }
                             break;
@@ -323,31 +417,31 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                         case 'episodes (with operators)':
                             switch (operator) {
                                 case '<':
-                                    while (database[random].episodes < episode) {
+                                    while (database[random].episodes < episode || choices2.indexOf(database[random].link) > -1) {
                                         random = Math.round(Math.random() * (database.length - 1));
                                     }
                                     break;
 
                                 case '>':
-                                    while (database[random].episodes > episode) {
+                                    while (database[random].episodes > episode || choices2.indexOf(database[random].link) > -1) {
                                         random = Math.round(Math.random() * (database.length - 1));
                                     }
                                     break;
 
                                 case '<=':
-                                    while (database[random].episodes <= episode) {
+                                    while (database[random].episodes <= episode || choices2.indexOf(database[random].link) > -1) {
                                         random = Math.round(Math.random() * (database.length - 1));
                                     }
                                     break;
 
                                 case '>=':
-                                    while (database[random].episodes >= episode) {
+                                    while (database[random].episodes >= episode || choices2.indexOf(database[random].link) > -1) {
                                         random = Math.round(Math.random() * (database.length - 1));
                                     }
                                     break;
 
                                 default:
-                                    while (database[random].episodes === episode) {
+                                    while (database[random].episodes === episode || choices2.indexOf(database[random].link) > -1) {
                                         random = Math.round(Math.random() * (database.length - 1));
                                     }
                                     break;
@@ -355,13 +449,13 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                             break;
 
                         case 'season':
-                            while (database[random].season === season) {
+                            while (database[random].season === season || choices2.indexOf(database[random].link) > -1) {
                                 random = Math.round(Math.random() * (database.length - 1));
                             }
                             break;
 
                         case 'year (without operators)':
-                            while (database[random].year === year) {
+                            while (database[random].year === year || choices2.indexOf(database[random].link) > -1) {
                                 random = Math.round(Math.random() * (database.length - 1));
                             }
                             break;
@@ -369,31 +463,31 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                         case 'year (with operators)':
                             switch (operator) {
                                 case '<':
-                                    while (database[random].year && database[random].year < year) {
+                                    while ((database[random].year && database[random].year < year) || choices2.indexOf(database[random].link) > -1) {
                                         random = Math.round(Math.random() * (database.length - 1));
                                     }
                                     break;
 
                                 case '>':
-                                    while (database[random].year > year) {
+                                    while (database[random].year > year || choices2.indexOf(database[random].link) > -1) {
                                         random = Math.round(Math.random() * (database.length - 1));
                                     }
                                     break;
 
                                 case '<=':
-                                    while (database[random].year && database[random].year <= year) {
+                                    while ((database[random].year && database[random].year <= year) || choices2.indexOf(database[random].link) > -1) {
                                         random = Math.round(Math.random() * (database.length - 1));
                                     }
                                     break;
 
                                 case '>=':
-                                    while (database[random].year >= year) {
+                                    while (database[random].year >= year || choices2.indexOf(database[random].link) > -1) {
                                         random = Math.round(Math.random() * (database.length - 1));
                                     }
                                     break;
 
                                 default:
-                                    while (database[random].year === year) {
+                                    while (database[random].year === year || choices2.indexOf(database[random].link) > -1) {
                                         random = Math.round(Math.random() * (database.length - 1));
                                     }
                                     break;
@@ -401,24 +495,17 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                             break;
 
                         default:
-                            while (database[random].tags.indexOf(tag) > -1) {
+                            while (database[random].tags.indexOf(tag) > -1 || choices2.indexOf(database[random].link) > -1) {
                                 random = Math.round(Math.random() * (database.length - 1));
                             }
                             break;
                     }
                 }
 
-                switch (localStorage.getItem('thumbnails')) {
-                    case 'disable':
-                        div.innerHTML = '<span class="no-picture"></span>';
-                        break;
+                choices2.push(database[random].link);
 
-                    default:
-                        div.innerHTML = `<img class="picture" src="${database[random].picture}" loading="lazy" alt></img>`;
-                        break;
-                }
-
-                div.innerHTML +=
+                div.innerHTML =
+                    `<img class="picture" src="${database[random].picture}" loading="lazy" alt>` +
                     '<span class="separator"></span>' +
                     `<a class="link" href="${database[random].link}" target="_blank" rel="noreferrer">` +
                         `<img class="source" src="${database[random].source}" loading="lazy" alt>` +
@@ -510,13 +597,6 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
 
         document.querySelector('.selection').addEventListener('change', (e) => {
             localStorage.setItem('selection', e.currentTarget.value);
-            localStorage.setItem('score', 0);
-            localStorage.setItem('high', 0);
-            game();
-        });
-
-        document.querySelector('.thumbnails').addEventListener('change', (e) => {
-            localStorage.setItem('thumbnails', e.currentTarget.value);
             localStorage.setItem('score', 0);
             localStorage.setItem('high', 0);
             game();

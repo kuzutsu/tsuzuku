@@ -31,7 +31,7 @@ function is(value1, type, value2) {
     }
 }
 
-self.addEventListener('message', (event) => {
+addEventListener('message', (event) => {
     const
         f = [],
         u = [];
@@ -88,9 +88,9 @@ self.addEventListener('message', (event) => {
         v = v.replace(/\bseason:(?:\|?(?:winter|spring|summer|fall|tba)\b)+/giu, '');
     }
 
-    if (v.match(/\btags:\S+\b/giu)) {
-        tags = v.match(/\btags:\S+\b/giu)[0].replace(/tags:/giu, '').split('&');
-        v = v.replace(/\btags:\S+\b/giu, '');
+    if (v.match(/\btag:\S+\b/giu)) {
+        tags = v.match(/\btag:\S+\b/giu)[0].replace(/tag:/giu, '').split('&');
+        v = v.replace(/\btag:\S+\b/giu, '');
     }
 
     if (v.match(/\bis:selected\b/giu)) {
