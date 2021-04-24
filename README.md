@@ -95,8 +95,7 @@ MyAnimeList
 1. Click "animelist_xxxxxxxxxx_-_xxxxxxxx.xml.gz" to download GZIP file
 1. Extract XML file
 
-Kitsu
-Kitsu exports in MyAnimeList XML format, Kitsu-only titles not included
+Kitsu, exports in MyAnimeList XML format, Kitsu-only titles not included
 1. Go to https://kitsu.io/settings/exports
 1. Click "Download Anime Library" to download XML file
 
