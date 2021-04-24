@@ -69,9 +69,6 @@ Examples:
 ### Random select
 Default is 1
 
-### Invert select
-Click on thumbnail header icon
-
 ### Select range
 Desktop only
 
