@@ -79,7 +79,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                 database.push({
                     episodes: e,
                     link: value,
-                    picture: d[i].thumbnail,
+                    picture: d[i].picture,
                     season: d[i].animeSeason.season.toLowerCase(),
                     source:
                         value.match(/myanimelist\.net/gu)
