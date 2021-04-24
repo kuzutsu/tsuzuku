@@ -2,6 +2,8 @@ import {
     db2,
     params,
     r,
+    selected,
+    svg,
     t,
     title
 } from './fetchFunction.js';
@@ -237,7 +239,11 @@ document.querySelector('#close').addEventListener('click', () => {
         document.head.querySelector('[name="theme-color"]').content = '#fff';
     }
 
+    t.getColumn('picture')._column.titleElement.children[0].innerHTML = svg.blank;
     t.deselectRow();
+
+    selected.s = false;
+    selected.ss.splice(0);
 });
 
 document.querySelector('#search').addEventListener('keyup', (e) => {

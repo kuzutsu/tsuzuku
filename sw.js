@@ -7,6 +7,7 @@ addEventListener('install', (event) => {
                 './',
                 './fetchFunction.js',
                 './index.css',
+                './index.html',
                 './index.js',
                 './logo.svg',
                 './logo-180.png',
@@ -20,6 +21,7 @@ addEventListener('install', (event) => {
                 // games
                 './games/',
                 './games/index.css',
+                './games/index.html',
                 './games/index.js',
 
                 // third-party
