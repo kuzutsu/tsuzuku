@@ -507,7 +507,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                 div.innerHTML =
                     `<img class="picture" src="${database[random].picture}" loading="lazy" alt>` +
                     '<span class="separator"></span>' +
-                    `<a class="link" href="${database[random].link}" target="_blank" rel="noreferrer" style="background: url(${database[random].source}); background-size: contain; height: 17px; width: 17px;"></a>` +
+                    `<a class="link" href="${database[random].link}" target="_blank" rel="noreferrer" style="background: url(${database[random].source}); background-size: contain; height: 17px; width: 17px; min-height: 17px; min-width: 17px;"></a>` +
                     '<span class="separator"></span>' +
                     `<span class="title">${database[random].title}</span>`;
 
