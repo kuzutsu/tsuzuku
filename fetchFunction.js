@@ -880,6 +880,9 @@ db.onsuccess = (event3) => {
 
                     if (new URLSearchParams(location.search).get('query')) {
                         document.querySelector('#search').value = decodeURIComponent(new URLSearchParams(location.search).get('query'));
+                        document.querySelector('#default').style.display = 'contents';
+                        document.querySelector('.tabs').style.display = 'none';
+                        document.querySelector('#enter svg').style.fill = '';
                         document.querySelector('#clear').style.visibility = 'visible';
                         document.querySelector('#clear').style.display = 'inline-flex';
                     } else {
