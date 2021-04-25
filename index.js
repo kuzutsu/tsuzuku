@@ -55,8 +55,8 @@ function searchFunction(tt, qq, p, s) {
         document.querySelector('.selected-tab').classList.remove('selected-tab');
     }
 
-    if (document.querySelector(`.tab[data-query="${query}"]`)) {
-        document.querySelector(`.tab[data-query="${query}"]`).classList.add('selected-tab');
+    if (document.querySelector(`[data-query="${query}"]`)) {
+        document.querySelector(`[data-query="${query}"]`).classList.add('selected-tab');
     }
 
     if (document.querySelector('.importing')) {

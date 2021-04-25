@@ -879,12 +879,17 @@ db.onsuccess = (event3) => {
                     document.querySelector('#loading').innerHTML = 'Loading personal list...';
 
                     if (new URLSearchParams(location.search).get('query')) {
-                        document.querySelector('#search').value = decodeURIComponent(new URLSearchParams(location.search).get('query'));
-                        document.querySelector('#default').style.display = 'contents';
-                        document.querySelector('.tabs').style.display = 'none';
-                        document.querySelector('#enter svg').style.fill = '';
+                        const value = decodeURIComponent(new URLSearchParams(location.search).get('query'));
+
+                        document.querySelector('#search').value = value;
                         document.querySelector('#clear').style.visibility = 'visible';
                         document.querySelector('#clear').style.display = 'inline-flex';
+
+                        if (!document.querySelector(`[data-query="${value}"]`)) {
+                            document.querySelector('#default').style.display = 'contents';
+                            document.querySelector('.tabs').style.display = 'none';
+                            document.querySelector('#enter svg').style.fill = '';
+                        }
                     } else {
                         document.querySelector('#search').value = '';
                         document.querySelector('#clear').style.display = 'none';
