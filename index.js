@@ -223,6 +223,13 @@ document.querySelector('#theme').addEventListener('click', () => {
     }
 });
 
+document.querySelector('#banner').addEventListener('click', () => {
+    document.body.classList.toggle('show');
+    document.querySelector('#banner svg').classList.toggle('disabled');
+
+    t.redraw();
+});
+
 document.querySelector('#close').addEventListener('click', () => {
     index.lastRow = null;
 

@@ -30,6 +30,7 @@ const
     title = document.title;
 
 let db2 = null,
+    focused = false,
     r = null,
     s = null,
     statuses = '',
@@ -147,6 +148,15 @@ db.onsuccess = (event3) => {
                     });
                 }
             }
+
+            // disable edit module dependency
+            Tabulator.prototype.registerModule('edit', function () {
+                this.cancelEdit = function () {
+                    // empty
+                };
+
+                this.currentCell = true;
+            });
 
             t = new Tabulator('#database-container', {
                 columnHeaderSortMulti: false,
@@ -662,8 +672,14 @@ db.onsuccess = (event3) => {
                                 }
                             });
 
+                            input.addEventListener('focus', () => {
+                                focused = true;
+                            });
+
                             // chromium bug when using change to cell.getRow().update(progress)
                             input.addEventListener('blur', () => {
+                                focused = false;
+
                                 db2().get(cell.getRow().getData().sources).onsuccess = (event) => {
                                     const result = event.target.result;
                                     result.progress = input.value;
@@ -971,6 +987,13 @@ db.onsuccess = (event3) => {
                     }
 
                     row.getCell('color').getElement().dataset.status = row.getData().status;
+                },
+                tableBuilt: function () {
+                    new ResizeObserver(() => {
+                        if (!focused) {
+                            this.redraw();
+                        }
+                    }).observe(this.element);
                 }
             });
         });
