@@ -7,6 +7,9 @@ const
     database = [],
     database2 = {},
     db = indexedDB.open('tsuzuku', 1),
+    focused = {
+        f: false
+    },
     params = {
         alt: true,
         random: false,
@@ -30,7 +33,6 @@ const
     title = document.title;
 
 let db2 = null,
-    focused = false,
     r = null,
     s = null,
     statuses = '',
@@ -673,12 +675,12 @@ db.onsuccess = (event3) => {
                             });
 
                             input.addEventListener('focus', () => {
-                                focused = true;
+                                focused.f = true;
                             });
 
                             // chromium bug when using change to cell.getRow().update(progress)
                             input.addEventListener('blur', () => {
-                                focused = false;
+                                focused.f = false;
 
                                 db2().get(cell.getRow().getData().sources).onsuccess = (event) => {
                                     const result = event.target.result;
@@ -990,7 +992,7 @@ db.onsuccess = (event3) => {
                 },
                 tableBuilt: function () {
                     new ResizeObserver(() => {
-                        if (!focused) {
+                        if (!focused.f) {
                             this.redraw();
                         }
                     }).observe(this.element);
@@ -1001,6 +1003,7 @@ db.onsuccess = (event3) => {
 
 export {
     db2,
+    focused,
     params,
     r,
     selected,
