@@ -263,8 +263,12 @@ svg.disabled {
     transform: scaleY(-1);
 }
 
-.header-tabulator-selected {
-    background: var(--selected) !important;
+body:not(.show) .header-tabulator-selected {
+    background: var(--selected);
+}
+
+.show .header-tabulator-selected .overlay {
+    background: linear-gradient(to bottom, var(--selected), transparent);
 }
 
 .header-tabulator-selected span {
@@ -276,6 +280,7 @@ svg.disabled {
 }
 
 .header-tabulator-selected a,
+.header-tabulator-selected #banner,
 .header-tabulator-selected .separator,
 .header-tabulator-selected #theme {
     display: none !important;
@@ -399,8 +404,15 @@ select {
     }
 }
 
-header select {
+.show header select {
+    background: transparent;
+}
+
+body:not(.show) header select {
     background: var(--selected);
+}
+
+header select {
     border: 0;
     color: var(--selected-color);
     font-size: 16px;
