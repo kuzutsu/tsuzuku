@@ -1,6 +1,5 @@
 import {
     db2,
-    focused,
     params,
     r,
     selected,
@@ -322,16 +321,10 @@ document.querySelector('#search').addEventListener('input', (e) => {
 });
 
 document.querySelector('#search').addEventListener('focus', (e) => {
-    focused.f = true;
-
     if (e.target.value) {
         document.querySelector('#clear').style.visibility = 'visible';
         document.querySelector('#clear').style.display = 'inline-flex';
     }
-});
-
-document.querySelector('#search').addEventListener('blur', () => {
-    focused.f = false;
 });
 
 document.querySelectorAll('.tab').forEach((element) => {

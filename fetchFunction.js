@@ -7,9 +7,6 @@ const
     database = [],
     database2 = {},
     db = indexedDB.open('tsuzuku', 1),
-    focused = {
-        f: false
-    },
     params = {
         alt: true,
         random: false,
@@ -674,14 +671,8 @@ db.onsuccess = (event3) => {
                                 }
                             });
 
-                            input.addEventListener('focus', () => {
-                                focused.f = true;
-                            });
-
                             // chromium bug when using change to cell.getRow().update(progress)
                             input.addEventListener('blur', () => {
-                                focused.f = false;
-
                                 db2().get(cell.getRow().getData().sources).onsuccess = (event) => {
                                     const result = event.target.result;
                                     result.progress = input.value;
@@ -990,20 +981,12 @@ db.onsuccess = (event3) => {
 
                     row.getCell('color').getElement().dataset.status = row.getData().status;
                 },
-                tableBuilt: function () {
-                    new ResizeObserver(() => {
-                        if (!focused.f) {
-                            this.redraw();
-                        }
-                    }).observe(this.element);
-                }
             });
         });
 };
 
 export {
     db2,
-    focused,
     params,
     r,
     selected,
