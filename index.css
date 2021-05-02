@@ -143,7 +143,7 @@ main {
 }
 
 [data-status="Completed"] {
-    background: #8bc34a !important;
+    background: #3f51b5 !important;
 }
 
 [data-status="Rewatching"] {
@@ -155,7 +155,7 @@ main {
 }
 
 [data-status="Watching"] {
-    background: #3f51b5 !important;
+    background: #8bc34a !important;
 }
 
 [data-status="Dropped"] {
