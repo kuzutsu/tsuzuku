@@ -142,27 +142,30 @@ main {
     background: var(--selected-hover);
 }
 
-[data-status="Completed"] {
+[data-status="Completed"] [tabulator-field="color"] {
     background: #3f51b5 !important;
 }
 
-[data-status="Rewatching"] {
+[data-status="Rewatching"] [tabulator-field="color"] {
     background: #03a9f4 !important;
 }
 
-[data-status="Planning"] {
+[data-status="Planning"] [tabulator-field="color"] {
     background: #9e9e9e !important;
 }
 
-[data-status="Watching"] {
+[data-status="Watching"] .indicator,
+[data-status="Watching"] [tabulator-field="color"] {
     background: #8bc34a !important;
 }
 
-[data-status="Dropped"] {
+[data-status="Dropped"] .indicator,
+[data-status="Dropped"] [tabulator-field="color"] {
     background: #f44336 !important;
 }
 
-[data-status="Paused"] {
+[data-status="Paused"] .indicator,
+[data-status="Paused"] [tabulator-field="color"] {
     background: #ff9800 !important;
 }
 

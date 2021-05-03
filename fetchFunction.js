@@ -568,7 +568,7 @@ db.onsuccess = (event3) => {
                     {
                         field: 'alternative',
                         formatter: function (cell) {
-                            return `<span>${cell.getValue()}</span>`;
+                            return `<span>${cell.getValue()}</span><div class="indicator" style="position: absolute; bottom: 0; height: 2px;"></div>`;
                         },
                         minWidth: 150,
                         title: 'Title',
@@ -682,6 +682,14 @@ db.onsuccess = (event3) => {
                                         });
                                     };
                                 };
+                            });
+
+                            input.addEventListener('change', () => {
+                                if (!cell.getRow().getCell('alternative').getElement().querySelector('.indicator')) {
+                                    return;
+                                }
+
+                                cell.getRow().getCell('alternative').getElement().querySelector('.indicator').style.width = `${input.value / cell.getRow().getData().episodes * 100}%`;
                             });
 
                             input.addEventListener('keyup', (e) => {
@@ -979,8 +987,23 @@ db.onsuccess = (event3) => {
                         row.getCell('progress').getElement().querySelector('input').disabled = true;
                     }
 
-                    row.getCell('color').getElement().dataset.status = row.getData().status;
-                },
+                    row.getElement().dataset.status = row.getData().status;
+
+                    switch (row.getData().status) {
+                        case 'Dropped':
+                        case 'Paused':
+                        case 'Rewatching':
+                        case 'Watching':
+                            row.getCell('alternative').getElement().querySelector('.indicator').style.width = `${row.getData().progress / row.getData().episodes * 100}%`;
+                            break;
+
+                        case 'Completed':
+                        case 'Planning':
+                        default:
+                            row.getCell('alternative').getElement().querySelector('.indicator').style.width = 0;
+                            break;
+                    }
+                }
             });
         });
 };
