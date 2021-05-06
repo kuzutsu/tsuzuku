@@ -241,12 +241,7 @@ svg.disabled {
 }
 
 .tabulator-row {
-    margin-top: 1px;
     min-height: 40px;
-}
-
-.tabulator-table {
-    background: var(--background-hover);
 }
 
 .tabulator-col-title {

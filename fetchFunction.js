@@ -172,8 +172,8 @@ db.onsuccess = (event3) => {
                         // padding
                         frozen: true,
                         headerSort: false,
-                        minWidth: 4,
-                        width: 4
+                        minWidth: 15,
+                        width: 15
                     },
                     {
                         cellClick: function (e, cell) {
@@ -488,7 +488,7 @@ db.onsuccess = (event3) => {
                             return `<svg viewBox="0 0 24 24" width="17" height="17">${svg.blank}</svg>`;
                         },
                         vertAlign: 'middle',
-                        width: 50
+                        width: 40
                     },
                     {
                         field: 'sources',
@@ -521,7 +521,7 @@ db.onsuccess = (event3) => {
                             return `<svg viewBox="0 0 24 24" width="17" height="17">${svg.globe}</svg>`;
                         },
                         vertAlign: 'middle',
-                        width: 50
+                        width: 55
                     },
                     {
                         field: 'sources2',
@@ -563,14 +563,14 @@ db.onsuccess = (event3) => {
                         title: 'Source',
                         vertAlign: 'middle',
                         visible: false,
-                        width: 122
+                        width: 127
                     },
                     {
                         field: 'alternative',
                         formatter: function (cell) {
-                            return `<span>${cell.getValue()}</span><div class="indicator" style="position: absolute; bottom: 0; height: 2px;"></div>`;
+                            return `<span>${cell.getValue()}</span><div class="indicator" style="position: absolute; bottom: 0; height: 2px; max-width: 100%;"></div>`;
                         },
-                        minWidth: 150,
+                        minWidth: 200,
                         title: 'Title',
                         vertAlign: 'middle'
                     },
@@ -640,6 +640,8 @@ db.onsuccess = (event3) => {
                                     return;
                                 }
 
+                                cell.getRow().getCell('alternative').getElement().querySelector('.indicator').style.width = `${input.value / cell.getRow().getData().episodes * 100}%`;
+
                                 if (input.value < cell.getRow().getData().episodes) {
                                     if (cell.getRow().getData().status === 'Rewatching' || cell.getRow().getData().status === 'Watching') {
                                         return;
@@ -682,14 +684,6 @@ db.onsuccess = (event3) => {
                                         });
                                     };
                                 };
-                            });
-
-                            input.addEventListener('change', () => {
-                                if (!cell.getRow().getCell('alternative').getElement().querySelector('.indicator')) {
-                                    return;
-                                }
-
-                                cell.getRow().getCell('alternative').getElement().querySelector('.indicator').style.width = `${input.value / cell.getRow().getData().episodes * 100}%`;
                             });
 
                             input.addEventListener('keyup', (e) => {
@@ -832,8 +826,8 @@ db.onsuccess = (event3) => {
                     {
                         // padding
                         headerSort: false,
-                        minWidth: 8,
-                        width: 8
+                        minWidth: 19,
+                        width: 19
                     }
                 ],
                 data: database,
@@ -1000,7 +994,7 @@ db.onsuccess = (event3) => {
                         case 'Completed':
                         case 'Planning':
                         default:
-                            row.getCell('alternative').getElement().querySelector('.indicator').style.width = 0;
+                            row.getCell('alternative').getElement().querySelector('.indicator').style.width = '0%';
                             break;
                     }
                 }

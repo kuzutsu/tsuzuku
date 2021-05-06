@@ -161,9 +161,12 @@ main {
     font-size: 14px;
 }
 
-.menu,
-.query {
+.menu {
     height: 48px;
+}
+
+.query {
+    height: 40px;
 }
 
 header,
