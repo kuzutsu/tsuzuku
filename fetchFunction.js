@@ -84,6 +84,10 @@ db.onsuccess = (event3) => {
                     continue;
                 }
 
+                if (d[i].picture === 'https://cdn.myanimelist.net/images/qm_50.gif') {
+                    continue;
+                }
+
                 for (const value of d[i].sources.filter((sources) => sources.match(source))) {
                     const
                         anilist = d[i].sources.filter((sources) => sources.match(/anilist\.co/gu)),
@@ -218,7 +222,7 @@ db.onsuccess = (event3) => {
                             if (cell.getTable().getSelectedRows().length) {
                                 index.lastRow = cell.getRow();
 
-                                document.querySelector('header').classList.add('header-tabulator-selected');
+                                document.querySelector('header').classList.add('header-selected');
                                 document.querySelector('#header-title').innerHTML = `${cell.getTable().getSelectedRows().length} selected`;
 
                                 if (document.querySelector('#header-status')) {
@@ -318,7 +322,7 @@ db.onsuccess = (event3) => {
                             } else {
                                 index.lastRow = null;
 
-                                document.querySelector('header').classList.remove('header-tabulator-selected');
+                                document.querySelector('header').classList.remove('header-selected');
                                 document.querySelector('#header-title').innerHTML = 'Tsuzuku';
                                 document.querySelector('#header-status').remove();
                                 document.querySelectorAll('.separator-selected').forEach((element) => {
@@ -368,7 +372,7 @@ db.onsuccess = (event3) => {
                             }
 
                             if (column.getTable().getSelectedRows().length) {
-                                document.querySelector('header').classList.add('header-tabulator-selected');
+                                document.querySelector('header').classList.add('header-selected');
                                 document.querySelector('#header-title').innerHTML = `${column.getTable().getSelectedRows().length} selected`;
 
                                 if (selected.s) {
@@ -466,7 +470,7 @@ db.onsuccess = (event3) => {
                                     document.head.querySelector('[name="theme-color"]').content = '#000';
                                 }
                             } else {
-                                document.querySelector('header').classList.remove('header-tabulator-selected');
+                                document.querySelector('header').classList.remove('header-selected');
                                 column._column.titleElement.children[0].innerHTML = svg.blank;
                                 document.querySelector('#header-title').innerHTML = 'Tsuzuku';
                                 document.querySelector('#header-status').remove();
@@ -984,15 +988,14 @@ db.onsuccess = (event3) => {
                     row.getElement().dataset.status = row.getData().status;
 
                     switch (row.getData().status) {
+                        case 'Completed':
                         case 'Dropped':
                         case 'Paused':
                         case 'Rewatching':
                         case 'Watching':
-                            row.getCell('alternative').getElement().querySelector('.indicator').style.width = `${row.getData().progress / row.getData().episodes * 100}%`;
+                            row.getCell('alternative').getElement().querySelector('.indicator').style.width = `${row.getCell('progress').getElement().querySelector('input').value / row.getData().episodes * 100}%`;
                             break;
 
-                        case 'Completed':
-                        case 'Planning':
                         default:
                             row.getCell('alternative').getElement().querySelector('.indicator').style.width = '0%';
                             break;

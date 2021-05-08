@@ -214,11 +214,13 @@ document.querySelector('#theme').addEventListener('click', () => {
         document.body.classList.remove('dark');
         document.body.classList.add('light');
         document.head.querySelector('[name="theme-color"]').content = '#fff';
+        document.querySelector('#theme path').setAttribute('d', 'M20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69zM12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6c3.31 0 6 2.69 6 6s-2.69 6-6 6z');
         localStorage.setItem('theme', 'light');
     } else {
         document.body.classList.remove('light');
         document.body.classList.add('dark');
         document.head.querySelector('[name="theme-color"]').content = '#000';
+        document.querySelector('#theme path').setAttribute('d', 'M20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69zM12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6zm0-10c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4z');
         localStorage.setItem('theme', 'dark');
     }
 });
@@ -234,7 +236,7 @@ document.querySelector('#close').addEventListener('click', () => {
     index.lastRow = null;
 
     document.querySelector('#header-title').innerHTML = 'Tsuzuku';
-    document.querySelector('.header-tabulator-selected').classList.remove('header-tabulator-selected');
+    document.querySelector('.header-selected').classList.remove('header-selected');
     document.querySelector('#header-status').remove();
     document.querySelectorAll('.separator-selected').forEach((element) => {
         element.remove();
@@ -340,7 +342,7 @@ document.querySelectorAll('.tab').forEach((element) => {
 });
 
 document.querySelector('#header-title').addEventListener('click', (e) => {
-    if (e.target.parentNode.classList[0] !== 'header-tabulator-selected') {
+    if (e.target.parentNode.parentNode.parentNode.classList[0] !== 'header-selected') {
         return;
     }
 

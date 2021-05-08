@@ -50,6 +50,10 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                 source = /anilist\.co/gu;
             }
 
+            if (d[i].picture === 'https://cdn.myanimelist.net/images/qm_50.gif') {
+                continue;
+            }
+
             for (const value of d[i].sources.filter((sources) => sources.match(source))) {
                 const tt = d[i].tags.map((t) => t.replace(/\s/gu, '_'));
 
@@ -575,13 +579,13 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                 }
             }
 
-            if (localStorage.getItem('reset-incorrect') === 'enable' && incorrect) {
+            if (localStorage.getItem('reset-incorrect') === 'true' && incorrect) {
                 localStorage.setItem('score', 0);
             } else {
                 localStorage.setItem('score', Number(localStorage.getItem('score')) + score);
             }
 
-            if (localStorage.getItem('negative') === 'disable' && Number(localStorage.getItem('score')) < 0) {
+            if (localStorage.getItem('negative') === 'false' && Number(localStorage.getItem('score')) < 0) {
                 localStorage.setItem('score', 0);
             }
 
@@ -608,14 +612,14 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
         });
 
         document.querySelector('.negative').addEventListener('change', (e) => {
-            localStorage.setItem('negative', e.currentTarget.value);
+            localStorage.setItem('negative', e.currentTarget.checked);
             localStorage.setItem('score', 0);
             localStorage.setItem('high', 0);
             game();
         });
 
         document.querySelector('.reset-incorrect').addEventListener('change', (e) => {
-            localStorage.setItem('reset-incorrect', e.currentTarget.value);
+            localStorage.setItem('reset-incorrect', e.currentTarget.checked);
             localStorage.setItem('score', 0);
             localStorage.setItem('high', 0);
             game();
@@ -635,12 +639,12 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
         });
 
         document.querySelector('.settings').addEventListener('click', () => {
-            for (const i of document.querySelectorAll('.setting')) {
-                if (i.style.display) {
-                    i.style.display = '';
-                } else {
-                    i.style.display = 'flex';
-                }
+            if (document.querySelector('.settings-container').style.display) {
+                document.querySelector('.settings-container').style.display = '';
+                document.querySelector('.settings svg').style.fill = '';
+            } else {
+                document.querySelector('.settings-container').style.display = 'none';
+                document.querySelector('.settings svg').style.fill = '#aaa';
             }
         });
 

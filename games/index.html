@@ -31,12 +31,107 @@
         <noscript>
             <span class="full">Tsuzuku Games can't run without JavaScript</span>
         </noscript>
+        <header>
+            <a href="../" rel="noreferrer">Tsuzuku</a>
+            <span class="half-separator"></span>
+            <span>/</span>
+            <span class="half-separator"></span>
+            <span class="bold">Games</span>
+            <span class="flex-separator"></span>
+            <a href="https://github.com/kuzutsu/tsuzuku" target="_blank" rel="noreferrer">GitHub</a>
+            <span class="separator"></span>
+            <span class="theme" title="Toggle theme">
+                <svg viewBox="0 0 24 24" width="19" height="19">
+                    <path d="M20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69zM12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6c3.31 0 6 2.69 6 6s-2.69 6-6 6z"></path>
+                </svg>
+            </span>
+        </header>
+        <main>
+            <div class="menu">
+                <span>High</span>
+                <span class="half-separator"></span>
+                <span class="high bold"></span>
+                <span class="separator"></span>
+                <span>Score</span>
+                <span class="half-separator"></span>
+                <span class="score bold"></span>
+                <span style="width: 100%; min-width: 14px;"></span>
+                <span class="settings" title="Settings" style="display: inline-flex; align-items: center;">
+                    <svg viewBox="0 0 24 24" width="17" height="17" style="fill: #aaa;">
+                        <path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"></path>
+                    </svg>
+                </span>
+            </div>
+            <div class="settings-container" style="display: none;">
+                <div>
+                    <span>Selection</span>
+                    <span class="flex-separator"></span>
+                    <select class="selection" title="Selection">
+                        <option>single</option>
+                        <option>multiple</option>
+                    </select>
+                </div>
+                <div>
+                    <span>Type</span>
+                    <span class="flex-separator"></span>
+                    <select class="type" title="Type">
+                        <option>tag</option>
+                        <option>year (without operators)</option>
+                        <option>year (with operators)</option>
+                        <option>episodes (without operators)</option>
+                        <option>episodes (with operators)</option>
+                        <option>season</option>
+                        <option>random</option>
+                    </select>
+                </div>
+                <div>
+                    <span>Number of choices</span>
+                    <span class="flex-separator"></span>
+                    <select class="choices" title="Number of choices">
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                        <option>6</option>
+                        <option>7</option>
+                        <option>8</option>
+                        <option>9</option>
+                        <option>10</option>
+                    </select>
+                </div>
+                <div>
+                    <span>Toggle negative score</span>
+                    <span class="flex-separator"></span>
+                    <input type="checkbox" class="negative" title="Toggle negative score"></input>
+                </div>
+                <div>
+                    <span>Reset score when incorrect</span>
+                    <span class="flex-separator"></span>
+                    <input type="checkbox" class="reset-incorrect" title="Reset score when incorrect"></input>
+                </div>
+            </div>
+            <div class="query">
+                <span class="reload" title="Reload">
+                    <svg viewBox="0 0 24 24" width="17" height="17">
+                        <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"></path>
+                    </svg>
+                </span>
+                <span class="separator"></span>
+                <div class="query-container">
+                    <a href rel="noreferrer"></a>
+                </div>
+                <span class="separator"></span>
+                <span class="submit bold">Submit</span>
+            </div>
+            <div class="choice"></div>
+        </main>
         <script>
             switch (localStorage.getItem('theme')) {
                 case 'dark':
                     document.body.classList.remove('light');
                     document.body.classList.add('dark');
                     document.head.querySelector('[name="theme-color"]').content = '#000';
+                    document.querySelector('.theme path').setAttribute('d', 'M20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69zM12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6zm0-10c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4z');
                     break;
 
                 case 'light':
@@ -68,7 +163,7 @@
             }
 
             if (!localStorage.getItem('negative')) {
-                localStorage.setItem('negative', 'enable');
+                localStorage.setItem('negative', true);
             }
 
             if (!localStorage.getItem('selection')) {
@@ -76,108 +171,23 @@
             }
 
             if (!localStorage.getItem('reset-incorrect')) {
-                localStorage.setItem('reset-incorrect', 'disable');
+                localStorage.setItem('reset-incorrect', false);
             }
-        </script>
-        <header>
-            <a href="../" rel="noreferrer">Tsuzuku</a>
-            <span class="half-separator"></span>
-            <span>/</span>
-            <span class="half-separator"></span>
-            <span class="bold">Games</span>
-            <span class="flex-separator"></span>
-            <a href="https://github.com/kuzutsu/tsuzuku" target="_blank" rel="noreferrer">GitHub</a>
-            <span class="separator"></span>
-            <span class="theme" title="Toggle theme">
-                <svg viewBox="0 0 24 24" width="19" height="19">
-                    <path d="M20 15.31L23.31 12 20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69zM12 18V6c3.31 0 6 2.69 6 6s-2.69 6-6 6z"></path>
-                </svg>
-            </span>
-        </header>
-        <main>
-            <div class="menu">
-                <span class="settings">Toggle settings</span>
-                <span style="width: 100%; min-width: 14px;"></span>
-                <span>High</span>
-                <span class="half-separator"></span>
-                <span class="high bold"></span>
-                <span class="separator"></span>
-                <span>Score</span>
-                <span class="half-separator"></span>
-                <span class="score bold"></span>
-            </div>
-            <div class="setting">
-                <span>Selection</span>
-                <span class="flex-separator"></span>
-                <select class="selection" title="Selection">
-                    <option>single</option>
-                    <option>multiple</option>
-                </select>
-            </div>
-            <div class="setting">
-                <span>Type</span>
-                <span class="flex-separator"></span>
-                <select class="type" title="Type">
-                    <option>tag</option>
-                    <option>year (without operators)</option>
-                    <option>year (with operators)</option>
-                    <option>episodes (without operators)</option>
-                    <option>episodes (with operators)</option>
-                    <option>season</option>
-                    <option>random</option>
-                </select>
-            </div>
-            <div class="setting">
-                <span>Number of choices</span>
-                <span class="flex-separator"></span>
-                <select class="choices" title="Number of choices">
-                    <option>2</option>
-                    <option>3</option>
-                    <option>4</option>
-                    <option>5</option>
-                    <option>6</option>
-                    <option>7</option>
-                    <option>8</option>
-                    <option>9</option>
-                    <option>10</option>
-                </select>
-            </div>
-            <div class="setting">
-                <span>Toggle negative score</span>
-                <span class="flex-separator"></span>
-                <select class="negative" title="Toggle negative score">
-                    <option>enable</option>
-                    <option>disable</option>
-                </select>
-            </div>
-            <div class="setting">
-                <span>Reset score when incorrect</span>
-                <span class="flex-separator"></span>
-                <select class="reset-incorrect" title="Reset score when incorrect">
-                    <option>enable</option>
-                    <option>disable</option>
-                </select>
-            </div>
-            <div class="query">
-                <span class="reload" title="Reload">
-                    <svg viewBox="0 0 24 24" width="17" height="17">
-                        <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"></path>
-                    </svg>
-                </span>
-                <span class="separator"></span>
-                <div class="query-container">
-                    <a href rel="noreferrer"></a>
-                </div>
-                <span class="separator"></span>
-                <span class="submit bold">Submit</span>
-            </div>
-            <div class="choice"></div>
-        </main>
-        <script>
+
             document.querySelector('.choices').value = localStorage.getItem('choices');
             document.querySelector('.selection').value = localStorage.getItem('selection');
-            document.querySelector('.negative').value = localStorage.getItem('negative');
-            document.querySelector('.reset-incorrect').value = localStorage.getItem('reset-incorrect');
+
+            if (localStorage.getItem('negative') === 'true') {
+                document.querySelector('.negative').checked = true;
+            } else {
+                document.querySelector('.negative').checked = false;
+            }
+
+            if (localStorage.getItem('reset-incorrect') === 'true') {
+                document.querySelector('.reset-incorrect').checked = true;
+            } else {
+                document.querySelector('.reset-incorrect').checked = false;
+            }
 
             if (localStorage.getItem('random') === 'enable') {
                 document.querySelector('.type').value = 'random';
@@ -204,16 +214,18 @@
                     });
             }
 
-            document.querySelector('.theme svg').addEventListener('click', () => {
+            document.querySelector('.theme').addEventListener('click', () => {
                 if (localStorage.getItem('theme') === 'dark') {
                     document.body.classList.remove('dark');
                     document.body.classList.add('light');
                     document.head.querySelector('[name="theme-color"]').content = '#fff';
+                    document.querySelector('.theme path').setAttribute('d', 'M20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69zM12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6c3.31 0 6 2.69 6 6s-2.69 6-6 6z');
                     localStorage.setItem('theme', 'light');
                 } else {
                     document.body.classList.remove('light');
                     document.body.classList.add('dark');
                     document.head.querySelector('[name="theme-color"]').content = '#000';
+                    document.querySelector('.theme path').setAttribute('d', 'M20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69zM12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6zm0-10c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4z');
                     localStorage.setItem('theme', 'dark');
                 }
             });

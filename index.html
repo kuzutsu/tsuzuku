@@ -31,41 +31,6 @@
         <noscript>
             <span id="full">Tsuzuku can't run without JavaScript</span>
         </noscript>
-        <script>
-            switch (localStorage.getItem('theme')) {
-                case 'dark':
-                    document.body.classList.remove('light');
-                    document.body.classList.add('dark');
-                    document.head.querySelector('[name="theme-color"]').content = '#000';
-                    break;
-
-                case 'light':
-                    break;
-
-                default:
-                    localStorage.setItem('theme', 'light');
-                    break;
-            }
-
-            if ('serviceWorker' in navigator) {
-                navigator
-                    .serviceWorker
-                    .register('sw.js')
-                    .then((registration) => {
-                        registration.addEventListener('updatefound', () => {
-                            let r = registration.installing;
-                            
-                            r.addEventListener('statechange', () => {
-                                if (r.state === 'installed') {
-                                    r.postMessage({
-                                        update: true
-                                    });
-                                }
-                            });
-                        });
-                    });
-            }
-        </script> 
         <header>
             <div class="overlay">
                 <div class="header-container" style="height: 50px; width: 100%; padding: 0 19px; display: flex; align-items: center; overflow: auto;">
@@ -88,7 +53,7 @@
                     <span class="separator"></span>
                     <div id="theme" title="Toggle theme" style="display: inline-flex; align-items: center;">
                         <svg viewBox="0 0 24 24" width="19" height="19">
-                            <path d="M20 15.31L23.31 12 20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69zM12 18V6c3.31 0 6 2.69 6 6s-2.69 6-6 6z"></path>
+                            <path d="M20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69zM12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6c3.31 0 6 2.69 6 6s-2.69 6-6 6z"></path>
                         </svg>
                     </div>
                 </div>
@@ -126,7 +91,7 @@
                         </span>
                     </div>
                     <div class="tabs" style="display: contents; font-size: 14px; width: 100%;">
-                        <div style="display: inline-flex; align-items: center; width: 100%; min-width: 100px; overflow: auto;">
+                        <div style="display: inline-flex; align-items: center; width: 100%; min-width: 200px; overflow: auto;">
                             <div class="tab" data-query="status:completed|dropped|paused|planning|rewatching|watching" style="height: 100%; display: inline-flex; align-items: center; justify-content: center; color: #aaa;">All</div>
                             <span class="separator"></span>
                             <div class="tab" data-query="status:completed" style="height: 100%; display: inline-flex; align-items: center; justify-content: center; color: #aaa;">Completed</div>
@@ -181,6 +146,42 @@
             </div>
             <div id="database-container"></div>
         </main>
+        <script>
+            switch (localStorage.getItem('theme')) {
+                case 'dark':
+                    document.body.classList.remove('light');
+                    document.body.classList.add('dark');
+                    document.head.querySelector('[name="theme-color"]').content = '#000';
+                    document.querySelector('#theme path').setAttribute('d', 'M20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69zM12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6zm0-10c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4z');
+                    break;
+
+                case 'light':
+                    break;
+
+                default:
+                    localStorage.setItem('theme', 'light');
+                    break;
+            }
+
+            if ('serviceWorker' in navigator) {
+                navigator
+                    .serviceWorker
+                    .register('sw.js')
+                    .then((registration) => {
+                        registration.addEventListener('updatefound', () => {
+                            let r = registration.installing;
+                            
+                            r.addEventListener('statechange', () => {
+                                if (r.state === 'installed') {
+                                    r.postMessage({
+                                        update: true
+                                    });
+                                }
+                            });
+                        });
+                    });
+            }
+        </script>
         <script defer src="https://cdn.jsdelivr.net/npm/tabulator-tables/dist/js/tabulator_core.min.js"></script>
         <script defer src="https://cdn.jsdelivr.net/npm/tabulator-tables/dist/js/modules/filter.min.js"></script>
         <script defer src="https://cdn.jsdelivr.net/npm/tabulator-tables/dist/js/modules/format.min.js"></script>
