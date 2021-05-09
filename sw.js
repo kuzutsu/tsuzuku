@@ -19,15 +19,15 @@ addEventListener('install', (event) => {
                 './games/index.js',
 
                 // images
-                './anilist.png',
-                './kitsu.png',
-                './logo.svg',
-                './logo-180.png',
-                './logo-192.png',
-                './logo-512.png',
-                './logo-maskable-192.png',
-                './logo-maskable-512.png',
-                './myanimelist.png',
+                './images/anilist.png',
+                './images/kitsu.png',
+                './images/logo.svg',
+                './images/logo-180.png',
+                './images/logo-192.png',
+                './images/logo-512.png',
+                './images/logo-maskable-192.png',
+                './images/logo-maskable-512.png',
+                './images/myanimelist.png',
 
                 // third-party
                 'https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.min.js',
