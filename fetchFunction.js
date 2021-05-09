@@ -501,13 +501,13 @@ db.onsuccess = (event3) => {
                                 ss = null;
 
                             if (cell.getValue().match(/myanimelist\.net/gu)) {
-                                sources = 'https://myanimelist.net/img/common/pwa/launcher-icon-4x.png';
+                                sources = './images/myanimelist.png';
                                 ss = 'MyAnimeList';
                             } else if (cell.getValue().match(/kitsu\.io/gu)) {
-                                sources = 'https://kitsu.io/favicon-194x194-2f4dbec5ffe82b8f61a3c6d28a77bc6e.png';
+                                sources = './images/kitsu.png';
                                 ss = 'Kitsu';
                             } else {
-                                sources = 'https://anilist.co/img/icons/android-chrome-192x192.png';
+                                sources = './images/anilist.png';
                                 ss = 'AniList';
                             }
 
@@ -533,7 +533,7 @@ db.onsuccess = (event3) => {
                             let sources = '';
 
                             if (cell.getValue()[0]) {
-                                sources += `<a href="${cell.getValue()[0]}" target="_blank" rel="noreferrer" title="MyAnimeList" style="background: url(https://myanimelist.net/img/common/pwa/launcher-icon-4x.png); background-size: contain; height: 17px; width: 17px;"></a>`;
+                                sources += `<a href="${cell.getValue()[0]}" target="_blank" rel="noreferrer" title="MyAnimeList" style="background: url(./images/myanimelist.png); background-size: contain; height: 17px; width: 17px;"></a>`;
                             } else {
                                 sources += '<span style="height: 17px; width: 17px;"></span>';
                             }
@@ -541,7 +541,7 @@ db.onsuccess = (event3) => {
                             sources += '<span class="separator "></span>';
 
                             if (cell.getValue()[1]) {
-                                sources += `<a href="${cell.getValue()[1]}" target="_blank" rel="noreferrer" title="Kitsu" style="background: url(https://kitsu.io/favicon-194x194-2f4dbec5ffe82b8f61a3c6d28a77bc6e.png); background-size: contain; height: 17px; width: 17px;"></a>`;
+                                sources += `<a href="${cell.getValue()[1]}" target="_blank" rel="noreferrer" title="Kitsu" style="background: url(./images/kitsu.png); background-size: contain; height: 17px; width: 17px;"></a>`;
                             } else {
                                 sources += '<span style="height: 17px; width: 17px;"></span>';
                             }
@@ -549,7 +549,7 @@ db.onsuccess = (event3) => {
                             sources += '<span class="separator"></span>';
 
                             if (cell.getValue()[2]) {
-                                sources += `<a href="${cell.getValue()[2]}" target="_blank" rel="noreferrer" title="AniList" style="background: url(https://anilist.co/img/icons/android-chrome-192x192.png); background-size: contain; height: 17px; width: 17px;"></a>`;
+                                sources += `<a href="${cell.getValue()[2]}" target="_blank" rel="noreferrer" title="AniList" style="background: url(./images/anilist.png); background-size: contain; height: 17px; width: 17px;"></a>`;
                             } else {
                                 sources += '<span style="height: 17px; width: 17px;"></span>';
                             }

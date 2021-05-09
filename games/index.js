@@ -87,10 +87,10 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                     season: d[i].animeSeason.season.toLowerCase(),
                     source:
                         value.match(/myanimelist\.net/gu)
-                            ? 'https://myanimelist.net/img/common/pwa/launcher-icon-4x.png'
+                            ? '../images/myanimelist.png'
                             : value.match(/kitsu\.io/gu)
-                                ? 'https://kitsu.io/favicon-194x194-2f4dbec5ffe82b8f61a3c6d28a77bc6e.png'
-                                : 'https://anilist.co/img/icons/android-chrome-192x192.png',
+                                ? '../images/kitsu.png'
+                                : '../images/anilist.png',
                     tags: tt,
                     title: d[i].title,
                     year: y

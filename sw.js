@@ -9,12 +9,6 @@ addEventListener('install', (event) => {
                 './index.css',
                 './index.html',
                 './index.js',
-                './logo.svg',
-                './logo-180.png',
-                './logo-192.png',
-                './logo-512.png',
-                './logo-maskable-192.png',
-                './logo-maskable-512.png',
                 './manifest.webmanifest',
                 './worker.js',
 
@@ -23,6 +17,17 @@ addEventListener('install', (event) => {
                 './games/index.css',
                 './games/index.html',
                 './games/index.js',
+
+                // images
+                './anilist.png',
+                './kitsu.png',
+                './logo.svg',
+                './logo-180.png',
+                './logo-192.png',
+                './logo-512.png',
+                './logo-maskable-192.png',
+                './logo-maskable-512.png',
+                './myanimelist.png',
 
                 // third-party
                 'https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.min.js',
