@@ -249,12 +249,12 @@ header,
 
 .title {
     overflow-wrap: anywhere;
-    min-width: 200px;
+    min-width: 100px;
     padding: 4px 0;
 }
 
 .query-container {
     width: 100%;
-    min-width: 200px;
+    min-width: 100px;
     overflow: auto;
 }
