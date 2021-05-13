@@ -162,6 +162,9 @@ db.onsuccess = (event3) => {
             });
 
             t = new Tabulator('#database-container', {
+                cellDblClick: function () {
+                    return false;
+                },
                 columnHeaderSortMulti: false,
                 columns: [
                     {

@@ -597,35 +597,35 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
             }
         });
 
-        document.querySelector('.selection').addEventListener('change', (e) => {
+        document.querySelector('#selection').addEventListener('change', (e) => {
             localStorage.setItem('selection', e.currentTarget.value);
             localStorage.setItem('score', 0);
             localStorage.setItem('high', 0);
             game();
         });
 
-        document.querySelector('.choices').addEventListener('change', (e) => {
+        document.querySelector('#choices').addEventListener('change', (e) => {
             localStorage.setItem('choices', e.currentTarget.value);
             localStorage.setItem('score', 0);
             localStorage.setItem('high', 0);
             game();
         });
 
-        document.querySelector('.negative').addEventListener('change', (e) => {
+        document.querySelector('#negative').addEventListener('change', (e) => {
             localStorage.setItem('negative', e.currentTarget.checked);
             localStorage.setItem('score', 0);
             localStorage.setItem('high', 0);
             game();
         });
 
-        document.querySelector('.reset-incorrect').addEventListener('change', (e) => {
+        document.querySelector('#reset-incorrect').addEventListener('change', (e) => {
             localStorage.setItem('reset-incorrect', e.currentTarget.checked);
             localStorage.setItem('score', 0);
             localStorage.setItem('high', 0);
             game();
         });
 
-        document.querySelector('.type').addEventListener('change', (e) => {
+        document.querySelector('#type').addEventListener('change', (e) => {
             if (e.currentTarget.value === 'random') {
                 localStorage.setItem('random', 'enable');
             } else {

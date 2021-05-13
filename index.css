@@ -82,25 +82,9 @@ main {
     flex-direction: column;
 }
 
-.show header {
-    height: 25%;
-    background-image: var(--banner);
-    background-color: var(--background-hover);
-    background-size: cover;
-    background-position: center;
-}
-
-.show main {
-    height: 75%;
-}
-
 .overlay {
     height: 100%;
     width: 100%;
-}
-
-.show .overlay {
-    background: linear-gradient(to bottom, var(--background), transparent);
 }
 
 #search-container {
@@ -262,12 +246,8 @@ svg.disabled {
     transform: scaleY(-1);
 }
 
-body:not(.show) .header-selected {
+.header-selected {
     background: var(--selected);
-}
-
-.show .header-selected .overlay {
-    background: linear-gradient(to bottom, var(--selected), transparent);
 }
 
 .header-selected span {
@@ -279,7 +259,6 @@ body:not(.show) .header-selected {
 }
 
 .header-selected a,
-.header-selected #banner,
 .header-selected .separator,
 .header-selected #theme {
     display: none !important;
@@ -403,15 +382,8 @@ select {
     }
 }
 
-.show header select {
-    background: transparent;
-}
-
-body:not(.show) header select {
-    background: var(--selected);
-}
-
 header select {
+    background: var(--selected);
     border: 0;
     color: var(--selected-color);
     font-size: 16px;

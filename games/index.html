@@ -60,17 +60,17 @@
             </div>
             <div class="settings-container" style="display: none;">
                 <div>
-                    <span>Selection</span>
+                    <label for="selection">Selection</label>
                     <span class="flex-separator"></span>
-                    <select class="selection" title="Selection">
+                    <select id="selection">
                         <option>single</option>
                         <option>multiple</option>
                     </select>
                 </div>
                 <div>
-                    <span>Type</span>
+                    <label for="type">Type</label>
                     <span class="flex-separator"></span>
-                    <select class="type" title="Type">
+                    <select id="type">
                         <option>tag</option>
                         <option>year (without operators)</option>
                         <option>year (with operators)</option>
@@ -81,9 +81,9 @@
                     </select>
                 </div>
                 <div>
-                    <span>Number of choices</span>
+                    <label for="choices">Number of choices</label>
                     <span class="flex-separator"></span>
-                    <select class="choices" title="Number of choices">
+                    <select id="choices">
                         <option>2</option>
                         <option>3</option>
                         <option>4</option>
@@ -96,14 +96,14 @@
                     </select>
                 </div>
                 <div>
-                    <span>Toggle negative score</span>
+                    <label for="negative">Toggle negative score</label>
                     <span class="flex-separator"></span>
-                    <input type="checkbox" class="negative" title="Toggle negative score"></input>
+                    <input id="negative" type="checkbox"></input>
                 </div>
                 <div>
-                    <span>Reset score when incorrect</span>
+                    <label for="reset-incorrect">Reset score when incorrect</label>
                     <span class="flex-separator"></span>
-                    <input type="checkbox" class="reset-incorrect" title="Reset score when incorrect"></input>
+                    <input id="reset-incorrect" type="checkbox"></input>
                 </div>
             </div>
             <div class="query">
@@ -170,25 +170,25 @@
                 localStorage.setItem('reset-incorrect', false);
             }
 
-            document.querySelector('.choices').value = localStorage.getItem('choices');
-            document.querySelector('.selection').value = localStorage.getItem('selection');
+            document.querySelector('#choices').value = localStorage.getItem('choices');
+            document.querySelector('#selection').value = localStorage.getItem('selection');
 
             if (localStorage.getItem('negative') === 'true') {
-                document.querySelector('.negative').checked = true;
+                document.querySelector('#negative').checked = true;
             } else {
-                document.querySelector('.negative').checked = false;
+                document.querySelector('#negative').checked = false;
             }
 
             if (localStorage.getItem('reset-incorrect') === 'true') {
-                document.querySelector('.reset-incorrect').checked = true;
+                document.querySelector('#reset-incorrect').checked = true;
             } else {
-                document.querySelector('.reset-incorrect').checked = false;
+                document.querySelector('#reset-incorrect').checked = false;
             }
 
             if (localStorage.getItem('random') === 'enable') {
-                document.querySelector('.type').value = 'random';
+                document.querySelector('#type').value = 'random';
             } else {
-                document.querySelector('.type').value = localStorage.getItem('type');
+                document.querySelector('#type').value = localStorage.getItem('type');
             }
 
             if ('serviceWorker' in navigator) {
