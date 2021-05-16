@@ -225,6 +225,10 @@ svg.disabled {
     border: 0;
 }
 
+.tabulator-headers {
+    display: flex;
+}
+
 .tabulator-row {
     min-height: 40px;
 }
@@ -451,7 +455,6 @@ header option[disabled] {
 
 .tabulator-col {
     display: inline-flex;
-    vertical-align: middle;
 }
 
 .tabulator-col-sorter {
