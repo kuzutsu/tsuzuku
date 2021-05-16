@@ -17,7 +17,7 @@ let worker = null;
 
 function searchFunction(tt, qq, p, s) {
     const
-        query = qq || document.querySelector('#search').value,
+        query = qq || document.querySelector('.search').value,
         table = tt || t;
 
     if (document.querySelector('#regex').checked) {
@@ -40,15 +40,15 @@ function searchFunction(tt, qq, p, s) {
         params.randomValue = 1;
     }
 
-    if (document.querySelector('#nothing')) {
-        document.querySelector('#nothing').remove();
+    if (document.querySelector('.nothing')) {
+        document.querySelector('.nothing').remove();
     } else {
         document.querySelector('.tabulator').style.display = 'none';
     }
 
-    if (document.querySelector('#search').value) {
-        document.querySelector('#clear').style.visibility = 'visible';
-        document.querySelector('#clear').style.display = 'inline-flex';
+    if (document.querySelector('.search').value) {
+        document.querySelector('.clear').style.visibility = 'visible';
+        document.querySelector('.clear').style.display = 'inline-flex';
     }
 
     if (!s && document.querySelector('.selected-tab')) {
@@ -60,27 +60,20 @@ function searchFunction(tt, qq, p, s) {
     }
 
     if (document.querySelector('.importing')) {
-        document.querySelector('#search-container').style.display = 'inline-flex';
+        document.querySelector('.search-container').style.display = 'inline-flex';
         document.querySelector('.importing').remove();
     }
 
     if (worker) {
         worker.terminate();
         worker = null;
-        document.querySelector('#progress').remove();
-        document.querySelector('#searching').remove();
-    }
-
-    if (document.querySelector('#enter .disabled')) {
-        document.querySelector('#enter .disabled').classList.remove('disabled');
-        document.querySelector('#default').style.display = 'inline-flex';
-        document.querySelector('#related').style.display = 'none';
-        document.querySelector('#related-title').innerHTML = '';
+        document.querySelector('.progress').remove();
+        document.querySelector('.searching').remove();
     }
 
     document.querySelector('main').insertAdjacentHTML('beforeend',
-        '<div id="searching">' +
-            '<div id="progress" style="position: absolute; top: 0; left: 0;"></div>' +
+        '<div class="searching">' +
+            '<div class="progress" style="position: absolute; top: 0; left: 0;"></div>' +
             '<span>Searching...</span>' +
         '</span>'
     );
@@ -110,8 +103,8 @@ function searchFunction(tt, qq, p, s) {
         switch (event.data.message) {
             case 'clear':
                 // fake load
-                document.querySelector('#progress').classList.add('found');
-                document.querySelector('#progress').style.width = '100%';
+                document.querySelector('.progress').classList.add('found');
+                document.querySelector('.progress').style.width = '100%';
 
                 setTimeout(() => {
                     index.dimension = null;
@@ -190,11 +183,11 @@ function searchFunction(tt, qq, p, s) {
                 break;
 
             case 'found':
-                document.querySelector('#progress').classList.add('found');
+                document.querySelector('.progress').classList.add('found');
                 break;
 
             case 'progress':
-                document.querySelector('#progress').style.width = event.data.progress;
+                document.querySelector('.progress').style.width = event.data.progress;
                 break;
 
             default:
@@ -203,34 +196,34 @@ function searchFunction(tt, qq, p, s) {
     });
 }
 
-document.querySelector('#clear').addEventListener('click', () => {
-    document.querySelector('#clear').style.display = 'none';
-    document.querySelector('#search').value = '';
-    document.querySelector('#search').focus();
+document.querySelector('.clear').addEventListener('click', () => {
+    document.querySelector('.clear').style.display = 'none';
+    document.querySelector('.search').value = '';
+    document.querySelector('.search').focus();
 });
 
-document.querySelector('#theme').addEventListener('click', () => {
+document.querySelector('.theme').addEventListener('click', () => {
     if (localStorage.getItem('theme') === 'dark') {
         document.body.classList.remove('dark');
         document.body.classList.add('light');
         document.head.querySelector('[name="theme-color"]').content = '#fff';
-        document.querySelector('#theme path').setAttribute('d', 'M20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69zM12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6c3.31 0 6 2.69 6 6s-2.69 6-6 6z');
+        document.querySelector('.theme path').setAttribute('d', 'M20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69zM12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6c3.31 0 6 2.69 6 6s-2.69 6-6 6z');
         localStorage.setItem('theme', 'light');
     } else {
         document.body.classList.remove('light');
         document.body.classList.add('dark');
         document.head.querySelector('[name="theme-color"]').content = '#000';
-        document.querySelector('#theme path').setAttribute('d', 'M20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69zM12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6zm0-10c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4z');
+        document.querySelector('.theme path').setAttribute('d', 'M20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69zM12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6zm0-10c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4z');
         localStorage.setItem('theme', 'dark');
     }
 });
 
-document.querySelector('#close').addEventListener('click', () => {
+document.querySelector('.close').addEventListener('click', () => {
     index.lastRow = null;
 
-    document.querySelector('#header-title').innerHTML = 'Tsuzuku';
+    document.querySelector('.header-title').innerHTML = 'Tsuzuku';
     document.querySelector('.header-selected').classList.remove('header-selected');
-    document.querySelector('#header-status').remove();
+    document.querySelector('.header-status').remove();
     document.querySelectorAll('.separator-selected').forEach((element) => {
         element.remove();
     });
@@ -248,7 +241,7 @@ document.querySelector('#close').addEventListener('click', () => {
     selected.ss.splice(0);
 });
 
-document.querySelector('#search').addEventListener('keyup', (e) => {
+document.querySelector('.search').addEventListener('keyup', (e) => {
     if (e.key !== 'Enter') {
         return;
     }
@@ -257,39 +250,39 @@ document.querySelector('#search').addEventListener('keyup', (e) => {
     searchFunction();
 });
 
-document.querySelector('#enter').addEventListener('click', () => {
-    if (document.querySelector('#default').style.display === 'contents') {
-        document.querySelector('#default').style.display = 'none';
+document.querySelector('.enter').addEventListener('click', () => {
+    if (document.querySelector('.default').style.display === 'contents') {
+        document.querySelector('.default').style.display = 'none';
         document.querySelector('.tabs').style.display = 'contents';
-        document.querySelector('#enter svg').style.fill = '#aaa';
+        document.querySelector('.enter svg').style.fill = '#aaa';
 
         if (!document.querySelector('.settings-container').style.display) {
             document.querySelector('.settings-container').style.display = 'none';
-            document.querySelector('#settings svg').style.fill = '#aaa';
-            document.querySelector('#database-container').style.maxHeight = '';
+            document.querySelector('.settings svg').style.fill = '#aaa';
+            document.querySelector('.database-container').style.maxHeight = '';
 
             t.redraw();
         }
     } else {
-        document.querySelector('#default').style.display = 'contents';
-        document.querySelector('#search').focus();
+        document.querySelector('.default').style.display = 'contents';
+        document.querySelector('.search').focus();
         document.querySelector('.tabs').style.display = 'none';
-        document.querySelector('#enter svg').style.fill = '';
+        document.querySelector('.enter svg').style.fill = '';
     }
 });
 
-document.querySelector('#search-container').addEventListener('dragenter', () => {
-    if (document.querySelector('#default').style.display === 'contents') {
+document.querySelector('.search-container').addEventListener('dragenter', () => {
+    if (document.querySelector('.default').style.display === 'contents') {
         return;
     }
 
-    document.querySelector('#default').style.display = 'contents';
-    document.querySelector('#search').focus();
+    document.querySelector('.default').style.display = 'contents';
+    document.querySelector('.search').focus();
     document.querySelector('.tabs').style.display = 'none';
-    document.querySelector('#enter svg').style.fill = '';
+    document.querySelector('.enter svg').style.fill = '';
 });
 
-document.querySelector('#enter2').addEventListener('click', () => {
+document.querySelector('.enter2').addEventListener('click', () => {
     searchFunction();
 });
 
@@ -303,33 +296,33 @@ document.querySelector('#random').addEventListener('change', (e) => {
     }
 });
 
-document.querySelector('#settings').addEventListener('click', () => {
+document.querySelector('.settings').addEventListener('click', () => {
     if (document.querySelector('.settings-container').style.display) {
         document.querySelector('.settings-container').style.display = '';
-        document.querySelector('#settings svg').style.fill = '';
-        document.querySelector('#database-container').style.maxHeight = 'calc(100% - 208px)';
+        document.querySelector('.settings svg').style.fill = '';
+        document.querySelector('.database-container').style.maxHeight = 'calc(100% - 208px)';
     } else {
         document.querySelector('.settings-container').style.display = 'none';
-        document.querySelector('#settings svg').style.fill = '#aaa';
-        document.querySelector('#database-container').style.maxHeight = '';
+        document.querySelector('.settings svg').style.fill = '#aaa';
+        document.querySelector('.database-container').style.maxHeight = '';
     }
 
     t.redraw();
 });
 
-document.querySelector('#search').addEventListener('input', (e) => {
+document.querySelector('.search').addEventListener('input', (e) => {
     if (e.target.value) {
-        document.querySelector('#clear').style.visibility = 'visible';
-        document.querySelector('#clear').style.display = 'inline-flex';
+        document.querySelector('.clear').style.visibility = 'visible';
+        document.querySelector('.clear').style.display = 'inline-flex';
     } else {
-        document.querySelector('#clear').style.display = 'none';
+        document.querySelector('.clear').style.display = 'none';
     }
 });
 
-document.querySelector('#search').addEventListener('focus', (e) => {
+document.querySelector('.search').addEventListener('focus', (e) => {
     if (e.target.value) {
-        document.querySelector('#clear').style.visibility = 'visible';
-        document.querySelector('#clear').style.display = 'inline-flex';
+        document.querySelector('.clear').style.visibility = 'visible';
+        document.querySelector('.clear').style.display = 'inline-flex';
     }
 });
 
@@ -340,17 +333,17 @@ document.querySelectorAll('.tab').forEach((element) => {
         }
 
         element.classList.add('selected-tab');
-        document.querySelector('#search').value = element.dataset.query;
+        document.querySelector('.search').value = element.dataset.query;
         searchFunction(null, element.dataset.query, null, true);
     });
 });
 
-document.querySelector('#header-title').addEventListener('click', (e) => {
+document.querySelector('.header-title').addEventListener('click', (e) => {
     if (e.target.parentNode.parentNode.parentNode.classList[0] !== 'header-selected') {
         return;
     }
 
-    document.querySelector('#search').value = 'is:selected';
+    document.querySelector('.search').value = 'is:selected';
 
     searchFunction();
 });
@@ -413,8 +406,8 @@ document.querySelector('.import').addEventListener('click', () => {
 
             let count = 0;
 
-            if (document.querySelector('#nothing')) {
-                document.querySelector('#nothing').remove();
+            if (document.querySelector('.nothing')) {
+                document.querySelector('.nothing').remove();
             }
 
             // anilist
@@ -432,7 +425,7 @@ document.querySelector('.import').addEventListener('click', () => {
                     return;
                 }
 
-                document.querySelector('#search-container').style.display = 'none';
+                document.querySelector('.search-container').style.display = 'none';
                 document.querySelector('.tabulator').style.display = 'none';
                 document.querySelector('main').insertAdjacentHTML('beforeend',
                     '<div class="importing"><span>Importing...</span></div>'
@@ -470,7 +463,7 @@ document.querySelector('.import').addEventListener('click', () => {
                                         document.querySelector('.importing').remove();
                                     }
 
-                                    document.querySelector('#search-container').style.display = 'inline-flex';
+                                    document.querySelector('.search-container').style.display = 'inline-flex';
                                     document.querySelector('.tabulator').style.display = '';
 
                                     searchFunction(null, null, true);
@@ -499,7 +492,7 @@ document.querySelector('.import').addEventListener('click', () => {
                                                 document.querySelector('.importing').remove();
                                             }
 
-                                            document.querySelector('#search-container').style.display = 'inline-flex';
+                                            document.querySelector('.search-container').style.display = 'inline-flex';
                                             document.querySelector('.tabulator').style.display = '';
 
                                             searchFunction(null, null, true);
@@ -517,7 +510,7 @@ document.querySelector('.import').addEventListener('click', () => {
                                     document.querySelector('.importing').remove();
                                 }
 
-                                document.querySelector('#search-container').style.display = 'inline-flex';
+                                document.querySelector('.search-container').style.display = 'inline-flex';
                                 document.querySelector('.tabulator').style.display = '';
 
                                 searchFunction(null, null, true);
@@ -540,13 +533,13 @@ document.querySelector('.import').addEventListener('click', () => {
                     return;
                 }
 
-                document.querySelector('#search-container').style.display = 'none';
+                document.querySelector('.search-container').style.display = 'none';
                 document.querySelector('.tabulator').style.display = 'none';
                 document.querySelector('main').insertAdjacentHTML('beforeend',
                     '<div class="importing">' +
-                        '<div id="progress" class="found" style="position: absolute; top: 0; left: 0;"></div>' +
+                        '<div class="progress" class="found" style="position: absolute; top: 0; left: 0;"></div>' +
                         '<span>Importing...</span>' +
-                    '</span>'
+                    '</div>'
                 );
 
                 for (const value of a2) {
@@ -581,7 +574,7 @@ document.querySelector('.import').addEventListener('click', () => {
                                         document.querySelector('.importing').remove();
                                     }
 
-                                    document.querySelector('#search-container').style.display = 'inline-flex';
+                                    document.querySelector('.search-container').style.display = 'inline-flex';
                                     document.querySelector('.tabulator').style.display = '';
 
                                     searchFunction(null, null, true);
@@ -610,7 +603,7 @@ document.querySelector('.import').addEventListener('click', () => {
                                                 document.querySelector('.importing').remove();
                                             }
 
-                                            document.querySelector('#search-container').style.display = 'inline-flex';
+                                            document.querySelector('.search-container').style.display = 'inline-flex';
                                             document.querySelector('.tabulator').style.display = '';
 
                                             searchFunction(null, null, true);
@@ -628,7 +621,7 @@ document.querySelector('.import').addEventListener('click', () => {
                                     document.querySelector('.importing').remove();
                                 }
 
-                                document.querySelector('#search-container').style.display = 'inline-flex';
+                                document.querySelector('.search-container').style.display = 'inline-flex';
                                 document.querySelector('.tabulator').style.display = '';
 
                                 searchFunction(null, null, true);
@@ -739,12 +732,12 @@ onbeforeunload = () => {
 
 onpopstate = () => {
     if (new URLSearchParams(location.search).get('query')) {
-        document.querySelector('#search').value = decodeURIComponent(new URLSearchParams(location.search).get('query'));
-        document.querySelector('#clear').style.visibility = 'visible';
-        document.querySelector('#clear').style.display = 'inline-flex';
+        document.querySelector('.search').value = decodeURIComponent(new URLSearchParams(location.search).get('query'));
+        document.querySelector('.clear').style.visibility = 'visible';
+        document.querySelector('.clear').style.display = 'inline-flex';
     } else {
-        document.querySelector('#search').value = '';
-        document.querySelector('#clear').style.display = 'none';
+        document.querySelector('.search').value = '';
+        document.querySelector('.clear').style.display = 'none';
     }
 
     if (new URLSearchParams(location.search).get('regex') === '1') {

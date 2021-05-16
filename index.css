@@ -56,7 +56,7 @@ body {
     background: var(--background);
 }
 
-#database-container {
+.database-container {
     height: auto;
     max-height: calc(100% - 48px);
     width: 100%;
@@ -87,7 +87,7 @@ main {
     width: 100%;
 }
 
-#search-container {
+.search-container {
     width: 100%;
     display: none;
     align-items: center;
@@ -176,23 +176,23 @@ svg.disabled {
     fill: #aaa;
 }
 
-#header-title {
+.header-title {
     color: var(--color);
     font-weight: 500;
     white-space: nowrap;
 }
 
-#search {
+.search {
     width: 100%;
     border: 0;
     min-width: 100px;
 }
 
-#full,
+.full,
 .importing,
-#loading,
-#nothing,
-#searching {
+.loading,
+.nothing,
+.searching {
     font-size: 14px;
 }
 
@@ -264,11 +264,11 @@ svg.disabled {
 
 .header-selected a,
 .header-selected .separator,
-.header-selected #theme {
+.header-selected .theme {
     display: none !important;
 }
 
-.header-selected #close {
+.header-selected .close {
     display: inline-flex !important;
 }
 
@@ -330,7 +330,7 @@ select {
 
 /*****************************************************************/
 
-#progress {
+.progress {
     background: #f44336;
     height: 4px;
     width: 0;
@@ -345,9 +345,9 @@ select {
 }
 
 .importing,
-#loading,
-#nothing,
-#searching {
+.loading,
+.nothing,
+.searching {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -355,19 +355,19 @@ select {
     text-align: center;
 }
 
-#loading {
+.loading {
     position: relative;
     height: 100%;
 }
 
 .importing,
-#nothing,
-#searching {
+.nothing,
+.searching {
     flex-grow: 1;
     position: relative;
 }
 
-#full {
+.full {
     height: 100%;
     width: 100%;
     background: var(--background);

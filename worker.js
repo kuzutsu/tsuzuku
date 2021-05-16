@@ -1,5 +1,5 @@
 if (typeof Fuse === 'undefined') {
-    importScripts('https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.min.js');
+    importScripts('https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js');
 }
 
 function is(value1, type, value2) {

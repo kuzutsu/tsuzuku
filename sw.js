@@ -30,14 +30,14 @@ addEventListener('install', (event) => {
                 './images/myanimelist.png',
 
                 // third-party
-                'https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.min.js',
-                'https://cdn.jsdelivr.net/npm/tabulator-tables/dist/js/modules/filter.min.js',
-                'https://cdn.jsdelivr.net/npm/tabulator-tables/dist/js/modules/format.min.js',
-                'https://cdn.jsdelivr.net/npm/tabulator-tables/dist/js/modules/frozen_columns.min.js',
-                'https://cdn.jsdelivr.net/npm/tabulator-tables/dist/js/modules/resize_table.min.js',
-                'https://cdn.jsdelivr.net/npm/tabulator-tables/dist/js/modules/select_row.min.js',
-                'https://cdn.jsdelivr.net/npm/tabulator-tables/dist/js/modules/sort.min.js',
-                'https://cdn.jsdelivr.net/npm/tabulator-tables/dist/js/tabulator_core.min.js',
+                'https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js',
+                'https://cdn.jsdelivr.net/npm/tabulator-tables@4.9.3/dist/js/modules/filter.min.js',
+                'https://cdn.jsdelivr.net/npm/tabulator-tables@4.9.3/dist/js/modules/format.min.js',
+                'https://cdn.jsdelivr.net/npm/tabulator-tables@4.9.3/dist/js/modules/frozen_columns.min.js',
+                'https://cdn.jsdelivr.net/npm/tabulator-tables@4.9.3/dist/js/modules/resize_table.min.js',
+                'https://cdn.jsdelivr.net/npm/tabulator-tables@4.9.3/dist/js/modules/select_row.min.js',
+                'https://cdn.jsdelivr.net/npm/tabulator-tables@4.9.3/dist/js/modules/sort.min.js',
+                'https://cdn.jsdelivr.net/npm/tabulator-tables@4.9.3/dist/js/tabulator_core.min.js',
                 'https://fonts.gstatic.com/s/roboto/v20/KFOmCnqEu92Fr1Mu4mxKKTU1Kg.woff2',
                 'https://fonts.gstatic.com/s/roboto/v20/KFOlCnqEu92Fr1MmEU9fBBc4AMP6lQ.woff2',
                 'https://raw.githubusercontent.com/manami-project/anime-offline-database/master/anime-offline-database.json'

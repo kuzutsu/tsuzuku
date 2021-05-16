@@ -161,7 +161,7 @@ db.onsuccess = (event3) => {
                 this.currentCell = true;
             });
 
-            t = new Tabulator('#database-container', {
+            t = new Tabulator('.database-container', {
                 cellDblClick: function () {
                     return false;
                 },
@@ -226,10 +226,10 @@ db.onsuccess = (event3) => {
                                 index.lastRow = cell.getRow();
 
                                 document.querySelector('header').classList.add('header-selected');
-                                document.querySelector('#header-title').innerHTML = `${cell.getTable().getSelectedRows().length} selected`;
+                                document.querySelector('.header-title').innerHTML = `${cell.getTable().getSelectedRows().length} selected`;
 
-                                if (document.querySelector('#header-status')) {
-                                    document.querySelector('#header-status').remove();
+                                if (document.querySelector('.header-status')) {
+                                    document.querySelector('.header-status').remove();
                                 }
 
                                 if (document.querySelector('.separator-selected')) {
@@ -240,7 +240,7 @@ db.onsuccess = (event3) => {
 
                                 const hstatus = document.createElement('select');
 
-                                hstatus.id = 'header-status';
+                                hstatus.classList.add('header-status');
                                 hstatus.title = 'Status';
                                 hstatus.innerHTML = `<option selected disabled>Status</option>${statuses}`;
                                 hstatus.addEventListener('change', () => {
@@ -308,7 +308,7 @@ db.onsuccess = (event3) => {
                                     }
                                 });
 
-                                document.querySelector('#close').insertAdjacentHTML('afterend', '<span class="separator-selected"></span>');
+                                document.querySelector('.close').insertAdjacentHTML('afterend', '<span class="separator-selected"></span>');
                                 document.querySelector('.header-container').insertAdjacentElement('beforeend', hstatus);
 
                                 if (localStorage.getItem('theme') === 'dark') {
@@ -326,8 +326,8 @@ db.onsuccess = (event3) => {
                                 index.lastRow = null;
 
                                 document.querySelector('header').classList.remove('header-selected');
-                                document.querySelector('#header-title').innerHTML = 'Tsuzuku';
-                                document.querySelector('#header-status').remove();
+                                document.querySelector('.header-title').innerHTML = 'Tsuzuku';
+                                document.querySelector('.header-status').remove();
                                 document.querySelectorAll('.separator-selected').forEach((element) => {
                                     element.remove();
                                 });
@@ -376,7 +376,7 @@ db.onsuccess = (event3) => {
 
                             if (column.getTable().getSelectedRows().length) {
                                 document.querySelector('header').classList.add('header-selected');
-                                document.querySelector('#header-title').innerHTML = `${column.getTable().getSelectedRows().length} selected`;
+                                document.querySelector('.header-title').innerHTML = `${column.getTable().getSelectedRows().length} selected`;
 
                                 if (selected.s) {
                                     column._column.titleElement.children[0].innerHTML = svg.check;
@@ -384,8 +384,8 @@ db.onsuccess = (event3) => {
                                     column._column.titleElement.children[0].innerHTML = svg.blank;
                                 }
 
-                                if (document.querySelector('#header-status')) {
-                                    document.querySelector('#header-status').remove();
+                                if (document.querySelector('.header-status')) {
+                                    document.querySelector('.header-status').remove();
                                 }
 
                                 if (document.querySelector('.separator-selected')) {
@@ -396,7 +396,7 @@ db.onsuccess = (event3) => {
 
                                 const hstatus = document.createElement('select');
 
-                                hstatus.id = 'header-status';
+                                hstatus.classList.add('header-status');
                                 hstatus.title = 'Status';
                                 hstatus.innerHTML = `<option selected disabled>Status</option>${statuses}`;
                                 hstatus.addEventListener('change', () => {
@@ -464,7 +464,7 @@ db.onsuccess = (event3) => {
                                     }
                                 });
 
-                                document.querySelector('#close').insertAdjacentHTML('afterend', '<span class="separator-selected"></span>');
+                                document.querySelector('.close').insertAdjacentHTML('afterend', '<span class="separator-selected"></span>');
                                 document.querySelector('.header-container').insertAdjacentElement('beforeend', hstatus);
 
                                 if (localStorage.getItem('theme') === 'dark') {
@@ -475,8 +475,8 @@ db.onsuccess = (event3) => {
                             } else {
                                 document.querySelector('header').classList.remove('header-selected');
                                 column._column.titleElement.children[0].innerHTML = svg.blank;
-                                document.querySelector('#header-title').innerHTML = 'Tsuzuku';
-                                document.querySelector('#header-status').remove();
+                                document.querySelector('.header-title').innerHTML = 'Tsuzuku';
+                                document.querySelector('.header-status').remove();
                                 document.querySelectorAll('.separator-selected').forEach((element) => {
                                     element.remove();
                                 });
@@ -609,12 +609,12 @@ db.onsuccess = (event3) => {
                                 if (value.indexOf(' ') > -1) {
                                     const split = value.split(' ');
 
-                                    document.querySelector('#search').value = `season:${split[0].toLowerCase()} year:${split[1]}`;
+                                    document.querySelector('.search').value = `season:${split[0].toLowerCase()} year:${split[1]}`;
                                 } else {
-                                    document.querySelector('#search').value = `season:tba year:${value}`;
+                                    document.querySelector('.search').value = `season:tba year:${value}`;
                                 }
                             } else {
-                                document.querySelector('#search').value = 'year:tba';
+                                document.querySelector('.search').value = 'year:tba';
                             }
 
                             searchFunction(cell.getTable());
@@ -801,7 +801,7 @@ db.onsuccess = (event3) => {
                                 return;
                             }
 
-                            document.querySelector('#search').value = 'is:ongoing';
+                            document.querySelector('.search').value = 'is:ongoing';
 
                             searchFunction(cell.getTable());
                         },
@@ -873,19 +873,19 @@ db.onsuccess = (event3) => {
                         }
                     }
 
-                    if (document.querySelector('#progress')) {
-                        document.querySelector('#progress').remove();
+                    if (document.querySelector('.progress')) {
+                        document.querySelector('.progress').remove();
                     }
 
-                    if (document.querySelector('#searching')) {
-                        document.querySelector('#searching').remove();
+                    if (document.querySelector('.searching')) {
+                        document.querySelector('.searching').remove();
                     }
 
                     if (rows.length) {
                         document.querySelector('.tabulator').style.display = '';
                     } else {
                         document.querySelector('main').insertAdjacentHTML('beforeend',
-                            '<div id="nothing">Nothing found</div>'
+                            '<div class="nothing">Nothing found</div>'
                         );
 
                     }
@@ -894,23 +894,23 @@ db.onsuccess = (event3) => {
                 },
                 dataLoaded: function () {
                     document.querySelector('.tabulator').style.display = 'none';
-                    document.querySelector('#loading').innerHTML = 'Loading personal list...';
+                    document.querySelector('.loading').innerHTML = 'Loading personal list...';
 
                     if (new URLSearchParams(location.search).get('query')) {
                         const value = decodeURIComponent(new URLSearchParams(location.search).get('query'));
 
-                        document.querySelector('#search').value = value;
-                        document.querySelector('#clear').style.visibility = 'visible';
-                        document.querySelector('#clear').style.display = 'inline-flex';
+                        document.querySelector('.search').value = value;
+                        document.querySelector('.clear').style.visibility = 'visible';
+                        document.querySelector('.clear').style.display = 'inline-flex';
 
                         if (!document.querySelector(`[data-query="${value}"]`)) {
-                            document.querySelector('#default').style.display = 'contents';
+                            document.querySelector('.default').style.display = 'contents';
                             document.querySelector('.tabs').style.display = 'none';
-                            document.querySelector('#enter svg').style.fill = '';
+                            document.querySelector('.enter svg').style.fill = '';
                         }
                     } else {
-                        document.querySelector('#search').value = '';
-                        document.querySelector('#clear').style.display = 'none';
+                        document.querySelector('.search').value = '';
+                        document.querySelector('.clear').style.display = 'none';
                     }
 
                     if (new URLSearchParams(location.search).get('regex') === '1') {
@@ -947,8 +947,8 @@ db.onsuccess = (event3) => {
 
                             cursor.continue();
                         } else {
-                            document.querySelector('#loading').remove();
-                            document.querySelector('#search-container').style.display = 'inline-flex';
+                            document.querySelector('.loading').remove();
+                            document.querySelector('.search-container').style.display = 'inline-flex';
                             searchFunction(this);
                         }
                     };
