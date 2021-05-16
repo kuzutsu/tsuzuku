@@ -226,7 +226,7 @@ svg.disabled {
 }
 
 .tabulator-headers {
-    display: flex;
+    display: inline-flex;
 }
 
 .tabulator-row {
