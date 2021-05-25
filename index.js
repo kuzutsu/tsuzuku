@@ -47,8 +47,8 @@ function searchFunction(tt, qq, p, s) {
     }
 
     if (document.querySelector('.search').value) {
-        document.querySelector('.clear').style.visibility = 'visible';
         document.querySelector('.clear').style.display = 'inline-flex';
+        document.querySelector('.clear-separator').style.display = '';
     }
 
     if (!s && document.querySelector('.selected-tab')) {
@@ -198,8 +198,23 @@ function searchFunction(tt, qq, p, s) {
 
 document.querySelector('.clear').addEventListener('click', () => {
     document.querySelector('.clear').style.display = 'none';
+    document.querySelector('.clear-separator').style.display = 'none';
     document.querySelector('.search').value = '';
     document.querySelector('.search').focus();
+});
+
+document.querySelector('.thumbnails').addEventListener('click', () => {
+    if (localStorage.getItem('thumbnails') === 'hide') {
+        document.body.classList.remove('hide');
+        document.querySelector('.thumbnails path').setAttribute('d', 'M21.9 21.9l-8.49-8.49l0 0L3.59 3.59l0 0L2.1 2.1L0.69 3.51L3 5.83V19c0 1.1 0.9 2 2 2h13.17l2.31 2.31L21.9 21.9z M5 18 l3.5-4.5l2.5 3.01L12.17 15l3 3H5z M21 18.17L5.83 3H19c1.1 0 2 0.9 2 2V18.17z');
+        localStorage.setItem('thumbnails', 'show');
+    } else {
+        document.body.classList.add('hide');
+        document.querySelector('.thumbnails path').setAttribute('d', 'M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z');
+        localStorage.setItem('thumbnails', 'hide');
+    }
+
+    t.redraw(true);
 });
 
 document.querySelector('.theme').addEventListener('click', () => {
@@ -221,7 +236,6 @@ document.querySelector('.theme').addEventListener('click', () => {
 document.querySelector('.close').addEventListener('click', () => {
     index.lastRow = null;
 
-    document.querySelector('.header-title').innerHTML = 'Tsuzuku';
     document.querySelector('.header-selected').classList.remove('header-selected');
     document.querySelector('.header-status').remove();
     document.querySelectorAll('.separator-selected').forEach((element) => {
@@ -261,7 +275,7 @@ document.querySelector('.enter').addEventListener('click', () => {
             document.querySelector('.settings svg').style.fill = '#aaa';
             document.querySelector('.database-container').style.maxHeight = '';
 
-            t.redraw();
+            t.redraw(true);
         }
     } else {
         document.querySelector('.default').style.display = 'contents';
@@ -307,22 +321,23 @@ document.querySelector('.settings').addEventListener('click', () => {
         document.querySelector('.database-container').style.maxHeight = '';
     }
 
-    t.redraw();
+    t.redraw(true);
 });
 
 document.querySelector('.search').addEventListener('input', (e) => {
     if (e.target.value) {
-        document.querySelector('.clear').style.visibility = 'visible';
         document.querySelector('.clear').style.display = 'inline-flex';
+        document.querySelector('.clear-separator').style.display = '';
     } else {
         document.querySelector('.clear').style.display = 'none';
+        document.querySelector('.clear-separator').style.display = 'none';
     }
 });
 
 document.querySelector('.search').addEventListener('focus', (e) => {
     if (e.target.value) {
-        document.querySelector('.clear').style.visibility = 'visible';
         document.querySelector('.clear').style.display = 'inline-flex';
+        document.querySelector('.clear-separator').style.display = '';
     }
 });
 
@@ -338,11 +353,7 @@ document.querySelectorAll('.tab').forEach((element) => {
     });
 });
 
-document.querySelector('.header-title').addEventListener('click', (e) => {
-    if (e.target.parentNode.parentNode.parentNode.classList[0] !== 'header-selected') {
-        return;
-    }
-
+document.querySelector('.selected-count').addEventListener('click', () => {
     document.querySelector('.search').value = 'is:selected';
 
     searchFunction();
@@ -368,7 +379,7 @@ document.querySelector('.import').addEventListener('click', () => {
                 return '';
             }
 
-            function status(s, r2, t2) {
+            function status(s, r2, t2, s2) {
                 switch (s) {
                     case 2:
                     case 'Completed':
@@ -380,6 +391,10 @@ document.querySelector('.import').addEventListener('click', () => {
 
                     case 3:
                     case 'Dropped':
+                        if (s2) {
+                            return 'Skipping';
+                        }
+
                         return 'Dropped';
 
                     case 4:
@@ -434,6 +449,10 @@ document.querySelector('.import').addEventListener('click', () => {
                 for (const value of a.lists) {
                     const
                         s = `https://anilist.co/anime/${value.series_id}`,
+                        s2 = status(value.status),
+                        s3 = s2 === 'Planning'
+                            ? ''
+                            : value.progress || '0',
                         ss = t.searchRows((d, dd) => d.sources2[2] === dd.v, {
                             v: s
                         })[0];
@@ -441,18 +460,18 @@ document.querySelector('.import').addEventListener('click', () => {
                     if (ss) {
                         const d = db2().add({
                             episodes: ss._row.data.episodes,
-                            progress: value.progress || 0,
+                            progress: s3,
                             season: ss._row.data.season,
                             source: ss._row.data.sources,
-                            status: status(value.status),
+                            status: s2,
                             title: ss._row.data.title,
                             type: ss._row.data.type
                         });
 
                         d.onsuccess = () => {
                             ss.update({
-                                progress: value.progress || 0,
-                                status: status(value.status)
+                                progress: s3,
+                                status: s2
                             });
 
                             count++;
@@ -475,13 +494,13 @@ document.querySelector('.import').addEventListener('click', () => {
                             db2().get(ss._row.data.sources).onsuccess = (event2) => {
                                 const result = event2.target.result;
 
-                                result.progress = value.progress || 0;
-                                result.status = status(value.status);
+                                result.progress = s3;
+                                result.status = s2;
 
                                 db2().put(result).onsuccess = () => {
                                     ss.update({
-                                        progress: value.progress || 0,
-                                        status: status(value.status)
+                                        progress: s3,
+                                        status: s2
                                     });
 
                                     count++;
@@ -547,23 +566,27 @@ document.querySelector('.import').addEventListener('click', () => {
                         s = Number(parse(value, 'series_animedb_id'))
                             ? `https://myanimelist.net/anime/${parse(value, 'series_animedb_id')}`
                             : parse(value, 'series_animedb_id'),
+                        s2 = status(parse(value, 'my_status'), Number(parse(value, 'my_rewatching')), Number(parse(value, 'my_times_watched')), Number(parse(value, 'my_skipping'))),
+                        s3 = s2 === 'Planning' || s2 === 'Skipping'
+                            ? ''
+                            : parse(value, 'my_watched_episodes') || '0',
                         ss = t.searchRows('sources', '=', s)[0];
 
                     if (ss) {
                         const d = db2().add({
                             episodes: ss._row.data.episodes,
-                            progress: parse(value, 'my_watched_episodes') || 0,
+                            progress: s3,
                             season: ss._row.data.season,
                             source: s,
-                            status: status(parse(value, 'my_status'), Number(parse(value, 'my_rewatching')), Number(parse(value, 'my_times_watched'))),
+                            status: s2,
                             title: ss._row.data.title,
                             type: ss._row.data.type
                         });
 
                         d.onsuccess = () => {
                             ss.update({
-                                progress: parse(value, 'my_watched_episodes') || 0,
-                                status: status(parse(value, 'my_status'), Number(parse(value, 'my_rewatching')), Number(parse(value, 'my_times_watched')))
+                                progress: s3,
+                                status: s2
                             });
 
                             count++;
@@ -586,13 +609,13 @@ document.querySelector('.import').addEventListener('click', () => {
                             db2().get(s).onsuccess = (event2) => {
                                 const result = event2.target.result;
 
-                                result.progress = parse(value, 'my_watched_episodes') || 0;
-                                result.status = status(parse(value, 'my_status'), Number(parse(value, 'my_rewatching')), Number(parse(value, 'my_times_watched')));
+                                result.progress = s3;
+                                result.status = s2;
 
                                 db2().put(result).onsuccess = () => {
                                     ss.update({
-                                        progress: parse(value, 'my_watched_episodes') || 0,
-                                        status: status(parse(value, 'my_status'), Number(parse(value, 'my_rewatching')), Number(parse(value, 'my_times_watched')))
+                                        progress: s3,
+                                        status: s2
                                     });
 
                                     count++;
@@ -648,7 +671,9 @@ document.querySelector('.export').addEventListener('click', () => {
         const cursor = event.target.result;
 
         if (cursor) {
-            let rewatching = 0,
+            let progress = cursor.value.progress,
+                rewatching = 0,
+                skipping = 0,
                 status = null;
 
             switch (cursor.value.status) {
@@ -658,11 +683,18 @@ document.querySelector('.export').addEventListener('click', () => {
 
                 case 'Planning':
                     status = 'Plan to Watch';
+                    progress = 0;
                     break;
 
                 case 'Rewatching':
                     status = 'Completed';
                     rewatching = 1;
+                    break;
+
+                case 'Skipping':
+                    status = 'Dropped';
+                    skipping = 1;
+                    progress = 0;
                     break;
 
                 default:
@@ -695,10 +727,11 @@ document.querySelector('.export').addEventListener('click', () => {
             '        <my_finish_date>0000-00-00</my_finish_date>\n' +
             `        <my_rewatching>${rewatching}</my_rewatching>\n` +
             '        <my_score>0</my_score>\n' +
+            `        <my_skipping>${skipping}</my_skipping>\n` +
             '        <my_start_date>0000-00-00</my_start_date>\n' +
             `        <my_status>${status}</my_status>\n` +
             `        <my_times_watched>${rewatching}</my_times_watched>\n` +
-            `        <my_watched_episodes>${cursor.value.progress}</my_watched_episodes>\n` +
+            `        <my_watched_episodes>${progress}</my_watched_episodes>\n` +
             `        <series_animedb_id>${
                 cursor.key.match(/myanimelist/gu)
                     ? cursor.key.substring('https://myanimelist.net/anime/'.length)
@@ -719,7 +752,7 @@ document.querySelector('.export').addEventListener('click', () => {
                 type: 'application/xml'
             });
 
-            a.download = 'export.xml';
+            a.download = `tsuzuku_${new Date().toISOString()}.xml`;
             a.click();
         }
     };
@@ -733,11 +766,12 @@ onbeforeunload = () => {
 onpopstate = () => {
     if (new URLSearchParams(location.search).get('query')) {
         document.querySelector('.search').value = decodeURIComponent(new URLSearchParams(location.search).get('query'));
-        document.querySelector('.clear').style.visibility = 'visible';
         document.querySelector('.clear').style.display = 'inline-flex';
+        document.querySelector('.clear-separator').style.display = '';
     } else {
         document.querySelector('.search').value = '';
         document.querySelector('.clear').style.display = 'none';
+        document.querySelector('.clear-separator').style.display = 'none';
     }
 
     if (new URLSearchParams(location.search).get('regex') === '1') {

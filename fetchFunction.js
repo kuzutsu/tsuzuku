@@ -17,14 +17,13 @@ const
         s: true,
         ss: []
     },
-    status = ['', 'Completed', 'Dropped', 'Paused', 'Planning', 'Rewatching', 'Watching'],
+    status = ['', 'Completed', 'Dropped', 'Paused', 'Planning', 'Rewatching', 'Skipping', 'Watching'],
     svg = {
         arrow: '<path d="M20 12l-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8 8-8z"></path>',
         blank: '<path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"></path>',
         check: '<path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>',
         globe: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"></path>',
         indeterminate: '<path d="M19 3H5C3.9 3 3 3.9 3 5v14c0 1.1 0.9 2 2 2h14c1.1 0 2-0.9 2-2V5C21 3.9 20.1 3 19 3z M17 13H7v-2h10V13z"></path>',
-        picture: '<path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"></path>',
         play: '<path d="M8 5v14l11-7z"></path>'
     },
     title = document.title;
@@ -111,7 +110,7 @@ db.onsuccess = (event3) => {
                         source2 = [
                             '',
                             '',
-                            anilist[0] || ''
+                            value
                         ];
                     }
 
@@ -135,6 +134,7 @@ db.onsuccess = (event3) => {
                         ongoing: d[i].status === 'CURRENTLY',
                         picture: d[i].picture,
                         progress: '',
+                        r18: tt.indexOf('hentai') > -1,
                         relations: [
                             ...d[i].sources.filter((sources) => sources.match(source) && sources !== value),
                             ...d[i].relations.filter((relations) => relations.match(/anilist\.co|kitsu\.io|myanimelist\.net/gu))
@@ -226,7 +226,7 @@ db.onsuccess = (event3) => {
                                 index.lastRow = cell.getRow();
 
                                 document.querySelector('header').classList.add('header-selected');
-                                document.querySelector('.header-title').innerHTML = `${cell.getTable().getSelectedRows().length} selected`;
+                                document.querySelector('.selected-count').innerHTML = `${cell.getTable().getSelectedRows().length} selected`;
 
                                 if (document.querySelector('.header-status')) {
                                     document.querySelector('.header-status').remove();
@@ -251,7 +251,9 @@ db.onsuccess = (event3) => {
                                                 progress:
                                                     hstatus.value === 'Completed' && value._row.data.episodes
                                                         ? value._row.data.episodes
-                                                        : '0',
+                                                        : hstatus.value === 'Planning' || hstatus.value === 'Skipping'
+                                                            ? ''
+                                                            : '0',
                                                 season: value._row.data.season,
                                                 source: value._row.data.sources,
                                                 status: hstatus.value,
@@ -265,20 +267,37 @@ db.onsuccess = (event3) => {
                                                         progress: value._row.data.episodes,
                                                         status: hstatus.value
                                                     });
-                                                } else {
+
+                                                    return;
+                                                }
+
+                                                if (hstatus.value === 'Planning' || hstatus.value === 'Skipping') {
                                                     value.update({
-                                                        progress: '0',
+                                                        progress: '',
                                                         status: hstatus.value
                                                     });
+
+                                                    return;
                                                 }
+
+                                                value.update({
+                                                    progress: '0',
+                                                    status: hstatus.value
+                                                });
                                             };
 
                                             d2.onerror = () => {
                                                 db2().get(value._row.data.sources).onsuccess = (event) => {
-                                                    const result = event.target.result;
+                                                    const
+                                                        result = event.target.result,
+                                                        status2 = result.status;
 
                                                     if (hstatus.value === 'Completed' && value._row.data.episodes) {
                                                         result.progress = value._row.data.episodes;
+                                                    } else {
+                                                        if (hstatus.value === 'Planning' || hstatus.value === 'Skipping') {
+                                                            result.progress = '';
+                                                        }
                                                     }
 
                                                     result.status = hstatus.value;
@@ -289,11 +308,31 @@ db.onsuccess = (event3) => {
                                                                 progress: value._row.data.episodes,
                                                                 status: hstatus.value
                                                             });
-                                                        } else {
+
+                                                            return;
+                                                        }
+
+                                                        if (hstatus.value === 'Planning' || hstatus.value === 'Skipping') {
                                                             value.update({
+                                                                progress: '',
                                                                 status: hstatus.value
                                                             });
+
+                                                            return;
                                                         }
+
+                                                        if (status2 === 'Planning' || status2 === 'Skipping') {
+                                                            value.update({
+                                                                progress: '0',
+                                                                status: hstatus.value
+                                                            });
+
+                                                            return;
+                                                        }
+
+                                                        value.update({
+                                                            status: hstatus.value
+                                                        });
                                                     };
                                                 };
                                             };
@@ -326,7 +365,6 @@ db.onsuccess = (event3) => {
                                 index.lastRow = null;
 
                                 document.querySelector('header').classList.remove('header-selected');
-                                document.querySelector('.header-title').innerHTML = 'Tsuzuku';
                                 document.querySelector('.header-status').remove();
                                 document.querySelectorAll('.separator-selected').forEach((element) => {
                                     element.remove();
@@ -344,7 +382,8 @@ db.onsuccess = (event3) => {
                         field: 'picture',
                         formatter: function (cell) {
                             return (
-                                `<svg viewBox="0 0 24 24" width="17" height="17">${svg.check}</svg>` +
+                                `<svg class="blank" viewBox="0 0 24 24" width="17" height="17">${svg.blank}</svg>` +
+                                `<svg class="check" viewBox="0 0 24 24" width="17" height="17">${svg.check}</svg>` +
                                 `<img src="${cell.getValue()}" loading="lazy" alt style="height: 40px; width: 40px; object-fit: cover; user-select: none;">`
                             );
                         },
@@ -376,7 +415,7 @@ db.onsuccess = (event3) => {
 
                             if (column.getTable().getSelectedRows().length) {
                                 document.querySelector('header').classList.add('header-selected');
-                                document.querySelector('.header-title').innerHTML = `${column.getTable().getSelectedRows().length} selected`;
+                                document.querySelector('.selected-count').innerHTML = `${column.getTable().getSelectedRows().length} selected`;
 
                                 if (selected.s) {
                                     column._column.titleElement.children[0].innerHTML = svg.check;
@@ -407,7 +446,9 @@ db.onsuccess = (event3) => {
                                                 progress:
                                                     hstatus.value === 'Completed' && value._row.data.episodes
                                                         ? value._row.data.episodes
-                                                        : '0',
+                                                        : hstatus.value === 'Planning' || hstatus.value === 'Skipping'
+                                                            ? ''
+                                                            : '0',
                                                 season: value._row.data.season,
                                                 source: value._row.data.sources,
                                                 status: hstatus.value,
@@ -421,20 +462,37 @@ db.onsuccess = (event3) => {
                                                         progress: value._row.data.episodes,
                                                         status: hstatus.value
                                                     });
-                                                } else {
+
+                                                    return;
+                                                }
+
+                                                if (hstatus.value === 'Planning' || hstatus.value === 'Skipping') {
                                                     value.update({
-                                                        progress: '0',
+                                                        progress: '',
                                                         status: hstatus.value
                                                     });
+
+                                                    return;
                                                 }
+
+                                                value.update({
+                                                    progress: '0',
+                                                    status: hstatus.value
+                                                });
                                             };
 
                                             d2.onerror = () => {
                                                 db2().get(value._row.data.sources).onsuccess = (event) => {
-                                                    const result = event.target.result;
+                                                    const
+                                                        result = event.target.result,
+                                                        status2 = result.status;
 
                                                     if (hstatus.value === 'Completed' && value._row.data.episodes) {
                                                         result.progress = value._row.data.episodes;
+                                                    } else {
+                                                        if (hstatus.value === 'Planning' || hstatus.value === 'Skipping') {
+                                                            result.progress = '';
+                                                        }
                                                     }
 
                                                     result.status = hstatus.value;
@@ -445,11 +503,31 @@ db.onsuccess = (event3) => {
                                                                 progress: value._row.data.episodes,
                                                                 status: hstatus.value
                                                             });
-                                                        } else {
+
+                                                            return;
+                                                        }
+
+                                                        if (hstatus.value === 'Planning' || hstatus.value === 'Skipping') {
                                                             value.update({
+                                                                progress: '',
                                                                 status: hstatus.value
                                                             });
+
+                                                            return;
                                                         }
+
+                                                        if (status2 === 'Planning' || status2 === 'Skipping') {
+                                                            value.update({
+                                                                progress: '0',
+                                                                status: hstatus.value
+                                                            });
+
+                                                            return;
+                                                        }
+
+                                                        value.update({
+                                                            status: hstatus.value
+                                                        });
                                                     };
                                                 };
                                             };
@@ -475,7 +553,6 @@ db.onsuccess = (event3) => {
                             } else {
                                 document.querySelector('header').classList.remove('header-selected');
                                 column._column.titleElement.children[0].innerHTML = svg.blank;
-                                document.querySelector('.header-title').innerHTML = 'Tsuzuku';
                                 document.querySelector('.header-status').remove();
                                 document.querySelectorAll('.separator-selected').forEach((element) => {
                                     element.remove();
@@ -519,7 +596,7 @@ db.onsuccess = (event3) => {
                         headerClick: function (e, column) {
                             column.hide();
                             column.getTable().getColumn('sources2').show();
-                            column.getTable().redraw();
+                            column.getTable().redraw(true);
                         },
                         headerHozAlign: 'center',
                         headerSort: false,
@@ -562,7 +639,7 @@ db.onsuccess = (event3) => {
                         headerClick: function (e, column) {
                             column.hide();
                             column.getTable().getColumn('sources').show();
-                            column.getTable().redraw();
+                            column.getTable().redraw(true);
                         },
                         headerHozAlign: 'center',
                         headerSort: false,
@@ -575,6 +652,10 @@ db.onsuccess = (event3) => {
                     {
                         field: 'alternative',
                         formatter: function (cell) {
+                            if (cell.getRow().getData().r18) {
+                                return `<span>${cell.getValue()}&nbsp;<span style="color: #f44336;">R18+</span></span><div class="indicator" style="position: absolute; bottom: 0; height: 2px; max-width: 100%;"></div>`;
+                            }
+
                             return `<span>${cell.getValue()}</span><div class="indicator" style="position: absolute; bottom: 0; height: 2px; max-width: 100%;"></div>`;
                         },
                         minWidth: 200,
@@ -602,24 +683,31 @@ db.onsuccess = (event3) => {
                         width: 100
                     },
                     {
-                        cellClick: function (e, cell) {
-                            const value = cell.getValue();
-
-                            if (value) {
-                                if (value.indexOf(' ') > -1) {
-                                    const split = value.split(' ');
-
-                                    document.querySelector('.search').value = `season:${split[0].toLowerCase()} year:${split[1]}`;
-                                } else {
-                                    document.querySelector('.search').value = `season:tba year:${value}`;
-                                }
-                            } else {
-                                document.querySelector('.search').value = 'year:tba';
-                            }
-
-                            searchFunction(cell.getTable());
-                        },
                         field: 'season',
+                        formatter: function (cell) {
+                            const
+                                span = document.createElement('span'),
+                                value = cell.getValue();
+
+                            span.innerHTML = cell.getValue();
+                            span.addEventListener('click', () => {
+                                if (value) {
+                                    if (value.indexOf(' ') > -1) {
+                                        const split = value.split(' ');
+
+                                        document.querySelector('.search').value = `season:${split[0].toLowerCase()} year:${split[1]}`;
+                                    } else {
+                                        document.querySelector('.search').value = `season:tba year:${value}`;
+                                    }
+                                } else {
+                                    document.querySelector('.search').value = 'year:tba';
+                                }
+
+                                searchFunction(cell.getTable());
+                            });
+
+                            return span;
+                        },
                         headerHozAlign: 'center',
                         hozAlign: 'center',
                         sorterParams: {
@@ -628,6 +716,37 @@ db.onsuccess = (event3) => {
                         title: 'Season',
                         vertAlign: 'middle',
                         width: 100
+                    },
+                    {
+                        cellClick: function (e, cell) {
+                            if (!cell.getValue()) {
+                                return;
+                            }
+
+                            document.querySelector('.search').value = 'is:ongoing';
+
+                            searchFunction(cell.getTable());
+                        },
+                        field: 'ongoing',
+                        formatter: function (cell) {
+                            if (!cell.getValue()) {
+                                return '';
+                            }
+
+                            return (
+                                '<span title="Ongoing" style="line-height: 0;">' +
+                                    `<svg viewBox="3 2 20 20" width="17" height="17">${svg.play}</svg>` +
+                                '</span>'
+                            );
+                        },
+                        headerHozAlign: 'center',
+                        headerSort: false,
+                        hozAlign: 'center',
+                        titleFormatter: function () {
+                            return `<svg viewBox="3 2 20 20" width="17" height="17">${svg.play}</svg>`;
+                        },
+                        vertAlign: 'middle',
+                        width: 50
                     },
                     {
                         field: 'progress',
@@ -728,7 +847,9 @@ db.onsuccess = (event3) => {
                                         progress:
                                             select.value === 'Completed' && cell.getRow().getData().episodes
                                                 ? cell.getRow().getData().episodes
-                                                : '0',
+                                                : select.value === 'Planning' || select.value === 'Skipping'
+                                                    ? ''
+                                                    : '0',
                                         season: cell.getRow().getData().season,
                                         source: cell.getRow().getData().sources,
                                         status: select.value,
@@ -742,20 +863,37 @@ db.onsuccess = (event3) => {
                                                 progress: cell.getRow().getData().episodes,
                                                 status: select.value
                                             });
-                                        } else {
+
+                                            return;
+                                        }
+
+                                        if (select.value === 'Planning' || select.value === 'Skipping') {
                                             cell.getRow().update({
-                                                progress: '0',
+                                                progress: '',
                                                 status: select.value
                                             });
+
+                                            return;
                                         }
+
+                                        cell.getRow().update({
+                                            progress: '0',
+                                            status: select.value
+                                        });
                                     };
 
                                     d2.onerror = () => {
                                         db2().get(cell.getRow().getData().sources).onsuccess = (event) => {
-                                            const result = event.target.result;
+                                            const
+                                                result = event.target.result,
+                                                status2 = result.status;
 
                                             if (select.value === 'Completed' && cell.getRow().getData().episodes) {
                                                 result.progress = cell.getRow().getData().episodes;
+                                            } else {
+                                                if (select.value === 'Planning' || select.value === 'Skipping') {
+                                                    result.progress = '';
+                                                }
                                             }
 
                                             result.status = select.value;
@@ -766,11 +904,31 @@ db.onsuccess = (event3) => {
                                                         progress: cell.getRow().getData().episodes,
                                                         status: select.value
                                                     });
-                                                } else {
+
+                                                    return;
+                                                }
+
+                                                if (select.value === 'Planning' || select.value === 'Skipping') {
                                                     cell.getRow().update({
+                                                        progress: '',
                                                         status: select.value
                                                     });
+
+                                                    return;
                                                 }
+
+                                                if (status2 === 'Planning' || status2 === 'Skipping') {
+                                                    cell.getRow().update({
+                                                        progress: '0',
+                                                        status: select.value
+                                                    });
+
+                                                    return;
+                                                }
+
+                                                cell.getRow().update({
+                                                    status: select.value
+                                                });
                                             };
                                         };
                                     };
@@ -794,37 +952,6 @@ db.onsuccess = (event3) => {
                         title: 'Status',
                         vertAlign: 'middle',
                         width: 100
-                    },
-                    {
-                        cellClick: function (e, cell) {
-                            if (!cell.getValue()) {
-                                return;
-                            }
-
-                            document.querySelector('.search').value = 'is:ongoing';
-
-                            searchFunction(cell.getTable());
-                        },
-                        field: 'ongoing',
-                        formatter: function (cell) {
-                            if (!cell.getValue()) {
-                                return '';
-                            }
-
-                            return (
-                                '<span title="Ongoing" style="line-height: 0;">' +
-                                    `<svg viewBox="3 2 20 20" width="17" height="17">${svg.play}</svg>` +
-                                '</span>'
-                            );
-                        },
-                        headerHozAlign: 'center',
-                        headerSort: false,
-                        hozAlign: 'center',
-                        titleFormatter: function () {
-                            return `<svg viewBox="3 2 20 20" width="17" height="17">${svg.play}</svg>`;
-                        },
-                        vertAlign: 'middle',
-                        width: 50
                     },
                     {
                         field: 'relevancy',
@@ -890,7 +1017,7 @@ db.onsuccess = (event3) => {
 
                     }
 
-                    this.redraw();
+                    this.redraw(true);
                 },
                 dataLoaded: function () {
                     document.querySelector('.tabulator').style.display = 'none';
@@ -900,8 +1027,8 @@ db.onsuccess = (event3) => {
                         const value = decodeURIComponent(new URLSearchParams(location.search).get('query'));
 
                         document.querySelector('.search').value = value;
-                        document.querySelector('.clear').style.visibility = 'visible';
                         document.querySelector('.clear').style.display = 'inline-flex';
+                        document.querySelector('.clear-separator').style.display = '';
 
                         if (!document.querySelector(`[data-query="${value}"]`)) {
                             document.querySelector('.default').style.display = 'contents';
@@ -911,6 +1038,7 @@ db.onsuccess = (event3) => {
                     } else {
                         document.querySelector('.search').value = '';
                         document.querySelector('.clear').style.display = 'none';
+                        document.querySelector('.clear-separator').style.display = 'none';
                     }
 
                     if (new URLSearchParams(location.search).get('regex') === '1') {
@@ -940,7 +1068,7 @@ db.onsuccess = (event3) => {
                         const cursor = event.target.result;
 
                         if (cursor) {
-                            this.searchRows('sources', '=', cursor.key)[0].update({
+                            this.searchRows((d2) => d2.sources2.indexOf(cursor.key) > -1)[0].update({
                                 progress: cursor.value.progress,
                                 status: cursor.value.status
                             });
@@ -968,7 +1096,7 @@ db.onsuccess = (event3) => {
                         }
                     }
 
-                    this.redraw();
+                    this.redraw(true);
                 },
                 headerSortElement: `<svg viewBox="0 0 24 24" width="17" height="17">${svg.arrow}</svg>`,
                 headerSortTristate: true,
@@ -982,12 +1110,6 @@ db.onsuccess = (event3) => {
                 layout: 'fitColumns',
                 resizableColumns: false,
                 rowFormatter: function (row) {
-                    if (row.getData().status) {
-                        row.getCell('progress').getElement().querySelector('input').disabled = false;
-                    } else {
-                        row.getCell('progress').getElement().querySelector('input').disabled = true;
-                    }
-
                     row.getElement().dataset.status = row.getData().status;
 
                     switch (row.getData().status) {
@@ -996,10 +1118,12 @@ db.onsuccess = (event3) => {
                         case 'Paused':
                         case 'Rewatching':
                         case 'Watching':
+                            row.getCell('progress').getElement().querySelector('input').disabled = false;
                             row.getCell('alternative').getElement().querySelector('.indicator').style.width = `${row.getCell('progress').getElement().querySelector('input').value / row.getData().episodes * 100}%`;
                             break;
 
                         default:
+                            row.getCell('progress').getElement().querySelector('input').disabled = true;
                             row.getCell('alternative').getElement().querySelector('.indicator').style.width = '0%';
                             break;
                     }

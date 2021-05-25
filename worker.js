@@ -78,9 +78,9 @@ addEventListener('message', (event) => {
         v = v.replace(/\btype:(?:\|?(?:tv|movie|ova|ona|special)\b)+/giu, '');
     }
 
-    if (v.match(/\bstatus:(?:\|?(?:watching|rewatching|completed|paused|dropped|planning)\b)+/giu)) {
-        status = v.match(/\bstatus:(?:\|?(?:watching|rewatching|completed|paused|dropped|planning)\b)+/giu)[0].replace(/status:/giu, '').split('|');
-        v = v.replace(/\bstatus:(?:\|?(?:watching|rewatching|completed|paused|dropped|planning)\b)+/giu, '');
+    if (v.match(/\bstatus:(?:\|?(?:watching|rewatching|completed|paused|dropped|planning|skipping)\b)+/giu)) {
+        status = v.match(/\bstatus:(?:\|?(?:watching|rewatching|completed|paused|dropped|planning|skipping)\b)+/giu)[0].replace(/status:/giu, '').split('|');
+        v = v.replace(/\bstatus:(?:\|?(?:watching|rewatching|completed|paused|dropped|planning|skipping)\b)+/giu, '');
     }
 
     if (v.match(/\bseason:(?:\|?(?:winter|spring|summer|fall|tba)\b)+/giu)) {
@@ -206,7 +206,7 @@ addEventListener('message', (event) => {
                             r = true;
 
                             if (value !== d.title) {
-                                d.alternative = `${value} <span class="title">${d.title}</span>`;
+                                d.alternative = `${value}&nbsp;<span class="title">${d.title}</span>`;
                             }
 
                             break;
@@ -264,7 +264,7 @@ addEventListener('message', (event) => {
                     }
 
                     if (result[0].item.title !== d.title) {
-                        d.alternative = `${result[0].item.title} <span class="title">${d.title}</span>`;
+                        d.alternative = `${result[0].item.title}&nbsp;<span class="title">${d.title}</span>`;
                     }
                 }
             }

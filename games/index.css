@@ -122,10 +122,6 @@ svg {
     background: var(--background-hover);
 }
 
-select {
-    outline: none;
-}
-
 option,
 select {
     background: var(--background);
@@ -235,7 +231,7 @@ header,
 }
 
 .dim {
-    opacity: 0.1;
+    opacity: 0.2;
 }
 
 .source {
