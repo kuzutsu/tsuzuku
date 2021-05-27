@@ -1,7 +1,9 @@
+const sw = '2.2.7';
+
 addEventListener('install', (event) => {
     event.waitUntil(
         caches
-            .open('tsuzuku')
+            .open(sw)
             .then((c) => c.addAll([
                 // local
                 './',
@@ -38,10 +40,24 @@ addEventListener('install', (event) => {
                 'https://cdn.jsdelivr.net/npm/tabulator-tables@4.9.3/dist/js/modules/select_row.min.js',
                 'https://cdn.jsdelivr.net/npm/tabulator-tables@4.9.3/dist/js/modules/sort.min.js',
                 'https://cdn.jsdelivr.net/npm/tabulator-tables@4.9.3/dist/js/tabulator_core.min.js',
-                'https://fonts.gstatic.com/s/roboto/v20/KFOmCnqEu92Fr1Mu4mxKKTU1Kg.woff2',
-                'https://fonts.gstatic.com/s/roboto/v20/KFOlCnqEu92Fr1MmEU9fBBc4AMP6lQ.woff2',
+                'https://fonts.gstatic.com/s/roboto/v27/KFOmCnqEu92Fr1Mu4mxK.woff2',
+                'https://fonts.gstatic.com/s/roboto/v27/KFOlCnqEu92Fr1MmEU9fBBc4.woff2',
                 'https://raw.githubusercontent.com/manami-project/anime-offline-database/master/anime-offline-database.json'
             ]))
+    );
+});
+
+addEventListener('activate', (event) => {
+    const cache = [sw];
+
+    event.waitUntil(
+        caches.keys().then((keys) => Promise.all(keys.map((key) => {
+            if (cache.indexOf(key) > -1) {
+                return Promise.resolve();
+            }
+
+            return caches.delete(key);
+        })))
     );
 });
 
@@ -53,11 +69,9 @@ addEventListener('message', (event) => {
 
 addEventListener('fetch', (event) => {
     event.respondWith(
-        caches
-            .match(event.request, {
-                ignoreSearch: true
-            })
-            .then((cached) => cached || fetch(event.request))
+        caches.match(event.request, {
+            ignoreSearch: true
+        }).then((cached) => cached || fetch(event.request))
     );
 
     event.waitUntil(
@@ -67,7 +81,7 @@ addEventListener('fetch', (event) => {
                     return Promise.resolve();
                 }
 
-                return caches.open('tsuzuku').then((cache) => cache.put(event.request, response.clone()));
+                return caches.open(sw).then((cache) => cache.put(event.request, response.clone()));
             })
             .catch(() => Promise.resolve())
     );
