@@ -11,8 +11,7 @@ const
 
 let query = null;
 
-fetch('../../anime-offline-database.json')
-// fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/master/anime-offline-database.json')
+fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/master/anime-offline-database.json')
     .then((response) => response.json())
     .then((data) => {
         const d = data.data;
