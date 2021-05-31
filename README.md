@@ -1,12 +1,11 @@
 # [Tsuzuku](https://kuzutsu.github.io/tsuzuku/)
-**Tsuzuku** combines entries from different anime metadata providers into a single list, using [Tabulator](https://github.com/olifolkerd/tabulator) and the [anime-offline-database](https://github.com/manami-project/anime-offline-database).
+**Tsuzuku** combines entries from MyAnimeList (highest priority), Kitsu, and AniList into a single list.
+
+Uses the [anime-offline-database](https://github.com/manami-project/anime-offline-database) and [Tabulator](https://github.com/olifolkerd/tabulator)
 
 ![](https://raw.githubusercontent.com/kuzutsu/tsuzuku/master/preview.png)
 
-Only one source will appear, click on earth header icon to toggle more
-* MyAnimeList (highest priority)
-* Kitsu
-* AniList
+Only one source will appear, click on earth icon to toggle more
 
 ## Features
 ### Offline-ready
@@ -84,14 +83,20 @@ Click on moon icon to toggle
 Click on image icon to toggle
 
 ### Games
-Play games
+#### Odd one out
+Query will only show after submitting an answer
+
+#### Quiz
+Single selection mode (default) only have one correct answer
+
+Multiple selection mode may have no correct answers
 
 ### Export
 File is in MyAnimeList XML format
 
 #### Disclaimer
 * Sites supporting this format may only import titles with a MyAnimeList entry
-* Skipped titles will have a Dropped status with zero progress
+* Skipped titles will have a Dropped status with 0 progress
 
 ### Import
 Supports files in MyAnimeList XML or AniList GDPR JSON format

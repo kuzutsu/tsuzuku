@@ -21,7 +21,8 @@ const
     years = [],
     years2 = new Map();
 
-fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/master/anime-offline-database.json')
+fetch('../../anime-offline-database.json')
+// fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/master/anime-offline-database.json')
     .then((response) => response.json())
     .then((data) => {
         const d = data.data;
@@ -87,10 +88,10 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                     season: d[i].animeSeason.season.toLowerCase(),
                     source:
                         value.match(/myanimelist\.net/gu)
-                            ? '../images/myanimelist.png'
+                            ? '../../images/myanimelist.png'
                             : value.match(/kitsu\.io/gu)
-                                ? '../images/kitsu.png'
-                                : '../images/anilist.png',
+                                ? '../../images/kitsu.png'
+                                : '../../images/anilist.png',
                     tags: tt,
                     title: d[i].title,
                     year: y
@@ -153,35 +154,34 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
         }
 
         function game() {
-            document.querySelector('.score').innerHTML = localStorage.getItem('score');
-            document.querySelector('.high').innerHTML = localStorage.getItem('high');
-
-            if (document.querySelector('.choice').innerHTML) {
-                document.querySelector('.choice').innerHTML = '';
-            }
-
-            if (localStorage.getItem('random') === 'enable') {
-                localStorage.setItem('type', types[Math.round(Math.random() * (types.length - 1))]);
-            }
-
             const
+                c = JSON.parse(localStorage.getItem('quiz')),
                 choices =
-                    localStorage.getItem('selection') === 'single'
+                    c.selection === 'single'
                         ? 1
-                        : Math.round(Math.random() * Number(localStorage.getItem('choices'))),
+                        : Math.round(Math.random() * c.choices),
                 choices2 = [],
-                choices3 = Number(localStorage.getItem('choices')),
+                choices3 = c.choices,
                 operator = operators[Math.round(Math.random() * (operators.length - 1))],
                 season = seasons[Math.round(Math.random() * (seasons.length - 1))];
+
+            document.querySelector('.score').innerHTML = c.score;
+            document.querySelector('.high').innerHTML = c.high;
+            document.querySelector('.submit').innerHTML = 'Submit';
+            document.querySelector('.choice').innerHTML = '';
+
+            if (c.random) {
+                c.type = types[Math.round(Math.random() * (types.length - 1))];
+            }
 
             choice.splice(0);
 
             if (choices) {
                 for (let i = 0; i < choices; i++) {
-                    let n = Math.round(Math.random() * (Number(localStorage.getItem('choices')) - 1));
+                    let n = Math.round(Math.random() * (c.choices - 1));
 
                     while (choice.indexOf(n) > -1) {
-                        n = Math.round(Math.random() * (Number(localStorage.getItem('choices')) - 1));
+                        n = Math.round(Math.random() * (c.choices - 1));
                     }
 
                     choice.push(n);
@@ -192,9 +192,9 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                 tag = tags[Math.round(Math.random() * (tags.length - 1))],
                 year = years[Math.round(Math.random() * (years.length - 1))];
 
-            document.querySelector('.query a').href = '../?query=';
+            document.querySelector('.query a').href = '../../?query=';
 
-            switch (localStorage.getItem('type')) {
+            switch (c.type) {
                 case 'episodes (without operators)':
                     while (episodes2.get(episode) < choices) {
                         episode = episodes[Math.round(Math.random() * (episodes.length - 1))];
@@ -312,202 +312,207 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                     break;
             }
 
-            for (let i = 0; i < Number(localStorage.getItem('choices')); i++) {
+            for (let i = 0; i < c.choices; i++) {
                 const div = document.createElement('div');
                 let random = Math.round(Math.random() * (database.length - 1));
 
-                if (choice.indexOf(i) > -1) {
-                    switch (localStorage.getItem('type')) {
-                        case 'episodes (without operators)':
+                switch (c.type) {
+                    case 'episodes (without operators)':
+                        if (choice.indexOf(i) > -1) {
                             while (database[random].episodes !== episode || choices2.indexOf(database[random].link) > -1) {
                                 random = Math.round(Math.random() * (database.length - 1));
                             }
-                            break;
-
-                        case 'episodes (with operators)':
-                            switch (operator) {
-                                case '<':
-                                    while (database[random].episodes >= episode || choices2.indexOf(database[random].link) > -1) {
-                                        random = Math.round(Math.random() * (database.length - 1));
-                                    }
-                                    break;
-
-                                case '>':
-                                    while (database[random].episodes <= episode || choices2.indexOf(database[random].link) > -1) {
-                                        random = Math.round(Math.random() * (database.length - 1));
-                                    }
-                                    break;
-
-                                case '<=':
-                                    while (database[random].episodes > episode || choices2.indexOf(database[random].link) > -1) {
-                                        random = Math.round(Math.random() * (database.length - 1));
-                                    }
-                                    break;
-
-                                case '>=':
-                                    while (database[random].episodes < episode || choices2.indexOf(database[random].link) > -1) {
-                                        random = Math.round(Math.random() * (database.length - 1));
-                                    }
-                                    break;
-
-                                default:
-                                    while (database[random].episodes !== episode || choices2.indexOf(database[random].link) > -1) {
-                                        random = Math.round(Math.random() * (database.length - 1));
-                                    }
-                                    break;
-                            }
-                            break;
-
-                        case 'season':
-                            while (database[random].season !== season || choices2.indexOf(database[random].link) > -1) {
-                                random = Math.round(Math.random() * (database.length - 1));
-                            }
-                            break;
-
-                        case 'year (without operators)':
-                            while (database[random].year !== year || choices2.indexOf(database[random].link) > -1) {
-                                random = Math.round(Math.random() * (database.length - 1));
-                            }
-                            break;
-
-                        case 'year (with operators)':
-                            switch (operator) {
-                                case '<':
-                                    while (!database[random].year || database[random].year >= year || choices2.indexOf(database[random].link) > -1) {
-                                        random = Math.round(Math.random() * (database.length - 1));
-                                    }
-                                    break;
-
-                                case '>':
-                                    while (database[random].year <= year || choices2.indexOf(database[random].link) > -1) {
-                                        random = Math.round(Math.random() * (database.length - 1));
-                                    }
-                                    break;
-
-                                case '<=':
-                                    while (!database[random].year || database[random].year > year || choices2.indexOf(database[random].link) > -1) {
-                                        random = Math.round(Math.random() * (database.length - 1));
-                                    }
-                                    break;
-
-                                case '>=':
-                                    while (database[random].year < year || choices2.indexOf(database[random].link) > -1) {
-                                        random = Math.round(Math.random() * (database.length - 1));
-                                    }
-                                    break;
-
-                                default:
-                                    while (database[random].year !== year || choices2.indexOf(database[random].link) > -1) {
-                                        random = Math.round(Math.random() * (database.length - 1));
-                                    }
-                                    break;
-                            }
-                            break;
-
-                        default:
-                            while (database[random].tags.indexOf(tag) === -1 || choices2.indexOf(database[random].link) > -1) {
-                                random = Math.round(Math.random() * (database.length - 1));
-                            }
-                            break;
-                    }
-                } else {
-                    switch (localStorage.getItem('type')) {
-                        case 'episodes (without operators)':
+                        } else {
                             while (database[random].episodes === episode || choices2.indexOf(database[random].link) > -1) {
                                 random = Math.round(Math.random() * (database.length - 1));
                             }
-                            break;
+                        }
 
-                        case 'episodes (with operators)':
-                            switch (operator) {
-                                case '<':
-                                    while (database[random].episodes < episode || choices2.indexOf(database[random].link) > -1) {
-                                        random = Math.round(Math.random() * (database.length - 1));
-                                    }
-                                    break;
+                        break;
 
-                                case '>':
-                                    while (database[random].episodes > episode || choices2.indexOf(database[random].link) > -1) {
-                                        random = Math.round(Math.random() * (database.length - 1));
-                                    }
-                                    break;
-
-                                case '<=':
-                                    while (database[random].episodes <= episode || choices2.indexOf(database[random].link) > -1) {
-                                        random = Math.round(Math.random() * (database.length - 1));
-                                    }
-                                    break;
-
-                                case '>=':
+                    case 'episodes (with operators)':
+                        switch (operator) {
+                            case '<':
+                                if (choice.indexOf(i) > -1) {
                                     while (database[random].episodes >= episode || choices2.indexOf(database[random].link) > -1) {
                                         random = Math.round(Math.random() * (database.length - 1));
                                     }
-                                    break;
+                                } else {
+                                    while (database[random].episodes < episode || choices2.indexOf(database[random].link) > -1) {
+                                        random = Math.round(Math.random() * (database.length - 1));
+                                    }
+                                }
 
-                                default:
+                                break;
+
+                            case '>':
+                                if (choice.indexOf(i) > -1) {
+                                    while (database[random].episodes <= episode || choices2.indexOf(database[random].link) > -1) {
+                                        random = Math.round(Math.random() * (database.length - 1));
+                                    }
+                                } else {
+                                    while (database[random].episodes > episode || choices2.indexOf(database[random].link) > -1) {
+                                        random = Math.round(Math.random() * (database.length - 1));
+                                    }
+                                }
+
+                                break;
+
+                            case '<=':
+                                if (choice.indexOf(i) > -1) {
+                                    while (database[random].episodes > episode || choices2.indexOf(database[random].link) > -1) {
+                                        random = Math.round(Math.random() * (database.length - 1));
+                                    }
+                                } else {
+                                    while (database[random].episodes <= episode || choices2.indexOf(database[random].link) > -1) {
+                                        random = Math.round(Math.random() * (database.length - 1));
+                                    }
+                                }
+
+                                break;
+
+                            case '>=':
+                                if (choice.indexOf(i) > -1) {
+                                    while (database[random].episodes < episode || choices2.indexOf(database[random].link) > -1) {
+                                        random = Math.round(Math.random() * (database.length - 1));
+                                    }
+                                } else {
+                                    while (database[random].episodes >= episode || choices2.indexOf(database[random].link) > -1) {
+                                        random = Math.round(Math.random() * (database.length - 1));
+                                    }
+                                }
+
+                                break;
+
+                            default:
+                                if (choice.indexOf(i) > -1) {
+                                    while (database[random].episodes !== episode || choices2.indexOf(database[random].link) > -1) {
+                                        random = Math.round(Math.random() * (database.length - 1));
+                                    }
+                                } else {
                                     while (database[random].episodes === episode || choices2.indexOf(database[random].link) > -1) {
                                         random = Math.round(Math.random() * (database.length - 1));
                                     }
-                                    break;
-                            }
-                            break;
+                                }
 
-                        case 'season':
+                                break;
+                        }
+
+                        break;
+
+                    case 'season':
+                        if (choice.indexOf(i) > -1) {
+                            while (database[random].season !== season || choices2.indexOf(database[random].link) > -1) {
+                                random = Math.round(Math.random() * (database.length - 1));
+                            }
+                        } else {
                             while (database[random].season === season || choices2.indexOf(database[random].link) > -1) {
                                 random = Math.round(Math.random() * (database.length - 1));
                             }
-                            break;
+                        }
 
-                        case 'year (without operators)':
+                        break;
+
+                    case 'year (without operators)':
+                        if (choice.indexOf(i) > -1) {
+                            while (database[random].year !== year || choices2.indexOf(database[random].link) > -1) {
+                                random = Math.round(Math.random() * (database.length - 1));
+                            }
+                        } else {
                             while (database[random].year === year || choices2.indexOf(database[random].link) > -1) {
                                 random = Math.round(Math.random() * (database.length - 1));
                             }
-                            break;
+                        }
 
-                        case 'year (with operators)':
-                            switch (operator) {
-                                case '<':
+                        break;
+
+                    case 'year (with operators)':
+                        switch (operator) {
+                            case '<':
+                                if (choice.indexOf(i) > -1) {
+                                    while (!database[random].year || database[random].year >= year || choices2.indexOf(database[random].link) > -1) {
+                                        random = Math.round(Math.random() * (database.length - 1));
+                                    }
+                                } else {
                                     while ((database[random].year && database[random].year < year) || choices2.indexOf(database[random].link) > -1) {
                                         random = Math.round(Math.random() * (database.length - 1));
                                     }
-                                    break;
+                                }
 
-                                case '>':
+                                break;
+
+                            case '>':
+                                if (choice.indexOf(i) > -1) {
+                                    while (database[random].year <= year || choices2.indexOf(database[random].link) > -1) {
+                                        random = Math.round(Math.random() * (database.length - 1));
+                                    }
+                                } else {
                                     while (database[random].year > year || choices2.indexOf(database[random].link) > -1) {
                                         random = Math.round(Math.random() * (database.length - 1));
                                     }
-                                    break;
+                                }
 
-                                case '<=':
+                                break;
+
+                            case '<=':
+                                if (choice.indexOf(i) > -1) {
+                                    while (!database[random].year || database[random].year > year || choices2.indexOf(database[random].link) > -1) {
+                                        random = Math.round(Math.random() * (database.length - 1));
+                                    }
+                                } else {
                                     while ((database[random].year && database[random].year <= year) || choices2.indexOf(database[random].link) > -1) {
                                         random = Math.round(Math.random() * (database.length - 1));
                                     }
-                                    break;
+                                }
 
-                                case '>=':
+                                break;
+
+                            case '>=':
+                                if (choice.indexOf(i) > -1) {
+                                    while (database[random].year < year || choices2.indexOf(database[random].link) > -1) {
+                                        random = Math.round(Math.random() * (database.length - 1));
+                                    }
+                                } else {
                                     while (database[random].year >= year || choices2.indexOf(database[random].link) > -1) {
                                         random = Math.round(Math.random() * (database.length - 1));
                                     }
-                                    break;
+                                }
 
-                                default:
+                                break;
+
+                            default:
+                                if (choice.indexOf(i) > -1) {
+                                    while (database[random].year !== year || choices2.indexOf(database[random].link) > -1) {
+                                        random = Math.round(Math.random() * (database.length - 1));
+                                    }
+                                } else {
                                     while (database[random].year === year || choices2.indexOf(database[random].link) > -1) {
                                         random = Math.round(Math.random() * (database.length - 1));
                                     }
-                                    break;
-                            }
-                            break;
+                                }
 
-                        default:
+                                break;
+                        }
+
+                        break;
+
+                    default:
+                        if (choice.indexOf(i) > -1) {
+                            while (database[random].tags.indexOf(tag) === -1 || choices2.indexOf(database[random].link) > -1) {
+                                random = Math.round(Math.random() * (database.length - 1));
+                            }
+                        } else {
                             while (database[random].tags.indexOf(tag) > -1 || choices2.indexOf(database[random].link) > -1) {
                                 random = Math.round(Math.random() * (database.length - 1));
                             }
-                            break;
-                    }
+                        }
+
+                        break;
                 }
 
                 choices2.push(database[random].link);
 
+                div.tabIndex = 0;
                 div.innerHTML =
                     `<img class="picture" src="${database[random].picture}" loading="lazy" alt>` +
                     '<span class="separator"></span>' +
@@ -524,7 +529,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                         return;
                     }
 
-                    if (localStorage.getItem('selection') === 'single' && document.querySelector('.selected')) {
+                    if (c.selection === 'single' && document.querySelector('.selected')) {
                         document.querySelector('.selected').classList.remove('selected');
                     }
 
@@ -533,30 +538,38 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
 
                 document.querySelector('.choice').appendChild(div);
             }
+
+            localStorage.setItem('quiz', JSON.stringify(c));
         }
 
         game();
 
-        document.querySelector('.submit').addEventListener('click', () => {
+        document.querySelector('.submit').addEventListener('click', (e) => {
+            const c = JSON.parse(localStorage.getItem('quiz'));
+
             let incorrect = false,
                 score = 0;
 
             if (document.querySelector('.choice div[style]')) {
+                game();
+
                 return;
             }
 
-            if (localStorage.getItem('selection') === 'single' && !document.querySelector('.selected')) {
+            if (c.selection === 'single' && !document.querySelector('.selected')) {
                 return;
             }
 
-            for (let i = 0; i < Number(localStorage.getItem('choices')); i++) {
+            e.target.innerHTML = 'Next';
+
+            for (let i = 0; i < c.choices; i++) {
                 if (choice.indexOf(i) > -1) {
                     if (document.querySelector(`.choice div:nth-child(${i + 1})`).classList.contains('selected')) {
                         document.querySelector(`.choice div:nth-child(${i + 1})`).classList.remove('selected');
                         document.querySelector(`.choice div:nth-child(${i + 1})`).style.background = green;
                         score += 1;
                     } else {
-                        if (localStorage.getItem('selection') !== 'single') {
+                        if (c.selection !== 'single') {
                             document.querySelector(`.choice div:nth-child(${i + 1})`).style.background = red;
                             score -= 1;
                             incorrect = true;
@@ -569,7 +582,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                         score -= 1;
                         incorrect = true;
                     } else {
-                        if (localStorage.getItem('selection') !== 'single') {
+                        if (c.selection !== 'single') {
                             document.querySelector(`.choice div:nth-child(${i + 1})`).style.background = green;
                             score += 1;
                         }
@@ -579,62 +592,84 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                 }
             }
 
-            if (localStorage.getItem('reset-incorrect') === 'true' && incorrect) {
-                localStorage.setItem('score', 0);
+            if (c.resetIncorrect && incorrect) {
+                c.score = 0;
             } else {
-                localStorage.setItem('score', Number(localStorage.getItem('score')) + score);
+                c.score += score;
             }
 
-            if (localStorage.getItem('negative') === 'false' && Number(localStorage.getItem('score')) < 0) {
-                localStorage.setItem('score', 0);
+            if (!c.negative && c.score < 0) {
+                c.score = 0;
             }
 
-            document.querySelector('.score').innerHTML = localStorage.getItem('score');
+            document.querySelector('.score').innerHTML = c.score;
 
-            if (Number(localStorage.getItem('score')) > Number(localStorage.getItem('high'))) {
-                localStorage.setItem('high', Number(localStorage.getItem('score')));
-                document.querySelector('.high').innerHTML = localStorage.getItem('high');
+            if (c.score > c.high) {
+                c.high = c.score;
+                document.querySelector('.high').innerHTML = c.high;
             }
+
+            localStorage.setItem('quiz', JSON.stringify(c));
         });
 
         document.querySelector('#selection').addEventListener('change', (e) => {
-            localStorage.setItem('selection', e.currentTarget.value);
-            localStorage.setItem('score', 0);
-            localStorage.setItem('high', 0);
+            const c = JSON.parse(localStorage.getItem('quiz'));
+
+            c.selection = e.target.value;
+            c.score = 0;
+            c.high = 0;
+
+            localStorage.setItem('quiz', JSON.stringify(c));
             game();
         });
 
         document.querySelector('#choices').addEventListener('change', (e) => {
-            localStorage.setItem('choices', e.currentTarget.value);
-            localStorage.setItem('score', 0);
-            localStorage.setItem('high', 0);
+            const c = JSON.parse(localStorage.getItem('quiz'));
+
+            c.choices = Number(e.target.value);
+            c.score = 0;
+            c.high = 0;
+
+            localStorage.setItem('quiz', JSON.stringify(c));
             game();
         });
 
         document.querySelector('#negative').addEventListener('change', (e) => {
-            localStorage.setItem('negative', e.currentTarget.checked);
-            localStorage.setItem('score', 0);
-            localStorage.setItem('high', 0);
+            const c = JSON.parse(localStorage.getItem('quiz'));
+
+            c.negative = e.target.checked;
+            c.score = 0;
+            c.high = 0;
+
+            localStorage.setItem('quiz', JSON.stringify(c));
             game();
         });
 
         document.querySelector('#reset-incorrect').addEventListener('change', (e) => {
-            localStorage.setItem('reset-incorrect', e.currentTarget.checked);
-            localStorage.setItem('score', 0);
-            localStorage.setItem('high', 0);
+            const c = JSON.parse(localStorage.getItem('quiz'));
+
+            c.resetIncorrect = e.target.checked;
+            c.score = 0;
+            c.high = 0;
+
+            localStorage.setItem('quiz', JSON.stringify(c));
             game();
         });
 
         document.querySelector('#type').addEventListener('change', (e) => {
-            if (e.currentTarget.value === 'random') {
-                localStorage.setItem('random', 'enable');
+            const c = JSON.parse(localStorage.getItem('quiz'));
+
+            if (e.target.value === 'random') {
+                c.random = true;
             } else {
-                localStorage.setItem('random', 'disable');
-                localStorage.setItem('type', e.currentTarget.value);
+                c.random = false;
+                c.type = e.target.value;
             }
 
-            localStorage.setItem('score', 0);
-            localStorage.setItem('high', 0);
+            c.score = 0;
+            c.high = 0;
+
+            localStorage.setItem('quiz', JSON.stringify(c));
             game();
         });
 
@@ -649,16 +684,34 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
         });
 
         document.querySelector('.score').addEventListener('click', (e) => {
-            localStorage.setItem('score', 0);
-            e.currentTarget.innerHTML = localStorage.getItem('score');
+            const c = JSON.parse(localStorage.getItem('quiz'));
+
+            c.score = 0;
+            e.target.innerHTML = c.score;
+
+            localStorage.setItem('quiz', JSON.stringify(c));
         });
 
         document.querySelector('.high').addEventListener('click', (e) => {
-            localStorage.setItem('high', 0);
-            e.currentTarget.innerHTML = localStorage.getItem('high');
+            const c = JSON.parse(localStorage.getItem('quiz'));
+
+            c.high = 0;
+            e.target.innerHTML = c.high;
+
+            localStorage.setItem('quiz', JSON.stringify(c));
         });
 
-        document.querySelector('.reload svg').addEventListener('click', () => {
+        document.querySelector('.reload').addEventListener('click', () => {
             game();
+        });
+
+        document.body.addEventListener('keydown', (e) => {
+            if (e.key !== 'Enter' || e.repeat) {
+                return;
+            }
+
+            if (e.target.tabIndex === 0 || e.target.type === 'checkbox') {
+                e.target.click();
+            }
         });
     });

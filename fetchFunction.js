@@ -22,7 +22,7 @@ const
         arrow: '<path d="M20 12l-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8 8-8z"></path>',
         blank: '<path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"></path>',
         check: '<path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>',
-        globe: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"></path>',
+        earth: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"></path>',
         indeterminate: '<path d="M19 3H5C3.9 3 3 3.9 3 5v14c0 1.1 0.9 2 2 2h14c1.1 0 2-0.9 2-2V5C21 3.9 20.1 3 19 3z M17 13H7v-2h10V13z"></path>',
         play: '<path d="M8 5v14l11-7z"></path>'
     },
@@ -83,6 +83,8 @@ db.onsuccess = (event3) => {
                     continue;
                 }
 
+                // https://anime-planet.com/inc/img/blank_main.jpg
+                // https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/default.jpg
                 if (d[i].picture === 'https://cdn.myanimelist.net/images/qm_50.gif') {
                     continue;
                 }
@@ -152,15 +154,6 @@ db.onsuccess = (event3) => {
                 }
             }
 
-            // disable edit module dependency
-            Tabulator.prototype.registerModule('edit', function () {
-                this.cancelEdit = function () {
-                    // empty
-                };
-
-                this.currentCell = true;
-            });
-
             t = new Tabulator('.database-container', {
                 cellDblClick: function () {
                     return false;
@@ -195,15 +188,61 @@ db.onsuccess = (event3) => {
                                 if (lastPosition < position) {
                                     let prevRow = cell.getRow().getPrevRow();
 
-                                    while (prevRow.getPosition(true) > lastPosition) {
-                                        prevRow.toggleSelect();
+                                    while (prevRow && prevRow.getPosition(true) >= lastPosition) {
+                                        if (index.lastRow.isSelected()) {
+                                            if (cell.getRow().isSelected()) {
+                                                if (prevRow.getPosition(true) !== lastPosition) {
+                                                    if (!prevRow.isSelected()) {
+                                                        prevRow.toggleSelect();
+                                                    }
+                                                }
+                                            } else {
+                                                prevRow.toggleSelect();
+                                            }
+                                        } else {
+                                            if (cell.getRow().isSelected()) {
+                                                if (!prevRow.isSelected()) {
+                                                    if (prevRow.getPosition(true) !== lastPosition || index.lastRow.getPrevRow().isSelected()) {
+                                                        prevRow.toggleSelect();
+                                                    }
+                                                }
+                                            } else {
+                                                if (prevRow.getPosition(true) !== lastPosition) {
+                                                    prevRow.toggleSelect();
+                                                }
+                                            }
+                                        }
+
                                         prevRow = prevRow.getPrevRow();
                                     }
                                 } else {
                                     let nextRow = cell.getRow().getNextRow();
 
-                                    while (nextRow.getPosition(true) < lastPosition) {
-                                        nextRow.toggleSelect();
+                                    while (nextRow && nextRow.getPosition(true) <= lastPosition) {
+                                        if (index.lastRow.isSelected()) {
+                                            if (cell.getRow().isSelected()) {
+                                                if (nextRow.getPosition(true) !== lastPosition) {
+                                                    if (!nextRow.isSelected()) {
+                                                        nextRow.toggleSelect();
+                                                    }
+                                                }
+                                            } else {
+                                                nextRow.toggleSelect();
+                                            }
+                                        } else {
+                                            if (cell.getRow().isSelected()) {
+                                                if (!nextRow.isSelected()) {
+                                                    if (nextRow.getPosition(true) !== lastPosition || index.lastRow.getNextRow().isSelected()) {
+                                                        nextRow.toggleSelect();
+                                                    }
+                                                }
+                                            } else {
+                                                if (nextRow.getPosition(true) !== lastPosition) {
+                                                    nextRow.toggleSelect();
+                                                }
+                                            }
+                                        }
+
                                         nextRow = nextRow.getNextRow();
                                     }
                                 }
@@ -245,26 +284,28 @@ db.onsuccess = (event3) => {
                                 hstatus.innerHTML = `<option selected disabled>Status</option>${statuses}`;
                                 hstatus.addEventListener('change', () => {
                                     for (const value of cell.getTable().getSelectedRows()) {
+                                        const p = value.getData().progress;
+
                                         if (hstatus.value) {
                                             const d2 = db2().add({
-                                                episodes: value._row.data.episodes,
+                                                episodes: value.getData().episodes,
                                                 progress:
-                                                    hstatus.value === 'Completed' && value._row.data.episodes
-                                                        ? value._row.data.episodes
+                                                    hstatus.value === 'Completed' && value.getData().episodes
+                                                        ? value.getData().episodes
                                                         : hstatus.value === 'Planning' || hstatus.value === 'Skipping'
                                                             ? ''
                                                             : '0',
-                                                season: value._row.data.season,
-                                                source: value._row.data.sources,
+                                                season: value.getData().season,
+                                                source: value.getData().sources,
                                                 status: hstatus.value,
-                                                title: value._row.data.title,
-                                                type: value._row.data.type
+                                                title: value.getData().title,
+                                                type: value.getData().type
                                             });
 
                                             d2.onsuccess = () => {
-                                                if (hstatus.value === 'Completed' && value._row.data.episodes) {
+                                                if (hstatus.value === 'Completed' && value.getData().episodes) {
                                                     value.update({
-                                                        progress: value._row.data.episodes,
+                                                        progress: value.getData().episodes,
                                                         status: hstatus.value
                                                     });
 
@@ -287,13 +328,13 @@ db.onsuccess = (event3) => {
                                             };
 
                                             d2.onerror = () => {
-                                                db2().get(value._row.data.sources).onsuccess = (event) => {
+                                                db2().get(value.getData().sources).onsuccess = (event) => {
                                                     const
                                                         result = event.target.result,
                                                         status2 = result.status;
 
-                                                    if (hstatus.value === 'Completed' && value._row.data.episodes) {
-                                                        result.progress = value._row.data.episodes;
+                                                    if (hstatus.value === 'Completed' && value.getData().episodes) {
+                                                        result.progress = value.getData().episodes;
                                                     } else {
                                                         if (hstatus.value === 'Planning' || hstatus.value === 'Skipping') {
                                                             result.progress = '';
@@ -303,9 +344,16 @@ db.onsuccess = (event3) => {
                                                     result.status = hstatus.value;
 
                                                     db2().put(result).onsuccess = () => {
-                                                        if (hstatus.value === 'Completed' && value._row.data.episodes) {
+                                                        if (hstatus.value === 'Completed' && value.getData().episodes) {
+                                                            value.getElement().dataset.progress = '';
+
+                                                            // force update
                                                             value.update({
-                                                                progress: value._row.data.episodes,
+                                                                progress: ''
+                                                            });
+
+                                                            value.update({
+                                                                progress: value.getData().episodes,
                                                                 status: hstatus.value
                                                             });
 
@@ -313,6 +361,8 @@ db.onsuccess = (event3) => {
                                                         }
 
                                                         if (hstatus.value === 'Planning' || hstatus.value === 'Skipping') {
+                                                            value.getElement().dataset.progress = '';
+
                                                             value.update({
                                                                 progress: '',
                                                                 status: hstatus.value
@@ -330,14 +380,20 @@ db.onsuccess = (event3) => {
                                                             return;
                                                         }
 
+                                                        // force update
                                                         value.update({
+                                                            progress: ''
+                                                        });
+
+                                                        value.update({
+                                                            progress: p,
                                                             status: hstatus.value
                                                         });
                                                     };
                                                 };
                                             };
                                         } else {
-                                            db2().delete(value._row.data.sources).onsuccess = () => {
+                                            db2().delete(value.getData().sources).onsuccess = () => {
                                                 value.update({
                                                     progress: '',
                                                     status: ''
@@ -357,9 +413,9 @@ db.onsuccess = (event3) => {
                                 }
 
                                 if (selected.s) {
-                                    cell.getColumn()._column.titleElement.children[0].innerHTML = svg.check;
+                                    cell.getColumn().getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.check;
                                 } else {
-                                    cell.getColumn()._column.titleElement.children[0].innerHTML = svg.indeterminate;
+                                    cell.getColumn().getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.indeterminate;
                                 }
                             } else {
                                 index.lastRow = null;
@@ -370,7 +426,7 @@ db.onsuccess = (event3) => {
                                     element.remove();
                                 });
 
-                                cell.getColumn()._column.titleElement.children[0].innerHTML = svg.blank;
+                                cell.getColumn().getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.blank;
 
                                 if (localStorage.getItem('theme') === 'dark') {
                                     document.head.querySelector('[name="theme-color"]').content = '#000';
@@ -381,6 +437,8 @@ db.onsuccess = (event3) => {
                         },
                         field: 'picture',
                         formatter: function (cell) {
+                            cell.getElement().tabIndex = 0;
+
                             return (
                                 `<svg class="blank" viewBox="0 0 24 24" width="17" height="17">${svg.blank}</svg>` +
                                 `<svg class="check" viewBox="0 0 24 24" width="17" height="17">${svg.check}</svg>` +
@@ -418,9 +476,9 @@ db.onsuccess = (event3) => {
                                 document.querySelector('.selected-count').innerHTML = `${column.getTable().getSelectedRows().length} selected`;
 
                                 if (selected.s) {
-                                    column._column.titleElement.children[0].innerHTML = svg.check;
+                                    column.getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.check;
                                 } else {
-                                    column._column.titleElement.children[0].innerHTML = svg.blank;
+                                    column.getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.blank;
                                 }
 
                                 if (document.querySelector('.header-status')) {
@@ -440,26 +498,28 @@ db.onsuccess = (event3) => {
                                 hstatus.innerHTML = `<option selected disabled>Status</option>${statuses}`;
                                 hstatus.addEventListener('change', () => {
                                     for (const value of column.getTable().getSelectedRows()) {
+                                        const p = value.getData().progress;
+
                                         if (hstatus.value) {
                                             const d2 = db2().add({
-                                                episodes: value._row.data.episodes,
+                                                episodes: value.getData().episodes,
                                                 progress:
-                                                    hstatus.value === 'Completed' && value._row.data.episodes
-                                                        ? value._row.data.episodes
+                                                    hstatus.value === 'Completed' && value.getData().episodes
+                                                        ? value.getData().episodes
                                                         : hstatus.value === 'Planning' || hstatus.value === 'Skipping'
                                                             ? ''
                                                             : '0',
-                                                season: value._row.data.season,
-                                                source: value._row.data.sources,
+                                                season: value.getData().season,
+                                                source: value.getData().sources,
                                                 status: hstatus.value,
-                                                title: value._row.data.title,
-                                                type: value._row.data.type
+                                                title: value.getData().title,
+                                                type: value.getData().type
                                             });
 
                                             d2.onsuccess = () => {
-                                                if (hstatus.value === 'Completed' && value._row.data.episodes) {
+                                                if (hstatus.value === 'Completed' && value.getData().episodes) {
                                                     value.update({
-                                                        progress: value._row.data.episodes,
+                                                        progress: value.getData().episodes,
                                                         status: hstatus.value
                                                     });
 
@@ -482,13 +542,13 @@ db.onsuccess = (event3) => {
                                             };
 
                                             d2.onerror = () => {
-                                                db2().get(value._row.data.sources).onsuccess = (event) => {
+                                                db2().get(value.getData().sources).onsuccess = (event) => {
                                                     const
                                                         result = event.target.result,
                                                         status2 = result.status;
 
-                                                    if (hstatus.value === 'Completed' && value._row.data.episodes) {
-                                                        result.progress = value._row.data.episodes;
+                                                    if (hstatus.value === 'Completed' && value.getData().episodes) {
+                                                        result.progress = value.getData().episodes;
                                                     } else {
                                                         if (hstatus.value === 'Planning' || hstatus.value === 'Skipping') {
                                                             result.progress = '';
@@ -498,9 +558,16 @@ db.onsuccess = (event3) => {
                                                     result.status = hstatus.value;
 
                                                     db2().put(result).onsuccess = () => {
-                                                        if (hstatus.value === 'Completed' && value._row.data.episodes) {
+                                                        if (hstatus.value === 'Completed' && value.getData().episodes) {
+                                                            value.getElement().dataset.progress = '';
+
+                                                            // force update
                                                             value.update({
-                                                                progress: value._row.data.episodes,
+                                                                progress: ''
+                                                            });
+
+                                                            value.update({
+                                                                progress: value.getData().episodes,
                                                                 status: hstatus.value
                                                             });
 
@@ -508,6 +575,8 @@ db.onsuccess = (event3) => {
                                                         }
 
                                                         if (hstatus.value === 'Planning' || hstatus.value === 'Skipping') {
+                                                            value.getElement().dataset.progress = '';
+
                                                             value.update({
                                                                 progress: '',
                                                                 status: hstatus.value
@@ -525,14 +594,20 @@ db.onsuccess = (event3) => {
                                                             return;
                                                         }
 
+                                                        // force update
                                                         value.update({
+                                                            progress: ''
+                                                        });
+
+                                                        value.update({
+                                                            progress: p,
                                                             status: hstatus.value
                                                         });
                                                     };
                                                 };
                                             };
                                         } else {
-                                            db2().delete(value._row.data.sources).onsuccess = () => {
+                                            db2().delete(value.getData().sources).onsuccess = () => {
                                                 value.update({
                                                     progress: '',
                                                     status: ''
@@ -552,7 +627,7 @@ db.onsuccess = (event3) => {
                                 }
                             } else {
                                 document.querySelector('header').classList.remove('header-selected');
-                                column._column.titleElement.children[0].innerHTML = svg.blank;
+                                column.getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.blank;
                                 document.querySelector('.header-status').remove();
                                 document.querySelectorAll('.separator-selected').forEach((element) => {
                                     element.remove();
@@ -602,7 +677,7 @@ db.onsuccess = (event3) => {
                         headerSort: false,
                         hozAlign: 'center',
                         titleFormatter: function () {
-                            return `<svg viewBox="0 0 24 24" width="17" height="17">${svg.globe}</svg>`;
+                            return `<svg viewBox="0 0 24 24" width="17" height="17">${svg.earth}</svg>`;
                         },
                         vertAlign: 'middle',
                         width: 55
@@ -652,11 +727,13 @@ db.onsuccess = (event3) => {
                     {
                         field: 'alternative',
                         formatter: function (cell) {
+                            let r18 = '';
+
                             if (cell.getRow().getData().r18) {
-                                return `<span>${cell.getValue()}&nbsp;<span style="color: #f44336;">R18+</span></span><div class="indicator" style="position: absolute; bottom: 0; height: 2px; max-width: 100%;"></div>`;
+                                r18 = '&nbsp;<span style="color: #f44336;">R18+</span>';
                             }
 
-                            return `<span>${cell.getValue()}</span><div class="indicator" style="position: absolute; bottom: 0; height: 2px; max-width: 100%;"></div>`;
+                            return `<span>${cell.getValue() + r18}</span><div class="indicator" style="position: absolute; bottom: 0; height: 2px; max-width: 100%;"></div>`;
                         },
                         minWidth: 200,
                         title: 'Title',
@@ -689,6 +766,7 @@ db.onsuccess = (event3) => {
                                 span = document.createElement('span'),
                                 value = cell.getValue();
 
+                            span.tabIndex = 0;
                             span.innerHTML = cell.getValue();
                             span.addEventListener('click', () => {
                                 if (value) {
@@ -718,26 +796,25 @@ db.onsuccess = (event3) => {
                         width: 100
                     },
                     {
-                        cellClick: function (e, cell) {
-                            if (!cell.getValue()) {
-                                return;
-                            }
-
-                            document.querySelector('.search').value = 'is:ongoing';
-
-                            searchFunction(cell.getTable());
-                        },
                         field: 'ongoing',
                         formatter: function (cell) {
                             if (!cell.getValue()) {
                                 return '';
                             }
 
-                            return (
-                                '<span title="Ongoing" style="line-height: 0;">' +
-                                    `<svg viewBox="3 2 20 20" width="17" height="17">${svg.play}</svg>` +
-                                '</span>'
-                            );
+                            const span = document.createElement('span');
+
+                            span.tabIndex = 0;
+                            span.title = 'Ongoing';
+                            span.style.lineHeight = 0;
+                            span.innerHTML = `<svg viewBox="3 2 20 20" width="17" height="17">${svg.play}</svg>`;
+                            span.addEventListener('click', () => {
+                                document.querySelector('.search').value = 'is:ongoing';
+
+                                searchFunction(cell.getTable());
+                            });
+
+                            return span;
                         },
                         headerHozAlign: 'center',
                         headerSort: false,
@@ -749,78 +826,193 @@ db.onsuccess = (event3) => {
                         width: 50
                     },
                     {
-                        field: 'progress',
-                        formatter: function (cell) {
+                        editable: function () {
+                            return false;
+                        },
+                        editor: function (cell, rendered, success) {
                             const input = document.createElement('input');
 
                             input.type = 'number';
-                            input.disabled = true;
                             input.min = 0;
-                            input.max = cell.getRow().getData().episodes;
+                            input.max = 9999;
+                            input.placeholder = 0;
                             input.autocomplete = 'off';
                             input.value = cell.getValue();
                             input.title = 'Progress';
 
                             input.addEventListener('input', () => {
-                                if (!cell.getRow().getData().episodes) {
-                                    return;
-                                }
-
-                                cell.getRow().getCell('alternative').getElement().querySelector('.indicator').style.width = `${input.value / cell.getRow().getData().episodes * 100}%`;
-
-                                if (input.value < cell.getRow().getData().episodes) {
-                                    if (cell.getRow().getData().status === 'Rewatching' || cell.getRow().getData().status === 'Watching') {
-                                        return;
-                                    }
-
-                                    db2().get(cell.getRow().getData().sources).onsuccess = (event) => {
-                                        const result = event.target.result;
-                                        result.status = 'Watching';
-                                        db2().put(result).onsuccess = () => {
-                                            cell.getRow().update({
-                                                status: 'Watching'
-                                            });
-                                        };
-                                    };
-                                } else {
-                                    if (cell.getRow().getData().status === 'Completed') {
-                                        return;
-                                    }
-
-                                    db2().get(cell.getRow().getData().sources).onsuccess = (event) => {
-                                        const result = event.target.result;
-                                        result.status = 'Completed';
-                                        db2().put(result).onsuccess = () => {
-                                            cell.getRow().update({
-                                                status: 'Completed'
-                                            });
-                                        };
-                                    };
-                                }
-                            });
-
-                            // chromium bug when using change to cell.getRow().update(progress)
-                            input.addEventListener('blur', () => {
                                 db2().get(cell.getRow().getData().sources).onsuccess = (event) => {
                                     const result = event.target.result;
-                                    result.progress = input.value;
+
+                                    if (input.value <= 0) {
+                                        result.progress = '0';
+                                    } else if (input.value >= 9999) {
+                                        result.progress = 9999;
+                                    } else {
+                                        result.progress = input.value;
+                                    }
+
                                     db2().put(result).onsuccess = () => {
-                                        cell.getRow().update({
-                                            progress: input.value
-                                        });
+                                        if (!cell.getRow().getData().episodes) {
+                                            return;
+                                        }
+
+                                        cell.getRow().getElement().dataset.progress = input.value;
+                                        cell.getRow().getCell('alternative').getElement().querySelector('.indicator').style.width = `${input.value / cell.getRow().getData().episodes * 100}%`;
+
+                                        if (Number(input.value) === cell.getRow().getData().episodes) {
+                                            if (cell.getRow().getData().status === 'Completed') {
+                                                return;
+                                            }
+
+                                            db2().get(cell.getRow().getData().sources).onsuccess = (event2) => {
+                                                const result2 = event2.target.result;
+                                                result2.status = 'Completed';
+
+                                                db2().put(result2).onsuccess = () => {
+                                                    cell.getRow().update({
+                                                        status: 'Completed'
+                                                    });
+                                                };
+                                            };
+                                        } else {
+                                            if (cell.getRow().getData().status === 'Rewatching' || cell.getRow().getData().status === 'Watching') {
+                                                return;
+                                            }
+
+                                            db2().get(cell.getRow().getData().sources).onsuccess = (event2) => {
+                                                const result2 = event2.target.result;
+                                                result2.status = 'Watching';
+
+                                                db2().put(result2).onsuccess = () => {
+                                                    cell.getRow().update({
+                                                        status: 'Watching'
+                                                    });
+                                                };
+                                            };
+                                        }
                                     };
                                 };
                             });
 
-                            input.addEventListener('keyup', (e) => {
-                                if (e.key !== 'Enter') {
+                            input.addEventListener('keydown', (e) => {
+                                if (e.key !== 'Enter' || e.repeat) {
                                     return;
                                 }
 
-                                e.target.blur();
+                                input.blur();
+                            });
+
+                            input.addEventListener('blur', () => {
+                                if (input.value <= 0) {
+                                    success('0');
+                                } else if (input.value >= 9999) {
+                                    success(9999);
+                                } else {
+                                    success(input.value);
+                                }
+                            });
+
+                            rendered(() => {
+                                input.focus();
                             });
 
                             return input;
+                        },
+                        field: 'progress',
+                        formatter: function (cell) {
+                            const
+                                fragment = new DocumentFragment(),
+                                span = document.createElement('span'),
+                                span2 = document.createElement('span');
+
+                            cell.getElement().removeAttribute('tabindex');
+
+                            if (['Completed', 'Dropped', 'Paused', 'Rewatching', 'Watching'].indexOf(cell.getRow().getData().status) > -1) {
+                                span.tabIndex = 0;
+                            }
+
+                            span.innerHTML = `${cell.getValue()}&nbsp;`;
+                            span.addEventListener('click', () => {
+                                cell.edit(true);
+                            });
+
+                            span2.classList.add('add');
+                            span2.tabIndex = 0;
+                            span2.style.display = 'inline-flex';
+                            span2.innerHTML = '<svg viewBox="0 0 24 24" height="17" width="17"><path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"></path></svg>';
+                            span2.addEventListener('click', () => {
+                                db2().get(cell.getRow().getData().sources).onsuccess = (event) => {
+                                    const result = event.target.result;
+                                    result.progress++;
+
+                                    if (result.progress > 9999) {
+                                        return;
+                                    }
+
+                                    db2().put(result).onsuccess = () => {
+                                        let value = cell.getValue();
+                                        value++;
+
+                                        cell.getRow().update({
+                                            progress: value
+                                        });
+
+                                        if (!cell.getRow().getData().episodes) {
+                                            return;
+                                        }
+
+                                        cell.getRow().getElement().dataset.progress = value;
+                                        cell.getRow().getCell('alternative').getElement().querySelector('.indicator').style.width = `${value / cell.getRow().getData().episodes * 100}%`;
+
+                                        if (value === cell.getRow().getData().episodes) {
+                                            if (cell.getRow().getData().status === 'Completed') {
+                                                return;
+                                            }
+
+                                            db2().get(cell.getRow().getData().sources).onsuccess = (event2) => {
+                                                const result2 = event2.target.result;
+                                                result2.status = 'Completed';
+
+                                                db2().put(result2).onsuccess = () => {
+                                                    // force update
+                                                    cell.getRow().update({
+                                                        progress: ''
+                                                    });
+
+                                                    cell.getRow().update({
+                                                        progress: value,
+                                                        status: 'Completed'
+                                                    });
+                                                };
+                                            };
+                                        } else {
+                                            if (cell.getRow().getData().status === 'Rewatching' || cell.getRow().getData().status === 'Watching') {
+                                                return;
+                                            }
+
+                                            db2().get(cell.getRow().getData().sources).onsuccess = (event2) => {
+                                                const result2 = event2.target.result;
+                                                result2.status = 'Watching';
+
+                                                db2().put(result2).onsuccess = () => {
+                                                    cell.getRow().update({
+                                                        status: 'Watching'
+                                                    });
+                                                };
+                                            };
+                                        }
+                                    };
+                                };
+                            });
+
+                            fragment.appendChild(span);
+
+                            if (['Dropped', 'Paused', 'Rewatching', 'Watching'].indexOf(cell.getRow().getData().status) > -1) {
+                                fragment.appendChild(span2);
+                            }
+
+                            return fragment;
                         },
                         headerHozAlign: 'center',
                         hozAlign: 'center',
@@ -841,6 +1033,8 @@ db.onsuccess = (event3) => {
                             select.value = cell.getValue();
                             select.title = 'Status';
                             select.addEventListener('change', () => {
+                                const p = cell.getRow().getData().progress;
+
                                 if (select.value) {
                                     const d2 = db2().add({
                                         episodes: cell.getRow().getData().episodes,
@@ -900,6 +1094,13 @@ db.onsuccess = (event3) => {
 
                                             db2().put(result).onsuccess = () => {
                                                 if (select.value === 'Completed' && cell.getRow().getData().episodes) {
+                                                    cell.getRow().getElement().dataset.progress = '';
+
+                                                    // force update
+                                                    cell.getRow().update({
+                                                        progress: ''
+                                                    });
+
                                                     cell.getRow().update({
                                                         progress: cell.getRow().getData().episodes,
                                                         status: select.value
@@ -909,6 +1110,8 @@ db.onsuccess = (event3) => {
                                                 }
 
                                                 if (select.value === 'Planning' || select.value === 'Skipping') {
+                                                    cell.getRow().getElement().dataset.progress = '';
+
                                                     cell.getRow().update({
                                                         progress: '',
                                                         status: select.value
@@ -926,7 +1129,13 @@ db.onsuccess = (event3) => {
                                                     return;
                                                 }
 
+                                                // force update
                                                 cell.getRow().update({
+                                                    progress: ''
+                                                });
+
+                                                cell.getRow().update({
+                                                    progress: p,
                                                     status: select.value
                                                 });
                                             };
@@ -982,12 +1191,12 @@ db.onsuccess = (event3) => {
                     }
 
                     if (selected.s) {
-                        this.getColumn('picture')._column.titleElement.children[0].innerHTML = svg.check;
+                        this.getColumn('picture').getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.check;
                     } else {
                         if (selected.ss.length) {
-                            this.getColumn('picture')._column.titleElement.children[0].innerHTML = svg.indeterminate;
+                            this.getColumn('picture').getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.indeterminate;
                         } else {
-                            this.getColumn('picture')._column.titleElement.children[0].innerHTML = svg.blank;
+                            this.getColumn('picture').getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.blank;
                         }
                     }
 
@@ -1110,6 +1319,8 @@ db.onsuccess = (event3) => {
                 layout: 'fitColumns',
                 resizableColumns: false,
                 rowFormatter: function (row) {
+                    let width = null;
+
                     row.getElement().dataset.status = row.getData().status;
 
                     switch (row.getData().status) {
@@ -1118,14 +1329,21 @@ db.onsuccess = (event3) => {
                         case 'Paused':
                         case 'Rewatching':
                         case 'Watching':
-                            row.getCell('progress').getElement().querySelector('input').disabled = false;
-                            row.getCell('alternative').getElement().querySelector('.indicator').style.width = `${row.getCell('progress').getElement().querySelector('input').value / row.getData().episodes * 100}%`;
+                            width = `${(row.getElement().dataset.progress || row.getData().progress) / row.getData().episodes * 100}%`;
                             break;
 
                         default:
-                            row.getCell('progress').getElement().querySelector('input').disabled = true;
-                            row.getCell('alternative').getElement().querySelector('.indicator').style.width = '0%';
+                            width = '0%';
                             break;
+                    }
+
+                    row.getCell('alternative').getElement().querySelector('.indicator').style.width = width;
+                },
+                tableBuilt: function () {
+                    document.querySelector('.tabulator-tableHolder').removeAttribute('tabindex');
+
+                    for (const value of ['picture', 'sources', 'sources2', 'alternative', 'type', 'episodes', 'season', 'progress', 'status']) {
+                        document.querySelector(`.tabulator-col[tabulator-field="${value}"]`).tabIndex = 0;
                     }
                 }
             });

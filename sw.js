@@ -1,4 +1,4 @@
-const sw = '2.2.7';
+const sw = '2.3.0';
 
 addEventListener('install', (event) => {
     event.waitUntil(
@@ -18,7 +18,14 @@ addEventListener('install', (event) => {
                 './games/',
                 './games/index.css',
                 './games/index.html',
-                './games/index.js',
+                './games/odd-one-out/',
+                './games/odd-one-out/index.css',
+                './games/odd-one-out/index.html',
+                './games/odd-one-out/index.js',
+                './games/quiz/',
+                './games/quiz/index.css',
+                './games/quiz/index.html',
+                './games/quiz/index.js',
 
                 // images
                 './images/anilist.png',
@@ -33,6 +40,7 @@ addEventListener('install', (event) => {
 
                 // third-party
                 'https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js',
+                'https://cdn.jsdelivr.net/npm/tabulator-tables@4.9.3/dist/js/modules/edit.min.js',
                 'https://cdn.jsdelivr.net/npm/tabulator-tables@4.9.3/dist/js/modules/filter.min.js',
                 'https://cdn.jsdelivr.net/npm/tabulator-tables@4.9.3/dist/js/modules/format.min.js',
                 'https://cdn.jsdelivr.net/npm/tabulator-tables@4.9.3/dist/js/modules/frozen_columns.min.js',

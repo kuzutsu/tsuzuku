@@ -248,15 +248,15 @@ document.querySelector('.close').addEventListener('click', () => {
         document.head.querySelector('[name="theme-color"]').content = '#fff';
     }
 
-    t.getColumn('picture')._column.titleElement.children[0].innerHTML = svg.blank;
+    t.getColumn('picture').getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.blank;
     t.deselectRow();
 
     selected.s = false;
     selected.ss.splice(0);
 });
 
-document.querySelector('.search').addEventListener('keyup', (e) => {
-    if (e.key !== 'Enter') {
+document.querySelector('.search').addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' || e.repeat) {
         return;
     }
 
@@ -459,13 +459,13 @@ document.querySelector('.import').addEventListener('click', () => {
 
                     if (ss) {
                         const d = db2().add({
-                            episodes: ss._row.data.episodes,
+                            episodes: ss.getData().episodes,
                             progress: s3,
-                            season: ss._row.data.season,
-                            source: ss._row.data.sources,
+                            season: ss.getData().season,
+                            source: ss.getData().sources,
                             status: s2,
-                            title: ss._row.data.title,
-                            type: ss._row.data.type
+                            title: ss.getData().title,
+                            type: ss.getData().type
                         });
 
                         d.onsuccess = () => {
@@ -491,7 +491,7 @@ document.querySelector('.import').addEventListener('click', () => {
                         };
 
                         d.onerror = () => {
-                            db2().get(ss._row.data.sources).onsuccess = (event2) => {
+                            db2().get(ss.getData().sources).onsuccess = (event2) => {
                                 const result = event2.target.result;
 
                                 result.progress = s3;
@@ -574,13 +574,13 @@ document.querySelector('.import').addEventListener('click', () => {
 
                     if (ss) {
                         const d = db2().add({
-                            episodes: ss._row.data.episodes,
+                            episodes: ss.getData().episodes,
                             progress: s3,
-                            season: ss._row.data.season,
+                            season: ss.getData().season,
                             source: s,
                             status: s2,
-                            title: ss._row.data.title,
-                            type: ss._row.data.type
+                            title: ss.getData().title,
+                            type: ss.getData().type
                         });
 
                         d.onsuccess = () => {
@@ -758,10 +758,15 @@ document.querySelector('.export').addEventListener('click', () => {
     };
 });
 
-// chromium bug when using change to cell.getRow().update(progress)
-onbeforeunload = () => {
-    document.activeElement.blur();
-};
+document.body.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' || e.repeat) {
+        return;
+    }
+
+    if (e.target.tabIndex === 0 || e.target.type === 'checkbox') {
+        e.target.click();
+    }
+});
 
 onpopstate = () => {
     if (new URLSearchParams(location.search).get('query')) {

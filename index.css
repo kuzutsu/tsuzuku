@@ -190,7 +190,6 @@ svg.disabled {
     min-width: 100px;
 }
 
-.full,
 .importing,
 .loading,
 .nothing,
@@ -373,7 +372,7 @@ input[type="text"] {
     position: relative;
 }
 
-.full {
+noscript {
     height: 100%;
     width: 100%;
     background: var(--background);
@@ -383,6 +382,7 @@ input[type="text"] {
     justify-content: center;
     text-align: center;
     z-index: 1;
+    font-size: 14px;
 }
 
 @media only screen and (min-width: 1301px) {
@@ -526,7 +526,7 @@ input {
 }
 
 .hide .tabulator-cell[tabulator-field="picture"] img {
-    display: none;;
+    display: none;
 }
 
 .hide .tabulator-row {
@@ -550,4 +550,8 @@ input {
 
 .header-selected .selected-count {
     display: block;
+}
+
+::placeholder {
+    color: #aaa;
 }

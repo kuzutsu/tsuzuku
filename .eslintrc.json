@@ -46,7 +46,6 @@
         "no-nested-ternary": "off",
         "no-plusplus": "off",
         "no-ternary": "off",
-        "no-underscore-dangle": "off",
         "object-shorthand": "off",
         "padded-blocks": "off",
         "prefer-destructuring": "off",
