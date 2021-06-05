@@ -9,9 +9,11 @@ Only one source will appear, click on earth icon to toggle more
 
 ## Features
 ### Offline-ready
-Install as PWA
+Install as PWA (~36 MB)
 
 Personal list only saved locally in the browser
+
+While offline, thumbnails will not load unless cached
 
 ### Fuzzy search (default)
 Uses [Fuse](https://github.com/krisk/fuse)
