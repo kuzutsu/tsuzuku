@@ -1,0 +1,145 @@
+@font-face {
+    font-family: Roboto;
+    font-weight: 400;
+    font-display: swap;
+    src: url(https://fonts.gstatic.com/s/roboto/v27/KFOmCnqEu92Fr1Mu4mxK.woff2) format('woff2');
+}
+
+@font-face {
+    font-family: Roboto;
+    font-weight: 500;
+    font-display: swap;
+    src: url(https://fonts.gstatic.com/s/roboto/v27/KFOlCnqEu92Fr1MmEU9fBBc4.woff2) format('woff2');
+}
+
+.light {
+    --background: #fff;
+    --background-hover: #f1f3f4;
+    --color: #000;
+    --selected: #000;
+    --selected-color: #fff;
+    --selected-hover: #353535;
+    --shadow: #aaa;
+}
+
+.dark {
+    --background: #000;
+    --background-hover: #353535;
+    --color: #fff;
+    --selected: #fff;
+    --selected-color: #000;
+    --selected-hover: #f1f3f4;
+    --shadow: #000;
+}
+
+* {
+    box-sizing: border-box;
+    font-family: Roboto, sans-serif;
+    color: var(--color);
+}
+
+body,
+html {
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    position: relative;
+    background: var(--background-hover);
+    user-select: none;
+}
+
+header,
+main {
+    background: var(--background);
+}
+
+header {
+    height: 50px;
+    min-height: 50px;
+    width: 100%;
+    position: relative;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    padding: 0 19px;
+}
+
+main {
+    height: calc(100% - 50px);
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    font-size: 14px;
+}
+
+.separator,
+.separator-selected {
+    width: 19px;
+    min-width: 19px;
+}
+
+.half-separator {
+    width: 9.5px;
+    min-width: 9.5px;
+}
+
+.flex-separator {
+    width: 100%;
+    min-width: 19px;
+}
+
+a {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+svg {
+    fill: var(--color);
+}
+
+svg.disabled {
+    fill: #aaa;
+}
+
+.header-title {
+    font-weight: 500;
+}
+
+input,
+select {
+    background: var(--background);
+}
+
+input[type="number"],
+input[type="text"] {
+    outline: none;
+}
+
+noscript {
+    height: 100%;
+    width: 100%;
+    background: var(--background);
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    z-index: 1;
+    font-size: 14px;
+}
+
+@media only screen and (min-width: 1301px) {
+    body {
+        margin: 0 15%;
+        box-shadow: 0 0 20px 0 var(--shadow);
+    }
+}

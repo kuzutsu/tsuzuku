@@ -84,7 +84,7 @@ Click on image icon to toggle
 
 ### Games
 #### Odd one out
-Query will only show after submitting an answer
+Query will only appear after submitting an answer
 
 #### Quiz
 Single selection mode (default) only have one correct answer

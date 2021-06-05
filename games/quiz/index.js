@@ -703,14 +703,4 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
         document.querySelector('.reload').addEventListener('click', () => {
             game();
         });
-
-        document.body.addEventListener('keydown', (e) => {
-            if (e.key !== 'Enter' || e.repeat) {
-                return;
-            }
-
-            if (e.target.tabIndex === 0 || e.target.type === 'checkbox') {
-                e.target.click();
-            }
-        });
     });

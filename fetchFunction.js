@@ -404,7 +404,7 @@ db.onsuccess = (event3) => {
                                 });
 
                                 document.querySelector('.close').insertAdjacentHTML('afterend', '<span class="separator-selected"></span>');
-                                document.querySelector('.header-container').insertAdjacentElement('beforeend', hstatus);
+                                document.querySelector('header').insertAdjacentElement('beforeend', hstatus);
 
                                 if (localStorage.getItem('theme') === 'dark') {
                                     document.head.querySelector('[name="theme-color"]').content = '#fff';
@@ -618,7 +618,7 @@ db.onsuccess = (event3) => {
                                 });
 
                                 document.querySelector('.close').insertAdjacentHTML('afterend', '<span class="separator-selected"></span>');
-                                document.querySelector('.header-container').insertAdjacentElement('beforeend', hstatus);
+                                document.querySelector('header').insertAdjacentElement('beforeend', hstatus);
 
                                 if (localStorage.getItem('theme') === 'dark') {
                                     document.head.querySelector('[name="theme-color"]').content = '#fff';
@@ -934,6 +934,10 @@ db.onsuccess = (event3) => {
 
                             span.innerHTML = `${cell.getValue()}&nbsp;`;
                             span.addEventListener('click', () => {
+                                if (['', 'Planning', 'Skipping'].indexOf(cell.getRow().getData().status) > -1) {
+                                    return;
+                                }
+
                                 cell.edit(true);
                             });
 

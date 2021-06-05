@@ -1,0 +1,7 @@
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">
+    <ShortName>Tsuzuku</ShortName>
+    <Description>Search Tsuzuku</Description>
+    <Image>https://kuzutsu.github.io/tsuzuku/images/logo-192.png</Image>
+    <Url type="text/html" template="https://kuzutsu.github.io/tsuzuku/?query={searchTerms}"/>
+    <Url type="application/opensearchdescription+xml" rel="self" template="https://kuzutsu.github.io/tsuzuku/opensearch.xml"/>
+</OpenSearchDescription>

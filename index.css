@@ -1,43 +1,3 @@
-@font-face {
-    font-family: Roboto;
-    font-weight: 400;
-    font-display: swap;
-    src: url(https://fonts.gstatic.com/s/roboto/v27/KFOmCnqEu92Fr1Mu4mxK.woff2) format('woff2');
-}
-
-@font-face {
-    font-family: Roboto;
-    font-weight: 500;
-    font-display: swap;
-    src: url(https://fonts.gstatic.com/s/roboto/v27/KFOlCnqEu92Fr1MmEU9fBBc4.woff2) format('woff2');
-}
-
-/**********************************************************************************/
-
-.light {
-    --background: #fff;
-    --background-hover: #eee;
-    --color: #000;
-    --selected: #000;
-    --selected-color: #fff;
-    --selected-hover: #111;
-}
-
-.dark {
-    --background: #000;
-    --background-hover: #111;
-    --color: #fff;
-    --selected: #fff;
-    --selected-color: #000;
-    --selected-hover: #eee;
-}
-
-* {
-    box-sizing: border-box;
-    font-family: Roboto, sans-serif;
-    color: var(--color);
-}
-
 .tabulator-cell[tabulator-field="alternative"],
 .tabulator-cell[tabulator-field="episodes"],
 .tabulator-cell[tabulator-field="progress"],
@@ -45,21 +5,6 @@
 .tabulator-cell[tabulator-field="status"],
 .tabulator-cell[tabulator-field="type"] {
     user-select: text;
-}
-
-body,
-html {
-    height: 100%;
-    overflow: hidden;
-}
-
-body {
-    display: flex;
-    flex-direction: column;
-    margin: 0;
-    position: relative;
-    background: var(--background);
-    user-select: none;
 }
 
 .database-container {
@@ -72,38 +17,11 @@ body {
     height: 100%;
 }
 
-header {
-    height: 50px;
-    min-height: 50px;
-    width: 100%;
-    position: relative;
-    white-space: nowrap;
-}
-
-main {
-    height: calc(100% - 50px);
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-}
-
 .search-container {
     width: 100%;
     display: none;
     align-items: center;
     overflow: auto;
-}
-
-.separator,
-.separator-selected {
-    width: 19px;
-    min-width: 19px;
-}
-
-.flex-separator {
-    width: 100%;
-    min-width: 19px;
 }
 
 .tabulator-cell {
@@ -140,7 +58,7 @@ main {
 }
 
 [data-status="Skipping"] {
-    opacity: 0.2;
+    opacity: 0.1;
 }
 
 [data-status="Watching"] .indicator,
@@ -160,41 +78,14 @@ main {
 
 /***********************************************************************************/
 
-a {
-    text-decoration: none;
-}
-
 .tabulator-cell[tabulator-field="sources"] a {
     line-height: 0;
-}
-
-a:hover {
-    text-decoration: underline;
-}
-
-svg {
-    fill: var(--color);
-}
-
-svg.disabled {
-    fill: #aaa;
-}
-
-.header-title {
-    font-weight: 500;
 }
 
 .search {
     width: 100%;
     border: 0;
     min-width: 100px;
-}
-
-.importing,
-.loading,
-.nothing,
-.searching {
-    font-size: 14px;
 }
 
 /**************************************************************************************/
@@ -280,16 +171,12 @@ svg.disabled {
 
 /***************************************************************************************************/
 
-.tabulator-row {
-    --row-background: var(--background) !important;
-}
-
 .tabulator-row:hover {
-    --row-background: var(--background-hover) !important;
+    background: var(--background-hover) !important;
 }
 
 .tabulator-selected {
-    --row-background: var(--selected) !important;
+    background: var(--selected) !important;
 }
 
 .tabulator-selected *:not(.title) {
@@ -301,11 +188,7 @@ svg.disabled {
 }
 
 .tabulator-selected:hover {
-    --row-background: var(--selected-hover) !important;
-}
-
-.tabulator-row {
-    background: var(--row-background);
+    background: var(--selected-hover) !important;
 }
 
 /***************************************************************************************************/
@@ -322,16 +205,6 @@ svg.disabled {
 #number:disabled {
     background: var(--background);
     color: #aaa;
-}
-
-input,
-select {
-    background: var(--background);
-}
-
-input[type="number"],
-input[type="text"] {
-    outline: none;
 }
 
 /*****************************************************************/
@@ -370,26 +243,6 @@ input[type="text"] {
 .searching {
     flex-grow: 1;
     position: relative;
-}
-
-noscript {
-    height: 100%;
-    width: 100%;
-    background: var(--background);
-    position: absolute;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    z-index: 1;
-    font-size: 14px;
-}
-
-@media only screen and (min-width: 1301px) {
-    body {
-        margin: 0 15%;
-        box-shadow: 0 0 20px 0 var(--background-hover);
-    }
 }
 
 header select {
@@ -449,7 +302,6 @@ header option[disabled] {
 }
 
 .tabulator {
-    font-size: 14px;
     white-space: nowrap;
 }
 
@@ -489,8 +341,6 @@ header option[disabled] {
     width: 50px;
 }
 
-/* frozen */
-
 .tabulator-header,
 .tabulator-row {
     position: relative;
@@ -509,7 +359,6 @@ header option[disabled] {
     font-size: 14px;
 }
 
-/* tabs */
 .selected-tab {
     color: var(--color) !important;
     font-weight: 500;
@@ -533,6 +382,10 @@ input {
     min-height: 30px;
 }
 
+.hide .tabulator-col {
+    height: 30px;
+}
+
 .selected-count:hover,
 .tab,
 .tabulator-cell[tabulator-field="season"] span:hover {
@@ -554,4 +407,5 @@ input {
 
 ::placeholder {
     color: #aaa;
+    opacity: 1;
 }

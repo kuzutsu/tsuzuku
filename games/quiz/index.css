@@ -1,104 +1,22 @@
-@font-face {
-    font-family: Roboto;
-    font-weight: 400;
-    font-display: swap;
-    src: url(https://fonts.gstatic.com/s/roboto/v27/KFOmCnqEu92Fr1Mu4mxK.woff2) format('woff2');
-}
-
-@font-face {
-    font-family: Roboto;
-    font-weight: 500;
-    font-display: swap;
-    src: url(https://fonts.gstatic.com/s/roboto/v27/KFOlCnqEu92Fr1MmEU9fBBc4.woff2) format('woff2');
-}
-
-.light {
-    --background: #fff;
-    --background-hover: #eee;
-    --color: #000;
-    --selected: #000;
-    --selected-color: #fff;
-    --selected-hover: #111;
-}
-
-.dark {
-    --background: #000;
-    --background-hover: #111;
-    --color: #fff;
-    --selected: #fff;
-    --selected-color: #000;
-    --selected-hover: #eee;
-}
-
-* {
-    box-sizing: border-box;
-    font-family: Roboto, sans-serif;
-}
-
 .selected {
     background: var(--selected);
-    color: var(--selected-color);
 }
 
 .selected:hover {
     background: var(--selected-hover) !important;
+}
+
+.selected .title {
     color: var(--selected-color);
+    user-select: text;
 }
 
 .bold {
     font-weight: 500;
 }
 
-noscript{
-    height: 100%;
-    width: 100%;
-    background: var(--background);
-    position: absolute;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    user-select: none;
-    text-align: center;
-    z-index: 1;
-    font-size: 14px;
-}
-
 .choice div[style] span {
     color: #fff;
-}
-
-a,
-body,
-select {
-    color: var(--color);
-}
-
-body {
-    height: 100%;
-    margin: 0;
-    overflow: auto;
-    position: relative;
-    background: var(--background);
-}
-
-html {
-    height: 100%;
-    overflow: hidden;
-}
-
-@media only screen and (min-width: 1301px) {
-    body {
-        box-shadow: 0 0 20px 0 var(--background-hover);
-        margin: 0 15%;
-    }
-}
-
-a {
-    text-decoration: none;
-}
-
-a:hover {
-    text-decoration: underline;
 }
 
 .link {
@@ -111,10 +29,6 @@ a:hover {
     padding: 0 19px;
 }
 
-svg {
-    fill: var(--color);
-}
-
 .choice div:hover,
 .picture {
     background: var(--background-hover);
@@ -125,7 +39,6 @@ select {
     background: var(--background);
 }
 
-header,
 .menu,
 .query {
     align-items: center;
@@ -133,7 +46,6 @@ header,
     white-space: nowrap;
 }
 
-header,
 .menu,
 .query {
     display: flex;
@@ -151,17 +63,6 @@ header,
     height: 40px;
     align-items: center;
     user-select: none;
-    font-size: 14px;
-}
-
-header {
-    height: 50px;
-}
-
-main {
-    display: flex;
-    flex-direction: column;
-    font-size: 14px;
 }
 
 .menu {
@@ -172,7 +73,6 @@ main {
     height: 40px;
 }
 
-header,
 .menu,
 .submit {
     user-select: none;
@@ -207,11 +107,6 @@ header,
     min-width: 40px;
 }
 
-.choices,
-.type {
-    font-size: 14px;
-}
-
 .theme {
     display: flex;
     align-items: center;
@@ -229,16 +124,7 @@ header,
 }
 
 .dim {
-    opacity: 0.2;
-}
-
-.source {
-    height: 17px;
-    width: 17px;
-    min-height: 17px;
-    min-width: 17px;
-    object-fit: cover;
-    user-select: none;
+    opacity: 0.1;
 }
 
 .title {

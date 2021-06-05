@@ -1,4 +1,4 @@
-const sw = '2.3.0';
+const sw = '2.3.1';
 
 addEventListener('install', (event) => {
     event.waitUntil(
@@ -8,6 +8,8 @@ addEventListener('install', (event) => {
                 // local
                 './',
                 './fetchFunction.js',
+                './global.css',
+                './global.js',
                 './index.css',
                 './index.html',
                 './index.js',
