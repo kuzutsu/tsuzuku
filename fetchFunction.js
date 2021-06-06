@@ -338,6 +338,10 @@ db.onsuccess = (event3) => {
                                                     } else {
                                                         if (hstatus.value === 'Planning' || hstatus.value === 'Skipping') {
                                                             result.progress = '';
+                                                        } else {
+                                                            if (status2 === 'Planning' || status2 === 'Skipping') {
+                                                                result.progress = '0';
+                                                            }
                                                         }
                                                     }
 
@@ -554,6 +558,10 @@ db.onsuccess = (event3) => {
                                                     } else {
                                                         if (hstatus.value === 'Planning' || hstatus.value === 'Skipping') {
                                                             result.progress = '';
+                                                        } else {
+                                                            if (status2 === 'Planning' || status2 === 'Skipping') {
+                                                                result.progress = '0';
+                                                            }
                                                         }
                                                     }
 
@@ -1095,6 +1103,10 @@ db.onsuccess = (event3) => {
                                             } else {
                                                 if (select.value === 'Planning' || select.value === 'Skipping') {
                                                     result.progress = '';
+                                                } else {
+                                                    if (status2 === 'Planning' || status2 === 'Skipping') {
+                                                        result.progress = '0';
+                                                    }
                                                 }
                                             }
 
