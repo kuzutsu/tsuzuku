@@ -394,6 +394,8 @@ db.onsuccess = (event3) => {
                                             };
                                         } else {
                                             db2().delete(value.getData().sources).onsuccess = () => {
+                                                value.getElement().dataset.progress = '';
+
                                                 value.update({
                                                     progress: '',
                                                     status: ''
@@ -608,6 +610,8 @@ db.onsuccess = (event3) => {
                                             };
                                         } else {
                                             db2().delete(value.getData().sources).onsuccess = () => {
+                                                value.getElement().dataset.progress = '';
+
                                                 value.update({
                                                     progress: '',
                                                     status: ''
@@ -1147,6 +1151,8 @@ db.onsuccess = (event3) => {
                                     };
                                 } else {
                                     db2().delete(cell.getRow().getData().sources).onsuccess = () => {
+                                        cell.getRow().getElement().dataset.progress = '';
+
                                         cell.getRow().update({
                                             progress: '',
                                             status: ''

@@ -58,7 +58,7 @@
 }
 
 [data-status="Skipping"] {
-    opacity: 0.1;
+    opacity: 0.2;
 }
 
 [data-status="Watching"] .indicator,
@@ -173,6 +173,7 @@
 
 .tabulator-row:hover {
     background: var(--background-hover) !important;
+    opacity: 1;
 }
 
 .tabulator-selected {

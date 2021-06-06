@@ -44,18 +44,19 @@ Recommended to disable when using regular expression search
 #### OR-type
 Separate with `|`, no spaces
 * `season:` (`winter`, `spring`, `summer`, `fall`, `tba`)
-* `status:` (`completed`, `dropped`, `paused`, `planning`, `rewatching`, `skipping`, `watching`)
+* `status:` (`all`, `completed`, `dropped`, `paused`, `planning`, `rewatching`, `skipping`, `watching`)
 * `type:` (`tv`, `movie`, `ova`, `ona`, `special`)
 
 Examples:
-* From summer season only ([`season:summer`](https://kuzutsu.github.io/tsuzuku/?query=season%253Asummer))
+* From summer season ([`season:summer`](https://kuzutsu.github.io/tsuzuku/?query=season%253Asummer))
 * Paused or dropped ([`status:paused|dropped`](https://kuzutsu.github.io/tsuzuku/?query=status%253Apaused%257Cdropped))
-* Movies, OVAs, or ONAs only ([`type:movie|ova|ona`](https://kuzutsu.github.io/tsuzuku/?query=type%253Amovie%257Cova%257Cona))
+* Movies, OVAs, or ONAs ([`type:movie|ova|ona`](https://kuzutsu.github.io/tsuzuku/?query=type%253Amovie%257Cova%257Cona))
 
 #### AND-type
-Can use `<`, `<=`, `>`, or `>=` for numerals, separate with `&`, no spaces
+Separate with `&`, no spaces, can use `<`, `<=`, `>`, or `>=` for numerals
 * `episodes:`
 * `progress:`
+* `source:` (`myanimelist`, `kitsu`, `anilist`)
 * `tag:` (replace spaces with `_`, start with `-` to exclude)
   * MyAnimeList (`action`, `adventure`, etc.)
   * Kitsu (`absurdist_humour`, `africa`, etc.)
@@ -64,11 +65,12 @@ Can use `<`, `<=`, `>`, or `>=` for numerals, separate with `&`, no spaces
 * `year:` (can use `tba`)
 
 Examples:
-* Only 13 episodes ([`episodes:13`](https://kuzutsu.github.io/tsuzuku/?query=episodes%253A13))
-* Progress higher than 4 but lower than 7 ([`progress:>4&<7`](https://kuzutsu.github.io/tsuzuku/?query=progress%253A%253E4%2526%253C7))
+* Has 13 episodes ([`episodes:13`](https://kuzutsu.github.io/tsuzuku/?query=episodes%253A13))
+* Has progress higher than 4 but lower than 7 ([`progress:>4&<7`](https://kuzutsu.github.io/tsuzuku/?query=progress%253A%253E4%2526%253C7))
+* Only on Kitsu and AniList ([`source:kitsu&anilist`](https://kuzutsu.github.io/tsuzuku/?query=source%253Akitsu%2526anilist))
 * Based on a manga and comedy ([`tag:based_on_a_manga&comedy`](https://kuzutsu.github.io/tsuzuku/?query=tag%253Abased_on_a_manga%2526comedy))
 * Based on a light novel but not isekai ([`tag:based_on_a_light_novel&-isekai`](https://kuzutsu.github.io/tsuzuku/?query=tag%253Abased_on_a_light_novel%2526-isekai))
-* On or before 2019 ([`year:<=2019`](https://kuzutsu.github.io/tsuzuku/?query=year%253A%253C%253D2019))
+* Before 2019 ([`year:<2019`](https://kuzutsu.github.io/tsuzuku/?query=year%253A%253C2019))
 
 ### Randomize results
 Default is 1
@@ -89,7 +91,7 @@ Click on image icon to toggle
 Query will only appear after submitting an answer
 
 #### Quiz
-Single selection mode (default) only have one correct answer
+Single selection mode (default) only has one correct answer
 
 Multiple selection mode may have no correct answers
 

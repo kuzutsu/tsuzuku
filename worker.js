@@ -24,10 +24,8 @@ function is(value1, type, value2) {
             return v1 < v2;
         case '>':
             return v1 > v2;
-        case '=':
-            return v1 === v2;
         default:
-            return false;
+            return v1 === v2;
     }
 }
 
@@ -43,6 +41,7 @@ addEventListener('message', (event) => {
         ongoing = false,
         progress = null,
         season = null,
+        source = null,
         status = null,
         tags = null,
         type = null,
@@ -78,9 +77,9 @@ addEventListener('message', (event) => {
         v = v.replace(/\btype:(?:\|?(?:tv|movie|ova|ona|special)\b)+/giu, '');
     }
 
-    if (v.match(/\bstatus:(?:\|?(?:watching|rewatching|completed|paused|dropped|planning|skipping)\b)+/giu)) {
-        status = v.match(/\bstatus:(?:\|?(?:watching|rewatching|completed|paused|dropped|planning|skipping)\b)+/giu)[0].replace(/status:/giu, '').split('|');
-        v = v.replace(/\bstatus:(?:\|?(?:watching|rewatching|completed|paused|dropped|planning|skipping)\b)+/giu, '');
+    if (v.match(/\bstatus:(?:\|?(?:all|watching|rewatching|completed|paused|dropped|planning|skipping)\b)+/giu)) {
+        status = v.match(/\bstatus:(?:\|?(?:all|watching|rewatching|completed|paused|dropped|planning|skipping)\b)+/giu)[0].replace(/status:/giu, '').split('|');
+        v = v.replace(/\bstatus:(?:\|?(?:all|watching|rewatching|completed|paused|dropped|planning|skipping)\b)+/giu, '');
     }
 
     if (v.match(/\bseason:(?:\|?(?:winter|spring|summer|fall|tba)\b)+/giu)) {
@@ -91,6 +90,11 @@ addEventListener('message', (event) => {
     if (v.match(/\btag:\S+\b/giu)) {
         tags = v.match(/\btag:\S+\b/giu)[0].replace(/tag:/giu, '').split('&');
         v = v.replace(/\btag:\S+\b/giu, '');
+    }
+
+    if (v.match(/\bsource:(?:&?(?:myanimelist|kitsu|anilist)\b)+/giu)) {
+        source = v.match(/\bsource:(?:&?(?:myanimelist|kitsu|anilist)\b)+/giu)[0].replace(/source:/giu, '').split('&');
+        v = v.replace(/\bsource:(?:&?(?:myanimelist|kitsu|anilist)\b)+/giu, '');
     }
 
     if (v.match(/\bis:selected\b/giu)) {
@@ -119,7 +123,7 @@ addEventListener('message', (event) => {
 
             if (episodes) {
                 for (const value of episodes) {
-                    if (!is(d.episodes, (value.match(/<=|>=|<|>/giu) || '=').toString(), value.match(/0|[1-9][0-9]*/giu).toString())) {
+                    if (!is(d.episodes, (value.match(/<=|>=|<|>/giu) || '').toString(), value.match(/0|[1-9][0-9]*/giu).toString())) {
                         return;
                     }
                 }
@@ -127,7 +131,7 @@ addEventListener('message', (event) => {
 
             if (progress) {
                 for (const value of progress) {
-                    if (!is(d.progress, (value.match(/<=|>=|<|>/giu) || '=').toString(), value.match(/0|[1-9][0-9]*/giu).toString())) {
+                    if (!is(d.progress, (value.match(/<=|>=|<|>/giu) || '').toString(), value.match(/0|[1-9][0-9]*/giu).toString())) {
                         return;
                     }
                 }
@@ -135,7 +139,7 @@ addEventListener('message', (event) => {
 
             if (year) {
                 for (const value of year) {
-                    if (!is(d.season.substring(d.season.indexOf(' ') + 1), (value.match(/<=|>=|<|>/giu) || '=').toString(), value.match(/tba|[1-9][0-9]{3}/giu).toString())) {
+                    if (!is(d.season.substring(d.season.indexOf(' ') + 1), (value.match(/<=|>=|<|>/giu) || '').toString(), value.match(/tba|[1-9][0-9]{3}/giu).toString())) {
                         return;
                     }
                 }
@@ -148,8 +152,14 @@ addEventListener('message', (event) => {
             }
 
             if (status) {
-                if (status.toString().toLowerCase().split(',').indexOf(d.status.toLowerCase()) === -1) {
-                    return;
+                if (status.toString().toLowerCase().split(',').indexOf('all') > -1) {
+                    if (!d.status.toLowerCase()) {
+                        return;
+                    }
+                } else {
+                    if (status.toString().toLowerCase().split(',').indexOf(d.status.toLowerCase()) === -1) {
+                        return;
+                    }
                 }
             }
 
@@ -174,6 +184,38 @@ addEventListener('message', (event) => {
                         if (d.tags.indexOf(value.toLowerCase()) === -1) {
                             return;
                         }
+                    }
+                }
+            }
+
+            if (source) {
+                if (source.toString().toLowerCase().split(',').indexOf('myanimelist') > -1) {
+                    if (d.sources2.toString().indexOf('myanimelist') === -1) {
+                        return;
+                    }
+                } else {
+                    if (d.sources2.toString().indexOf('myanimelist') > -1) {
+                        return;
+                    }
+                }
+
+                if (source.toString().toLowerCase().split(',').indexOf('kitsu') > -1) {
+                    if (d.sources2.toString().indexOf('kitsu') === -1) {
+                        return;
+                    }
+                } else {
+                    if (d.sources2.toString().indexOf('kitsu') > -1) {
+                        return;
+                    }
+                }
+
+                if (source.toString().toLowerCase().split(',').indexOf('anilist') > -1) {
+                    if (d.sources2.toString().indexOf('anilist') === -1) {
+                        return;
+                    }
+                } else {
+                    if (d.sources2.toString().indexOf('anilist') > -1) {
+                        return;
                     }
                 }
             }
