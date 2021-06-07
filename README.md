@@ -55,7 +55,7 @@ Examples:
 #### AND-type
 Separate with `&`, no spaces, can use `<`, `<=`, `>`, or `>=` for numerals
 * `episodes:`
-* `progress:`
+* `progress:` (can use absolute or relative values)
 * `source:` (`myanimelist`, `kitsu`, `anilist`)
 * `tag:` (replace spaces with `_`, start with `-` to exclude)
   * MyAnimeList (`action`, `adventure`, etc.)
@@ -66,7 +66,7 @@ Separate with `&`, no spaces, can use `<`, `<=`, `>`, or `>=` for numerals
 
 Examples:
 * Has 13 episodes ([`episodes:13`](https://kuzutsu.github.io/tsuzuku/?query=episodes%253A13))
-* Has progress higher than 4 but lower than 7 ([`progress:>4&<7`](https://kuzutsu.github.io/tsuzuku/?query=progress%253A%253E4%2526%253C7))
+* Has progress higher than 4 but lower than 70% ([`progress:>4&<70%`](https://kuzutsu.github.io/tsuzuku/?query=progress%253A%253E4%2526%253C70%2525))
 * Only on Kitsu and AniList ([`source:kitsu&anilist`](https://kuzutsu.github.io/tsuzuku/?query=source%253Akitsu%2526anilist))
 * Based on a manga and comedy ([`tag:based_on_a_manga&comedy`](https://kuzutsu.github.io/tsuzuku/?query=tag%253Abased_on_a_manga%2526comedy))
 * Based on a light novel but not isekai ([`tag:based_on_a_light_novel&-isekai`](https://kuzutsu.github.io/tsuzuku/?query=tag%253Abased_on_a_light_novel%2526-isekai))

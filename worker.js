@@ -4,7 +4,7 @@ if (typeof Fuse === 'undefined') {
 
 function is(value1, type, value2) {
     if (!value1) {
-        if (value2.toLowerCase() === 'tba') {
+        if (value2.toString().toLowerCase() === 'tba') {
             return true;
         }
 
@@ -62,9 +62,9 @@ addEventListener('message', (event) => {
         v = v.replace(/\bepisodes:(?:&?(?:<=|>=|<|>)?(?:0|[1-9][0-9]*)\b)+/giu, '');
     }
 
-    if (v.match(/\bprogress:(?:&?(?:<=|>=|<|>)?(?:0|[1-9][0-9]*)\b)+/giu)) {
-        progress = v.match(/\bprogress:(?:&?(?:<=|>=|<|>)?(?:0|[1-9][0-9]*)\b)+/giu)[0].replace(/progress:/giu, '').split('&');
-        v = v.replace(/\bprogress:(?:&?(?:<=|>=|<|>)?(?:0|[1-9][0-9]*)\b)+/giu, '');
+    if (v.match(/\bprogress:(?:&?(?:<=|>=|<|>)?(?:0|[1-9][0-9]*)(?:%\B|\b))+/giu)) {
+        progress = v.match(/\bprogress:(?:&?(?:<=|>=|<|>)?(?:0|[1-9][0-9]*)(?:%\B|\b))+/giu)[0].replace(/progress:/giu, '').split('&');
+        v = v.replace(/\bprogress:(?:&?(?:<=|>=|<|>)?(?:0|[1-9][0-9]*)(?:%\B|\b))+/giu, '');
     }
 
     if (v.match(/\byear:(?:tba\b|(?:&?(?:<=|>=|<|>)?[1-9][0-9]{3}\b)+)/giu)) {
@@ -131,8 +131,18 @@ addEventListener('message', (event) => {
 
             if (progress) {
                 for (const value of progress) {
-                    if (!is(d.progress, (value.match(/<=|>=|<|>/giu) || '').toString(), value.match(/0|[1-9][0-9]*/giu).toString())) {
-                        return;
+                    if (value.match(/%/giu)) {
+                        if (d.episodes) {
+                            if (!is(d.progress / d.episodes, (value.match(/<=|>=|<|>/giu) || '').toString(), Number(value.match(/0|[1-9][0-9]*/giu).toString()) / 100)) {
+                                return;
+                            }
+                        } else {
+                            return;
+                        }
+                    } else {
+                        if (!is(d.progress, (value.match(/<=|>=|<|>/giu) || '').toString(), value.match(/0|[1-9][0-9]*/giu).toString())) {
+                            return;
+                        }
                     }
                 }
             }
