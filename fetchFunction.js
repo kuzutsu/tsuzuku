@@ -802,6 +802,34 @@ db.onsuccess = (event3) => {
                         },
                         headerHozAlign: 'center',
                         hozAlign: 'center',
+                        sorter: function (a, b) {
+                            function date(n) {
+                                if (n) {
+                                    if (n.indexOf(' ') > -1) {
+                                        const split = n.split(' ');
+
+                                        switch (split[0]) {
+                                            case 'Winter':
+                                                return new Date(`${n}-01-01`);
+                                            case 'Spring':
+                                                return new Date(`${n}-04-01`);
+                                            case 'Summer':
+                                                return new Date(`${n}-07-01`);
+                                            case 'Fall':
+                                                return new Date(`${n}-10-01`);
+                                            default:
+                                                return new Date(`${n}-12-01`);
+                                        }
+                                    } else {
+                                        return new Date(`${n}-12-01`);
+                                    }
+                                } else {
+                                    return new Date();
+                                }
+                            }
+
+                            return date(a) - date(b);
+                        },
                         sorterParams: {
                             alignEmptyValues: 'bottom'
                         },
