@@ -179,7 +179,7 @@ function searchFunction(tt, qq, p, s) {
                 default:
                     break;
             }
-        }, 10);
+        }, 100);
     });
 }
 
