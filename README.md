@@ -87,6 +87,8 @@ Click on moon icon to toggle
 Click on image icon to toggle
 
 ### Games
+Click on score to reset
+
 #### Odd one out
 Query will only appear after submitting an answer
 

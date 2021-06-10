@@ -352,7 +352,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                 document.querySelector('.settings svg').style.fill = '';
             } else {
                 document.querySelector('.settings-container').style.display = 'none';
-                document.querySelector('.settings svg').style.fill = '#aaa';
+                document.querySelector('.settings svg').style.fill = '#a7abb7';
             }
         });
 

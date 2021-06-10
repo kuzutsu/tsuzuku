@@ -92,21 +92,23 @@ db.onsuccess = (event3) => {
                 for (const value of d[i].sources.filter((sources) => sources.match(source))) {
                     const
                         anilist = d[i].sources.filter((sources) => sources.match(/anilist\.co/gu)),
+                        anilist2 = '',
                         kitsu = d[i].sources.filter((sources) => sources.match(/kitsu\.io/gu)),
+                        kitsu2 = '',
                         ss = d[i].animeSeason.season,
                         tt = d[i].tags.map((tags) => tags.replace(/\s/gu, '_'));
 
                     if (d[i].sources.filter((sources) => sources.match(/myanimelist\.net/gu)).length) {
                         source2 = [
                             value,
-                            kitsu[0] || '',
-                            anilist[0] || ''
+                            kitsu[0] || kitsu2,
+                            anilist[0] || anilist2
                         ];
                     } else if (d[i].sources.filter((sources) => sources.match(/kitsu\.io/gu)).length) {
                         source2 = [
                             '',
                             value,
-                            anilist[0] || ''
+                            anilist[0] || anilist2
                         ];
                     } else {
                         source2 = [
@@ -1231,10 +1233,6 @@ db.onsuccess = (event3) => {
                         }
                     }
 
-                    if (document.querySelector('.progress')) {
-                        document.querySelector('.progress').remove();
-                    }
-
                     if (document.querySelector('.searching')) {
                         document.querySelector('.searching').remove();
                     }
@@ -1291,7 +1289,7 @@ db.onsuccess = (event3) => {
                         document.querySelector('#number').value = Math.round(Math.abs(Number(new URLSearchParams(location.search).get('random'))));
                     } else {
                         document.querySelector('#random').checked = false;
-                        document.querySelector('[for="number"]').style.color = '#aaa';
+                        document.querySelector('[for="number"]').style.color = '#a7abb7';
                         document.querySelector('#number').setAttribute('disabled', '');
                     }
 

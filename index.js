@@ -64,18 +64,14 @@ function searchFunction(tt, qq, p, s) {
         document.querySelector('.importing').remove();
     }
 
-    if (worker) {
-        worker.terminate();
-        worker = null;
-        document.querySelector('.progress').remove();
+    if (document.querySelector('.searching')) {
         document.querySelector('.searching').remove();
     }
 
     document.querySelector('main').insertAdjacentHTML('beforeend',
         '<div class="searching">' +
-            '<div class="progress" style="position: absolute; top: 0; left: 0;"></div>' +
             '<span>Searching...</span>' +
-        '</span>'
+        '</div>'
     );
 
     if (r) {
@@ -85,6 +81,11 @@ function searchFunction(tt, qq, p, s) {
                 relevancy: 1
             });
         }
+    }
+
+    if (worker) {
+        worker.terminate();
+        worker = null;
     }
 
     worker = new Worker('worker.js');
@@ -100,19 +101,18 @@ function searchFunction(tt, qq, p, s) {
     });
 
     worker.addEventListener('message', (event) => {
-        switch (event.data.message) {
-            case 'clear':
-                // fake load
-                document.querySelector('.progress').classList.add('found');
-                document.querySelector('.progress').style.width = '100%';
+        const url = new URL(location.href.replace(location.search, ''));
 
-                setTimeout(() => {
+        document.querySelector('.searching span').innerHTML = 'Filtering table...';
+
+        worker.terminate();
+        worker = null;
+
+        setTimeout(() => {
+            switch (event.data.message) {
+                case 'clear':
                     index.dimension = null;
                     table.clearFilter();
-                    worker.terminate();
-                    worker = null;
-
-                    const url = new URL(location.href.replace(location.search, ''));
 
                     if (params.regex) {
                         url.searchParams.set('regex', '1');
@@ -133,19 +133,13 @@ function searchFunction(tt, qq, p, s) {
                     }
 
                     document.title = title;
-                }, 100);
-                break;
 
-            case 'done':
-                // delay to extend progress to 100%
-                setTimeout(() => {
+                    break;
+
+                case 'success':
                     index.dimension = event.data.update;
                     index.query = event.data.query;
                     table.setFilter('sources', 'in', event.data.filter);
-                    worker.terminate();
-                    worker = null;
-
-                    const url = new URL(location.href.replace(location.search, ''));
 
                     if (params.regex) {
                         url.searchParams.set('regex', '1');
@@ -179,20 +173,13 @@ function searchFunction(tt, qq, p, s) {
                     } else {
                         document.title = title;
                     }
-                }, 100);
-                break;
 
-            case 'found':
-                document.querySelector('.progress').classList.add('found');
-                break;
+                    break;
 
-            case 'progress':
-                document.querySelector('.progress').style.width = event.data.progress;
-                break;
-
-            default:
-                break;
-        }
+                default:
+                    break;
+            }
+        }, 0);
     });
 }
 
@@ -252,11 +239,11 @@ document.querySelector('.enter').addEventListener('click', () => {
     if (document.querySelector('.default').style.display === 'contents') {
         document.querySelector('.default').style.display = 'none';
         document.querySelector('.tabs').style.display = 'contents';
-        document.querySelector('.enter svg').style.fill = '#aaa';
+        document.querySelector('.enter svg').style.fill = '#a7abb7';
 
         if (!document.querySelector('.settings-container').style.display) {
             document.querySelector('.settings-container').style.display = 'none';
-            document.querySelector('.settings svg').style.fill = '#aaa';
+            document.querySelector('.settings svg').style.fill = '#a7abb7';
             document.querySelector('.database-container').style.maxHeight = '';
 
             t.redraw(true);
@@ -289,7 +276,7 @@ document.querySelector('#random').addEventListener('change', (e) => {
         document.querySelector('[for="number"]').style.color = '';
         document.querySelector('#number').removeAttribute('disabled');
     } else {
-        document.querySelector('[for="number"]').style.color = '#aaa';
+        document.querySelector('[for="number"]').style.color = '#a7abb7';
         document.querySelector('#number').setAttribute('disabled', '');
     }
 });
@@ -301,7 +288,7 @@ document.querySelector('.settings').addEventListener('click', () => {
         document.querySelector('.database-container').style.maxHeight = 'calc(100% - 208px)';
     } else {
         document.querySelector('.settings-container').style.display = 'none';
-        document.querySelector('.settings svg').style.fill = '#aaa';
+        document.querySelector('.settings svg').style.fill = '#a7abb7';
         document.querySelector('.database-container').style.maxHeight = '';
     }
 
@@ -427,7 +414,9 @@ document.querySelector('.import').addEventListener('click', () => {
                 document.querySelector('.search-container').style.display = 'none';
                 document.querySelector('.tabulator').style.display = 'none';
                 document.querySelector('main').insertAdjacentHTML('beforeend',
-                    '<div class="importing"><span>Importing...</span></div>'
+                    '<div class="importing">' +
+                        '<span>Importing...</span>' +
+                    '</div>'
                 );
 
                 for (const value of a.lists) {
@@ -540,7 +529,6 @@ document.querySelector('.import').addEventListener('click', () => {
                 document.querySelector('.tabulator').style.display = 'none';
                 document.querySelector('main').insertAdjacentHTML('beforeend',
                     '<div class="importing">' +
-                        '<div class="progress" class="found" style="position: absolute; top: 0; left: 0;"></div>' +
                         '<span>Importing...</span>' +
                     '</div>'
                 );
@@ -772,7 +760,7 @@ onpopstate = () => {
         document.querySelector('#number').value = Math.round(Math.abs(Number(new URLSearchParams(location.search).get('random'))));
     } else {
         document.querySelector('#random').checked = false;
-        document.querySelector('[for="number"]').style.color = '#aaa';
+        document.querySelector('[for="number"]').style.color = '#a7abb7';
         document.querySelector('#number').setAttribute('disabled', '');
     }
 

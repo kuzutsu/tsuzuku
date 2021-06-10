@@ -205,23 +205,13 @@
 
 #number:disabled {
     background: var(--background);
-    color: #aaa;
+    color: #a7abb7;
 }
 
 /*****************************************************************/
 
-.progress {
-    background: #f44336;
-    height: 4px;
-    width: 0;
-}
-
-.found {
-    background: #4caf50 !important;
-}
-
 .title {
-    color: #aaa;
+    color: #a7abb7;
 }
 
 .importing,
@@ -259,7 +249,7 @@ header option {
 }
 
 header option[disabled] {
-    color: #aaa;
+    color: #a7abb7;
 }
 
 .tabulator-cell option {
@@ -407,6 +397,6 @@ input {
 }
 
 ::placeholder {
-    color: #aaa;
+    color: #a7abb7;
     opacity: 1;
 }

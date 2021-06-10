@@ -19,7 +19,7 @@
     --selected: #000;
     --selected-color: #fff;
     --selected-hover: #353535;
-    --shadow: #aaa;
+    --shadow: #a7abb7;
 }
 
 .dark {
@@ -107,7 +107,7 @@ svg {
 }
 
 svg.disabled {
-    fill: #aaa;
+    fill: #a7abb7;
 }
 
 .header-title {
