@@ -38,6 +38,7 @@ addEventListener('message', (event) => {
         episodes = null,
         ff = null,
         found = false,
+        n = false,
         ongoing = false,
         progress = null,
         season = null,
@@ -107,6 +108,11 @@ addEventListener('message', (event) => {
     if ((/\bis:ongoing\b/giu).test(v)) {
         ongoing = true;
         v = v.replace(/\bis:ongoing\b/giu, '');
+    }
+
+    if ((/\bis:new\b/giu).test(v)) {
+        n = true;
+        v = v.replace(/\bis:new\b/giu, '');
     }
 
     event.data[dd].forEach((d) => {
@@ -221,6 +227,12 @@ addEventListener('message', (event) => {
 
         if (ongoing) {
             if (!d.ongoing) {
+                return;
+            }
+        }
+
+        if (n) {
+            if (!d.new) {
                 return;
             }
         }

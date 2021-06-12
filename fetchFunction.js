@@ -4,6 +4,7 @@ import {
 } from './index.js';
 
 const
+    data5 = [],
     database = [],
     database2 = {},
     db = indexedDB.open('tsuzuku', 1),
@@ -135,6 +136,7 @@ db.onsuccess = (event3) => {
                     database.push({
                         alternative: d[i].title,
                         episodes: d[i].episodes || '',
+                        new: false,
                         ongoing: d[i].status === 'CURRENTLY',
                         picture: d[i].picture,
                         progress: '',
@@ -153,8 +155,32 @@ db.onsuccess = (event3) => {
                         title: d[i].title,
                         type: d[i].type
                     });
+
+                    data5.push(value);
                 }
             }
+
+
+            if (localStorage.getItem('data')) {
+                const
+                    set = new Set(data5),
+                    set2 = new Set(JSON.parse(localStorage.getItem('data'))),
+                    set3 = [];
+
+                for (const value of set) {
+                    if (set2.has(value)) {
+                        continue;
+                    }
+
+                    set3.push(value);
+                }
+
+                if (set3[0]) {
+                    localStorage.setItem('new', JSON.stringify(set3));
+                }
+            }
+
+            localStorage.setItem('data', JSON.stringify(data5));
 
             t = new Tabulator('.database-container', {
                 cellDblClick: function () {
@@ -741,13 +767,18 @@ db.onsuccess = (event3) => {
                     {
                         field: 'alternative',
                         formatter: function (cell) {
-                            let r18 = '';
+                            let n = '',
+                                r18 = '';
 
                             if (cell.getRow().getData().r18) {
                                 r18 = '&nbsp;<span style="color: #f44336;">R18+</span>';
                             }
 
-                            return `<span>${cell.getValue() + r18}</span><div class="indicator" style="position: absolute; bottom: 0; height: 2px; max-width: 100%;"></div>`;
+                            if (cell.getRow().getData().new) {
+                                n = '&nbsp;<span style="color: #8bc34a;">New</span>';
+                            }
+
+                            return `<span>${cell.getValue() + r18 + n}</span><div class="indicator" style="position: absolute; bottom: 0; height: 2px; max-width: 100%;"></div>`;
                         },
                         minWidth: 200,
                         title: 'Title',
@@ -1334,6 +1365,15 @@ db.onsuccess = (event3) => {
                         } else {
                             document.querySelector('.loading').remove();
                             document.querySelector('.search-container').style.display = 'inline-flex';
+
+                            if (localStorage.getItem('new')) {
+                                for (const value of JSON.parse(localStorage.getItem('new'))) {
+                                    this.searchRows((d2) => d2.sources2.indexOf(value) > -1)[0].update({
+                                        new: true
+                                    });
+                                }
+                            }
+
                             searchFunction(this);
                         }
                     };
