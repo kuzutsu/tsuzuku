@@ -78,9 +78,9 @@ addEventListener('message', (event) => {
         v = v.replace(/\btype:(?:\|?(?:tv|movie|ova|ona|special)\b)+/giu, '');
     }
 
-    if ((/\bstatus:(?:\|?(?:all|watching|rewatching|completed|paused|dropped|planning|skipping)\b)+/giu).test(v)) {
-        status = (/\bstatus:(?:\|?(?:all|watching|rewatching|completed|paused|dropped|planning|skipping)\b)+/giu).exec(v)[0].replace(/status:/giu, '').split('|');
-        v = v.replace(/\bstatus:(?:\|?(?:all|watching|rewatching|completed|paused|dropped|planning|skipping)\b)+/giu, '');
+    if ((/\bstatus:(?:\|?(?:all|none|watching|rewatching|completed|paused|dropped|planning|skipping)\b)+/giu).test(v)) {
+        status = (/\bstatus:(?:\|?(?:all|none|watching|rewatching|completed|paused|dropped|planning|skipping)\b)+/giu).exec(v)[0].replace(/status:/giu, '').split('|');
+        v = v.replace(/\bstatus:(?:\|?(?:all|none|watching|rewatching|completed|paused|dropped|planning|skipping)\b)+/giu, '');
     }
 
     if ((/\bseason:(?:\|?(?:winter|spring|summer|fall|tba)\b)+/giu).test(v)) {
@@ -159,6 +159,10 @@ addEventListener('message', (event) => {
         if (status) {
             if (status.toString().toLowerCase().split(',').indexOf('all') > -1) {
                 if (!d.status.toLowerCase()) {
+                    return;
+                }
+            } else if (status.toString().toLowerCase().split(',').indexOf('none') > -1) {
+                if (d.status.toLowerCase()) {
                     return;
                 }
             } else {

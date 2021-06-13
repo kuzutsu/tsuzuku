@@ -88,7 +88,7 @@ function searchFunction(tt, qq, p, s) {
         worker = null;
     }
 
-    worker = new Worker('worker.js');
+    worker = new Worker('./worker.js');
 
     worker.postMessage({
         alt: params.alt,

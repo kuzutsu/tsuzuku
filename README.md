@@ -45,7 +45,7 @@ Recommended to disable when using regular expression search
 #### OR-type
 Separate with `|`, no spaces
 * `season:` (`winter`, `spring`, `summer`, `fall`, `tba`)
-* `status:` (`all`, `completed`, `dropped`, `paused`, `planning`, `rewatching`, `skipping`, `watching`)
+* `status:` (`all`, `none`, `completed`, `dropped`, `paused`, `planning`, `rewatching`, `skipping`, `watching`)
 * `type:` (`tv`, `movie`, `ova`, `ona`, `special`)
 
 Examples:
