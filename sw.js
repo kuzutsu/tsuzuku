@@ -1,4 +1,4 @@
-const sw = '2.3.7';
+const sw = '2.3.8';
 
 addEventListener('install', (event) => {
     event.waitUntil(

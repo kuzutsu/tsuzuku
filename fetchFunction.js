@@ -117,7 +117,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                             let n2 = false,
                                 p2 = '',
                                 s = '',
-                                s2 = '';
+                                s2 = '',
+                                ttt = '';
 
                             if (d[i].sources.filter((sources) => sources.match(/myanimelist\.net/gu)).length) {
                                 source2 = [
@@ -171,11 +172,19 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                 break;
                             }
 
+                            if (d[i].type !== 'UNKNOWN') {
+                                if (['MOVIE', 'SPECIAL'].indexOf(d[i].type) > -1) {
+                                    ttt = d[i].type.replace(d[i].type.substr(1), d[i].type.substr(1).toLowerCase());
+                                } else {
+                                    ttt = d[i].type;
+                                }
+                            }
+
                             database.push({
                                 alternative: d[i].title,
                                 episodes: d[i].episodes || '',
                                 new: n2,
-                                ongoing: d[i].status === 'CURRENTLY',
+                                ongoing: d[i].status === 'ONGOING',
                                 picture: d[i].picture,
                                 progress: p2,
                                 r18: tt.indexOf('hentai') > -1,
@@ -191,7 +200,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                 synonyms: d[i].synonyms,
                                 tags: tt,
                                 title: d[i].title,
-                                type: d[i].type
+                                type: ttt
                             });
 
                             data5.push(value);
@@ -825,6 +834,9 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                 field: 'type',
                                 headerHozAlign: 'center',
                                 hozAlign: 'center',
+                                sorterParams: {
+                                    alignEmptyValues: 'bottom'
+                                },
                                 title: 'Type',
                                 vertAlign: 'middle',
                                 width: 100

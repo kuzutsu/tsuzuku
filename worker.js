@@ -73,9 +73,9 @@ addEventListener('message', (event) => {
         v = v.replace(/\byear:(?:tba\b|(?:&?(?:<=|>=|<|>)?[1-9][0-9]{3}\b)+)/giu, '');
     }
 
-    if ((/\btype:(?:\|?(?:tv|movie|ova|ona|special)\b)+/giu).test(v)) {
-        type = (/\btype:(?:\|?(?:tv|movie|ova|ona|special)\b)+/giu).exec(v)[0].replace(/type:/giu, '').split('|');
-        v = v.replace(/\btype:(?:\|?(?:tv|movie|ova|ona|special)\b)+/giu, '');
+    if ((/\btype:(?:\|?(?:tv|movie|ova|ona|special|tba)\b)+/giu).test(v)) {
+        type = (/\btype:(?:\|?(?:tv|movie|ova|ona|special|tba)\b)+/giu).exec(v)[0].replace(/type:/giu, '').split('|');
+        v = v.replace(/\btype:(?:\|?(?:tv|movie|ova|ona|special|tba)\b)+/giu, '');
     }
 
     if ((/\bstatus:(?:\|?(?:all|none|watching|rewatching|completed|paused|dropped|planning|skipping)\b)+/giu).test(v)) {
@@ -151,7 +151,9 @@ addEventListener('message', (event) => {
         }
 
         if (type) {
-            if (type.toString().toLowerCase().split(',').indexOf(d.type.toLowerCase()) === -1) {
+            const t = d.type || 'tba';
+
+            if (type.toString().toLowerCase().split(',').indexOf(t.toLowerCase()) === -1) {
                 return;
             }
         }

@@ -46,7 +46,7 @@ Recommended to disable when using regular expression search
 Separate with `|`, no spaces
 * `season:` (`winter`, `spring`, `summer`, `fall`, `tba`)
 * `status:` (`all`, `none`, `completed`, `dropped`, `paused`, `planning`, `rewatching`, `skipping`, `watching`)
-* `type:` (`tv`, `movie`, `ova`, `ona`, `special`)
+* `type:` (`tv`, `movie`, `ova`, `ona`, `special`, `tba`)
 
 Examples:
 * From summer season ([`season:summer`](https://kuzutsu.github.io/tsuzuku/?query=season%253Asummer))
