@@ -236,7 +236,13 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                     alternative: value.title,
                     dead: true,
                     episodes: value.episodes,
+                    new: false,
+                    ongoing: false,
+                    picture: '',
                     progress: value.progress,
+                    r18: false,
+                    relations: [],
+                    relevancy: 1,
                     season: value.season,
                     sources: key,
                     sources2:
@@ -246,6 +252,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                 ? ['', key, '']
                                 : ['', '', key],
                     status: value.status,
+                    synonyms: [],
+                    tags: [],
                     title: value.title,
                     type: value.type
                 });
