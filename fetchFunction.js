@@ -885,7 +885,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                         headerClick: function (e, column) {
                             column.hide();
                             column.getTable().getColumn('sources2').show();
-                            column.getTable().redraw(true);
+                            column.getTable().redraw();
                         },
                         headerHozAlign: 'center',
                         headerSort: false,
@@ -928,7 +928,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                         headerClick: function (e, column) {
                             column.hide();
                             column.getTable().getColumn('sources').show();
-                            column.getTable().redraw(true);
+                            column.getTable().redraw();
                         },
                         headerHozAlign: 'center',
                         headerSort: false,
@@ -1591,7 +1591,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
 
                     }
 
-                    this.redraw(true);
+                    this.redraw();
                 },
                 dataLoaded: function () {
                     document.querySelector('.tabulator').style.display = 'none';
@@ -1657,7 +1657,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                         }
                     }
 
-                    this.redraw(true);
+                    this.redraw();
                 },
                 headerSortElement: `<svg viewBox="0 0 24 24" width="17" height="17">${svg.arrow}</svg>`,
                 headerSortTristate: true,

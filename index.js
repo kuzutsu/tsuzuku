@@ -202,7 +202,7 @@ document.querySelector('.thumbnails').addEventListener('click', () => {
         localStorage.setItem('thumbnails', 'hide');
     }
 
-    t.redraw(true);
+    t.redraw();
 });
 
 document.querySelector('.close').addEventListener('click', () => {
@@ -247,7 +247,7 @@ document.querySelector('.enter').addEventListener('click', () => {
             document.querySelector('.settings svg').style.fill = '#a7abb7';
             document.querySelector('.database-container').style.maxHeight = '';
 
-            t.redraw(true);
+            t.redraw();
         }
     } else {
         document.querySelector('.default').style.display = 'contents';
@@ -300,7 +300,7 @@ document.querySelector('.settings').addEventListener('click', () => {
         document.querySelector('.database-container').style.maxHeight = '';
     }
 
-    t.redraw(true);
+    t.redraw();
 });
 
 document.querySelector('.search').addEventListener('input', (e) => {
