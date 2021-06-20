@@ -1,4 +1,4 @@
-const sw = '2.3.8';
+const sw = '2.3.9';
 
 addEventListener('install', (event) => {
     event.waitUntil(
@@ -11,7 +11,6 @@ addEventListener('install', (event) => {
                 './global.css',
                 './global.js',
                 './index.css',
-                './index.html',
                 './index.js',
                 './manifest.webmanifest',
                 './worker.js',
@@ -19,14 +18,11 @@ addEventListener('install', (event) => {
                 // games
                 './games/',
                 './games/index.css',
-                './games/index.html',
                 './games/odd-one-out/',
                 './games/odd-one-out/index.css',
-                './games/odd-one-out/index.html',
                 './games/odd-one-out/index.js',
                 './games/quiz/',
                 './games/quiz/index.css',
-                './games/quiz/index.html',
                 './games/quiz/index.js',
 
                 // images

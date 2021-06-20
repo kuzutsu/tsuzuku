@@ -9,7 +9,7 @@
 
 .database-container {
     height: auto;
-    max-height: calc(100% - 48px);
+    max-height: calc(100% - 40px);
     width: 100%;
 }
 
@@ -21,7 +21,6 @@
     width: 100%;
     display: none;
     align-items: center;
-    overflow: auto;
 }
 
 .tabulator-cell {
@@ -169,6 +168,10 @@
     display: inline-flex !important;
 }
 
+.selected-count:hover {
+    text-decoration: underline;
+}
+
 /***************************************************************************************************/
 
 .tabulator-row:hover {
@@ -206,6 +209,7 @@
 #number:disabled {
     background: var(--background);
     color: #a7abb7;
+    pointer-events: none;
 }
 
 /*****************************************************************/
@@ -248,7 +252,7 @@ header option {
     color: var(--selected-color);
 }
 
-header option[disabled] {
+header option:disabled {
     color: #a7abb7;
 }
 
@@ -363,6 +367,11 @@ input {
 .search2-container,
 .settings-container {
     padding: 0 19px;
+    overflow: auto;
+}
+
+.search2-container {
+    height: 40px;
 }
 
 .hide .tabulator-cell[tabulator-field="picture"] img {
@@ -399,4 +408,22 @@ input {
 ::placeholder {
     color: #a7abb7;
     opacity: 1;
+}
+
+[data-dead="true"] [tabulator-field="alternative"],
+[data-dead="true"] [tabulator-field="episodes"],
+[data-dead="true"] [tabulator-field="season"],
+[data-dead="true"] [tabulator-field="type"] {
+    text-decoration: line-through;
+}
+
+.error select:disabled,
+.error .tabulator-col[tabulator-field="progress"] .tabulator-col-title,
+.error .tabulator-col[tabulator-field="status"] .tabulator-col-title {
+    color: #a7abb7;
+}
+
+.error .export svg,
+.error .import svg {
+    fill: #a7abb7;
 }

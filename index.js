@@ -1,5 +1,6 @@
 import {
     db2,
+    error,
     params,
     r,
     selected,
@@ -55,8 +56,8 @@ function searchFunction(tt, qq, p, s) {
         document.querySelector('.selected-tab').classList.remove('selected-tab');
     }
 
-    if (document.querySelector(`[data-query="${query}"]`)) {
-        document.querySelector(`[data-query="${query}"]`).classList.add('selected-tab');
+    if (document.querySelector(`[data-query="${query.toLowerCase().replace(/"/gu, '&quot;')}"]`)) {
+        document.querySelector(`[data-query="${query.toLowerCase().replace(/"/gu, '&quot;')}"]`).classList.add('selected-tab');
     }
 
     if (document.querySelector('.importing')) {
@@ -267,6 +268,13 @@ document.querySelector('.search-container').addEventListener('dragenter', () => 
     document.querySelector('.enter svg').style.fill = '';
 });
 
+document.querySelector('.clear').addEventListener('dragenter', () => {
+    document.querySelector('.clear').style.display = 'none';
+    document.querySelector('.clear-separator').style.display = 'none';
+    document.querySelector('.search').value = '';
+    document.querySelector('.search').focus();
+});
+
 document.querySelector('.enter2').addEventListener('click', () => {
     searchFunction();
 });
@@ -282,10 +290,10 @@ document.querySelector('#random').addEventListener('change', (e) => {
 });
 
 document.querySelector('.settings').addEventListener('click', () => {
-    if (document.querySelector('.settings-container').style.display) {
-        document.querySelector('.settings-container').style.display = '';
+    if (document.querySelector('.settings-container').style.display === 'none') {
+        document.querySelector('.settings-container').style.display = 'flex';
         document.querySelector('.settings svg').style.fill = '';
-        document.querySelector('.database-container').style.maxHeight = 'calc(100% - 208px)';
+        document.querySelector('.database-container').style.maxHeight = 'calc(100% - 200px)';
     } else {
         document.querySelector('.settings-container').style.display = 'none';
         document.querySelector('.settings svg').style.fill = '#a7abb7';
@@ -326,11 +334,14 @@ document.querySelectorAll('.tab').forEach((element) => {
 
 document.querySelector('.selected-count').addEventListener('click', () => {
     document.querySelector('.search').value = 'is:selected';
-
     searchFunction();
 });
 
 document.querySelector('.import').addEventListener('click', () => {
+    if (error) {
+        return;
+    }
+
     const input = document.createElement('input');
 
     input.type = 'file';
@@ -632,6 +643,10 @@ document.querySelector('.import').addEventListener('click', () => {
 });
 
 document.querySelector('.export').addEventListener('click', () => {
+    if (error) {
+        return;
+    }
+
     let xml =
             '<?xml version="1.0" encoding="UTF-8"?>\n' +
             '<myanimelist>\n' +

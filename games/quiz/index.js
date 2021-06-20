@@ -199,7 +199,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                         episode = episodes[Math.round(Math.random() * (episodes.length - 1))];
                     }
 
-                    document.querySelector('.query a').href += encodeURIComponent(`episodes:${episode}`);
+                    document.querySelector('.query a').href += escape(encodeURIComponent(`episodes:${episode}`));
                     document.querySelector('.query a').innerHTML = `episodes:<span class="bold">${episode}</span>`;
                     break;
 
@@ -236,12 +236,12 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                             break;
                     }
 
-                    document.querySelector('.query a').href += encodeURIComponent(`episodes:${operator + episode}`);
+                    document.querySelector('.query a').href += escape(encodeURIComponent(`episodes:${operator + episode}`));
                     document.querySelector('.query a').innerHTML = `episodes:<span class="bold">${operator + episode}</span>`;
                     break;
 
                 case 'season':
-                    document.querySelector('.query a').href += encodeURIComponent(`season:${season}`);
+                    document.querySelector('.query a').href += escape(encodeURIComponent(`season:${season}`));
                     document.querySelector('.query a').innerHTML = `season:<span class="bold">${season}</span>`;
                     break;
 
@@ -250,7 +250,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                         year = years[Math.round(Math.random() * (years.length - 1))];
                     }
 
-                    document.querySelector('.query a').href += encodeURIComponent(`year:${year || 'tba'}`);
+                    document.querySelector('.query a').href += escape(encodeURIComponent(`year:${year || 'tba'}`));
                     document.querySelector('.query a').innerHTML = `year:<span class="bold">${year || 'tba'}</span>`;
                     break;
 
@@ -287,11 +287,11 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                             break;
                     }
 
-                    document.querySelector('.query a').href += encodeURIComponent(`year:${
+                    document.querySelector('.query a').href += escape(encodeURIComponent(`year:${
                         year
                             ? operator + year
                             : 'tba'
-                    }`);
+                    }`));
 
                     document.querySelector('.query a').innerHTML = `year:<span class="bold">${
                         year
@@ -306,7 +306,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                         tag = tags[Math.round(Math.random() * (tags.length - 1))];
                     }
 
-                    document.querySelector('.query a').href += encodeURIComponent(`tag:${tag}`);
+                    document.querySelector('.query a').href += escape(encodeURIComponent(`tag:${tag}`));
                     document.querySelector('.query a').innerHTML = `tag:<span class="bold">${tag}</span>`;
                     break;
             }
@@ -673,8 +673,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
         });
 
         document.querySelector('.settings').addEventListener('click', () => {
-            if (document.querySelector('.settings-container').style.display) {
-                document.querySelector('.settings-container').style.display = '';
+            if (document.querySelector('.settings-container').style.display === 'none') {
+                document.querySelector('.settings-container').style.display = 'flex';
                 document.querySelector('.settings svg').style.fill = '';
             } else {
                 document.querySelector('.settings-container').style.display = 'none';

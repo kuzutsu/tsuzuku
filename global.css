@@ -60,13 +60,13 @@ main {
 
 header {
     height: 50px;
-    min-height: 50px;
     width: 100%;
     position: relative;
     white-space: nowrap;
     display: flex;
     align-items: center;
     padding: 0 19px;
+    overflow: auto;
 }
 
 main {

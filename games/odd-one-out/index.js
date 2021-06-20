@@ -264,12 +264,12 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
 
             switch (c.type) {
                 case 'year':
-                    document.querySelector('.query a').href += encodeURIComponent(`year:${query}`);
+                    document.querySelector('.query a').href += escape(encodeURIComponent(`year:${query}`));
                     document.querySelector('.query a').innerHTML = `year:<span class="bold">${query}</span>`;
                     break;
 
                 default:
-                    document.querySelector('.query a').href += encodeURIComponent(`tag:${query}`);
+                    document.querySelector('.query a').href += escape(encodeURIComponent(`tag:${query}`));
                     document.querySelector('.query a').innerHTML = `tag:<span class="bold">${query}</span>`;
                     break;
             }
@@ -347,8 +347,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
         });
 
         document.querySelector('.settings').addEventListener('click', () => {
-            if (document.querySelector('.settings-container').style.display) {
-                document.querySelector('.settings-container').style.display = '';
+            if (document.querySelector('.settings-container').style.display === 'none') {
+                document.querySelector('.settings-container').style.display = 'flex';
                 document.querySelector('.settings svg').style.fill = '';
             } else {
                 document.querySelector('.settings-container').style.display = 'none';

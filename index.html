@@ -3,7 +3,7 @@
     <head>
         <title>Tsuzuku</title>
         <meta charset="utf-8">
-        <meta name="description" content="Search, track, and play games with the unofficial UI for the anime-offline-database">
+        <meta name="description" content="Search, track, and play games with the unofficial web app for the anime-offline-database">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#fff">
         <meta name="apple-mobile-web-app-capable" content="yes">
@@ -13,7 +13,6 @@
         <link rel="mask-icon" href="./images/logo.svg" color="#000">
         <link rel="apple-touch-icon" href="./images/logo-180.png">
         <link rel="manifest" href="./manifest.webmanifest">
-        <link rel="search" type="application/opensearchdescription+xml" href="./opensearch.xml" title="Tsuzuku">
         <link rel="preconnect" href="https://fonts.gstatic.com">
         <link rel="preconnect" href="https://cdn.jsdelivr.net">
         <link rel="preconnect" href="https://raw.githubusercontent.com">
@@ -55,7 +54,7 @@
         <main>
             <span class="loading">Fetching database...</span>
             <div class="search-container" style="flex-direction: column;">
-                <div class="search2-container" style="height: 48px; width: 100%; display: inline-flex; align-items: center;">
+                <div class="search2-container" style="width: 100%; display: inline-flex; align-items: center;">
                     <span class="enter" title="Search" tabindex="0" style="display: inline-flex; align-items: center;">
                         <svg viewBox="0 0 24 24" width="17" height="17" style="fill: #a7abb7;">
                             <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path>
@@ -116,26 +115,34 @@
                     </div>
                 </div>
                 <div class="settings-container" style="width: 100%; display: none;">
-                    <div style="display: inline-flex; white-space: nowrap; width: 100%; height: 40px; align-items: center; user-select: none;">
-                        <label for="regex">Use regular expression</label>
-                        <span class="flex-separator"></span>
-                        <input id="regex" type="checkbox">
+                    <div style="display: flex; flex-direction: column;">
+                        <div style="display: inline-flex; white-space: nowrap; width: 100%; height: 40px; align-items: center; user-select: none;">
+                            <label for="regex">Use regular expression</label>
+                        </div>
+                        <div style="display: inline-flex; white-space: nowrap; width: 100%; height: 40px; align-items: center; user-select: none;">
+                            <label for="alt">Match also alternative titles</label>
+                        </div>
+                        <div style="display: inline-flex; white-space: nowrap; width: 100%; height: 40px; align-items: center; user-select: none;"> 
+                            <label for="random">Randomize</label>
+                        </div>
+                        <div style="display: inline-flex; white-space: nowrap; width: 100%; height: 40px; align-items: center; user-select: none;">
+                            <label for="number" style="color: #a7abb7;">Number of results</label>
+                        </div>
                     </div>
-                    <div style="display: inline-flex; white-space: nowrap; width: 100%; height: 40px; align-items: center; user-select: none;">
-                        <label for="alt">Match also alternative titles</label>
-                        <span class="flex-separator"></span>
-                        <input id="alt" type="checkbox" checked>
-                    </div>
-                    <div style="display: inline-flex; white-space: nowrap; width: 100%; height: 40px; align-items: center; user-select: none;">
-                        <label for="random">Randomize</label>
-                        <span class="flex-separator"></span>
-                        <input id="random" type="checkbox">
-                    </div>
-                    <div style="display: inline-flex; white-space: nowrap; width: 100%; height: 40px; align-items: center; user-select: none;">
-                        <span class="separator"></span>
-                        <label for="number" style="color: #a7abb7;">Number of results</label>
-                        <span class="flex-separator"></span>
-                        <input id="number" type="number" min="1" value="1" placeholder="1" style="width: 50px; border: 0;" disabled>
+                    <div style="width: 100%; min-width: 19px;"></div>
+                    <div style="display: flex; flex-direction: column;">
+                        <div style="display: inline-flex; white-space: nowrap; width: 100%; height: 40px; align-items: center; user-select: none; justify-content: flex-end;">
+                            <input id="regex" type="checkbox">
+                        </div>
+                        <div style="display: inline-flex; white-space: nowrap; width: 100%; height: 40px; align-items: center; user-select: none; justify-content: flex-end;">
+                            <input id="alt" type="checkbox" checked>
+                        </div>
+                        <div style="display: inline-flex; white-space: nowrap; width: 100%; height: 40px; align-items: center; user-select: none; justify-content: flex-end;">
+                            <input id="random" type="checkbox">
+                        </div>
+                        <div style="display: inline-flex; white-space: nowrap; width: 100%; height: 40px; align-items: center; user-select: none; justify-content: flex-end;">
+                            <input id="number" type="number" min="1" value="1" placeholder="1" style="width: 50px; border: 0;" disabled>
+                        </div>
                     </div>
                 </div>
             </div>

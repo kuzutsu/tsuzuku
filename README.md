@@ -38,6 +38,7 @@ Disable to match canonical titles only
 Recommended to disable when using regular expression search
 
 ### Search syntaxes
+* `is:dead`
 * `is:new`
 * `is:ongoing`
 * `is:selected`

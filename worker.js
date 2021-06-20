@@ -35,6 +35,7 @@ addEventListener('message', (event) => {
         u = [];
 
     let dd = null,
+        dead = false,
         episodes = null,
         ff = null,
         found = false,
@@ -113,6 +114,11 @@ addEventListener('message', (event) => {
     if ((/\bis:new\b/giu).test(v)) {
         n = true;
         v = v.replace(/\bis:new\b/giu, '');
+    }
+
+    if ((/\bis:dead\b/giu).test(v)) {
+        dead = true;
+        v = v.replace(/\bis:dead\b/giu, '');
     }
 
     event.data[dd].forEach((d) => {
@@ -243,8 +249,15 @@ addEventListener('message', (event) => {
             }
         }
 
+        if (dead) {
+            if (!d.dead) {
+                return;
+            }
+        }
+
         const
             s = [],
+            s2 = [],
             t = [
                 {
                     title: d.title,
@@ -283,28 +296,40 @@ addEventListener('message', (event) => {
                     for (const value of d.synonyms) {
                         t.push({
                             title: value,
-                            title2: value
+                            title2: value,
+                            title3: value
                         });
                     }
                 }
 
-                let key = ['title'],
+                let extend = false,
+                    key = ['title'],
                     search = v.trim();
 
                 if (v.trim().split(' ').length > 1) {
+                    extend = true;
+
                     for (const value of v.trim().split(' ')) {
                         s.push({
-                            title2: value
+                            title2: `=${value}`
+                        });
+
+                        s2.push({
+                            title3: value
                         });
                     }
 
                     key = [
                         {
                             name: 'title',
-                            weight: 0.9
+                            weight: 0.5
                         },
                         {
                             name: 'title2',
+                            weight: 0.4
+                        },
+                        {
+                            name: 'title3',
                             weight: 0.1
                         }
                     ];
@@ -316,6 +341,9 @@ addEventListener('message', (event) => {
                             },
                             {
                                 $and: s
+                            },
+                            {
+                                $and: s2
                             }
                         ]
                     };
@@ -325,7 +353,8 @@ addEventListener('message', (event) => {
                     ignoreLocation: true,
                     includeScore: true,
                     keys: key,
-                    threshold: 0.25
+                    threshold: 0.25,
+                    useExtendedSearch: extend
                 }).search(search);
 
                 if (result.length) {
