@@ -1,4 +1,4 @@
-const sw = '2.3.9';
+const sw = '2.3.10';
 
 addEventListener('install', (event) => {
     event.waitUntil(
@@ -75,20 +75,18 @@ addEventListener('message', (event) => {
 
 addEventListener('fetch', (event) => {
     event.respondWith(
-        caches.match(event.request, {
+        caches.open(sw).then((cache) => cache.match(event.request, {
             ignoreSearch: true
-        }).then((cached) => cached || fetch(event.request))
-    );
-
-    event.waitUntil(
-        fetch(event.request)
-            .then((response) => {
-                if (response.type === 'error' || response.type === 'opaque') {
-                    return Promise.resolve();
+        }).then((cached) => {
+            const fetched = fetch(event.request).then((response) => {
+                if (response.ok) {
+                    cache.put(event.request.url.replace(new URL(event.request.url).search, ''), response.clone());
                 }
 
-                return caches.open(sw).then((cache) => cache.put(event.request, response.clone()));
-            })
-            .catch(() => Promise.resolve())
+                return response;
+            });
+
+            return cached || fetched;
+        }))
     );
 });
