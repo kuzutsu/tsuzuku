@@ -7,6 +7,7 @@ switch (localStorage.getItem('theme')) {
         document.body.classList.remove('light');
         document.body.classList.add('dark');
         document.head.querySelector('[name="theme-color"]').content = '#000';
+        document.head.querySelector('[name="color-scheme"]').content = 'dark';
         document.querySelector('.theme path').setAttribute('d', sun);
         break;
 
@@ -23,12 +24,14 @@ document.querySelector('.theme').addEventListener('click', () => {
         document.body.classList.remove('dark');
         document.body.classList.add('light');
         document.head.querySelector('[name="theme-color"]').content = '#fff';
+        document.head.querySelector('[name="color-scheme"]').content = 'light';
         document.querySelector('.theme path').setAttribute('d', moon);
         localStorage.setItem('theme', 'light');
     } else {
         document.body.classList.remove('light');
         document.body.classList.add('dark');
         document.head.querySelector('[name="theme-color"]').content = '#000';
+        document.head.querySelector('[name="color-scheme"]').content = 'dark';
         document.querySelector('.theme path').setAttribute('d', sun);
         localStorage.setItem('theme', 'dark');
     }
