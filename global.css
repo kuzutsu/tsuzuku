@@ -59,7 +59,7 @@ main {
 }
 
 header {
-    height: 50px;
+    height: 40px;
     width: 100%;
     position: relative;
     white-space: nowrap;
@@ -67,10 +67,11 @@ header {
     align-items: center;
     padding: 0 19px;
     overflow: auto;
+    font-size: 14px;
 }
 
 main {
-    height: calc(100% - 50px);
+    height: calc(100% - 40px);
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -78,8 +79,7 @@ main {
     font-size: 14px;
 }
 
-.separator,
-.separator-selected {
+.separator {
     width: 19px;
     min-width: 19px;
 }
@@ -140,6 +140,16 @@ noscript {
 @media only screen and (min-width: 1301px) {
     body {
         margin: 0 15%;
-        box-shadow: 0 0 20px 0 var(--shadow);
+        box-shadow: 0 1px 2px 0 var(--shadow), 0 1px 3px 1px var(--shadow);
     }
+}
+
+
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    position: relative;
+    height: 100%;
 }

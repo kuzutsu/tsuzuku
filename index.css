@@ -94,7 +94,8 @@
     background: var(--background-hover);
 }
 
-.tabulator-cell[tabulator-field="picture"] svg {
+.tabulator-cell[tabulator-field="picture"] svg,
+.tabulator-cell[tabulator-field="picture2"] svg {
     position: absolute;
     display: none;
 }
@@ -109,6 +110,7 @@
 
 .tabulator-col[tabulator-field="ongoing"] .tabulator-col-title,
 .tabulator-col[tabulator-field="picture"] .tabulator-col-title,
+.tabulator-col[tabulator-field="picture2"] .tabulator-col-title,
 .tabulator-col[tabulator-field="sources"] .tabulator-col-title {
     line-height: 0;
 }
@@ -126,6 +128,10 @@
 
 .tabulator-row {
     min-height: 40px;
+}
+
+.hide .tabulator-row {
+    min-height: 30px;
 }
 
 .tabulator-col-title {
@@ -226,6 +232,7 @@
     align-items: center;
     justify-content: center;
     text-align: center;
+    flex-direction: column;
 }
 
 .loading {
@@ -244,7 +251,7 @@ header select {
     background: var(--selected);
     border: 0;
     color: var(--selected-color);
-    font-size: 16px;
+    font-size: 14px;
 }
 
 header option {
@@ -376,14 +383,6 @@ input {
 
 .hide .tabulator-cell[tabulator-field="picture"] img {
     display: none;
-}
-
-.hide .tabulator-row {
-    min-height: 30px;
-}
-
-.hide .tabulator-col {
-    height: 30px;
 }
 
 .selected-count:hover,

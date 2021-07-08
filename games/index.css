@@ -8,11 +8,14 @@
     justify-content: center;
 }
 
-main a {
-    padding: 19px 19px;
+main {
+    overflow: auto;
+}
+
+main div {
+    padding: 11.5px 19px;
     display: inline-flex;
     width: 100%;
-    min-height: 40px;
     min-width: 100px;
     user-select: none;
     flex-direction: column;
@@ -20,12 +23,11 @@ main a {
     overflow-wrap: anywhere;
 }
 
-main a:hover {
+main div:hover {
     background: var(--background-hover);
-    text-decoration: none;
 }
 
 main .info {
     color: #a7abb7;
-    padding: 4px 0;
+    margin-top: 4px;
 }

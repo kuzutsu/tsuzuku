@@ -126,6 +126,10 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                     continue;
                 }
 
+                if (d[i].tags.indexOf('anime influenced') > -1) {
+                    continue;
+                }
+
                 for (const value of d[i].sources.filter((sources) => sources.match(source))) {
                     const
                         anilist = d[i].sources.filter((sources) => sources.match(/anilist\.co/gu)),
@@ -397,12 +401,6 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                     document.querySelector('.header-status').remove();
                                 }
 
-                                if (document.querySelector('.separator-selected')) {
-                                    document.querySelectorAll('.separator-selected').forEach((element) => {
-                                        element.remove();
-                                    });
-                                }
-
                                 const hstatus = document.createElement('select');
 
                                 if (error) {
@@ -573,7 +571,6 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                     }
                                 });
 
-                                document.querySelector('.close').insertAdjacentHTML('afterend', '<span class="separator-selected"></span>');
                                 document.querySelector('header').insertAdjacentElement('beforeend', hstatus);
 
                                 if (localStorage.getItem('theme') === 'dark') {
@@ -585,16 +582,17 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                 if (selected.s) {
                                     cell.getColumn().getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.check;
                                 } else {
-                                    cell.getColumn().getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.indeterminate;
+                                    if (selected.ss.length) {
+                                        cell.getColumn().getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.indeterminate;
+                                    } else {
+                                        cell.getColumn().getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.blank;
+                                    }
                                 }
                             } else {
                                 index.lastRow = null;
 
                                 document.querySelector('header').classList.remove('header-selected');
                                 document.querySelector('.header-status').remove();
-                                document.querySelectorAll('.separator-selected').forEach((element) => {
-                                    element.remove();
-                                });
 
                                 cell.getColumn().getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.blank;
 
@@ -653,12 +651,6 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
 
                                 if (document.querySelector('.header-status')) {
                                     document.querySelector('.header-status').remove();
-                                }
-
-                                if (document.querySelector('.separator-selected')) {
-                                    document.querySelectorAll('.separator-selected').forEach((element) => {
-                                        element.remove();
-                                    });
                                 }
 
                                 const hstatus = document.createElement('select');
@@ -831,7 +823,6 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                     }
                                 });
 
-                                document.querySelector('.close').insertAdjacentHTML('afterend', '<span class="separator-selected"></span>');
                                 document.querySelector('header').insertAdjacentElement('beforeend', hstatus);
 
                                 if (localStorage.getItem('theme') === 'dark') {
@@ -843,9 +834,6 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                 document.querySelector('header').classList.remove('header-selected');
                                 column.getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.blank;
                                 document.querySelector('.header-status').remove();
-                                document.querySelectorAll('.separator-selected').forEach((element) => {
-                                    element.remove();
-                                });
 
                                 if (localStorage.getItem('theme') === 'dark') {
                                     document.head.querySelector('[name="theme-color"]').content = '#000';
@@ -861,7 +849,555 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                             return `<svg viewBox="0 0 24 24" width="17" height="17">${svg.blank}</svg>`;
                         },
                         vertAlign: 'middle',
+                        visible: localStorage.getItem('thumbnails') === 'show',
                         width: 40
+                    },
+                    {
+                        cellClick: function (e, cell) {
+                            getSelection().removeAllRanges();
+                            cell.getRow().toggleSelect();
+
+                            if (e.shiftKey && index.lastRow) {
+                                const
+                                    lastPosition = index.lastRow.getPosition(true),
+                                    position = cell.getRow().getPosition(true);
+
+                                if (lastPosition < position) {
+                                    let prevRow = cell.getRow().getPrevRow();
+
+                                    while (prevRow && prevRow.getPosition(true) >= lastPosition) {
+                                        if (index.lastRow.isSelected()) {
+                                            if (cell.getRow().isSelected()) {
+                                                if (prevRow.getPosition(true) !== lastPosition) {
+                                                    if (!prevRow.isSelected()) {
+                                                        prevRow.toggleSelect();
+                                                    }
+                                                }
+                                            } else {
+                                                prevRow.toggleSelect();
+                                            }
+                                        } else {
+                                            if (cell.getRow().isSelected()) {
+                                                if (!prevRow.isSelected()) {
+                                                    if (prevRow.getPosition(true) !== lastPosition || index.lastRow.getPrevRow().isSelected()) {
+                                                        prevRow.toggleSelect();
+                                                    }
+                                                }
+                                            } else {
+                                                if (prevRow.getPosition(true) !== lastPosition) {
+                                                    prevRow.toggleSelect();
+                                                }
+                                            }
+                                        }
+
+                                        prevRow = prevRow.getPrevRow();
+                                    }
+                                } else {
+                                    let nextRow = cell.getRow().getNextRow();
+
+                                    while (nextRow && nextRow.getPosition(true) <= lastPosition) {
+                                        if (index.lastRow.isSelected()) {
+                                            if (cell.getRow().isSelected()) {
+                                                if (nextRow.getPosition(true) !== lastPosition) {
+                                                    if (!nextRow.isSelected()) {
+                                                        nextRow.toggleSelect();
+                                                    }
+                                                }
+                                            } else {
+                                                nextRow.toggleSelect();
+                                            }
+                                        } else {
+                                            if (cell.getRow().isSelected()) {
+                                                if (!nextRow.isSelected()) {
+                                                    if (nextRow.getPosition(true) !== lastPosition || index.lastRow.getNextRow().isSelected()) {
+                                                        nextRow.toggleSelect();
+                                                    }
+                                                }
+                                            } else {
+                                                if (nextRow.getPosition(true) !== lastPosition) {
+                                                    nextRow.toggleSelect();
+                                                }
+                                            }
+                                        }
+
+                                        nextRow = nextRow.getNextRow();
+                                    }
+                                }
+                            }
+
+                            selected.s = true;
+                            selected.ss.splice(0);
+
+                            for (const value of r) {
+                                if (value.isSelected()) {
+                                    selected.ss.push(value);
+                                } else {
+                                    if (selected.s) {
+                                        selected.s = false;
+                                    }
+                                }
+                            }
+
+                            if (cell.getTable().getSelectedRows().length) {
+                                index.lastRow = cell.getRow();
+
+                                document.querySelector('header').classList.add('header-selected');
+                                document.querySelector('.selected-count').innerHTML = `${cell.getTable().getSelectedRows().length} selected`;
+
+                                if (document.querySelector('.header-status')) {
+                                    document.querySelector('.header-status').remove();
+                                }
+
+                                const hstatus = document.createElement('select');
+
+                                if (error) {
+                                    hstatus.disabled = true;
+                                }
+
+                                hstatus.classList.add('header-status');
+                                hstatus.title = 'Status';
+                                hstatus.innerHTML = `<option selected disabled>Status</option>${statuses}`;
+                                hstatus.addEventListener('change', () => {
+                                    if (error) {
+                                        return;
+                                    }
+
+                                    for (const value of cell.getTable().getSelectedRows()) {
+                                        const p = value.getData().progress;
+
+                                        if (hstatus.value) {
+                                            const d2 = db2().add({
+                                                episodes: value.getData().episodes,
+                                                progress:
+                                                    hstatus.value === 'Completed' && value.getData().episodes
+                                                        ? value.getData().episodes
+                                                        : ['Planning', 'Skipping'].indexOf(hstatus.value) > -1
+                                                            ? ''
+                                                            : '0',
+                                                season: value.getData().season,
+                                                source: value.getData().sources,
+                                                status: hstatus.value,
+                                                title: value.getData().title,
+                                                type: value.getData().type
+                                            });
+
+                                            d2.onsuccess = () => {
+                                                const dd = [];
+
+                                                for (const value2 of value.getData().sources2) {
+                                                    if (!value2 || value2 === value.getData().sources) {
+                                                        continue;
+                                                    }
+
+                                                    dd.push(
+                                                        new Promise((resolve) => {
+                                                            db2().delete(value2).onsuccess = () => resolve();
+                                                        })
+                                                    );
+                                                }
+
+                                                Promise.all(dd).then(() => {
+                                                    if (hstatus.value === 'Completed' && value.getData().episodes) {
+                                                        value.update({
+                                                            progress: value.getData().episodes,
+                                                            status: hstatus.value
+                                                        });
+
+                                                        return;
+                                                    }
+
+                                                    if (hstatus.value === 'Planning' || hstatus.value === 'Skipping') {
+                                                        value.update({
+                                                            progress: '',
+                                                            status: hstatus.value
+                                                        });
+
+                                                        return;
+                                                    }
+
+                                                    value.update({
+                                                        progress: '0',
+                                                        status: hstatus.value
+                                                    });
+                                                });
+                                            };
+
+                                            d2.onerror = () => {
+                                                db2().get(value.getData().sources).onsuccess = (event) => {
+                                                    const
+                                                        result = event.target.result,
+                                                        status2 = result.status;
+
+                                                    if (hstatus.value === 'Completed' && value.getData().episodes) {
+                                                        result.progress = value.getData().episodes;
+                                                    } else {
+                                                        if (hstatus.value === 'Planning' || hstatus.value === 'Skipping') {
+                                                            result.progress = '';
+                                                        } else {
+                                                            if (status2 === 'Planning' || status2 === 'Skipping') {
+                                                                result.progress = '0';
+                                                            }
+                                                        }
+                                                    }
+
+                                                    result.status = hstatus.value;
+
+                                                    db2().put(result).onsuccess = () => {
+                                                        if (hstatus.value === 'Completed' && value.getData().episodes) {
+                                                            value.getElement().dataset.progress = '';
+
+                                                            // force update
+                                                            value.update({
+                                                                progress: ''
+                                                            });
+
+                                                            value.update({
+                                                                progress: value.getData().episodes,
+                                                                status: hstatus.value
+                                                            });
+
+                                                            return;
+                                                        }
+
+                                                        if (hstatus.value === 'Planning' || hstatus.value === 'Skipping') {
+                                                            value.getElement().dataset.progress = '';
+
+                                                            value.update({
+                                                                progress: '',
+                                                                status: hstatus.value
+                                                            });
+
+                                                            return;
+                                                        }
+
+                                                        if (status2 === 'Planning' || status2 === 'Skipping') {
+                                                            value.update({
+                                                                progress: '0',
+                                                                status: hstatus.value
+                                                            });
+
+                                                            return;
+                                                        }
+
+                                                        // force update
+                                                        value.update({
+                                                            progress: ''
+                                                        });
+
+                                                        value.update({
+                                                            progress: p,
+                                                            status: hstatus.value
+                                                        });
+                                                    };
+                                                };
+                                            };
+                                        } else {
+                                            const dd = [];
+
+                                            for (const value2 of value.getData().sources2) {
+                                                if (!value2) {
+                                                    continue;
+                                                }
+
+                                                dd.push(
+                                                    new Promise((resolve) => {
+                                                        db2().delete(value2).onsuccess = () => resolve();
+                                                    })
+                                                );
+                                            }
+
+                                            Promise.all(dd).then(() => {
+                                                value.getElement().dataset.progress = '';
+
+                                                value.update({
+                                                    progress: '',
+                                                    status: ''
+                                                });
+                                            });
+                                        }
+                                    }
+                                });
+
+                                document.querySelector('header').insertAdjacentElement('beforeend', hstatus);
+
+                                if (localStorage.getItem('theme') === 'dark') {
+                                    document.head.querySelector('[name="theme-color"]').content = '#fff';
+                                } else {
+                                    document.head.querySelector('[name="theme-color"]').content = '#000';
+                                }
+
+                                if (selected.s) {
+                                    cell.getColumn().getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.check;
+                                } else {
+                                    if (selected.ss.length) {
+                                        cell.getColumn().getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.indeterminate;
+                                    } else {
+                                        cell.getColumn().getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.blank;
+                                    }
+                                }
+                            } else {
+                                index.lastRow = null;
+
+                                document.querySelector('header').classList.remove('header-selected');
+                                document.querySelector('.header-status').remove();
+
+                                cell.getColumn().getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.blank;
+
+                                if (localStorage.getItem('theme') === 'dark') {
+                                    document.head.querySelector('[name="theme-color"]').content = '#000';
+                                } else {
+                                    document.head.querySelector('[name="theme-color"]').content = '#fff';
+                                }
+                            }
+                        },
+                        field: 'picture2',
+                        formatter: function (cell) {
+                            cell.getElement().tabIndex = 0;
+
+                            return (
+                                `<svg class="blank" viewBox="0 0 24 24" width="17" height="17">${svg.blank}</svg>` +
+                                `<svg class="check" viewBox="0 0 24 24" width="17" height="17">${svg.check}</svg>`
+                            );
+                        },
+                        frozen: true,
+                        headerClick: function (e, column) {
+                            index.lastRow = null;
+
+                            if (selected.ss.length) {
+                                if (selected.ss.length === column.getTable().getRows().length) {
+                                    column.getTable().deselectRow();
+                                } else {
+                                    for (const value of selected.ss) {
+                                        value.toggleSelect();
+                                    }
+                                }
+
+                                selected.s = false;
+                                selected.ss.splice(0);
+                            } else {
+                                selected.s = true;
+                                selected.ss.splice(0);
+
+                                column.getTable().selectRow('active');
+
+                                for (const value of r) {
+                                    selected.ss.push(value);
+                                }
+                            }
+
+                            if (column.getTable().getSelectedRows().length) {
+                                document.querySelector('header').classList.add('header-selected');
+                                document.querySelector('.selected-count').innerHTML = `${column.getTable().getSelectedRows().length} selected`;
+
+                                if (selected.s) {
+                                    column.getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.check;
+                                } else {
+                                    column.getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.blank;
+                                }
+
+                                if (document.querySelector('.header-status')) {
+                                    document.querySelector('.header-status').remove();
+                                }
+
+                                const hstatus = document.createElement('select');
+
+                                if (error) {
+                                    hstatus.disabled = true;
+                                }
+
+                                hstatus.classList.add('header-status');
+                                hstatus.title = 'Status';
+                                hstatus.innerHTML = `<option selected disabled>Status</option>${statuses}`;
+                                hstatus.addEventListener('change', () => {
+                                    if (error) {
+                                        return;
+                                    }
+
+                                    for (const value of column.getTable().getSelectedRows()) {
+                                        const p = value.getData().progress;
+
+                                        if (hstatus.value) {
+                                            const d2 = db2().add({
+                                                episodes: value.getData().episodes,
+                                                progress:
+                                                    hstatus.value === 'Completed' && value.getData().episodes
+                                                        ? value.getData().episodes
+                                                        : ['Planning', 'Skipping'].indexOf(hstatus.value) > -1
+                                                            ? ''
+                                                            : '0',
+                                                season: value.getData().season,
+                                                source: value.getData().sources,
+                                                status: hstatus.value,
+                                                title: value.getData().title,
+                                                type: value.getData().type
+                                            });
+
+                                            d2.onsuccess = () => {
+                                                const dd = [];
+
+                                                for (const value2 of value.getData().sources2) {
+                                                    if (!value2 || value2 === value.getData().sources) {
+                                                        continue;
+                                                    }
+
+                                                    dd.push(
+                                                        new Promise((resolve) => {
+                                                            db2().delete(value2).onsuccess = () => resolve();
+                                                        })
+                                                    );
+                                                }
+
+                                                Promise.all(dd).then(() => {
+                                                    if (hstatus.value === 'Completed' && value.getData().episodes) {
+                                                        value.update({
+                                                            progress: value.getData().episodes,
+                                                            status: hstatus.value
+                                                        });
+
+                                                        return;
+                                                    }
+
+                                                    if (hstatus.value === 'Planning' || hstatus.value === 'Skipping') {
+                                                        value.update({
+                                                            progress: '',
+                                                            status: hstatus.value
+                                                        });
+
+                                                        return;
+                                                    }
+
+                                                    value.update({
+                                                        progress: '0',
+                                                        status: hstatus.value
+                                                    });
+                                                });
+                                            };
+
+                                            d2.onerror = () => {
+                                                db2().get(value.getData().sources).onsuccess = (event) => {
+                                                    const
+                                                        result = event.target.result,
+                                                        status2 = result.status;
+
+                                                    if (hstatus.value === 'Completed' && value.getData().episodes) {
+                                                        result.progress = value.getData().episodes;
+                                                    } else {
+                                                        if (hstatus.value === 'Planning' || hstatus.value === 'Skipping') {
+                                                            result.progress = '';
+                                                        } else {
+                                                            if (status2 === 'Planning' || status2 === 'Skipping') {
+                                                                result.progress = '0';
+                                                            }
+                                                        }
+                                                    }
+
+                                                    result.status = hstatus.value;
+
+                                                    db2().put(result).onsuccess = () => {
+                                                        if (hstatus.value === 'Completed' && value.getData().episodes) {
+                                                            value.getElement().dataset.progress = '';
+
+                                                            // force update
+                                                            value.update({
+                                                                progress: ''
+                                                            });
+
+                                                            value.update({
+                                                                progress: value.getData().episodes,
+                                                                status: hstatus.value
+                                                            });
+
+                                                            return;
+                                                        }
+
+                                                        if (hstatus.value === 'Planning' || hstatus.value === 'Skipping') {
+                                                            value.getElement().dataset.progress = '';
+
+                                                            value.update({
+                                                                progress: '',
+                                                                status: hstatus.value
+                                                            });
+
+                                                            return;
+                                                        }
+
+                                                        if (status2 === 'Planning' || status2 === 'Skipping') {
+                                                            value.update({
+                                                                progress: '0',
+                                                                status: hstatus.value
+                                                            });
+
+                                                            return;
+                                                        }
+
+                                                        // force update
+                                                        value.update({
+                                                            progress: ''
+                                                        });
+
+                                                        value.update({
+                                                            progress: p,
+                                                            status: hstatus.value
+                                                        });
+                                                    };
+                                                };
+                                            };
+                                        } else {
+                                            const dd = [];
+
+                                            for (const value2 of value.getData().sources2) {
+                                                if (!value2) {
+                                                    continue;
+                                                }
+
+                                                dd.push(
+                                                    new Promise((resolve) => {
+                                                        db2().delete(value2).onsuccess = () => resolve();
+                                                    })
+                                                );
+                                            }
+
+                                            Promise.all(dd).then(() => {
+                                                value.getElement().dataset.progress = '';
+
+                                                value.update({
+                                                    progress: '',
+                                                    status: ''
+                                                });
+                                            });
+                                        }
+                                    }
+                                });
+
+                                document.querySelector('header').insertAdjacentElement('beforeend', hstatus);
+
+                                if (localStorage.getItem('theme') === 'dark') {
+                                    document.head.querySelector('[name="theme-color"]').content = '#fff';
+                                } else {
+                                    document.head.querySelector('[name="theme-color"]').content = '#000';
+                                }
+                            } else {
+                                document.querySelector('header').classList.remove('header-selected');
+                                column.getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.blank;
+                                document.querySelector('.header-status').remove();
+
+                                if (localStorage.getItem('theme') === 'dark') {
+                                    document.head.querySelector('[name="theme-color"]').content = '#000';
+                                } else {
+                                    document.head.querySelector('[name="theme-color"]').content = '#fff';
+                                }
+                            }
+                        },
+                        headerHozAlign: 'center',
+                        headerSort: false,
+                        hozAlign: 'center',
+                        minWidth: 17,
+                        titleFormatter: function () {
+                            return `<svg viewBox="0 0 24 24" width="17" height="17">${svg.blank}</svg>`;
+                        },
+                        vertAlign: 'middle',
+                        visible: localStorage.getItem('thumbnails') !== 'show',
+                        width: 17
                     },
                     {
                         field: 'sources',
@@ -902,20 +1438,16 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                             let sources = '';
 
                             if (cell.getValue()[0]) {
-                                sources += `<a href="${cell.getValue()[0]}" target="_blank" rel="noreferrer" title="MyAnimeList" style="background: url(./images/myanimelist.png); background-size: contain; height: 17px; width: 17px;"></a>`;
+                                sources += `<a href="${cell.getValue()[0]}" target="_blank" rel="noreferrer" title="MyAnimeList" style="background: url(./images/myanimelist.png); background-size: contain; height: 17px; width: 17px; margin-right: 19px;"></a>`;
                             } else {
-                                sources += '<span style="height: 17px; width: 17px;"></span>';
+                                sources += '<span style="height: 17px; width: 17px; margin-right: 19px;"></span>';
                             }
-
-                            sources += '<span class="separator "></span>';
 
                             if (cell.getValue()[1]) {
-                                sources += `<a href="${cell.getValue()[1]}" target="_blank" rel="noreferrer" title="Kitsu" style="background: url(./images/kitsu.png); background-size: contain; height: 17px; width: 17px;"></a>`;
+                                sources += `<a href="${cell.getValue()[1]}" target="_blank" rel="noreferrer" title="Kitsu" style="background: url(./images/kitsu.png); background-size: contain; height: 17px; width: 17px; margin-right: 19px;"></a>`;
                             } else {
-                                sources += '<span style="height: 17px; width: 17px;"></span>';
+                                sources += '<span style="height: 17px; width: 17px; margin-right: 19px;"></span>';
                             }
-
-                            sources += '<span class="separator"></span>';
 
                             if (cell.getValue()[2]) {
                                 sources += `<a href="${cell.getValue()[2]}" target="_blank" rel="noreferrer" title="AniList" style="background: url(./images/anilist.png); background-size: contain; height: 17px; width: 17px;"></a>`;
@@ -1002,6 +1534,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                 v = 'year:tba';
                             }
 
+                            v += ' ';
+
                             a.href = `./?query=${escape(encodeURIComponent(v))}`;
                             a.innerHTML = cell.getValue();
                             a.addEventListener('click', (e) => {
@@ -1064,7 +1598,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                             span.style.lineHeight = 0;
                             span.innerHTML = `<svg viewBox="3 2 20 20" width="17" height="17">${svg.play}</svg>`;
                             span.addEventListener('click', () => {
-                                document.querySelector('.search').value = 'is:ongoing';
+                                document.querySelector('.search').value = 'is:ongoing ';
 
                                 searchFunction(cell.getTable());
                             });
@@ -1219,7 +1753,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                 span.tabIndex = 0;
                             }
 
-                            span.innerHTML = `${cell.getValue()}&nbsp;`;
+                            span.innerHTML = cell.getValue();
                             span.addEventListener('click', () => {
                                 if (['', 'Planning', 'Skipping'].indexOf(cell.getRow().getData().status) > -1) {
                                     return;
@@ -1231,7 +1765,13 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                             span2.classList.add('add');
                             span2.tabIndex = 0;
                             span2.style.display = 'inline-flex';
+                            span2.style.marginLeft = '2.125px';
                             span2.innerHTML = '<svg viewBox="0 0 24 24" height="17" width="17"><path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"></path></svg>';
+
+                            span2.addEventListener('dblclick', () => {
+                                getSelection().removeAllRanges();
+                            });
+
                             span2.addEventListener('click', () => {
                                 new Promise((resolve) => {
                                     const d2 = db2().add({
@@ -1590,8 +2130,6 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                         );
 
                     }
-
-                    this.redraw(true);
                 },
                 dataLoaded: function () {
                     document.querySelector('.tabulator').style.display = 'none';
@@ -1621,9 +2159,9 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                     }
 
                     if (new URLSearchParams(location.search).get('alt') === '0') {
-                        document.querySelector('#alt').checked = false;
-                    } else {
                         document.querySelector('#alt').checked = true;
+                    } else {
+                        document.querySelector('#alt').checked = false;
                     }
 
                     if (Math.round(Math.abs(Number(new URLSearchParams(location.search).get('random'))))) {
@@ -1631,10 +2169,12 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                         document.querySelector('[for="number"]').style.color = '';
                         document.querySelector('#number').removeAttribute('disabled');
                         document.querySelector('#number').value = Math.round(Math.abs(Number(new URLSearchParams(location.search).get('random'))));
+                        document.querySelector('.enter2 path').setAttribute('d', 'M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z');
                     } else {
                         document.querySelector('#random').checked = false;
                         document.querySelector('[for="number"]').style.color = '#a7abb7';
                         document.querySelector('#number').setAttribute('disabled', '');
+                        document.querySelector('.enter2 path').setAttribute('d', 'M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z');
                     }
 
                     document.querySelector('.loading').remove();
@@ -1699,6 +2239,167 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                         document.querySelector(`.tabulator-col[tabulator-field="${value}"]`).tabIndex = 0;
                     }
                 }
+            });
+        });
+    })
+    .catch(() => {
+        new Promise((resolve) => {
+            const db = indexedDB.open('tsuzuku', 1);
+
+            db.onupgradeneeded = (event) => {
+                const
+                    index2 = [
+                        'episodes',
+                        'progress',
+                        'season',
+                        'status',
+                        'title',
+                        'type'
+                    ],
+                    storage = event.target.result.createObjectStore('tsuzuku', {
+                        keyPath: 'source'
+                    });
+
+                for (const value of index2) {
+                    storage.createIndex(value, value, {
+                        unique: false
+                    });
+                }
+            };
+
+            db.onerror = () => resolve('error');
+
+            db.onsuccess = (event3) => {
+                db2 = () => event3.target.result.transaction('tsuzuku', 'readwrite').objectStore('tsuzuku');
+
+                db2().openCursor().onsuccess = (event5) => {
+                    const cursor = event5.target.result;
+
+                    if (cursor) {
+                        map4.set(cursor.key, {
+                            episodes: cursor.value.episodes,
+                            progress: cursor.value.progress,
+                            season: cursor.value.season,
+                            status: cursor.value.status,
+                            title: cursor.value.title,
+                            type: cursor.value.type
+                        });
+
+                        cursor.continue();
+                    } else {
+                        return resolve('success');
+                    }
+
+                    return null;
+                };
+            };
+        }).then(() => {
+            document.querySelector('.thumbnails').remove();
+            document.querySelector('.loading').innerHTML = 'Database not found';
+
+            if (error) {
+                return;
+            }
+
+            document.querySelector('.loading').innerHTML += '<span class="export2" style="display: inline-flex; margin-top: 11.5px;">Export list</span>';
+
+            document.querySelector('.export2').addEventListener('click', () => {
+                let xml =
+                    '<?xml version="1.0" encoding="UTF-8"?>\n' +
+                    '<myanimelist>\n' +
+                    '    <myinfo>\n' +
+                    '        <user_export_type>1</user_export_type>\n' +
+                    '    </myinfo>\n';
+
+                db2().openCursor().onsuccess = (event) => {
+                    const cursor = event.target.result;
+
+                    if (cursor) {
+                        let progress = cursor.value.progress,
+                            rewatching = 0,
+                            skipping = 0,
+                            status2 = null;
+
+                        switch (cursor.value.status) {
+                            case 'Paused':
+                                status2 = 'On-Hold';
+                                break;
+
+                            case 'Planning':
+                                status2 = 'Plan to Watch';
+                                progress = 0;
+                                break;
+
+                            case 'Rewatching':
+                                status2 = 'Completed';
+                                rewatching = 1;
+                                break;
+
+                            case 'Skipping':
+                                status2 = 'Dropped';
+                                skipping = 1;
+                                progress = 0;
+                                break;
+
+                            default:
+                                status2 = cursor.value.status;
+                                break;
+                        }
+
+                        // kitsu
+                        //      my_status
+                        //      my_times_watched
+                        //      my_watched_episodes
+                        //      series_animedb_id
+                        //      update_on_import
+                        //
+                        // myanimelist
+                        //      my_rewatching
+                        //
+                        // tsuzuku
+                        //      series_episodes
+                        //      series_season
+                        //      series_title
+                        //      series_type
+                        //
+                        // anilist
+                        //      my_finish_date
+                        //      my_score
+                        //      my_start_date
+                        xml +=
+                        '    <anime>\n' +
+                        '        <my_finish_date>0000-00-00</my_finish_date>\n' +
+                        `        <my_rewatching>${rewatching}</my_rewatching>\n` +
+                        '        <my_score>0</my_score>\n' +
+                        `        <my_skipping>${skipping}</my_skipping>\n` +
+                        '        <my_start_date>0000-00-00</my_start_date>\n' +
+                        `        <my_status>${status2}</my_status>\n` +
+                        `        <my_times_watched>${rewatching}</my_times_watched>\n` +
+                        `        <my_watched_episodes>${progress}</my_watched_episodes>\n` +
+                        `        <series_animedb_id>${
+                            cursor.key.match(/myanimelist/gu)
+                                ? cursor.key.substring('https://myanimelist.net/anime/'.length)
+                                : cursor.key
+                        }</series_animedb_id>\n` +
+                        `        <series_episodes>${cursor.value.episodes}</series_episodes>\n` +
+                        `        <series_season>${cursor.value.season}</series_season>\n` +
+                        `        <series_title><![CDATA[${cursor.value.title}]]></series_title>\n` +
+                        `        <series_type>${cursor.value.type}</series_type>\n` +
+                        '        <update_on_import>1</update_on_import>\n' +
+                        '    </anime>\n';
+
+                        cursor.continue();
+                    } else {
+                        const a = document.createElement('a');
+
+                        a.href = URL.createObjectURL(new Blob([`${xml}</myanimelist>`]), {
+                            type: 'application/xml'
+                        });
+
+                        a.download = `tsuzuku_${new Date().toISOString()}.xml`;
+                        a.click();
+                    }
+                };
             });
         });
     });

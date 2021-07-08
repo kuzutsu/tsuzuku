@@ -32,9 +32,7 @@ Examples:
 * Only 8 *i*'s ([`^[^i]*(?:i[^i]*){8}$`](https://kuzutsu.github.io/tsuzuku/?query=%255E%255B%255Ei%255D*%28%253F%253Ai%255B%255Ei%255D*%29%257B8%257D%2524&regex=1&alt=0))
 * No spaces ([`^\S+$`](https://kuzutsu.github.io/tsuzuku/?query=%255E%255CS%252B%2524&regex=1&alt=0))
 
-### Match also alternative titles (enabled by default)
-Disable to match canonical titles only
-
+### Match canonical titles only (disabled by default)
 Recommended to disable when using regular expression search
 
 ### Search syntaxes

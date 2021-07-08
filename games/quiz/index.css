@@ -46,7 +46,7 @@ select {
     padding: 0 19px;
     white-space: nowrap;
     overflow: auto;
-    display: flex;
+    display: none;
 }
 
 .settings-container {
@@ -68,21 +68,6 @@ select {
 
 .score {
     cursor: default;
-}
-
-.separator {
-    width: 19px;
-    min-width: 19px;
-}
-
-.half-separator {
-    width: 9.5px;
-    min-width: 9.5px;
-}
-
-.flex-separator {
-    width: 100%;
-    min-width: 19px;
 }
 
 .reload {
