@@ -1,4 +1,4 @@
-const sw = '2.3.13';
+const sw = '2.3.14';
 
 addEventListener('install', (event) => {
     event.waitUntil(
@@ -16,14 +16,14 @@ addEventListener('install', (event) => {
                 './worker.js',
 
                 // games
-                '../tsuzuku-games/',
-                '../tsuzuku-games/index.css',
-                '../tsuzuku-games/odd-one-out/',
-                '../tsuzuku-games/odd-one-out/index.css',
-                '../tsuzuku-games/odd-one-out/index.js',
-                '../tsuzuku-games/quiz/',
-                '../tsuzuku-games/quiz/index.css',
-                '../tsuzuku-games/quiz/index.js',
+                './games/',
+                './games/index.css',
+                './games/odd-one-out/',
+                './games/odd-one-out/index.css',
+                './games/odd-one-out/index.js',
+                './games/quiz/',
+                './games/quiz/index.css',
+                './games/quiz/index.js',
 
                 // images
                 './images/anilist.png',

@@ -1,0 +1,117 @@
+.selected {
+    background: var(--selected);
+}
+
+.selected:hover {
+    background: var(--selected-hover) !important;
+}
+
+.selected .title {
+    color: var(--selected-color);
+    user-select: text;
+}
+
+.bold {
+    font-weight: 500;
+}
+
+.choice div[style] span {
+    color: #fff;
+}
+
+.link {
+    line-height: 0;
+}
+
+.choice div {
+    align-items: center;
+    display: flex;
+    padding: 0 19px;
+}
+
+.choice div:hover,
+.picture {
+    background: var(--background-hover);
+    opacity: 1;
+}
+
+option,
+select {
+    background: var(--background);
+}
+
+.menu,
+.query {
+    align-items: center;
+    padding: 0 19px;
+    white-space: nowrap;
+    overflow: auto;
+    display: none;
+}
+
+.settings-container {
+    padding: 0 19px;
+    width: 100%;
+    overflow: auto;
+}
+
+.menu,
+.query {
+    height: 40px;
+    min-height: 40px;
+}
+
+.menu,
+.submit {
+    user-select: none;
+}
+
+.score {
+    cursor: default;
+}
+
+.reload {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    width: 40px;
+    min-height: 40px;
+    min-width: 40px;
+}
+
+.theme {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.picture {
+    height: 40px;
+    width: 40px;
+    min-height: 40px;
+    min-width: 40px;
+    object-fit: cover;
+    user-select: none;
+    pointer-events: none;
+}
+
+.dim {
+    opacity: 0.2;
+}
+
+.title {
+    overflow-wrap: anywhere;
+    min-width: 100px;
+    padding: 4px 0;
+}
+
+.query-container {
+    width: 100%;
+    min-width: 100px;
+    overflow: auto;
+}
+
+.choice {
+    overflow: auto;
+}

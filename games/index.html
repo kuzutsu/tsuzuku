@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Tsuzuku</title>
+        <meta charset="utf-8">
+        <meta name="description" content="Unofficial web app for the anime-offline-database">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#fff">
+        <meta name="color-scheme" content="light">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-title" content="Tsuzuku">
+        <meta name="apple-mobile-web-app-status-bar-style" content="default">
+        <link rel="icon" href="../images/logo-192.png">
+        <link rel="mask-icon" href="../images/logo.svg" color="#000">
+        <link rel="apple-touch-icon" href="../images/logo-180.png">
+        <link rel="manifest" href="../manifest.webmanifest">
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+        <link rel="preload" href="https://fonts.gstatic.com/s/roboto/v27/KFOmCnqEu92Fr1Mu4mxK.woff2" as="font" crossorigin>
+        <link rel="preload" href="https://fonts.gstatic.com/s/roboto/v27/KFOlCnqEu92Fr1MmEU9fBBc4.woff2" as="font" crossorigin>
+        <link href="../global.css" rel="stylesheet">
+        <link href="./index.css" rel="stylesheet">
+    </head>
+    <body class="light">
+        <noscript>Tsuzuku can't run without JavaScript</noscript>
+        <header>
+            <a href="../" title="Tsuzuku" style="display: inline-flex; align-items: center; margin-right: 19px;">
+                <svg viewBox="0 0 24 24" width="17" height="17">
+                    <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"></path>
+                </svg>
+            </a>
+            <span class="bold">Games</span>
+            <span class="flex-separator"></span>
+            <a href="https://github.com/kuzutsu/tsuzuku" rel="noreferrer" target="_blank" style="margin-right: 19px;">GitHub</a>
+            <span class="theme" title="Toggle theme" tabindex="0">
+                <svg viewBox="0 0 24 24" width="17" height="17">
+                    <path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9s9-4.03 9-9c0-0.46-0.04-0.92-0.1-1.36c-0.98 1.37-2.58 2.26-4.4 2.26 c-2.98 0-5.4-2.42-5.4-5.4c0-1.81 0.89-3.42 2.26-4.4C12.92 3.04 12.46 3 12 3L12 3z"></path>
+                </svg>
+            </span>
+        </header>
+        <main>
+            <div>
+                <span>
+                    <a href="./odd-one-out/">Odd one out</a>
+                </span>
+                <span class="info">Select the title that doesn't belong in the group</span>
+            </div>
+            <div>
+                <span>
+                    <a href="./quiz/">Quiz</a>
+                </span>
+                <span class="info">Test your knowledge</span>
+            </div>
+        </main>
+        <script src="../global.js"></script>
+        <script>
+            document.querySelectorAll('main div').forEach((element) => {
+                element.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    location.assign(element.querySelector('a').href);
+                });
+            });
+        </script>
+    </body>
+</html>

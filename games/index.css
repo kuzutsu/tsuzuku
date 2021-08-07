@@ -1,0 +1,33 @@
+.bold {
+    font-weight: 500;
+}
+
+.theme {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+main {
+    overflow: auto;
+}
+
+main div {
+    padding: 11.5px 19px;
+    display: inline-flex;
+    width: 100%;
+    min-width: 100px;
+    user-select: none;
+    flex-direction: column;
+    justify-content: center;
+    overflow-wrap: anywhere;
+}
+
+main div:hover {
+    background: var(--background-hover);
+}
+
+main .info {
+    color: #a7abb7;
+    margin-top: 4px;
+}

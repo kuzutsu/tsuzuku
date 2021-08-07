@@ -2179,6 +2179,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
 
                     document.querySelector('.loading').remove();
                     document.querySelector('.search-container').style.display = 'inline-flex';
+                    document.querySelector('.database-container').style.maxHeight = 'calc(100% - 40px)';
 
                     searchFunction(this);
                 },

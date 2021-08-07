@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Tsuzuku</title>
+        <meta charset="utf-8">
+        <meta name="description" content="Unofficial web app for the anime-offline-database">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#fff">
+        <meta name="color-scheme" content="light">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-title" content="Tsuzuku">
+        <meta name="apple-mobile-web-app-status-bar-style" content="default">
+        <link rel="icon" href="../../images/logo-192.png">
+        <link rel="mask-icon" href="../../images/logo.svg" color="#000">
+        <link rel="apple-touch-icon" href="../../images/logo-180.png">
+        <link rel="manifest" href="../../manifest.webmanifest">
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link rel="preconnect" href="https://raw.githubusercontent.com">
+        <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+        <link rel="dns-prefetch" href="https://raw.githubusercontent.com">
+        <link rel="preload" href="https://fonts.gstatic.com/s/roboto/v27/KFOmCnqEu92Fr1Mu4mxK.woff2" as="font" crossorigin>
+        <link rel="preload" href="https://fonts.gstatic.com/s/roboto/v27/KFOlCnqEu92Fr1MmEU9fBBc4.woff2" as="font" crossorigin>
+        <link href="../../global.css" rel="stylesheet">
+        <link href="./index.css" rel="stylesheet">
+    </head>
+    <body class="light">
+        <noscript>Tsuzuku can't run without JavaScript</noscript>
+        <header>
+            <a href="../" title="Games" style="display: inline-flex; align-items: center; margin-right: 19px;">
+                <svg viewBox="0 0 24 24" width="17" height="17">
+                    <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"></path>
+                </svg>
+            </a>
+            <span class="bold">Quiz</span>
+            <span class="flex-separator"></span>
+            <a href="https://github.com/kuzutsu/tsuzuku" rel="noreferrer" target="_blank" style="margin-right: 19px;">GitHub</a>
+            <span class="theme" title="Toggle theme" tabindex="0">
+                <svg viewBox="0 0 24 24" width="17" height="17">
+                    <path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9s9-4.03 9-9c0-0.46-0.04-0.92-0.1-1.36c-0.98 1.37-2.58 2.26-4.4 2.26 c-2.98 0-5.4-2.42-5.4-5.4c0-1.81 0.89-3.42 2.26-4.4C12.92 3.04 12.46 3 12 3L12 3z"></path>
+                </svg>
+            </span>
+        </header>
+        <main>
+            <span class="loading">Fetching database...</span>
+            <div class="menu">
+                <span style="margin-right: 9.5px;">High</span>
+                <span class="high bold" tabindex="0" style="margin-right: 19px;"></span>
+                <span style="margin-right: 9.5px;">Score</span>
+                <span class="score bold" tabindex="0"></span>
+                <span style="width: 100%; min-width: 19px;"></span>
+                <span class="settings" title="Settings" tabindex="0" style="display: inline-flex; align-items: center;">
+                    <svg viewBox="0 0 24 24" width="17" height="17" style="fill: #a7abb7;">
+                        <path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"></path>
+                    </svg>
+                </span>
+            </div>
+            <div class="settings-container" style="display: none; flex-direction: column;">
+                <div style="display: inline-flex; white-space: nowrap; width: 100%; height: 40px; align-items: center; user-select: none;">
+                    <span style="color: #a7abb7;">Changing any setting will reset both scores</span>
+                </div>
+                <div style="display: flex;">
+                    <div style="display: flex; flex-direction: column;">
+                        <div style="display: inline-flex; white-space: nowrap; width: 100%; height: 40px; align-items: center; user-select: none;">
+                            <label for="selection">Selection</label>
+                        </div>
+                        <div style="display: inline-flex; white-space: nowrap; width: 100%; height: 40px; align-items: center; user-select: none;">
+                            <label for="type">Type</label>
+                        </div>
+                        <div style="display: inline-flex; white-space: nowrap; width: 100%; height: 40px; align-items: center; user-select: none;">
+                            <label for="choices">Number of choices</label>
+                        </div>
+                        <div style="display: inline-flex; white-space: nowrap; width: 100%; height: 40px; align-items: center; user-select: none;"> 
+                            <label for="negative">Toggle negative score</label>
+                        </div>
+                        <div style="display: inline-flex; white-space: nowrap; width: 100%; height: 40px; align-items: center; user-select: none;">
+                            <label for="reset-incorrect">Reset score when incorrect</label>
+                        </div>
+                    </div>
+                    <div style="width: 100%; min-width: 19px;"></div>
+                    <div style="display: flex; flex-direction: column;">
+                        <div style="display: inline-flex; white-space: nowrap; width: 100%; height: 40px; align-items: center; user-select: none; justify-content: flex-end;">
+                            <select id="selection">
+                                <option>single</option>
+                                <option>multiple</option>
+                            </select>
+                        </div>
+                        <div style="display: inline-flex; white-space: nowrap; width: 100%; height: 40px; align-items: center; user-select: none; justify-content: flex-end;">
+                            <select id="type">
+                                <option>tag</option>
+                                <option>year (without operators)</option>
+                                <option>year (with operators)</option>
+                                <option>episodes (without operators)</option>
+                                <option>episodes (with operators)</option>
+                                <option>season</option>
+                                <option>random</option>
+                            </select>
+                        </div>
+                        <div style="display: inline-flex; white-space: nowrap; width: 100%; height: 40px; align-items: center; user-select: none; justify-content: flex-end;">
+                            <select id="choices">
+                                <option>2</option>
+                                <option>3</option>
+                                <option>4</option>
+                                <option>5</option>
+                                <option>6</option>
+                                <option>7</option>
+                                <option>8</option>
+                                <option>9</option>
+                                <option>10</option>
+                            </select>
+                        </div>
+                        <div style="display: inline-flex; white-space: nowrap; width: 100%; height: 40px; align-items: center; user-select: none; justify-content: flex-end;">
+                            <input id="negative" type="checkbox"></input>
+                        </div>
+                        <div style="display: inline-flex; white-space: nowrap; width: 100%; height: 40px; align-items: center; user-select: none; justify-content: flex-end;">
+                            <input id="reset-incorrect" type="checkbox"></input>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="query">
+                <span class="reload" title="Reload" tabindex="0" style="margin-right: 19px;">
+                    <svg viewBox="0 0 24 24" width="17" height="17">
+                        <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"></path>
+                    </svg>
+                </span>
+                <div class="query-container" style="margin-right: 19px;">
+                    <a href rel="noreferrer"></a>
+                </div>
+                <span class="submit bold" tabindex="0"></span>
+            </div>
+            <div class="choice"></div>
+        </main>
+        <script src="../../global.js"></script>
+        <script>
+            if (!localStorage.getItem('quiz')) {
+                localStorage.setItem('quiz', JSON.stringify({
+                    choices: 4,
+                    high: 0,
+                    negative: true,
+                    random: false,
+                    resetIncorrect: false,
+                    score: 0,
+                    selection: 'single',
+                    type: 'tag'
+                }));
+            }
+
+            const value = JSON.parse(localStorage.getItem('quiz'));
+
+            document.querySelector('#choices').value = value.choices;
+            document.querySelector('#selection').value = value.selection;
+
+            if (value.negative) {
+                document.querySelector('#negative').checked = true;
+            } else {
+                document.querySelector('#negative').checked = false;
+            }
+
+            if (value.resetIncorrect) {
+                document.querySelector('#reset-incorrect').checked = true;
+            } else {
+                document.querySelector('#reset-incorrect').checked = false;
+            }
+
+            if (value.random) {
+                document.querySelector('#type').value = 'random';
+            } else {
+                document.querySelector('#type').value = value.type;
+            }
+        </script>
+        <script defer type="module" src="./index.js"></script>
+    </body>
+</html>
