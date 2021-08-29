@@ -9,7 +9,7 @@ Only one source will appear, click on earth icon to toggle more
 
 ## Features
 ### Offline-ready
-Install as PWA (~36 MB)
+Install as PWA (~45 MB)
 
 Personal list only saved locally in the browser
 
@@ -78,7 +78,7 @@ Default is 1
 ### Mass change status
 Click on thumbnails to select
 
-Hold `Shift` to select range (desktop only)
+On desktop, hold `Shift` to select range
 
 ### Dark mode
 Click on moon icon to toggle

@@ -9,7 +9,7 @@
 
 .database-container {
     height: auto;
-    max-height: 100%;
+    max-height: calc(100% - 40px);
     width: 100%;
 }
 
