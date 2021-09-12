@@ -21,6 +21,8 @@ const
     years = [],
     years2 = new Map();
 
+let type = null;
+
 fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/master/anime-offline-database.json')
     .then((response) => response.json())
     .then((data) => {
@@ -176,8 +178,18 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                 document.querySelector('.submit').innerHTML = 'Submit';
                 document.querySelector('.choice').innerHTML = '';
 
-                if (c.random) {
-                    c.type = types[Math.round(Math.random() * (types.length - 1))];
+                if (c.type === 'random') {
+                    type = types[Math.round(Math.random() * (types.length - 1))];
+                } else {
+                    if (['episodes', 'year'].indexOf(c.type) > -1) {
+                        if (c.operators) {
+                            type = `${c.type} (with operators)`;
+                        } else {
+                            type = `${c.type} (without operators)`;
+                        }
+                    } else {
+                        type = c.type;
+                    }
                 }
 
                 choice.splice(0);
@@ -200,13 +212,13 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
 
                 document.querySelector('.query a').href = '../../?query=';
 
-                switch (c.type) {
+                switch (type) {
                     case 'episodes (without operators)':
                         while (episodes2.get(episode) < choices) {
                             episode = episodes[Math.round(Math.random() * (episodes.length - 1))];
                         }
 
-                        document.querySelector('.query a').href += escape(encodeURIComponent(`episodes:${episode}`));
+                        document.querySelector('.query a').href += escape(encodeURIComponent(`episodes:${episode} `));
                         document.querySelector('.query a').innerHTML = `episodes:<span class="bold">${episode}</span>`;
                         break;
 
@@ -243,12 +255,12 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                 break;
                         }
 
-                        document.querySelector('.query a').href += escape(encodeURIComponent(`episodes:${operator + episode}`));
+                        document.querySelector('.query a').href += escape(encodeURIComponent(`episodes:${operator + episode} `));
                         document.querySelector('.query a').innerHTML = `episodes:<span class="bold">${operator + episode}</span>`;
                         break;
 
                     case 'season':
-                        document.querySelector('.query a').href += escape(encodeURIComponent(`season:${season}`));
+                        document.querySelector('.query a').href += escape(encodeURIComponent(`season:${season} `));
                         document.querySelector('.query a').innerHTML = `season:<span class="bold">${season}</span>`;
                         break;
 
@@ -257,7 +269,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                             year = years[Math.round(Math.random() * (years.length - 1))];
                         }
 
-                        document.querySelector('.query a').href += escape(encodeURIComponent(`year:${year || 'tba'}`));
+                        document.querySelector('.query a').href += escape(encodeURIComponent(`year:${year || 'tba'} `));
                         document.querySelector('.query a').innerHTML = `year:<span class="bold">${year || 'tba'}</span>`;
                         break;
 
@@ -298,7 +310,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                             year
                                 ? operator + year
                                 : 'tba'
-                        }`));
+                        } `));
 
                         document.querySelector('.query a').innerHTML = `year:<span class="bold">${
                             year
@@ -313,7 +325,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                             tag = tags[Math.round(Math.random() * (tags.length - 1))];
                         }
 
-                        document.querySelector('.query a').href += escape(encodeURIComponent(`tag:${tag}`));
+                        document.querySelector('.query a').href += escape(encodeURIComponent(`tag:${tag} `));
                         document.querySelector('.query a').innerHTML = `tag:<span class="bold">${tag}</span>`;
                         break;
                 }
@@ -322,7 +334,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                     const div = document.createElement('div');
                     let random = Math.round(Math.random() * (database.length - 1));
 
-                    switch (c.type) {
+                    switch (type) {
                         case 'episodes (without operators)':
                             if (choice.indexOf(i) > -1) {
                                 while (database[random].episodes !== episode || choices2.indexOf(database[random].link) > -1) {
@@ -660,18 +672,31 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                 game();
             });
 
+            document.querySelector('#operators').addEventListener('change', (e) => {
+                const c = JSON.parse(localStorage.getItem('quiz'));
+
+                c.operators = e.target.checked;
+                c.score = 0;
+                c.high = 0;
+
+                localStorage.setItem('quiz', JSON.stringify(c));
+                game();
+            });
+
             document.querySelector('#type').addEventListener('change', (e) => {
                 const c = JSON.parse(localStorage.getItem('quiz'));
 
-                if (e.target.value === 'random') {
-                    c.random = true;
-                } else {
-                    c.random = false;
-                    c.type = e.target.value;
-                }
-
+                c.type = e.target.value;
                 c.score = 0;
                 c.high = 0;
+
+                if (['episodes', 'year'].indexOf(e.target.value) > -1) {
+                    document.querySelector('[for="operators"]').style.color = '';
+                    document.querySelector('#operators').removeAttribute('disabled');
+                } else {
+                    document.querySelector('[for="operators"]').style.color = '#a7abb7';
+                    document.querySelector('#operators').setAttribute('disabled', '');
+                }
 
                 localStorage.setItem('quiz', JSON.stringify(c));
                 game();
@@ -680,10 +705,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
             document.querySelector('.settings').addEventListener('click', () => {
                 if (document.querySelector('.settings-container').style.display === 'none') {
                     document.querySelector('.settings-container').style.display = 'flex';
-                    document.querySelector('.settings svg').style.fill = '';
                 } else {
                     document.querySelector('.settings-container').style.display = 'none';
-                    document.querySelector('.settings svg').style.fill = '#a7abb7';
                 }
             });
 

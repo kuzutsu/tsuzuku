@@ -174,10 +174,6 @@
     display: inline-flex !important;
 }
 
-.selected-count:hover {
-    text-decoration: underline;
-}
-
 /***************************************************************************************************/
 
 .tabulator-row:hover {
@@ -385,7 +381,6 @@ input {
     display: none;
 }
 
-.selected-count:hover,
 .tab,
 .tabulator-cell[tabulator-field="season"] span:hover {
     cursor: pointer;
@@ -422,7 +417,53 @@ input {
     color: #a7abb7;
 }
 
-.error .export svg,
-.error .import svg {
+.error .menu svg {
     fill: #a7abb7;
+}
+
+.side {
+    height: 100%;
+    width: 200px;
+    background: var(--background);
+    position: absolute;
+    z-index: 3;
+    display: none;
+    flex-direction: column;
+    font-size: 14px;
+    box-shadow: 0 1px 2px 0 var(--shadow), 0 1px 3px 1px var(--shadow);
+}
+
+.overlay {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    z-index: 2;
+    background: var(--background);
+    display: none;
+    opacity: 0.8;
+}
+
+.tab {
+    cursor: default;
+}
+
+.export:hover,
+.import:hover,
+.tab:hover {
+    background: var(--background-hover);
+}
+
+.export2 {
+    margin-top: 11.5px;
+    border: 1px solid var(--color);
+    padding: 10.5px;
+}
+
+.export2:hover {
+    background: var(--color);
+    color: var(--background);
+}
+
+.side-title {
+    font-weight: 500;
 }

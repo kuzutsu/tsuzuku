@@ -1,11 +1,11 @@
-const sw = '2.3.15';
+const sw = '2.4.0';
 
 addEventListener('install', (event) => {
     event.waitUntil(
         caches
             .open(sw)
             .then((c) => c.addAll([
-                // local
+                // main
                 './',
                 './fetchFunction.js',
                 './global.css',

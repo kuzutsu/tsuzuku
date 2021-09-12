@@ -1,6 +1,7 @@
 import {
     db2,
     error,
+    error2,
     params,
     r,
     selected,
@@ -49,7 +50,6 @@ function searchFunction(tt, qq, p, s) {
 
     if (document.querySelector('.search').value) {
         document.querySelector('.clear').style.display = 'inline-flex';
-        document.querySelector('.clear-separator').style.display = '';
     }
 
     if (!s && document.querySelector('.selected-tab')) {
@@ -188,7 +188,6 @@ function searchFunction(tt, qq, p, s) {
 
 document.querySelector('.clear').addEventListener('click', () => {
     document.querySelector('.clear').style.display = 'none';
-    document.querySelector('.clear-separator').style.display = 'none';
     document.querySelector('.search').value = '';
     document.querySelector('.search').focus();
 });
@@ -216,6 +215,7 @@ document.querySelector('.close').addEventListener('click', () => {
 
     document.querySelector('.header-selected').classList.remove('header-selected');
     document.querySelector('.header-status').remove();
+    document.querySelector('header .menu').style.display = 'inline-flex';
 
     if (localStorage.getItem('theme') === 'dark') {
         document.head.querySelector('[name="theme-color"]').content = '#000';
@@ -240,46 +240,99 @@ document.querySelector('.search').addEventListener('keydown', (e) => {
     searchFunction();
 });
 
-document.querySelector('.enter').addEventListener('click', () => {
-    if (document.querySelector('.default').style.display === 'contents') {
-        document.querySelector('.default').style.display = 'none';
-        document.querySelector('.tabs').style.display = 'contents';
-        document.querySelector('.enter svg').style.fill = '#a7abb7';
-
-        if (document.querySelector('.settings-container').style.display !== 'none') {
-            document.querySelector('.settings-container').style.display = 'none';
-            document.querySelector('.settings svg').style.fill = '#a7abb7';
-            document.querySelector('.database-container').style.maxHeight = '';
-
-            t.redraw(true);
-        }
-    } else {
-        document.querySelector('.default').style.display = 'contents';
-        document.querySelector('.search').focus();
-        document.querySelector('.tabs').style.display = 'none';
-        document.querySelector('.enter svg').style.fill = '';
-    }
-});
-
-document.querySelector('.search-container').addEventListener('dragenter', () => {
-    if (document.querySelector('.default').style.display === 'contents') {
+document.querySelector('header .menu').addEventListener('click', () => {
+    if (error || error2 || !db2) {
         return;
     }
 
-    document.querySelector('.default').style.display = 'contents';
-    document.querySelector('.search').focus();
-    document.querySelector('.tabs').style.display = 'none';
-    document.querySelector('.enter svg').style.fill = '';
+    const map = new Map();
+    let total = 0;
+
+    db2().openCursor().onsuccess = (event) => {
+        const cursor = event.target.result;
+
+        if (cursor) {
+            map.set(cursor.value.status.toLowerCase(), (map.get(cursor.value.status.toLowerCase()) || 0) + 1);
+            total += 1;
+
+            cursor.continue();
+        } else {
+            if (document.querySelector('.side').style.display === '') {
+                document.querySelector('.side').style.display = 'flex';
+                document.querySelector('.overlay').style.display = 'block';
+
+                document.querySelector('header .menu').blur();
+                document.querySelector('.side .menu').focus();
+            }
+
+            for (const value of ['completed', 'dropped', 'paused', 'planning', 'rewatching', 'skipping', 'watching']) {
+                if (map.has(value)) {
+                    document.querySelector(`.${value}`).innerHTML = map.get(value);
+                } else {
+                    document.querySelector(`.${value}`).innerHTML = 0;
+                }
+            }
+
+            document.querySelector('.all').innerHTML = total;
+
+            for (const value of [':not(.side) > :not(div) > .menu', 'div[tabindex]:not(.overlay):not(.menu)', ':not(.tab) > a', 'input', 'select', 'span[tabindex]']) {
+                document.querySelectorAll(value).forEach((element) => {
+                    element.classList.add('no-tab');
+                    element.setAttribute('tabindex', -1);
+                });
+            }
+        }
+    };
+});
+
+document.querySelector('.side .menu').addEventListener('click', () => {
+    if (document.querySelector('.side').style.display === 'flex') {
+        document.querySelector('.side').style.display = '';
+        document.querySelector('.overlay').style.display = '';
+
+        document.querySelector('header .menu').focus();
+        document.querySelector('.side .menu').blur();
+    }
+
+    for (const value of ['a.no-tab, input.no-tab, select.no-tab']) {
+        document.querySelectorAll(value).forEach((element) => {
+            element.classList.remove('no-tab');
+            element.removeAttribute('tabindex');
+        });
+    }
+
+    document.querySelectorAll('.no-tab').forEach((element) => {
+        element.classList.remove('no-tab');
+        element.setAttribute('tabindex', 0);
+    });
+});
+
+document.querySelector('.overlay').addEventListener('click', () => {
+    if (document.querySelector('.side').style.display === 'flex') {
+        document.querySelector('.side').style.display = '';
+        document.querySelector('.overlay').style.display = '';
+    }
+
+    for (const value of ['a.no-tab, input.no-tab, select.no-tab']) {
+        document.querySelectorAll(value).forEach((element) => {
+            element.classList.remove('no-tab');
+            element.removeAttribute('tabindex');
+        });
+    }
+
+    document.querySelectorAll('.no-tab').forEach((element) => {
+        element.classList.remove('no-tab');
+        element.setAttribute('tabindex', 0);
+    });
 });
 
 document.querySelector('.clear').addEventListener('dragenter', () => {
     document.querySelector('.clear').style.display = 'none';
-    document.querySelector('.clear-separator').style.display = 'none';
     document.querySelector('.search').value = '';
     document.querySelector('.search').focus();
 });
 
-document.querySelector('.enter2').addEventListener('click', () => {
+document.querySelector('.enter').addEventListener('click', () => {
     searchFunction();
 });
 
@@ -287,22 +340,22 @@ document.querySelector('#random').addEventListener('change', (e) => {
     if (e.target.checked) {
         document.querySelector('[for="number"]').style.color = '';
         document.querySelector('#number').removeAttribute('disabled');
-        document.querySelector('.enter2 path').setAttribute('d', 'M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z');
+        document.querySelector('.enter path').setAttribute('d', 'M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z');
+        document.querySelector('.search').setAttribute('placeholder', 'Search or show random anime');
     } else {
         document.querySelector('[for="number"]').style.color = '#a7abb7';
         document.querySelector('#number').setAttribute('disabled', '');
-        document.querySelector('.enter2 path').setAttribute('d', 'M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z');
+        document.querySelector('.enter path').setAttribute('d', 'M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z');
+        document.querySelector('.search').setAttribute('placeholder', 'Search or show all anime');
     }
 });
 
 document.querySelector('.settings').addEventListener('click', () => {
     if (document.querySelector('.settings-container').style.display === 'none') {
         document.querySelector('.settings-container').style.display = 'flex';
-        document.querySelector('.settings svg').style.fill = '';
         document.querySelector('.database-container').style.maxHeight = 'calc(100% - 200px)';
     } else {
         document.querySelector('.settings-container').style.display = 'none';
-        document.querySelector('.settings svg').style.fill = '#a7abb7';
         document.querySelector('.database-container').style.maxHeight = '';
     }
 
@@ -312,17 +365,14 @@ document.querySelector('.settings').addEventListener('click', () => {
 document.querySelector('.search').addEventListener('input', (e) => {
     if (e.target.value) {
         document.querySelector('.clear').style.display = 'inline-flex';
-        document.querySelector('.clear-separator').style.display = '';
     } else {
         document.querySelector('.clear').style.display = 'none';
-        document.querySelector('.clear-separator').style.display = 'none';
     }
 });
 
 document.querySelector('.search').addEventListener('focus', (e) => {
     if (e.target.value) {
         document.querySelector('.clear').style.display = 'inline-flex';
-        document.querySelector('.clear-separator').style.display = '';
     }
 });
 
@@ -330,21 +380,47 @@ document.querySelectorAll('.tab').forEach((element) => {
     element.addEventListener('click', (e) => {
         e.preventDefault();
 
-        const q = `${element.dataset.query} `;
+        const q = `${element.querySelector('a').dataset.query} `;
 
         if (document.querySelector('.selected-tab')) {
             document.querySelector('.selected-tab').classList.remove('selected-tab');
         }
 
-        element.classList.add('selected-tab');
+        element.querySelector('a').classList.add('selected-tab');
+
+        if (document.querySelector('.side').style.display === 'flex') {
+            document.querySelector('.side').style.display = '';
+            document.querySelector('.overlay').style.display = '';
+        }
+
+        for (const value of ['a.no-tab, input.no-tab, select.no-tab']) {
+            document.querySelectorAll(value).forEach((element2) => {
+                element2.classList.remove('no-tab');
+                element2.removeAttribute('tabindex');
+            });
+        }
+
+        document.querySelectorAll('.no-tab').forEach((element2) => {
+            element2.classList.remove('no-tab');
+            element2.setAttribute('tabindex', 0);
+        });
+
         document.querySelector('.search').value = q;
         searchFunction(null, q, null, true);
+    });
+
+    element.querySelector('a').addEventListener('click', (e) => {
+        e.preventDefault();
     });
 });
 
 document.querySelector('.selected-count').addEventListener('click', () => {
     document.querySelector('.search').value = 'is:selected ';
     searchFunction();
+});
+
+document.querySelector('.import a').addEventListener('click', (e) => {
+    e.stopPropagation();
 });
 
 document.querySelector('.import').addEventListener('click', () => {
@@ -413,10 +489,6 @@ document.querySelector('.import').addEventListener('click', () => {
 
             let count = 0;
 
-            if (document.querySelector('.nothing')) {
-                document.querySelector('.nothing').remove();
-            }
-
             // anilist
             //      0 = watching
             //      1 = planning
@@ -431,14 +503,6 @@ document.querySelector('.import').addEventListener('click', () => {
                     // invalid xml
                     return;
                 }
-
-                document.querySelector('.search-container').style.display = 'none';
-                document.querySelector('.tabulator').style.display = 'none';
-                document.querySelector('main').insertAdjacentHTML('beforeend',
-                    '<div class="importing">' +
-                        '<span>Importing...</span>' +
-                    '</div>'
-                );
 
                 for (const value of a.lists) {
                     const
@@ -479,6 +543,8 @@ document.querySelector('.import').addEventListener('click', () => {
                                     document.querySelector('.search-container').style.display = 'inline-flex';
                                     document.querySelector('.tabulator').style.display = '';
 
+                                    input.remove();
+
                                     searchFunction(null, null, true);
                                 }, 100);
                             }
@@ -508,6 +574,8 @@ document.querySelector('.import').addEventListener('click', () => {
                                             document.querySelector('.search-container').style.display = 'inline-flex';
                                             document.querySelector('.tabulator').style.display = '';
 
+                                            input.remove();
+
                                             searchFunction(null, null, true);
                                         }, 100);
                                     }
@@ -525,6 +593,8 @@ document.querySelector('.import').addEventListener('click', () => {
 
                                 document.querySelector('.search-container').style.display = 'inline-flex';
                                 document.querySelector('.tabulator').style.display = '';
+
+                                input.remove();
 
                                 searchFunction(null, null, true);
                             }, 100);
@@ -545,14 +615,6 @@ document.querySelector('.import').addEventListener('click', () => {
                 } else {
                     return;
                 }
-
-                document.querySelector('.search-container').style.display = 'none';
-                document.querySelector('.tabulator').style.display = 'none';
-                document.querySelector('main').insertAdjacentHTML('beforeend',
-                    '<div class="importing">' +
-                        '<span>Importing...</span>' +
-                    '</div>'
-                );
 
                 for (const value of a2) {
                     const
@@ -593,6 +655,8 @@ document.querySelector('.import').addEventListener('click', () => {
                                     document.querySelector('.search-container').style.display = 'inline-flex';
                                     document.querySelector('.tabulator').style.display = '';
 
+                                    input.remove();
+
                                     searchFunction(null, null, true);
                                 }, 100);
                             }
@@ -622,6 +686,8 @@ document.querySelector('.import').addEventListener('click', () => {
                                             document.querySelector('.search-container').style.display = 'inline-flex';
                                             document.querySelector('.tabulator').style.display = '';
 
+                                            input.remove();
+
                                             searchFunction(null, null, true);
                                         }, 100);
                                     }
@@ -640,6 +706,8 @@ document.querySelector('.import').addEventListener('click', () => {
                                 document.querySelector('.search-container').style.display = 'inline-flex';
                                 document.querySelector('.tabulator').style.display = '';
 
+                                input.remove();
+
                                 searchFunction(null, null, true);
                             }, 100);
                         }
@@ -647,6 +715,23 @@ document.querySelector('.import').addEventListener('click', () => {
                 }
             }
         };
+
+        if (document.querySelector('.side').style.display === 'flex') {
+            document.querySelector('.side').style.display = '';
+            document.querySelector('.overlay').style.display = '';
+        }
+
+        if (document.querySelector('.nothing')) {
+            document.querySelector('.nothing').remove();
+        }
+
+        document.querySelector('.search-container').style.display = 'none';
+        document.querySelector('.tabulator').style.display = 'none';
+        document.querySelector('main').insertAdjacentHTML('beforeend',
+            '<div class="importing">' +
+                '<span>Importing...</span>' +
+            '</div>'
+        );
     });
 
     input.click();
@@ -751,6 +836,7 @@ document.querySelector('.export').addEventListener('click', () => {
 
             a.download = `tsuzuku_${new Date().toISOString()}.xml`;
             a.click();
+            a.remove();
         }
     };
 });
@@ -759,11 +845,9 @@ onpopstate = () => {
     if (new URLSearchParams(location.search).get('query')) {
         document.querySelector('.search').value = decodeURIComponent(new URLSearchParams(location.search).get('query'));
         document.querySelector('.clear').style.display = 'inline-flex';
-        document.querySelector('.clear-separator').style.display = '';
     } else {
         document.querySelector('.search').value = '';
         document.querySelector('.clear').style.display = 'none';
-        document.querySelector('.clear-separator').style.display = 'none';
     }
 
     if (new URLSearchParams(location.search).get('regex') === '1') {
@@ -783,12 +867,14 @@ onpopstate = () => {
         document.querySelector('[for="number"]').style.color = '';
         document.querySelector('#number').removeAttribute('disabled');
         document.querySelector('#number').value = Math.round(Math.abs(Number(new URLSearchParams(location.search).get('random'))));
-        document.querySelector('.enter2 path').setAttribute('d', 'M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z');
+        document.querySelector('.enter path').setAttribute('d', 'M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z');
+        document.querySelector('.search').setAttribute('placeholder', 'Search or show random anime');
     } else {
         document.querySelector('#random').checked = false;
         document.querySelector('[for="number"]').style.color = '#a7abb7';
         document.querySelector('#number').setAttribute('disabled', '');
-        document.querySelector('.enter2 path').setAttribute('d', 'M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z');
+        document.querySelector('.enter path').setAttribute('d', 'M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z');
+        document.querySelector('.search').setAttribute('placeholder', 'Search or show all anime');
     }
 
     searchFunction(null, null, true);

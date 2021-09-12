@@ -9,7 +9,8 @@ const
     years = [],
     years2 = new Map();
 
-let query = null;
+let query = null,
+    type = null;
 
 fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/master/anime-offline-database.json')
     .then((response) => response.json())
@@ -106,8 +107,10 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                 document.querySelector('.submit').innerHTML = 'Submit';
                 document.querySelector('.choice').innerHTML = '';
 
-                if (c.random) {
-                    c.type = types[Math.round(Math.random() * (types.length - 1))];
+                if (c.type === 'random') {
+                    type = types[Math.round(Math.random() * (types.length - 1))];
+                } else {
+                    type = c.type;
                 }
 
                 choice.splice(0);
@@ -118,7 +121,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                 document.querySelector('.query a').innerHTML = '';
                 document.querySelector('.query a').tabIndex = -1;
 
-                switch (c.type) {
+                switch (type) {
                     case 'year':
                         query = years[Math.round(Math.random() * (years.length - 1))];
 
@@ -142,7 +145,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                     const div = document.createElement('div');
                     let random = Math.round(Math.random() * (database.length - 1));
 
-                    switch (c.type) {
+                    switch (type) {
                         case 'year':
                             if (choice.indexOf(i) > -1) {
                                 while (database[random].year === query || choices2.indexOf(database[random].link) > -1) {
@@ -154,7 +157,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                 }
                             }
 
-                            if (c.random) {
+                            if (c.type === 'random') {
                                 remaining.push(...database[random].tags);
                             }
 
@@ -172,7 +175,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                 }
                             }
 
-                            if (c.random) {
+                            if (c.type === 'random') {
                                 remaining.push(database[random].year);
                             }
 
@@ -267,14 +270,14 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                     }
                 }
 
-                switch (c.type) {
+                switch (type) {
                     case 'year':
-                        document.querySelector('.query a').href += escape(encodeURIComponent(`year:${query}`));
+                        document.querySelector('.query a').href += escape(encodeURIComponent(`year:${query} `));
                         document.querySelector('.query a').innerHTML = `year:<span class="bold">${query}</span>`;
                         break;
 
                     default:
-                        document.querySelector('.query a').href += escape(encodeURIComponent(`tag:${query}`));
+                        document.querySelector('.query a').href += escape(encodeURIComponent(`tag:${query} `));
                         document.querySelector('.query a').innerHTML = `tag:<span class="bold">${query}</span>`;
                         break;
                 }
@@ -337,13 +340,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
             document.querySelector('#type').addEventListener('change', (e) => {
                 const c = JSON.parse(localStorage.getItem('odd-one-out'));
 
-                if (e.target.value === 'random') {
-                    c.random = true;
-                } else {
-                    c.random = false;
-                    c.type = e.target.value;
-                }
-
+                c.type = e.target.value;
                 c.score = 0;
                 c.high = 0;
 
@@ -354,10 +351,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
             document.querySelector('.settings').addEventListener('click', () => {
                 if (document.querySelector('.settings-container').style.display === 'none') {
                     document.querySelector('.settings-container').style.display = 'flex';
-                    document.querySelector('.settings svg').style.fill = '';
                 } else {
                     document.querySelector('.settings-container').style.display = 'none';
-                    document.querySelector('.settings svg').style.fill = '#a7abb7';
                 }
             });
 

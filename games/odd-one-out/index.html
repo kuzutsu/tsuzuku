@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>Tsuzuku</title>
+        <title>Odd One Out</title>
         <meta charset="utf-8">
         <meta name="description" content="Unofficial web app for the anime-offline-database">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
         <meta name="theme-color" content="#fff">
         <meta name="color-scheme" content="light">
         <meta name="apple-mobile-web-app-capable" content="yes">
@@ -49,12 +49,12 @@
                 <span class="score bold" tabindex="0"></span>
                 <span style="width: 100%; min-width: 19px;"></span>
                 <span class="settings" title="Settings" tabindex="0" style="display: inline-flex; align-items: center;">
-                    <svg viewBox="0 0 24 24" width="17" height="17" style="fill: #a7abb7;">
+                    <svg viewBox="0 0 24 24" width="17" height="17">
                         <path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"></path>
                     </svg>
                 </span>
             </div>
-            <div class="settings-container" style="display: none; flex-direction: column;">
+            <div class="settings-container" style="display: none; flex-direction: column; height: 200px; min-height: 200px;">
                 <div style="display: inline-flex; white-space: nowrap; width: 100%; height: 40px; align-items: center; user-select: none;">
                     <span style="color: #a7abb7;">Changing any setting will reset both scores</span>
                 </div>
@@ -67,7 +67,7 @@
                             <label for="choices">Number of choices</label>
                         </div>
                         <div style="display: inline-flex; white-space: nowrap; width: 100%; height: 40px; align-items: center; user-select: none;"> 
-                            <label for="negative">Toggle negative score</label>
+                            <label for="negative">Enable negative score</label>
                         </div>
                         <div style="display: inline-flex; white-space: nowrap; width: 100%; height: 40px; align-items: center; user-select: none;">
                             <label for="reset-incorrect">Reset score when incorrect</label>
@@ -123,7 +123,6 @@
                     choices: 4,
                     high: 0,
                     negative: true,
-                    random: false,
                     resetIncorrect: false,
                     score: 0,
                     type: 'tag'
@@ -133,24 +132,10 @@
             const value = JSON.parse(localStorage.getItem('odd-one-out'));
 
             document.querySelector('#choices').value = value.choices;
+            document.querySelector('#type').value = value.type;
 
-            if (value.negative) {
-                document.querySelector('#negative').checked = true;
-            } else {
-                document.querySelector('#negative').checked = false;
-            }
-
-            if (value.resetIncorrect) {
-                document.querySelector('#reset-incorrect').checked = true;
-            } else {
-                document.querySelector('#reset-incorrect').checked = false;
-            }
-
-            if (value.random) {
-                document.querySelector('#type').value = 'random';
-            } else {
-                document.querySelector('#type').value = value.type;
-            }
+            document.querySelector('#negative').checked = value.negative;
+            document.querySelector('#reset-incorrect').checked = value.resetIncorrect;
         </script>
         <script defer type="module" src="./index.js"></script>
     </body>

@@ -4,6 +4,7 @@ import {
 } from './index.js';
 
 const
+    channel = new BroadcastChannel('tsuzuku'),
     data5 = [],
     database = [],
     database2 = {},
@@ -31,9 +32,14 @@ const
 
 let db2 = null,
     error = false,
+    error2 = false,
     r = null,
     statuses = '',
     t = null;
+
+channel.onmessage = () => {
+    location.reload();
+};
 
 fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/master/anime-offline-database.json')
     .then((response) => response.json())
@@ -100,6 +106,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
             if (value6 === 'error') {
                 error = true;
                 document.body.classList.add('error');
+                document.querySelector('header .menu').title = 'Can\'t track, import, or export without IndexedDB';
             }
 
             for (let ii = 0; ii < status.length; ii++) {
@@ -216,10 +223,10 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                         picture: d[i].picture,
                         progress: p2,
                         r18: tt.indexOf('hentai') > -1,
-                        relations: [
-                            ...d[i].sources.filter((sources) => sources.match(source) && sources !== value),
-                            ...d[i].relations.filter((relations) => relations.match(/anilist\.co|kitsu\.io|myanimelist\.net/gu))
-                        ],
+                        // relations: [
+                        //     ...d[i].sources.filter((sources) => sources.match(source) && sources !== value),
+                        //     ...d[i].relations.filter((relations) => relations.match(/anilist\.co|kitsu\.io|myanimelist\.net/gu))
+                        // ],
                         relevancy: 1,
                         season: s,
                         sources: value,
@@ -245,7 +252,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                     picture: '',
                     progress: value.progress,
                     r18: false,
-                    relations: [],
+                    // relations: [],
                     relevancy: 1,
                     season: value.season,
                     sources: key,
@@ -396,6 +403,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
 
                                 document.querySelector('header').classList.add('header-selected');
                                 document.querySelector('.selected-count').innerHTML = `${cell.getTable().getSelectedRows().length} selected`;
+                                document.querySelector('header .menu').style.display = 'none';
 
                                 if (document.querySelector('.header-status')) {
                                     document.querySelector('.header-status').remove();
@@ -456,6 +464,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                                             status: hstatus.value
                                                         });
 
+                                                        channel.postMessage(true);
+
                                                         return;
                                                     }
 
@@ -465,6 +475,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                                             status: hstatus.value
                                                         });
 
+                                                        channel.postMessage(true);
+
                                                         return;
                                                     }
 
@@ -472,6 +484,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                                         progress: '0',
                                                         status: hstatus.value
                                                     });
+
+                                                    channel.postMessage(true);
                                                 });
                                             };
 
@@ -509,6 +523,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                                                 status: hstatus.value
                                                             });
 
+                                                            channel.postMessage(true);
+
                                                             return;
                                                         }
 
@@ -520,6 +536,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                                                 status: hstatus.value
                                                             });
 
+                                                            channel.postMessage(true);
+
                                                             return;
                                                         }
 
@@ -528,6 +546,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                                                 progress: '0',
                                                                 status: hstatus.value
                                                             });
+
+                                                            channel.postMessage(true);
 
                                                             return;
                                                         }
@@ -541,6 +561,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                                             progress: p,
                                                             status: hstatus.value
                                                         });
+
+                                                        channel.postMessage(true);
                                                     };
                                                 };
                                             };
@@ -566,6 +588,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                                     progress: '',
                                                     status: ''
                                                 });
+
+                                                channel.postMessage(true);
                                             });
                                         }
                                     }
@@ -593,6 +617,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
 
                                 document.querySelector('header').classList.remove('header-selected');
                                 document.querySelector('.header-status').remove();
+                                document.querySelector('header .menu').style.display = 'inline-flex';
 
                                 cell.getColumn().getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.blank;
 
@@ -642,6 +667,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                             if (column.getTable().getSelectedRows().length) {
                                 document.querySelector('header').classList.add('header-selected');
                                 document.querySelector('.selected-count').innerHTML = `${column.getTable().getSelectedRows().length} selected`;
+                                document.querySelector('header .menu').style.display = 'none';
 
                                 if (selected.s) {
                                     column.getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.check;
@@ -708,6 +734,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                                             status: hstatus.value
                                                         });
 
+                                                        channel.postMessage(true);
+
                                                         return;
                                                     }
 
@@ -717,6 +745,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                                             status: hstatus.value
                                                         });
 
+                                                        channel.postMessage(true);
+
                                                         return;
                                                     }
 
@@ -724,6 +754,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                                         progress: '0',
                                                         status: hstatus.value
                                                     });
+
+                                                    channel.postMessage(true);
                                                 });
                                             };
 
@@ -761,6 +793,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                                                 status: hstatus.value
                                                             });
 
+                                                            channel.postMessage(true);
+
                                                             return;
                                                         }
 
@@ -772,6 +806,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                                                 status: hstatus.value
                                                             });
 
+                                                            channel.postMessage(true);
+
                                                             return;
                                                         }
 
@@ -780,6 +816,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                                                 progress: '0',
                                                                 status: hstatus.value
                                                             });
+
+                                                            channel.postMessage(true);
 
                                                             return;
                                                         }
@@ -793,6 +831,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                                             progress: p,
                                                             status: hstatus.value
                                                         });
+
+                                                        channel.postMessage(true);
                                                     };
                                                 };
                                             };
@@ -818,6 +858,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                                     progress: '',
                                                     status: ''
                                                 });
+
+                                                channel.postMessage(true);
                                             });
                                         }
                                     }
@@ -834,6 +876,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                 document.querySelector('header').classList.remove('header-selected');
                                 column.getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.blank;
                                 document.querySelector('.header-status').remove();
+                                document.querySelector('header .menu').style.display = 'inline-flex';
 
                                 if (localStorage.getItem('theme') === 'dark') {
                                     document.head.querySelector('[name="theme-color"]').content = '#000';
@@ -943,6 +986,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
 
                                 document.querySelector('header').classList.add('header-selected');
                                 document.querySelector('.selected-count').innerHTML = `${cell.getTable().getSelectedRows().length} selected`;
+                                document.querySelector('header .menu').style.display = 'none';
 
                                 if (document.querySelector('.header-status')) {
                                     document.querySelector('.header-status').remove();
@@ -1003,6 +1047,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                                             status: hstatus.value
                                                         });
 
+                                                        channel.postMessage(true);
+
                                                         return;
                                                     }
 
@@ -1012,6 +1058,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                                             status: hstatus.value
                                                         });
 
+                                                        channel.postMessage(true);
+
                                                         return;
                                                     }
 
@@ -1019,6 +1067,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                                         progress: '0',
                                                         status: hstatus.value
                                                     });
+
+                                                    channel.postMessage(true);
                                                 });
                                             };
 
@@ -1056,6 +1106,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                                                 status: hstatus.value
                                                             });
 
+                                                            channel.postMessage(true);
+
                                                             return;
                                                         }
 
@@ -1067,6 +1119,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                                                 status: hstatus.value
                                                             });
 
+                                                            channel.postMessage(true);
+
                                                             return;
                                                         }
 
@@ -1075,6 +1129,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                                                 progress: '0',
                                                                 status: hstatus.value
                                                             });
+
+                                                            channel.postMessage(true);
 
                                                             return;
                                                         }
@@ -1088,6 +1144,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                                             progress: p,
                                                             status: hstatus.value
                                                         });
+
+                                                        channel.postMessage(true);
                                                     };
                                                 };
                                             };
@@ -1113,6 +1171,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                                     progress: '',
                                                     status: ''
                                                 });
+
+                                                channel.postMessage(true);
                                             });
                                         }
                                     }
@@ -1140,6 +1200,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
 
                                 document.querySelector('header').classList.remove('header-selected');
                                 document.querySelector('.header-status').remove();
+                                document.querySelector('header .menu').style.display = 'inline-flex';
 
                                 cell.getColumn().getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.blank;
 
@@ -1188,6 +1249,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                             if (column.getTable().getSelectedRows().length) {
                                 document.querySelector('header').classList.add('header-selected');
                                 document.querySelector('.selected-count').innerHTML = `${column.getTable().getSelectedRows().length} selected`;
+                                document.querySelector('header .menu').style.display = 'none';
 
                                 if (selected.s) {
                                     column.getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.check;
@@ -1254,6 +1316,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                                             status: hstatus.value
                                                         });
 
+                                                        channel.postMessage(true);
+
                                                         return;
                                                     }
 
@@ -1263,6 +1327,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                                             status: hstatus.value
                                                         });
 
+                                                        channel.postMessage(true);
+
                                                         return;
                                                     }
 
@@ -1270,6 +1336,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                                         progress: '0',
                                                         status: hstatus.value
                                                     });
+
+                                                    channel.postMessage(true);
                                                 });
                                             };
 
@@ -1307,6 +1375,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                                                 status: hstatus.value
                                                             });
 
+                                                            channel.postMessage(true);
+
                                                             return;
                                                         }
 
@@ -1318,6 +1388,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                                                 status: hstatus.value
                                                             });
 
+                                                            channel.postMessage(true);
+
                                                             return;
                                                         }
 
@@ -1326,6 +1398,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                                                 progress: '0',
                                                                 status: hstatus.value
                                                             });
+
+                                                            channel.postMessage(true);
 
                                                             return;
                                                         }
@@ -1339,6 +1413,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                                             progress: p,
                                                             status: hstatus.value
                                                         });
+
+                                                        channel.postMessage(true);
                                                     };
                                                 };
                                             };
@@ -1364,6 +1440,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                                     progress: '',
                                                     status: ''
                                                 });
+
+                                                channel.postMessage(true);
                                             });
                                         }
                                     }
@@ -1380,6 +1458,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                 document.querySelector('header').classList.remove('header-selected');
                                 column.getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.blank;
                                 document.querySelector('.header-status').remove();
+                                document.querySelector('header .menu').style.display = 'inline-flex';
 
                                 if (localStorage.getItem('theme') === 'dark') {
                                     document.head.querySelector('[name="theme-color"]').content = '#000';
@@ -1398,6 +1477,13 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                         vertAlign: 'middle',
                         visible: localStorage.getItem('thumbnails') !== 'show',
                         width: 17
+                    },
+                    {
+                        // padding
+                        frozen: true,
+                        headerSort: false,
+                        minWidth: 19,
+                        width: 19
                     },
                     {
                         field: 'sources',
@@ -1426,11 +1512,12 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                         headerHozAlign: 'center',
                         headerSort: false,
                         hozAlign: 'center',
+                        minWidth: 17,
                         titleFormatter: function () {
                             return `<svg viewBox="0 0 24 24" width="17" height="17">${svg.earth}</svg>`;
                         },
                         vertAlign: 'middle',
-                        width: 55
+                        width: 17
                     },
                     {
                         field: 'sources2',
@@ -1465,26 +1552,78 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                         headerHozAlign: 'center',
                         headerSort: false,
                         hozAlign: 'center',
+                        minWidth: 89,
                         title: 'Source',
                         vertAlign: 'middle',
                         visible: false,
-                        width: 127
+                        width: 89
+                    },
+                    {
+                        // padding
+                        headerSort: false,
+                        minWidth: 19,
+                        width: 19
                     },
                     {
                         field: 'alternative',
                         formatter: function (cell) {
-                            let n = '',
-                                r18 = '';
+                            const
+                                div = document.createElement('div'),
+                                fragment = new DocumentFragment(),
+                                span = document.createElement('span');
+
+                            span.innerHTML = cell.getValue();
+
+                            div.classList.add('indicator');
+                            div.style.position = 'absolute';
+                            div.style.bottom = 0;
+                            div.style.height = '2px';
+                            div.style.maxWidth = '100%';
 
                             if (cell.getRow().getData().r18) {
-                                r18 = '&nbsp;<span style="color: #f44336;">R18+</span>';
+                                const
+                                    r18 = document.createElement('a'),
+                                    v = 'tag:hentai ';
+
+                                r18.href = `./?query=${escape(encodeURIComponent(v))}`;
+                                r18.style.color = '#f44336';
+                                r18.style.fontWeight = 500;
+                                r18.innerHTML = 'R18+';
+                                r18.addEventListener('click', (e) => {
+                                    e.preventDefault();
+
+                                    document.querySelector('.search').value = v;
+                                    searchFunction(cell.getTable());
+                                });
+
+                                span.innerHTML += '&nbsp;';
+                                span.appendChild(r18);
                             }
 
                             if (cell.getRow().getData().new) {
-                                n = '&nbsp;<span style="color: #8bc34a;">New</span>';
+                                const
+                                    n = document.createElement('a'),
+                                    v = 'is:new ';
+
+                                n.href = `./?query=${escape(encodeURIComponent(v))}`;
+                                n.style.color = '#8bc34a';
+                                n.style.fontWeight = 500;
+                                n.innerHTML = 'New';
+                                n.addEventListener('click', (e) => {
+                                    e.preventDefault();
+
+                                    document.querySelector('.search').value = v;
+                                    searchFunction(cell.getTable());
+                                });
+
+                                span.innerHTML += '&nbsp;';
+                                span.appendChild(n);
                             }
 
-                            return `<span>${cell.getValue() + r18 + n}</span><div class="indicator" style="position: absolute; bottom: 0; height: 2px; max-width: 100%;"></div>`;
+                            fragment.appendChild(span);
+                            fragment.appendChild(div);
+
+                            return fragment;
                         },
                         minWidth: 200,
                         title: 'Title',
@@ -1591,19 +1730,23 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                 return '';
                             }
 
-                            const span = document.createElement('span');
+                            const
+                                a = document.createElement('a'),
+                                v = 'is:ongoing ';
 
-                            span.tabIndex = 0;
-                            span.title = 'Ongoing';
-                            span.style.lineHeight = 0;
-                            span.innerHTML = `<svg viewBox="3 2 20 20" width="17" height="17">${svg.play}</svg>`;
-                            span.addEventListener('click', () => {
-                                document.querySelector('.search').value = 'is:ongoing ';
+                            a.href = `./?query=${escape(encodeURIComponent(v))}`;
+                            a.title = 'Ongoing';
+                            a.innerHTML = `<svg viewBox="3 2 20 20" width="17" height="17">${svg.play}</svg>`;
+                            a.style.display = 'inline-flex';
+                            a.style.alignItems = 'center';
+                            a.addEventListener('click', (e) => {
+                                e.preventDefault();
 
+                                document.querySelector('.search').value = v;
                                 searchFunction(cell.getTable());
                             });
 
-                            return span;
+                            return a;
                         },
                         headerHozAlign: 'center',
                         headerSort: false,
@@ -1693,6 +1836,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                                         cell.getRow().update({
                                                             status: 'Completed'
                                                         });
+
+                                                        channel.postMessage(true);
                                                     };
                                                 };
                                             } else {
@@ -1708,6 +1853,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                                         cell.getRow().update({
                                                             status: 'Watching'
                                                         });
+
+                                                        channel.postMessage(true);
                                                     };
                                                 };
                                             }
@@ -1846,6 +1993,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                                             progress: value,
                                                             status: 'Completed'
                                                         });
+
+                                                        channel.postMessage(true);
                                                     };
                                                 };
                                             } else {
@@ -1861,6 +2010,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                                         cell.getRow().update({
                                                             status: 'Watching'
                                                         });
+
+                                                        channel.postMessage(true);
                                                     };
                                                 };
                                             }
@@ -1945,6 +2096,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                                     status: select.value
                                                 });
 
+                                                channel.postMessage(true);
+
                                                 return;
                                             }
 
@@ -1954,6 +2107,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                                     status: select.value
                                                 });
 
+                                                channel.postMessage(true);
+
                                                 return;
                                             }
 
@@ -1961,6 +2116,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                                 progress: '0',
                                                 status: select.value
                                             });
+
+                                            channel.postMessage(true);
                                         });
                                     };
 
@@ -1998,6 +2155,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                                         status: select.value
                                                     });
 
+                                                    channel.postMessage(true);
+
                                                     return;
                                                 }
 
@@ -2009,6 +2168,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                                         status: select.value
                                                     });
 
+                                                    channel.postMessage(true);
+
                                                     return;
                                                 }
 
@@ -2017,6 +2178,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                                         progress: '0',
                                                         status: select.value
                                                     });
+
+                                                    channel.postMessage(true);
 
                                                     return;
                                                 }
@@ -2030,6 +2193,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                                     progress: p,
                                                     status: select.value
                                                 });
+
+                                                channel.postMessage(true);
                                             };
                                         };
                                     };
@@ -2055,6 +2220,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                             progress: '',
                                             status: ''
                                         });
+
+                                        channel.postMessage(true);
                                     });
                                 }
                             });
@@ -2139,17 +2306,9 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
 
                         document.querySelector('.search').value = value;
                         document.querySelector('.clear').style.display = 'inline-flex';
-                        document.querySelector('.clear-separator').style.display = '';
-
-                        if (!document.querySelector(`[data-query="${value}"]`)) {
-                            document.querySelector('.default').style.display = 'contents';
-                            document.querySelector('.tabs').style.display = 'none';
-                            document.querySelector('.enter svg').style.fill = '';
-                        }
                     } else {
                         document.querySelector('.search').value = '';
                         document.querySelector('.clear').style.display = 'none';
-                        document.querySelector('.clear-separator').style.display = 'none';
                     }
 
                     if (new URLSearchParams(location.search).get('regex') === '1') {
@@ -2169,12 +2328,14 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                         document.querySelector('[for="number"]').style.color = '';
                         document.querySelector('#number').removeAttribute('disabled');
                         document.querySelector('#number').value = Math.round(Math.abs(Number(new URLSearchParams(location.search).get('random'))));
-                        document.querySelector('.enter2 path').setAttribute('d', 'M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z');
+                        document.querySelector('.enter path').setAttribute('d', 'M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z');
+                        document.querySelector('.search').setAttribute('placeholder', 'Search or show random anime');
                     } else {
                         document.querySelector('#random').checked = false;
                         document.querySelector('[for="number"]').style.color = '#a7abb7';
                         document.querySelector('#number').setAttribute('disabled', '');
-                        document.querySelector('.enter2 path').setAttribute('d', 'M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z');
+                        document.querySelector('.enter path').setAttribute('d', 'M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z');
+                        document.querySelector('.search').setAttribute('placeholder', 'Search or show all anime');
                     }
 
                     document.querySelector('.loading').remove();
@@ -2233,9 +2394,15 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                     row.getCell('alternative').getElement().querySelector('.indicator').style.width = width;
                 },
                 tableBuilt: function () {
-                    document.querySelector('.tabulator-tableHolder').removeAttribute('tabindex');
+                    document.querySelector('.tabulator-tableHolder').setAttribute('tabindex', -1);
 
-                    for (const value of ['picture', 'sources', 'sources2', 'alternative', 'type', 'episodes', 'season', 'progress', 'status']) {
+                    const columns = ['picture', 'sources', 'sources2', 'alternative', 'type', 'episodes', 'season'];
+
+                    if (!error) {
+                        columns.push(...['progress', 'status']);
+                    }
+
+                    for (const value of columns) {
                         document.querySelector(`.tabulator-col[tabulator-field="${value}"]`).tabIndex = 0;
                     }
                 }
@@ -2297,11 +2464,13 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
             document.querySelector('.thumbnails').remove();
             document.querySelector('.loading').innerHTML = 'Database not found';
 
+            error2 = true;
+
             if (error) {
                 return;
             }
 
-            document.querySelector('.loading').innerHTML += '<span class="export2" style="display: inline-flex; margin-top: 11.5px;">Export list</span>';
+            document.querySelector('.loading').innerHTML += '<span class="export2" style="display: inline-flex; margin-top: 11.5px;">Export personal list</span>';
 
             document.querySelector('.export2').addEventListener('click', () => {
                 let xml =
@@ -2398,6 +2567,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
 
                         a.download = `tsuzuku_${new Date().toISOString()}.xml`;
                         a.click();
+                        a.remove();
                     }
                 };
             });
@@ -2407,6 +2577,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
 export {
     db2,
     error,
+    error2,
     params,
     r,
     selected,

@@ -9,7 +9,7 @@ Only one source will appear, click on earth icon to toggle more
 
 ## Features
 ### Offline-ready
-Install as PWA (~45 MB)
+Install as PWA
 
 Personal list only saved locally in the browser
 
@@ -36,8 +36,8 @@ Examples:
 Recommended to disable when using regular expression search
 
 ### Search syntaxes
-* `is:dead`
-* `is:new`
+* `is:dead` (saved titles removed from the database)
+* `is:new` (new titles since last app launch)
 * `is:ongoing`
 * `is:selected`
 
@@ -93,9 +93,9 @@ Click on score to reset
 Query will only appear after submitting an answer
 
 #### Quiz
-Single selection mode (default) only has one correct answer
+In single selection mode (default), there is only one correct answer
 
-Multiple selection mode may have no correct answers
+In multiple selection mode, there may be one, multiple, or no correct answers
 
 ### Export
 File is in MyAnimeList XML format
@@ -107,7 +107,10 @@ File is in MyAnimeList XML format
 ### Import
 Supports files in MyAnimeList XML or AniList GDPR JSON format
 
-**Disclaimer:** Only status and progress will be imported
+#### Disclaimer
+* Only status and progress will be imported
+* Saved data will be overwritten
+* For MyAnimeList XML, `update_on_import` will be ignored
 
 #### MyAnimeList
 1. Go to https://myanimelist.net/panel.php?go=export
