@@ -1,5 +1,6 @@
 const
     choice = [],
+    choice2 = [2, 3, 4, 5, 6, 7, 8, 9, 10],
     database = [],
     episodes = [],
     episodes2 = new Map(),
@@ -21,7 +22,9 @@ const
     years = [],
     years2 = new Map();
 
-let type = null;
+let choice3 = null,
+    choices = null,
+    type = null;
 
 fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/master/anime-offline-database.json')
     .then((response) => response.json())
@@ -164,14 +167,19 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
             function game() {
                 const
                     c = JSON.parse(localStorage.getItem('quiz')),
-                    choices =
-                        c.selection === 'single'
-                            ? 1
-                            : Math.round(Math.random() * c.choices),
                     choices2 = [],
-                    choices3 = c.choices,
                     operator = operators[Math.round(Math.random() * (operators.length - 1))],
                     season = seasons[Math.round(Math.random() * (seasons.length - 1))];
+
+                choice3 =
+                    c.choices === 'random'
+                        ? choice2[Math.round(Math.random() * (choice2.length - 1))]
+                        : c.choices;
+
+                choices =
+                    c.selection === 'single'
+                        ? 1
+                        : Math.round(Math.random() * choice3);
 
                 document.querySelector('.score').innerHTML = c.score;
                 document.querySelector('.high').innerHTML = c.high;
@@ -196,10 +204,10 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
 
                 if (choices) {
                     for (let i = 0; i < choices; i++) {
-                        let n = Math.round(Math.random() * (c.choices - 1));
+                        let n = Math.round(Math.random() * (choice3 - 1));
 
                         while (choice.indexOf(n) > -1) {
-                            n = Math.round(Math.random() * (c.choices - 1));
+                            n = Math.round(Math.random() * (choice3 - 1));
                         }
 
                         choice.push(n);
@@ -225,25 +233,25 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                     case 'episodes (with operators)':
                         switch (operator) {
                             case '<':
-                                while (episode === min.episode || operate(operator, episodes2, episode) < choices || operate('>=', episodes2, episode) < (choices3 - choices)) {
+                                while (episode === min.episode || operate(operator, episodes2, episode) < choices || operate('>=', episodes2, episode) < (choice3 - choices)) {
                                     episode = episodes[Math.round(Math.random() * (episodes.length - 1))];
                                 }
                                 break;
 
                             case '>':
-                                while (episode === max.episode || operate(operator, episodes2, episode) < choices || operate('<=', episodes2, episode) < (choices3 - choices)) {
+                                while (episode === max.episode || operate(operator, episodes2, episode) < choices || operate('<=', episodes2, episode) < (choice3 - choices)) {
                                     episode = episodes[Math.round(Math.random() * (episodes.length - 1))];
                                 }
                                 break;
 
                             case '<=':
-                                while (episode === max.episode || operate(operator, episodes2, episode) < choices || operate('>', episodes2, episode) < (choices3 - choices)) {
+                                while (episode === max.episode || operate(operator, episodes2, episode) < choices || operate('>', episodes2, episode) < (choice3 - choices)) {
                                     episode = episodes[Math.round(Math.random() * (episodes.length - 1))];
                                 }
                                 break;
 
                             case '>=':
-                                while (episode === min.episode || operate(operator, episodes2, episode) < choices || operate('<', episodes2, episode) < (choices3 - choices)) {
+                                while (episode === min.episode || operate(operator, episodes2, episode) < choices || operate('<', episodes2, episode) < (choice3 - choices)) {
                                     episode = episodes[Math.round(Math.random() * (episodes.length - 1))];
                                 }
                                 break;
@@ -276,25 +284,25 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                     case 'year (with operators)':
                         switch (operator) {
                             case '<':
-                                while (!year || year === min.year || operate(operator, years2, year) < choices || operate('>=', years2, year) < (choices3 - choices)) {
+                                while (!year || year === min.year || operate(operator, years2, year) < choices || operate('>=', years2, year) < (choice3 - choices)) {
                                     year = years[Math.round(Math.random() * (years.length - 1))];
                                 }
                                 break;
 
                             case '>':
-                                while (!year || year === max.year || operate(operator, years2, year) < choices || operate('<=', years2, year) < (choices3 - choices)) {
+                                while (!year || year === max.year || operate(operator, years2, year) < choices || operate('<=', years2, year) < (choice3 - choices)) {
                                     year = years[Math.round(Math.random() * (years.length - 1))];
                                 }
                                 break;
 
                             case '<=':
-                                while (!year || year === max.year || operate(operator, years2, year) < choices || operate('>', years2, year) < (choices3 - choices)) {
+                                while (!year || year === max.year || operate(operator, years2, year) < choices || operate('>', years2, year) < (choice3 - choices)) {
                                     year = years[Math.round(Math.random() * (years.length - 1))];
                                 }
                                 break;
 
                             case '>=':
-                                while (!year || year === min.year || operate(operator, years2, year) < choices || operate('<', years2, year) < (choices3 - choices)) {
+                                while (!year || year === min.year || operate(operator, years2, year) < choices || operate('<', years2, year) < (choice3 - choices)) {
                                     year = years[Math.round(Math.random() * (years.length - 1))];
                                 }
                                 break;
@@ -330,7 +338,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                         break;
                 }
 
-                for (let i = 0; i < c.choices; i++) {
+                for (let i = 0; i < choice3; i++) {
                     const div = document.createElement('div');
                     let random = Math.round(Math.random() * (database.length - 1));
 
@@ -578,7 +586,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
 
                 e.target.innerHTML = 'Next';
 
-                for (let i = 0; i < c.choices; i++) {
+                for (let i = 0; i < choice3; i++) {
                     if (choice.indexOf(i) > -1) {
                         if (document.querySelector(`.choice div:nth-child(${i + 1})`).classList.contains('selected')) {
                             document.querySelector(`.choice div:nth-child(${i + 1})`).classList.remove('selected');
@@ -642,7 +650,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
             document.querySelector('#choices').addEventListener('change', (e) => {
                 const c = JSON.parse(localStorage.getItem('quiz'));
 
-                c.choices = Number(e.target.value);
+                c.choices = Number(e.target.value) || e.target.value;
                 c.score = 0;
                 c.high = 0;
 

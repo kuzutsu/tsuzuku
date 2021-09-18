@@ -1,5 +1,6 @@
 const
     choice = [],
+    choice2 = [3, 4, 5, 6, 7, 8, 9, 10],
     database = [],
     green = '#2e7d32',
     red = '#c62828',
@@ -9,7 +10,9 @@ const
     years = [],
     years2 = new Map();
 
-let query = null,
+let choice3 = null,
+    choices = null,
+    query = null,
     type = null;
 
 fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/master/anime-offline-database.json')
@@ -97,10 +100,16 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
             function game() {
                 const
                     c = JSON.parse(localStorage.getItem('odd-one-out')),
-                    choices = Math.round(Math.random() * (c.choices - 1)),
                     choices2 = [],
                     remaining = [],
                     remaining2 = {};
+
+                choice3 =
+                    c.choices === 'random'
+                        ? choice2[Math.round(Math.random() * (choice2.length - 1))]
+                        : c.choices;
+
+                choices = Math.round(Math.random() * (choice3 - 1));
 
                 document.querySelector('.score').innerHTML = c.score;
                 document.querySelector('.high').innerHTML = c.high;
@@ -125,7 +134,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                     case 'year':
                         query = years[Math.round(Math.random() * (years.length - 1))];
 
-                        while (years2.get(query) < c.choices - 1) {
+                        while (years2.get(query) < choice3 - 1) {
                             query = years[Math.round(Math.random() * (years.length - 1))];
                         }
 
@@ -134,14 +143,14 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                     default:
                         query = tags[Math.round(Math.random() * (tags.length - 1))];
 
-                        while (tags2.get(query) < c.choices - 1) {
+                        while (tags2.get(query) < choice3 - 1) {
                             query = tags[Math.round(Math.random() * (tags.length - 1))];
                         }
 
                         break;
                 }
 
-                for (let i = 0; i < c.choices; i++) {
+                for (let i = 0; i < choice3; i++) {
                     const div = document.createElement('div');
                     let random = Math.round(Math.random() * (database.length - 1));
 
@@ -218,7 +227,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                     if (remaining2[value]) {
                         remaining2[value] += 1;
 
-                        if (remaining2[value] === c.choices - 1) {
+                        if (remaining2[value] === choice3 - 1) {
                             game();
 
                             return;
@@ -251,7 +260,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
 
                 e.target.innerHTML = 'Next';
 
-                for (let i = 0; i < c.choices; i++) {
+                for (let i = 0; i < choice3; i++) {
                     if (choice.indexOf(i) > -1) {
                         if (document.querySelector(`.choice div:nth-child(${i + 1})`).classList.contains('selected')) {
                             document.querySelector(`.choice div:nth-child(${i + 1})`).classList.remove('selected');
@@ -307,7 +316,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
             document.querySelector('#choices').addEventListener('change', (e) => {
                 const c = JSON.parse(localStorage.getItem('odd-one-out'));
 
-                c.choices = Number(e.target.value);
+                c.choices = Number(e.target.value) || e.target.value;
                 c.score = 0;
                 c.high = 0;
 
