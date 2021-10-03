@@ -1,4 +1,4 @@
-const sw = '2.4.1';
+const sw = '2.4.2';
 
 addEventListener('install', (event) => {
     event.waitUntil(
@@ -37,9 +37,9 @@ addEventListener('install', (event) => {
                 './images/myanimelist.png',
 
                 // stats
-                './stats/',
-                './stats/index.css',
-                './stats/index.js',
+                // './stats/',
+                // './stats/index.css',
+                // './stats/index.js',
 
                 // third-party
                 'https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js',
