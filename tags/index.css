@@ -1,3 +1,38 @@
+.bold {
+    font-weight: 500;
+}
+
+/*
+.theme {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+main {
+    overflow: auto;
+}
+
+main div {
+    padding: 11.5px 19px;
+    display: inline-flex;
+    width: 100%;
+    min-width: 100px;
+    user-select: none;
+    flex-direction: column;
+    justify-content: center;
+    overflow-wrap: anywhere;
+}
+
+main div:hover {
+    background: var(--background-hover);
+}
+
+main .info {
+    color: #a7abb7;
+    margin-top: 4px;
+}*/
+
 .tabulator-cell[tabulator-field="alternative"],
 .tabulator-cell[tabulator-field="episodes"],
 .tabulator-cell[tabulator-field="progress"],
@@ -9,7 +44,7 @@
 
 .database-container {
     height: auto;
-    max-height: calc(100% - 40px);
+    max-height: 100%;
     width: 100%;
 }
 
@@ -31,7 +66,6 @@
     background: var(--background);
 }
 
-.tabulator-row:focus-within .tabulator-frozen,
 .tabulator-row:hover .tabulator-frozen {
     background: var(--background-hover);
 }
@@ -40,7 +74,6 @@
     background: var(--selected);
 }
 
-.tabulator-selected:focus-within .tabulator-frozen,
 .tabulator-selected:hover .tabulator-frozen {
     background: var(--selected-hover);
 }
@@ -77,11 +110,19 @@
     background: #ff9800 !important;
 }
 
+/***********************************************************************************/
+
+.tabulator-cell[tabulator-field="sources"] a {
+    line-height: 0;
+}
+
 .search {
     width: 100%;
     border: 0;
     min-width: 100px;
 }
+
+/**************************************************************************************/
 
 [tabulator-field="picture"] img {
     pointer-events: none;
@@ -104,7 +145,8 @@
 
 .tabulator-col[tabulator-field="ongoing"] .tabulator-col-title,
 .tabulator-col[tabulator-field="picture"] .tabulator-col-title,
-.tabulator-col[tabulator-field="picture2"] .tabulator-col-title {
+.tabulator-col[tabulator-field="picture2"] .tabulator-col-title,
+.tabulator-col[tabulator-field="sources"] .tabulator-col-title {
     line-height: 0;
 }
 
@@ -167,7 +209,8 @@
     display: inline-flex !important;
 }
 
-.tabulator-row:focus-within,
+/***************************************************************************************************/
+
 .tabulator-row:hover {
     background: var(--background-hover) !important;
     opacity: 1;
@@ -185,10 +228,11 @@
     fill: var(--selected-color) !important;
 }
 
-.tabulator-selected:focus-within,
 .tabulator-selected:hover {
     background: var(--selected-hover) !important;
 }
+
+/***************************************************************************************************/
 
 .tabulator-col {
     height: 40px;
@@ -204,6 +248,8 @@
     color: #a7abb7;
     pointer-events: none;
 }
+
+/*****************************************************************/
 
 .title {
     color: #a7abb7;
@@ -277,12 +323,11 @@ header option:disabled,
     color: var(--selected-color);
 }
 
-.tabulator-row:focus-within input,
-.tabulator-row:focus-within select,
 .tabulator-row:hover input,
-.tabulator-row:hover select,
-.tabulator-selected:focus-within input,
-.tabulator-selected:focus-within select,
+.tabulator-row:hover select {
+    background: transparent;
+}
+
 .tabulator-selected:hover input,
 .tabulator-selected:hover select {
     background: transparent;
@@ -300,6 +345,7 @@ header option:disabled,
     padding: 4px 0;
 }
 
+/* without css */
 .tabulator-tableHolder {
     outline: none;
     overflow: auto;
@@ -430,7 +476,7 @@ input {
     width: 200px;
     background: var(--background);
     position: absolute;
-    z-index: 4;
+    z-index: 3;
     display: none;
     flex-direction: column;
     font-size: 14px;
@@ -441,7 +487,7 @@ input {
     height: 100%;
     width: 100%;
     position: absolute;
-    z-index: 3;
+    z-index: 2;
     background: var(--background);
     display: none;
     opacity: 0.8;
@@ -488,41 +534,7 @@ input {
     display: none;
 }
 
-.tabulator-row:focus-within .myanimelist,
-.tabulator-row:focus-within .relations,
 .tabulator-row:hover .myanimelist,
 .tabulator-row:hover .relations {
-    display: inline-flex;
-    align-items: center;
-}
-
-.qualifiers {
-    position: absolute;
-    z-index: 2;
-    background: var(--background);
-    padding: 19px;
-    height: calc(100% - 40px);
-    width: 100%;
-    overflow: auto;
-    display: none;
-    top: 40px;
-}
-
-code {
-    font-family: monospace;
-    padding: 4px;
-    background: var(--background-hover);
-}
-
-td {
-    padding: 4px;
-    vertical-align: baseline;
-}
-
-tr {
-    height: 40px;
-}
-
-.mono {
-    font-family: monospace;
+    display: inline;
 }

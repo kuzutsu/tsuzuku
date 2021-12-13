@@ -15,7 +15,7 @@ let choice3 = null,
     query = null,
     type = null;
 
-fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/master/anime-offline-database.json')
+fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/master/anime-offline-database-minified.json')
     .then((response) => response.json())
     .then((data) => {
         const d = data.data;
@@ -26,7 +26,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
             for (let i = 0; i < d.length; i++) {
                 const
                     e = d[i].episodes,
-                    m = d[i].sources.filter((sources) => sources.match(/anilist\.co|kitsu\.io|myanimelist\.net/gu)),
+                    m = d[i].sources.filter((sources) => sources.match(/myanimelist\.net/gu)),
                     y = d[i].animeSeason.year;
 
                 let source = null;
@@ -41,10 +41,6 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
 
                 if (d[i].sources.filter((sources) => sources.match(/myanimelist\.net/gu)).length) {
                     source = /myanimelist\.net/gu;
-                } else if (d[i].sources.filter((sources) => sources.match(/kitsu\.io/gu)).length) {
-                    source = /kitsu\.io/gu;
-                } else {
-                    source = /anilist\.co/gu;
                 }
 
                 if (d[i].picture === 'https://cdn.myanimelist.net/images/qm_50.gif') {
@@ -79,12 +75,6 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                         link: value,
                         picture: d[i].picture,
                         season: d[i].animeSeason.season.toLowerCase(),
-                        source:
-                            value.match(/myanimelist\.net/gu)
-                                ? '../../images/myanimelist.png'
-                                : value.match(/kitsu\.io/gu)
-                                    ? '../../images/kitsu.png'
-                                    : '../../images/anilist.png',
                         tags: tt,
                         title: d[i].title,
                         year: y
@@ -95,7 +85,6 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
             tags.sort();
             years.sort();
             years.splice(years.indexOf(null), 1);
-            years.push(null);
 
             function game() {
                 const
@@ -126,9 +115,12 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
 
                 choice.push(choices);
 
-                document.querySelector('.query a').href = '../../?query=';
-                document.querySelector('.query a').innerHTML = '';
-                document.querySelector('.query a').tabIndex = -1;
+                document.querySelector('.query-container').innerHTML =
+                    `<span>${
+                        type === 'year'
+                            ? 'year:?'
+                            : 'tag:?'
+                    }</span>`;
 
                 switch (type) {
                     case 'year':
@@ -197,8 +189,17 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                     div.tabIndex = 0;
                     div.innerHTML =
                         `<img class="picture" src="${database[random].picture}" loading="lazy" alt style="margin-right: 19px;">` +
-                        `<a class="link" href="${database[random].link}" target="_blank" rel="noreferrer" style="background: url(${database[random].source}); background-size: contain; height: 17px; width: 17px; min-height: 17px; min-width: 17px; margin-right: 19px;"></a>` +
-                        `<span class="title">${database[random].title}</span>`;
+                        '<span>' +
+                            `<span class="title">${database[random].title}</span>` +
+                            '<span class="myanimelist">' +
+                                '<span style="user-select: none;">&nbsp;</span>' +
+                                `<a href="${database[random].link}" target="_blank" rel="noreferrer" title="MyAnimeList" style="display: inline-flex; align-items: center;">` +
+                                    '<svg viewBox="0 0 24 24" height="17" width="17">' +
+                                        '<path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"></path>' +
+                                    '</svg>' +
+                                '</a>' +
+                            '</span>' +
+                        '</span>';
 
                     div.addEventListener('click', (e) => {
                         if (e.target.classList.contains('source')) {
@@ -281,17 +282,21 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
 
                 switch (type) {
                     case 'year':
-                        document.querySelector('.query a').href += escape(encodeURIComponent(`year:${query} `));
-                        document.querySelector('.query a').innerHTML = `year:<span class="bold">${query}</span>`;
+                        document.querySelector('.query-container').innerHTML =
+                            `<a href="../../?query=${escape(encodeURIComponent(`year:${query} `))}" rel="noreferrer">` +
+                                '<span>year:</span>' +
+                                `<span class="bold">${query}</span>` +
+                            '</a>';
                         break;
 
                     default:
-                        document.querySelector('.query a').href += escape(encodeURIComponent(`tag:${query} `));
-                        document.querySelector('.query a').innerHTML = `tag:<span class="bold">${query}</span>`;
+                        document.querySelector('.query-container').innerHTML =
+                            `<a href="../../?query=${escape(encodeURIComponent(`tag:${query} `))}" rel="noreferrer">` +
+                                '<span>tag:</span>' +
+                                `<span class="bold">${query}</span>` +
+                            '</a>';
                         break;
                 }
-
-                document.querySelector('.query a').tabIndex = 0;
 
                 if (c.resetIncorrect && incorrect) {
                     c.score = 0;
@@ -341,6 +346,14 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                 c.resetIncorrect = e.target.checked;
                 c.score = 0;
                 c.high = 0;
+
+                if (document.querySelector('#reset-incorrect').checked) {
+                    document.querySelector('[for="negative"]').style.color = 'var(--disabled)';
+                    document.querySelector('#negative').setAttribute('disabled', '');
+                } else {
+                    document.querySelector('[for="negative"]').style.color = '';
+                    document.querySelector('#negative').removeAttribute('disabled');
+                }
 
                 localStorage.setItem('odd-one-out', JSON.stringify(c));
                 game();

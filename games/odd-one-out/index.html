@@ -5,8 +5,8 @@
         <meta charset="utf-8">
         <meta name="description" content="Unofficial web app for the anime-offline-database">
         <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-        <meta name="theme-color" content="#fff">
-        <meta name="color-scheme" content="light">
+        <meta name="theme-color" content="#000">
+        <meta name="color-scheme" content="dark">
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-title" content="Tsuzuku">
         <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -18,12 +18,10 @@
         <link rel="preconnect" href="https://raw.githubusercontent.com">
         <link rel="dns-prefetch" href="https://fonts.gstatic.com">
         <link rel="dns-prefetch" href="https://raw.githubusercontent.com">
-        <link rel="preload" href="https://fonts.gstatic.com/s/roboto/v27/KFOmCnqEu92Fr1Mu4mxK.woff2" as="font" crossorigin>
-        <link rel="preload" href="https://fonts.gstatic.com/s/roboto/v27/KFOlCnqEu92Fr1MmEU9fBBc4.woff2" as="font" crossorigin>
         <link href="../../global.css" rel="stylesheet">
         <link href="./index.css" rel="stylesheet">
     </head>
-    <body class="light">
+    <body>
         <noscript>Tsuzuku can't run without JavaScript</noscript>
         <header>
             <a href="../" title="Games" style="display: inline-flex; align-items: center; margin-right: 19px;">
@@ -33,12 +31,12 @@
             </a>
             <span class="bold">Odd One Out</span>
             <span class="flex-separator"></span>
-            <a href="https://github.com/kuzutsu/tsuzuku" rel="noreferrer" target="_blank" style="margin-right: 19px;">GitHub</a>
-            <span class="theme" title="Toggle theme" tabindex="0">
-                <svg viewBox="0 0 24 24" width="17" height="17">
-                    <path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9s9-4.03 9-9c0-0.46-0.04-0.92-0.1-1.36c-0.98 1.37-2.58 2.26-4.4 2.26 c-2.98 0-5.4-2.42-5.4-5.4c0-1.81 0.89-3.42 2.26-4.4C12.92 3.04 12.46 3 12 3L12 3z"></path>
+            <a href="https://github.com/kuzutsu/tsuzuku" rel="noreferrer" target="_blank" style="display: inline-flex; align-items: center; text-decoration: none;">
+                <span>GitHub&nbsp;</span>
+                <svg viewBox="0 0 24 24" height="17" width="17">
+                    <path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"></path>
                 </svg>
-            </span>
+            </a>
         </header>
         <main>
             <span class="loading">Fetching database...</span>
@@ -56,7 +54,7 @@
             </div>
             <div class="settings-container" style="display: none; flex-direction: column; height: 200px; min-height: 200px;">
                 <div style="display: inline-flex; white-space: nowrap; width: 100%; height: 40px; align-items: center; user-select: none;">
-                    <span style="color: #a7abb7;">Changing any setting will reset both scores</span>
+                    <span style="color: #a7abb7;">※ Changing any setting will reset both scores</span>
                 </div>
                 <div style="display: flex;">
                     <div style="display: flex; flex-direction: column;">
@@ -111,7 +109,7 @@
                     </svg>
                 </span>
                 <div class="query-container" style="margin-right: 19px;">
-                    <a href rel="noreferrer"></a>
+                    <span></span>
                 </div>
                 <span class="submit bold" tabindex="0"></span>
             </div>
@@ -137,6 +135,14 @@
 
             document.querySelector('#negative').checked = value.negative;
             document.querySelector('#reset-incorrect').checked = value.resetIncorrect;
+
+            if (document.querySelector('#reset-incorrect').checked) {
+                document.querySelector('[for="negative"]').style.color = 'var(--disabled)';
+                document.querySelector('#negative').setAttribute('disabled', '');
+            } else {
+                document.querySelector('[for="negative"]').style.color = '';
+                document.querySelector('#negative').removeAttribute('disabled');
+            }
         </script>
         <script defer type="module" src="./index.js"></script>
     </body>

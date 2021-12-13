@@ -1,4 +1,4 @@
-const sw = '2.4.2';
+const sw = '61';
 
 addEventListener('install', (event) => {
     event.waitUntil(
@@ -26,20 +26,22 @@ addEventListener('install', (event) => {
                 './games/quiz/index.js',
 
                 // images
-                './images/anilist.png',
-                './images/kitsu.png',
                 './images/logo.svg',
                 './images/logo-180.png',
                 './images/logo-192.png',
                 './images/logo-512.png',
                 './images/logo-maskable-192.png',
                 './images/logo-maskable-512.png',
-                './images/myanimelist.png',
 
                 // stats
                 // './stats/',
                 // './stats/index.css',
                 // './stats/index.js',
+
+                // tags
+                './tags/',
+                './tags/index.css',
+                './tags/index.js',
 
                 // third-party
                 'https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js',
@@ -51,9 +53,9 @@ addEventListener('install', (event) => {
                 'https://cdn.jsdelivr.net/npm/tabulator-tables@4.9.3/dist/js/modules/select_row.min.js',
                 'https://cdn.jsdelivr.net/npm/tabulator-tables@4.9.3/dist/js/modules/sort.min.js',
                 'https://cdn.jsdelivr.net/npm/tabulator-tables@4.9.3/dist/js/tabulator_core.min.js',
-                'https://fonts.gstatic.com/s/roboto/v27/KFOmCnqEu92Fr1Mu4mxK.woff2',
-                'https://fonts.gstatic.com/s/roboto/v27/KFOlCnqEu92Fr1MmEU9fBBc4.woff2',
-                'https://raw.githubusercontent.com/manami-project/anime-offline-database/master/anime-offline-database.json'
+                'https://fonts.gstatic.com/s/roboto/v29/KFOmCnqEu92Fr1Mu4mxK.woff2',
+                'https://fonts.gstatic.com/s/roboto/v29/KFOlCnqEu92Fr1MmEU9fBBc4.woff2',
+                'https://raw.githubusercontent.com/manami-project/anime-offline-database/master/anime-offline-database-minified.json'
             ]))
     );
 });

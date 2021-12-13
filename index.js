@@ -1,46 +1,29 @@
 import {
     db2,
+    disableSelection,
     error,
     error2,
-    params,
     r,
     selected,
     svg,
     t,
-    title
+    title,
+    years
 } from './fetchFunction.js';
 
 const index = {
     dimension: null,
+    error: false,
     lastRow: null
 };
 
-let worker = null;
+let help = false,
+    worker = null;
 
 function searchFunction(tt, qq, p, s) {
     const
         query = qq || document.querySelector('.search').value,
         table = tt || t;
-
-    if (document.querySelector('#regex').checked) {
-        params.regex = true;
-    } else {
-        params.regex = false;
-    }
-
-    if (document.querySelector('#alt').checked) {
-        params.alt = false;
-    } else {
-        params.alt = true;
-    }
-
-    if (document.querySelector('#random').checked) {
-        params.random = true;
-        params.randomValue = Math.round(Math.abs(Number(document.querySelector('#number').value))) || 1;
-    } else {
-        params.random = false;
-        params.randomValue = 1;
-    }
 
     if (document.querySelector('.nothing')) {
         document.querySelector('.nothing').remove();
@@ -61,8 +44,18 @@ function searchFunction(tt, qq, p, s) {
     }
 
     if (document.querySelector('.importing')) {
-        document.querySelector('.search-container').style.display = 'inline-flex';
+        document.querySelector('.top-container').style.display = 'inline-flex';
         document.querySelector('.importing').remove();
+    }
+
+    if (document.querySelector('.related-container').style.display === 'inline-flex') {
+        document.querySelector('.related-container').style.display = 'none';
+        document.querySelector('.search-container').style.display = 'inline-flex';
+        document.querySelector('.related-title').innerHTML = '';
+    }
+
+    if (document.querySelector('.qualifiers').style.display) {
+        document.querySelector('.qualifiers').style.display = '';
     }
 
     if (document.querySelector('.searching')) {
@@ -71,6 +64,7 @@ function searchFunction(tt, qq, p, s) {
 
     document.querySelector('main').insertAdjacentHTML('beforeend',
         '<div class="searching">' +
+            '<div class="progress" style="position: absolute; top: 0; left: 0;"></div>' +
             '<span>Searching...</span>' +
         '</div>'
     );
@@ -92,11 +86,7 @@ function searchFunction(tt, qq, p, s) {
     worker = new Worker('./worker.js');
 
     worker.postMessage({
-        alt: params.alt,
         data: table.getData(),
-        random: params.random,
-        randomValue: params.randomValue,
-        regex: params.regex,
         selected: table.getSelectedData(),
         value: query
     });
@@ -104,48 +94,45 @@ function searchFunction(tt, qq, p, s) {
     worker.addEventListener('message', (event) => {
         const url = new URL(location.href.replace(location.search, ''));
 
-        document.querySelector('.searching span').innerHTML = 'Filtering table...';
+        switch (event.data.message) {
+            case 'clear':
+                if (document.querySelector('.searching')) {
+                    document.querySelector('.searching span').innerHTML = 'Filtering table...';
+                }
 
-        worker.terminate();
-        worker = null;
-
-        setTimeout(() => {
-            switch (event.data.message) {
-                case 'clear':
+                setTimeout(() => {
                     index.dimension = null;
+
                     table.clearFilter();
                     table.redraw(true);
-
-                    if (params.regex) {
-                        url.searchParams.set('regex', '1');
-                    }
-
-                    if (!params.alt) {
-                        url.searchParams.set('alt', '0');
-                    }
-
-                    if (params.random) {
-                        url.searchParams.set('random', params.randomValue);
-                    }
-
                     table.setSort('alternative', 'asc');
+
+                    worker.terminate();
+                    worker = null;
 
                     if (!p) {
                         history.pushState({}, '', url);
                     }
 
                     document.title = title;
+                }, 100);
 
-                    break;
+                break;
 
-                case 'success':
-                    index.dimension = event.data.update;
+            case 'error':
+                if (document.querySelector('.searching')) {
+                    document.querySelector('.searching span').innerHTML = 'Filtering table...';
+                }
+
+                setTimeout(() => {
+                    index.dimension = null;
                     index.query = event.data.query;
+                    index.error = true;
+
                     table.setFilter('sources', 'in', event.data.filter);
                     table.redraw(true);
 
-                    if (params.regex) {
-                        url.searchParams.set('regex', '1');
+                    if ((/\bregex:true\b/giu).test(event.data.query)) {
                         table.setSort('alternative', 'asc');
                     } else {
                         if (event.data.query) {
@@ -155,13 +142,8 @@ function searchFunction(tt, qq, p, s) {
                         }
                     }
 
-                    if (!params.alt) {
-                        url.searchParams.set('alt', '0');
-                    }
-
-                    if (params.random) {
-                        url.searchParams.set('random', params.randomValue);
-                    }
+                    worker.terminate();
+                    worker = null;
 
                     if (query) {
                         url.searchParams.set('query', encodeURIComponent(query));
@@ -176,23 +158,72 @@ function searchFunction(tt, qq, p, s) {
                     } else {
                         document.title = title;
                     }
+                }, 100);
 
-                    break;
+                break;
 
-                default:
-                    break;
-            }
-        }, 100);
+            case 'found':
+                document.querySelector('.progress').classList.add('found');
+                break;
+
+            case 'progress':
+                document.querySelector('.progress').style.width = event.data.progress;
+                break;
+
+            case 'success':
+                if (document.querySelector('.searching')) {
+                    document.querySelector('.searching span').innerHTML = 'Filtering table...';
+                }
+
+                setTimeout(() => {
+                    index.dimension = event.data.update;
+                    index.query = event.data.query;
+                    index.error = false;
+
+                    table.setFilter('sources', 'in', event.data.filter);
+                    table.redraw(true);
+
+                    if ((/\bregex:true\b/giu).test(event.data.query)) {
+                        table.setSort('alternative', 'asc');
+                    } else {
+                        if (event.data.query) {
+                            table.setSort('relevancy', 'desc');
+                        } else {
+                            table.setSort('alternative', 'asc');
+                        }
+                    }
+
+                    worker.terminate();
+                    worker = null;
+
+                    if (query) {
+                        url.searchParams.set('query', encodeURIComponent(query));
+                    }
+
+                    if (!p) {
+                        history.pushState({}, '', url);
+                    }
+
+                    if (query) {
+                        document.title = `${query} - ${title}`;
+                    } else {
+                        document.title = title;
+                    }
+                }, 100);
+
+                break;
+
+            default:
+                break;
+        }
     });
 }
 
-document.querySelector('.clear').addEventListener('click', () => {
-    document.querySelector('.clear').style.display = 'none';
-    document.querySelector('.search').value = '';
-    document.querySelector('.search').focus();
-});
-
 document.querySelector('.thumbnails').addEventListener('click', () => {
+    if (!t) {
+        return;
+    }
+
     if (localStorage.getItem('thumbnails') === 'hide') {
         document.body.classList.remove('hide');
         t.getColumn('picture').show();
@@ -211,17 +242,16 @@ document.querySelector('.thumbnails').addEventListener('click', () => {
 });
 
 document.querySelector('.close').addEventListener('click', () => {
+    if (disableSelection) {
+        return;
+    }
+
     index.lastRow = null;
 
     document.querySelector('.header-selected').classList.remove('header-selected');
     document.querySelector('.header-status').remove();
     document.querySelector('header .menu').style.display = 'inline-flex';
-
-    if (localStorage.getItem('theme') === 'dark') {
-        document.head.querySelector('[name="theme-color"]').content = '#000';
-    } else {
-        document.head.querySelector('[name="theme-color"]').content = '#fff';
-    }
+    document.head.querySelector('[name="theme-color"]').content = '#000';
 
     t.getColumn('picture').getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.blank;
     t.getColumn('picture2').getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.blank;
@@ -240,6 +270,39 @@ document.querySelector('.search').addEventListener('keydown', (e) => {
     searchFunction();
 });
 
+document.querySelector('.help').addEventListener('click', () => {
+    if (document.querySelector('.qualifiers').style.display) {
+        help = false;
+
+        document.querySelector('.qualifiers').style.display = '';
+
+        for (const value of ['a.no-tab, select.no-tab']) {
+            document.querySelectorAll(value).forEach((element) => {
+                element.classList.remove('no-tab');
+                element.removeAttribute('tabindex');
+            });
+        }
+
+        document.querySelectorAll('.no-tab').forEach((element) => {
+            element.classList.remove('no-tab');
+            element.setAttribute('tabindex', 0);
+        });
+    } else {
+        help = true;
+
+        document.querySelector('.qualifiers').style.display = 'block';
+
+        for (const value of ['.tabulator-cell[tabindex], .tabulator-cell a, .tabulator-cell select, .tabulator-cell span[tabindex], .tabulator-col[tabindex]']) {
+            document.querySelectorAll(value).forEach((element) => {
+                element.classList.add('no-tab');
+                element.setAttribute('tabindex', -1);
+            });
+        }
+    }
+
+    document.querySelector('.search').focus();
+});
+
 document.querySelector('header .menu').addEventListener('click', () => {
     if (error || error2 || !db2) {
         return;
@@ -250,6 +313,7 @@ document.querySelector('header .menu').addEventListener('click', () => {
 
     db2().openCursor().onsuccess = (event) => {
         const cursor = event.target.result;
+        let mismatched = null;
 
         if (cursor) {
             map.set(cursor.value.status.toLowerCase(), (map.get(cursor.value.status.toLowerCase()) || 0) + 1);
@@ -273,9 +337,25 @@ document.querySelector('header .menu').addEventListener('click', () => {
                 }
             }
 
+            mismatched = t.getData().filter((i) => {
+                if (i.status === 'Completed' && Number(i.progress) !== Number(i.episodes)) {
+                    return true;
+                }
+
+                return false;
+            });
+
+            if (mismatched.length) {
+                document.querySelector('[data-query="status:completed"]').style.marginRight = '9.5px';
+                document.querySelector('.mismatched').style.display = 'inline-flex';
+            } else {
+                document.querySelector('[data-query="status:completed"]').style.marginRight = 'auto';
+                document.querySelector('.mismatched').style.display = 'none';
+            }
+
             document.querySelector('.all').innerHTML = total;
 
-            for (const value of [':not(.side) > :not(div) > .menu', 'div[tabindex]:not(.overlay):not(.menu)', ':not(.tab) > a', 'input', 'select', 'span[tabindex]']) {
+            for (const value of [':not(.side) > :not(div) > .menu', 'div[tabindex]:not(.menu):not(.overlay)', ':not(.import):not(.stats):not(.tab) > a', 'input', 'select', ':not(.export):not(.import) > span[tabindex], code']) {
                 document.querySelectorAll(value).forEach((element) => {
                     element.classList.add('no-tab');
                     element.setAttribute('tabindex', -1);
@@ -305,6 +385,17 @@ document.querySelector('.side .menu').addEventListener('click', () => {
         element.classList.remove('no-tab');
         element.setAttribute('tabindex', 0);
     });
+
+    if (!help) {
+        return;
+    }
+
+    for (const value of ['.tabulator-cell[tabindex], .tabulator-cell a, .tabulator-cell select, .tabulator-cell span[tabindex], .tabulator-col[tabindex]']) {
+        document.querySelectorAll(value).forEach((element) => {
+            element.classList.add('no-tab');
+            element.setAttribute('tabindex', -1);
+        });
+    }
 });
 
 document.querySelector('.overlay').addEventListener('click', () => {
@@ -324,9 +415,20 @@ document.querySelector('.overlay').addEventListener('click', () => {
         element.classList.remove('no-tab');
         element.setAttribute('tabindex', 0);
     });
+
+    if (!help) {
+        return;
+    }
+
+    for (const value of ['.tabulator-cell[tabindex], .tabulator-cell a, .tabulator-cell select, .tabulator-cell span[tabindex], .tabulator-col[tabindex]']) {
+        document.querySelectorAll(value).forEach((element) => {
+            element.classList.add('no-tab');
+            element.setAttribute('tabindex', -1);
+        });
+    }
 });
 
-document.querySelector('.clear').addEventListener('dragenter', () => {
+document.querySelector('.clear').addEventListener('click', () => {
     document.querySelector('.clear').style.display = 'none';
     document.querySelector('.search').value = '';
     document.querySelector('.search').focus();
@@ -336,30 +438,32 @@ document.querySelector('.enter').addEventListener('click', () => {
     searchFunction();
 });
 
-document.querySelector('#random').addEventListener('change', (e) => {
-    if (e.target.checked) {
-        document.querySelector('[for="number"]').style.color = '';
-        document.querySelector('#number').removeAttribute('disabled');
-        document.querySelector('.enter path').setAttribute('d', 'M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z');
-        document.querySelector('.search').setAttribute('placeholder', 'Search or show random anime');
-    } else {
-        document.querySelector('[for="number"]').style.color = '#a7abb7';
-        document.querySelector('#number').setAttribute('disabled', '');
-        document.querySelector('.enter path').setAttribute('d', 'M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z');
-        document.querySelector('.search').setAttribute('placeholder', 'Search or show all anime');
+document.querySelector('.return').addEventListener('click', () => {
+    if (document.querySelector('.related-container').style.display === 'inline-flex') {
+        document.querySelector('.related-container').style.display = 'none';
+        document.querySelector('.search-container').style.display = 'inline-flex';
+        document.querySelector('.related-title').innerHTML = '';
     }
+
+    document.querySelector('.tabulator').style.display = 'none';
+
+    if (document.querySelector('.searching')) {
+        document.querySelector('.searching').remove();
+    }
+
+    searchFunction();
 });
 
-document.querySelector('.settings').addEventListener('click', () => {
-    if (document.querySelector('.settings-container').style.display === 'none') {
-        document.querySelector('.settings-container').style.display = 'flex';
-        document.querySelector('.database-container').style.maxHeight = 'calc(100% - 200px)';
-    } else {
-        document.querySelector('.settings-container').style.display = 'none';
-        document.querySelector('.database-container').style.maxHeight = '';
-    }
+document.querySelector('.clear').addEventListener('dragenter', () => {
+    document.querySelector('.clear').style.display = 'none';
+    document.querySelector('.search').value = '';
+    document.querySelector('.search').focus();
+});
 
-    t.redraw(true);
+document.querySelector('.search').addEventListener('focus', (e) => {
+    if (e.target.value) {
+        document.querySelector('.clear').style.display = 'inline-flex';
+    }
 });
 
 document.querySelector('.search').addEventListener('input', (e) => {
@@ -370,10 +474,24 @@ document.querySelector('.search').addEventListener('input', (e) => {
     }
 });
 
-document.querySelector('.search').addEventListener('focus', (e) => {
-    if (e.target.value) {
-        document.querySelector('.clear').style.display = 'inline-flex';
-    }
+document.querySelectorAll('code').forEach((element) => {
+    element.addEventListener('click', (e) => {
+        if ((/^$|\s$/giu).test(document.querySelector('.search').value)) {
+            if (e.currentTarget.dataset.value2) {
+                document.querySelector('.search').value += `${e.currentTarget.dataset.value2}`;
+            } else {
+                document.querySelector('.search').value += `${e.currentTarget.dataset.value} `;
+            }
+        } else {
+            if (e.currentTarget.dataset.value2) {
+                document.querySelector('.search').value += ` ${e.currentTarget.dataset.value2}`;
+            } else {
+                document.querySelector('.search').value += ` ${e.currentTarget.dataset.value} `;
+            }
+        }
+
+        document.querySelector('.search').focus();
+    });
 });
 
 document.querySelectorAll('.tab').forEach((element) => {
@@ -414,13 +532,220 @@ document.querySelectorAll('.tab').forEach((element) => {
     });
 });
 
+function prev(season, year) {
+    const
+        seasons = ['Winter', 'Spring', 'Summer', 'Fall', 'TBA'],
+        year2 =
+            year === 'TBA'
+                ? null
+                : Number(year),
+        year3 = Array.from(years).sort();
+
+    if (seasons.indexOf(season)) {
+        return {
+            exists: true,
+            season: seasons[seasons.indexOf(season) - 1],
+            year: String(year2) || 'TBA'
+        };
+    }
+
+    if (year3.indexOf(year2)) {
+        return {
+            exists: true,
+            season: seasons[seasons.length - 1],
+            year: String(year3[year3.indexOf(year2) - 1]) || 'TBA'
+        };
+    }
+
+    return {
+        exists: false
+    };
+}
+
+
+function next(season, year) {
+    const
+        seasons = ['Winter', 'Spring', 'Summer', 'Fall', 'TBA'],
+        year2 =
+            year === 'TBA'
+                ? null
+                : Number(year),
+        year3 = Array.from(years).sort();
+
+    if (seasons.indexOf(season) < seasons.length - 1) {
+        return {
+            exists: true,
+            season: seasons[seasons.indexOf(season) + 1],
+            year: String(year2) || 'TBA'
+        };
+    }
+
+    if (year3.indexOf(year2) < year3.length - 1) {
+        return {
+            exists: true,
+            season: seasons[0],
+            year: String(year3[year3.indexOf(year2) + 1]) || 'TBA'
+        };
+    }
+
+    return {
+        exists: false
+    };
+}
+
+document.querySelector('.prev').addEventListener('click', (e) => {
+    e.preventDefault();
+
+    if (e.currentTarget.dataset.exists !== 'true') {
+        return;
+    }
+
+    document.querySelector('.season').value = e.currentTarget.dataset.season;
+    document.querySelector('.year').value = e.currentTarget.dataset.year;
+    document.querySelector('.search').value = `season:${e.currentTarget.dataset.season.toLowerCase()} year:${e.currentTarget.dataset.year.toLowerCase()} `;
+    searchFunction();
+
+    const
+        n = next(e.currentTarget.dataset.season, e.currentTarget.dataset.year),
+        p = prev(e.currentTarget.dataset.season, e.currentTarget.dataset.year);
+
+    if (p.exists) {
+        e.currentTarget.href = `./?query=${escape(encodeURIComponent(`season:${p.season.toLowerCase()} year:${p.year.toLowerCase()} `))}`;
+        e.currentTarget.dataset.exists = 'true';
+        e.currentTarget.dataset.season = p.season;
+        e.currentTarget.dataset.year = p.year;
+    } else {
+        e.currentTarget.removeAttribute('href');
+        e.currentTarget.dataset.exists = 'false';
+        e.currentTarget.dataset.season = '';
+        e.currentTarget.dataset.year = '';
+    }
+
+    if (n.exists) {
+        document.querySelector('.next').href = `./?query=${escape(encodeURIComponent(`season:${n.season.toLowerCase()} year:${n.year.toLowerCase()} `))}`;
+        document.querySelector('.next').dataset.exists = 'true';
+        document.querySelector('.next').dataset.season = n.season;
+        document.querySelector('.next').dataset.year = n.year;
+    } else {
+        document.querySelector('.next').removeAttribute('href');
+        document.querySelector('.next').dataset.exists = 'false';
+        document.querySelector('.next').dataset.season = '';
+        document.querySelector('.next').dataset.year = '';
+    }
+});
+
+document.querySelector('.next').addEventListener('click', (e) => {
+    e.preventDefault();
+
+    if (e.currentTarget.dataset.exists !== 'true') {
+        return;
+    }
+
+    document.querySelector('.season').value = e.currentTarget.dataset.season;
+    document.querySelector('.year').value = e.currentTarget.dataset.year;
+    document.querySelector('.search').value = `season:${e.currentTarget.dataset.season.toLowerCase()} year:${e.currentTarget.dataset.year.toLowerCase()} `;
+    searchFunction();
+
+    const
+        n = next(e.currentTarget.dataset.season, e.currentTarget.dataset.year),
+        p = prev(e.currentTarget.dataset.season, e.currentTarget.dataset.year);
+
+    if (p.exists) {
+        document.querySelector('.prev').href = `./?query=${escape(encodeURIComponent(`season:${p.season.toLowerCase()} year:${p.year.toLowerCase()} `))}`;
+        document.querySelector('.prev').dataset.exists = 'true';
+        document.querySelector('.prev').dataset.season = p.season;
+        document.querySelector('.prev').dataset.year = p.year;
+    } else {
+        document.querySelector('.prev').removeAttribute('href');
+        document.querySelector('.prev').dataset.exists = 'false';
+        document.querySelector('.prev').dataset.season = '';
+        document.querySelector('.prev').dataset.year = '';
+    }
+
+    if (n.exists) {
+        e.currentTarget.href = `./?query=${escape(encodeURIComponent(`season:${n.season.toLowerCase()} year:${n.year.toLowerCase()} `))}`;
+        e.currentTarget.dataset.exists = 'true';
+        e.currentTarget.dataset.season = n.season;
+        e.currentTarget.dataset.year = n.year;
+    } else {
+        e.currentTarget.removeAttribute('href');
+        e.currentTarget.dataset.exists = 'false';
+        e.currentTarget.dataset.season = '';
+        e.currentTarget.dataset.year = '';
+    }
+});
+
+document.querySelector('.enter2').addEventListener('click', () => {
+    if (document.querySelector('.season').value === 'Season' || document.querySelector('.year').value === 'Year') {
+        return;
+    }
+
+    const
+        n = next(document.querySelector('.season').value, document.querySelector('.year').value),
+        p = prev(document.querySelector('.season').value, document.querySelector('.year').value);
+
+    if (p.exists) {
+        document.querySelector('.prev').href = `./?query=${escape(encodeURIComponent(`season:${p.season.toLowerCase()} year:${p.year.toLowerCase()} `))}`;
+        document.querySelector('.prev').dataset.exists = 'true';
+        document.querySelector('.prev').dataset.season = p.season;
+        document.querySelector('.prev').dataset.year = p.year;
+    } else {
+        document.querySelector('.prev').removeAttribute('href');
+        document.querySelector('.prev').dataset.exists = 'false';
+        document.querySelector('.prev').dataset.season = '';
+        document.querySelector('.prev').dataset.year = '';
+    }
+
+    if (n.exists) {
+        document.querySelector('.next').href = `./?query=${escape(encodeURIComponent(`season:${n.season.toLowerCase()} year:${n.year.toLowerCase()} `))}`;
+        document.querySelector('.next').dataset.exists = 'true';
+        document.querySelector('.next').dataset.season = n.season;
+        document.querySelector('.next').dataset.year = n.year;
+    } else {
+        document.querySelector('.next').removeAttribute('href');
+        document.querySelector('.next').dataset.exists = 'false';
+        document.querySelector('.next').dataset.season = '';
+        document.querySelector('.next').dataset.year = '';
+    }
+
+    document.querySelector('.search').value = `season:${document.querySelector('.season').value.toLowerCase()} year:${document.querySelector('.year').value.toLowerCase()} `;
+    searchFunction();
+});
+
 document.querySelector('.selected-count').addEventListener('click', () => {
     document.querySelector('.search').value = 'is:selected ';
     searchFunction();
 });
 
-document.querySelector('.import a').addEventListener('click', (e) => {
+document.querySelector('.mismatched').addEventListener('click', (e) => {
     e.stopPropagation();
+    e.preventDefault();
+
+    const q = 'is:mismatched ';
+
+    if (document.querySelector('.selected-tab')) {
+        document.querySelector('.selected-tab').classList.remove('selected-tab');
+    }
+
+    if (document.querySelector('.side').style.display === 'flex') {
+        document.querySelector('.side').style.display = '';
+        document.querySelector('.overlay').style.display = '';
+    }
+
+    for (const value of ['a.no-tab, input.no-tab, select.no-tab']) {
+        document.querySelectorAll(value).forEach((element2) => {
+            element2.classList.remove('no-tab');
+            element2.removeAttribute('tabindex');
+        });
+    }
+
+    document.querySelectorAll('.no-tab').forEach((element2) => {
+        element2.classList.remove('no-tab');
+        element2.setAttribute('tabindex', 0);
+    });
+
+    document.querySelector('.search').value = q;
+    searchFunction(null, q, null, true);
 });
 
 document.querySelector('.import').addEventListener('click', () => {
@@ -436,6 +761,23 @@ document.querySelector('.import').addEventListener('click', () => {
         const
             file = e.target.files[0],
             reader = new FileReader();
+
+        if (document.querySelector('.side').style.display === 'flex') {
+            document.querySelector('.side').style.display = '';
+            document.querySelector('.overlay').style.display = '';
+        }
+
+        if (document.querySelector('.nothing')) {
+            document.querySelector('.nothing').remove();
+        }
+
+        document.querySelector('.top-container').style.display = 'none';
+        document.querySelector('.tabulator').style.display = 'none';
+        document.querySelector('main').insertAdjacentHTML('beforeend',
+            '<div class="importing">' +
+                '<span>Checking file...</span>' +
+            '</div>'
+        );
 
         reader.readAsText(file);
         reader.onload = (event) => {
@@ -500,8 +842,22 @@ document.querySelector('.import').addEventListener('click', () => {
                 const a = JSON.parse(event.target.result);
 
                 if (!a.lists) {
-                    // invalid xml
+                    if (document.querySelector('.importing')) {
+                        document.querySelector('.importing').remove();
+                    }
+
+                    document.querySelector('.top-container').style.display = 'inline-flex';
+                    document.querySelector('.tabulator').style.display = '';
+
+                    input.remove();
+
+                    searchFunction(null, null, true);
+
                     return;
+                }
+
+                if (document.querySelector('.importing span')) {
+                    document.querySelector('.importing span').innerHTML = 'Importing...';
                 }
 
                 for (const value of a.lists) {
@@ -540,7 +896,7 @@ document.querySelector('.import').addEventListener('click', () => {
                                         document.querySelector('.importing').remove();
                                     }
 
-                                    document.querySelector('.search-container').style.display = 'inline-flex';
+                                    document.querySelector('.top-container').style.display = 'inline-flex';
                                     document.querySelector('.tabulator').style.display = '';
 
                                     input.remove();
@@ -571,7 +927,7 @@ document.querySelector('.import').addEventListener('click', () => {
                                                 document.querySelector('.importing').remove();
                                             }
 
-                                            document.querySelector('.search-container').style.display = 'inline-flex';
+                                            document.querySelector('.top-container').style.display = 'inline-flex';
                                             document.querySelector('.tabulator').style.display = '';
 
                                             input.remove();
@@ -591,7 +947,7 @@ document.querySelector('.import').addEventListener('click', () => {
                                     document.querySelector('.importing').remove();
                                 }
 
-                                document.querySelector('.search-container').style.display = 'inline-flex';
+                                document.querySelector('.top-container').style.display = 'inline-flex';
                                 document.querySelector('.tabulator').style.display = '';
 
                                 input.remove();
@@ -610,10 +966,36 @@ document.querySelector('.import').addEventListener('click', () => {
                     a2 = a.querySelectorAll('anime');
 
                     if (!a2.length) {
+                        if (document.querySelector('.importing')) {
+                            document.querySelector('.importing').remove();
+                        }
+
+                        document.querySelector('.top-container').style.display = 'inline-flex';
+                        document.querySelector('.tabulator').style.display = '';
+
+                        input.remove();
+
+                        searchFunction(null, null, true);
+
                         return;
                     }
                 } else {
+                    if (document.querySelector('.importing')) {
+                        document.querySelector('.importing').remove();
+                    }
+
+                    document.querySelector('.top-container').style.display = 'inline-flex';
+                    document.querySelector('.tabulator').style.display = '';
+
+                    input.remove();
+
+                    searchFunction(null, null, true);
+
                     return;
+                }
+
+                if (document.querySelector('.importing span')) {
+                    document.querySelector('.importing span').innerHTML = 'Importing...';
                 }
 
                 for (const value of a2) {
@@ -652,7 +1034,7 @@ document.querySelector('.import').addEventListener('click', () => {
                                         document.querySelector('.importing').remove();
                                     }
 
-                                    document.querySelector('.search-container').style.display = 'inline-flex';
+                                    document.querySelector('.top-container').style.display = 'inline-flex';
                                     document.querySelector('.tabulator').style.display = '';
 
                                     input.remove();
@@ -683,7 +1065,7 @@ document.querySelector('.import').addEventListener('click', () => {
                                                 document.querySelector('.importing').remove();
                                             }
 
-                                            document.querySelector('.search-container').style.display = 'inline-flex';
+                                            document.querySelector('.top-container').style.display = 'inline-flex';
                                             document.querySelector('.tabulator').style.display = '';
 
                                             input.remove();
@@ -703,7 +1085,7 @@ document.querySelector('.import').addEventListener('click', () => {
                                     document.querySelector('.importing').remove();
                                 }
 
-                                document.querySelector('.search-container').style.display = 'inline-flex';
+                                document.querySelector('.top-container').style.display = 'inline-flex';
                                 document.querySelector('.tabulator').style.display = '';
 
                                 input.remove();
@@ -715,23 +1097,6 @@ document.querySelector('.import').addEventListener('click', () => {
                 }
             }
         };
-
-        if (document.querySelector('.side').style.display === 'flex') {
-            document.querySelector('.side').style.display = '';
-            document.querySelector('.overlay').style.display = '';
-        }
-
-        if (document.querySelector('.nothing')) {
-            document.querySelector('.nothing').remove();
-        }
-
-        document.querySelector('.search-container').style.display = 'none';
-        document.querySelector('.tabulator').style.display = 'none';
-        document.querySelector('main').insertAdjacentHTML('beforeend',
-            '<div class="importing">' +
-                '<span>Importing...</span>' +
-            '</div>'
-        );
     });
 
     input.click();
@@ -850,31 +1215,16 @@ onpopstate = () => {
         document.querySelector('.clear').style.display = 'none';
     }
 
-    if (new URLSearchParams(location.search).get('regex') === '1') {
-        document.querySelector('#regex').checked = true;
-    } else {
-        document.querySelector('#regex').checked = false;
+    if (document.querySelector('.related-container').style.display === 'inline-flex') {
+        document.querySelector('.related-container').style.display = 'none';
+        document.querySelector('.search-container').style.display = 'inline-flex';
+        document.querySelector('.related-title').innerHTML = '';
     }
 
-    if (new URLSearchParams(location.search).get('alt') === '0') {
-        document.querySelector('#alt').checked = true;
-    } else {
-        document.querySelector('#alt').checked = false;
-    }
+    document.querySelector('.tabulator').style.display = 'none';
 
-    if (Math.round(Math.abs(Number(new URLSearchParams(location.search).get('random'))))) {
-        document.querySelector('#random').checked = true;
-        document.querySelector('[for="number"]').style.color = '';
-        document.querySelector('#number').removeAttribute('disabled');
-        document.querySelector('#number').value = Math.round(Math.abs(Number(new URLSearchParams(location.search).get('random'))));
-        document.querySelector('.enter path').setAttribute('d', 'M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z');
-        document.querySelector('.search').setAttribute('placeholder', 'Search or show random anime');
-    } else {
-        document.querySelector('#random').checked = false;
-        document.querySelector('[for="number"]').style.color = '#a7abb7';
-        document.querySelector('#number').setAttribute('disabled', '');
-        document.querySelector('.enter path').setAttribute('d', 'M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z');
-        document.querySelector('.search').setAttribute('placeholder', 'Search or show all anime');
+    if (document.querySelector('.searching')) {
+        document.querySelector('.searching').remove();
     }
 
     searchFunction(null, null, true);

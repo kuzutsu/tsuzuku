@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>Games</title>
+        <title>Tags</title>
         <meta charset="utf-8">
         <meta name="description" content="Unofficial web app for the anime-offline-database">
         <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
@@ -15,7 +15,11 @@
         <link rel="apple-touch-icon" href="../images/logo-180.png">
         <link rel="manifest" href="../manifest.webmanifest">
         <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link rel="preconnect" href="https://cdn.jsdelivr.net">
+        <link rel="preconnect" href="https://raw.githubusercontent.com">
         <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+        <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+        <link rel="dns-prefetch" href="https://raw.githubusercontent.com">
         <link href="../global.css" rel="stylesheet">
         <link href="./index.css" rel="stylesheet">
     </head>
@@ -27,7 +31,7 @@
                     <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"></path>
                 </svg>
             </a>
-            <span class="bold">Games</span>
+            <span class="bold">Tags</span>
             <span class="flex-separator"></span>
             <a href="https://github.com/kuzutsu/tsuzuku" rel="noreferrer" target="_blank" style="display: inline-flex; align-items: center; text-decoration: none;">
                 <span>GitHub&nbsp;</span>
@@ -37,33 +41,17 @@
             </a>
         </header>
         <main>
-            <!--<div>
-                <span>
-                    <a href="./high-low/">High-low</a>
-                </span>
-                <span class="info">Compare two titles</span>
-            </div>-->
-            <div>
-                <span>
-                    <a href="./odd-one-out/">Odd one out</a>
-                </span>
-                <span class="info">Select the title that doesn't belong in the group</span>
-            </div>
-            <div>
-                <span>
-                    <a href="./quiz/">Quiz</a>
-                </span>
-                <span class="info">Test your knowledge</span>
-            </div>
+            <div class="database-container"></div>
         </main>
         <script src="../global.js"></script>
-        <script>
-            document.querySelectorAll('main div').forEach((element) => {
-                element.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    location.assign(element.querySelector('a').href);
-                });
-            });
-        </script>
+        <script defer src="https://cdn.jsdelivr.net/npm/tabulator-tables@4.9.3/dist/js/tabulator_core.min.js"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/tabulator-tables@4.9.3/dist/js/modules/edit.min.js"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/tabulator-tables@4.9.3/dist/js/modules/filter.min.js"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/tabulator-tables@4.9.3/dist/js/modules/format.min.js"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/tabulator-tables@4.9.3/dist/js/modules/frozen_columns.min.js"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/tabulator-tables@4.9.3/dist/js/modules/resize_table.min.js"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/tabulator-tables@4.9.3/dist/js/modules/select_row.min.js"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/tabulator-tables@4.9.3/dist/js/modules/sort.min.js"></script>
+        <script defer type="module" src="./index.js"></script>
     </body>
 </html>

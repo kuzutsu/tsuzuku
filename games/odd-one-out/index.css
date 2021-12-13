@@ -2,6 +2,7 @@
     background: var(--selected);
 }
 
+.selected:focus-within,
 .selected:hover {
     background: var(--selected-hover) !important;
 }
@@ -29,6 +30,7 @@
     padding: 0 19px;
 }
 
+.choice div:focus-within,
 .choice div:hover,
 .picture {
     background: var(--background-hover);
@@ -102,7 +104,7 @@ select {
 
 .title {
     overflow-wrap: anywhere;
-    min-width: 100px;
+    /*min-width: 100px;*/
     padding: 4px 0;
 }
 
@@ -114,4 +116,22 @@ select {
 
 .choice {
     overflow: auto;
+}
+
+.myanimelist {
+    display: none;
+}
+
+.choice div:focus-within .myanimelist,
+.choice div:hover .myanimelist {
+    display: inline-flex;
+    align-items: center;
+}
+
+.choice div {
+    min-width: 300px;
+}
+
+select {
+    border: 1px solid #fff;
 }

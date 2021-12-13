@@ -2,33 +2,24 @@
     font-family: Roboto;
     font-weight: 400;
     font-display: swap;
-    src: url(https://fonts.gstatic.com/s/roboto/v27/KFOmCnqEu92Fr1Mu4mxK.woff2) format('woff2');
+    src: url(https://fonts.gstatic.com/s/roboto/v29/KFOmCnqEu92Fr1Mu4mxK.woff2) format('woff2');
 }
 
 @font-face {
     font-family: Roboto;
     font-weight: 500;
     font-display: swap;
-    src: url(https://fonts.gstatic.com/s/roboto/v27/KFOlCnqEu92Fr1MmEU9fBBc4.woff2) format('woff2');
+    src: url(https://fonts.gstatic.com/s/roboto/v29/KFOlCnqEu92Fr1MmEU9fBBc4.woff2) format('woff2');
 }
 
-.light {
-    --background: #fff;
-    --background-hover: #f1f3f4;
-    --color: #000;
-    --selected: #000;
-    --selected-color: #fff;
-    --selected-hover: #353535;
-    --shadow: #a7abb7;
-}
-
-.dark {
+body {
     --background: #000;
     --background-hover: #353535;
     --color: #fff;
-    --selected: #fff;
-    --selected-color: #000;
-    --selected-hover: #f1f3f4;
+    --disabled: #a7abb7;
+    --selected: #4065ba;
+    --selected-color: #fff;
+    --selected-hover: #5a79c1;
     --shadow: #000;
 }
 
@@ -53,7 +44,7 @@ body {
     flex-direction: column;
     margin: 0;
     position: relative;
-    background: var(--background-hover);
+    background: var(--background);
     user-select: none;
 }
 
@@ -63,7 +54,7 @@ main {
 }
 
 header {
-    height: 40px;
+    height: 50px;
     width: 100%;
     position: relative;
     white-space: nowrap;
@@ -75,8 +66,7 @@ header {
 }
 
 main {
-    height: calc(100% - 40px);
-    width: 100%;
+    height: calc(100% - 50px);
     display: flex;
     flex-direction: column;
     position: relative;
@@ -120,7 +110,7 @@ svg.disabled {
 
 input,
 select {
-    background: var(--background);
+    background: transparent;
 }
 
 input[type="number"],
@@ -142,9 +132,8 @@ noscript {
 }
 
 @media only screen and (min-width: 1301px) {
-    body {
+    main {
         margin: 0 15%;
-        box-shadow: 0 1px 2px 0 var(--shadow), 0 1px 3px 1px var(--shadow);
     }
 }
 
