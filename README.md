@@ -1,7 +1,7 @@
 # [Tsuzuku](https://kuzutsu.github.io/tsuzuku/)
 **Tsuzuku** is an index for the [anime-offline-database](https://github.com/manami-project/anime-offline-database).
 
-> For now, only entries from MyAnimeList are listed. In a future update, all other entries will be included.
+> For now, only entries from MyAnimeList are listed.
 
  There's no need to create an account to track progress in Tsuzuku as everything is saved locally in the browser. However, tracking without any backup is **dangerous** as updates may break the app. Although an option to export progress is available, there's no feature to sync progress online. **Clearing site data will also clear progress.** By using Tsuzuku as a tracker, you agree that you're some sort of a daredevil.
 

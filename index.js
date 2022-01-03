@@ -348,9 +348,11 @@ document.querySelector('header .menu').addEventListener('click', () => {
             if (mismatched.length) {
                 document.querySelector('[data-query="status:completed"]').style.marginRight = '9.5px';
                 document.querySelector('.mismatched').style.display = 'inline-flex';
+                document.querySelector('.mismatched').title = `${mismatched.length} mismatched`;
             } else {
                 document.querySelector('[data-query="status:completed"]').style.marginRight = 'auto';
                 document.querySelector('.mismatched').style.display = 'none';
+                document.querySelector('.mismatched').title = 'Mismatched';
             }
 
             document.querySelector('.all').innerHTML = total;

@@ -1324,7 +1324,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                                     };
                                                 };
                                             } else {
-                                                if (cell.getRow().getData().status === 'Rewatching' || cell.getRow().getData().status === 'Watching') {
+                                                if (['Completed', 'Rewatching', 'Watching'].indexOf(cell.getRow().getData().status) > -1) {
                                                     return;
                                                 }
 
@@ -1474,7 +1474,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                                     };
                                                 };
                                             } else {
-                                                if (cell.getRow().getData().status === 'Rewatching' || cell.getRow().getData().status === 'Watching') {
+                                                if (['Completed', 'Rewatching', 'Watching'].indexOf(cell.getRow().getData().status) > -1) {
                                                     return;
                                                 }
 

@@ -1,4 +1,4 @@
-const sw = '61';
+const sw = '62';
 
 addEventListener('install', (event) => {
     event.waitUntil(
