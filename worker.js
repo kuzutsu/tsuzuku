@@ -300,19 +300,6 @@ addEventListener('message', (event) => {
             ],
             tt = [d.title];
 
-        /*
-        const
-            s = [],
-            s2 = [],
-            t = [
-                {
-                    title: d.title,
-                    title2: d.title
-                }
-            ],
-            tt = [d.title];
-        */
-
         if (v.trim()) {
             if (regex) {
                 let r = false;
@@ -353,65 +340,8 @@ addEventListener('message', (event) => {
                         t.push({
                             title: value
                         });
-
-                        /*
-                        t.push({
-                            title: value,
-                            title2: value,
-                            title3: value
-                        });
-                        */
                     }
                 }
-
-                /*
-                let extend = false,
-                    key = ['title'],
-                    search = v.trim();
-
-                if (v.trim().split(' ').length > 1) {
-                    extend = true;
-
-                    for (const value of v.trim().split(' ')) {
-                        s.push({
-                            title2: `=${value}`
-                        });
-
-                        s2.push({
-                            title3: value
-                        });
-                    }
-
-                    key = [
-                        {
-                            name: 'title',
-                            weight: 0.5
-                        },
-                        {
-                            name: 'title2',
-                            weight: 0.4
-                        },
-                        {
-                            name: 'title3',
-                            weight: 0.1
-                        }
-                    ];
-
-                    search = {
-                        $or: [
-                            {
-                                title: v.trim()
-                            },
-                            {
-                                $and: s
-                            },
-                            {
-                                $and: s2
-                            }
-                        ]
-                    };
-                }
-                */
 
                 const result = new Fuse(t, {
                     ignoreLocation: true,

@@ -5,6 +5,7 @@ import {
     error2,
     r,
     selected,
+    sorted,
     svg,
     t,
     title,
@@ -20,7 +21,7 @@ const index = {
 let help = false,
     worker = null;
 
-function searchFunction(tt, qq, p, s) {
+function searchFunction(tt, qq, p) {
     const
         query = qq || document.querySelector('.search').value,
         table = tt || t;
@@ -33,14 +34,6 @@ function searchFunction(tt, qq, p, s) {
 
     if (document.querySelector('.search').value) {
         document.querySelector('.clear').style.display = 'inline-flex';
-    }
-
-    if (!s && document.querySelector('.selected-tab')) {
-        document.querySelector('.selected-tab').classList.remove('selected-tab');
-    }
-
-    if (document.querySelector(`[data-query="${query.trim().toLowerCase().replace(/"/gu, '&quot;')}"]`)) {
-        document.querySelector(`[data-query="${query.trim().toLowerCase().replace(/"/gu, '&quot;')}"]`).classList.add('selected-tab');
     }
 
     if (document.querySelector('.importing')) {
@@ -64,7 +57,7 @@ function searchFunction(tt, qq, p, s) {
 
     document.querySelector('main').insertAdjacentHTML('beforeend',
         '<div class="searching">' +
-            '<div class="progress" style="position: absolute; top: 0; left: 0;"></div>' +
+            '<div class="progress" style="left: 0; position: absolute; top: 0;"></div>' +
             '<span>Searching...</span>' +
         '</div>'
     );
@@ -105,7 +98,20 @@ function searchFunction(tt, qq, p, s) {
 
                     table.clearFilter();
                     table.redraw(true);
-                    table.setSort('alternative', 'asc');
+
+                    sorted.s = 'relevancy';
+                    sorted.ss = false;
+
+                    table.setSort([
+                        {
+                            column: 'relevancy',
+                            dir: 'desc'
+                        },
+                        {
+                            column: 'alternative',
+                            dir: 'asc'
+                        }
+                    ]);
 
                     worker.terminate();
                     worker = null;
@@ -132,15 +138,19 @@ function searchFunction(tt, qq, p, s) {
                     table.setFilter('sources', 'in', event.data.filter);
                     table.redraw(true);
 
-                    if ((/\bregex:true\b/giu).test(event.data.query)) {
-                        table.setSort('alternative', 'asc');
-                    } else {
-                        if (event.data.query) {
-                            table.setSort('relevancy', 'desc');
-                        } else {
-                            table.setSort('alternative', 'asc');
+                    sorted.s = 'relevancy';
+                    sorted.ss = false;
+
+                    table.setSort([
+                        {
+                            column: 'relevancy',
+                            dir: 'desc'
+                        },
+                        {
+                            column: 'alternative',
+                            dir: 'asc'
                         }
-                    }
+                    ]);
 
                     worker.terminate();
                     worker = null;
@@ -183,15 +193,19 @@ function searchFunction(tt, qq, p, s) {
                     table.setFilter('sources', 'in', event.data.filter);
                     table.redraw(true);
 
-                    if ((/\bregex:true\b/giu).test(event.data.query)) {
-                        table.setSort('alternative', 'asc');
-                    } else {
-                        if (event.data.query) {
-                            table.setSort('relevancy', 'desc');
-                        } else {
-                            table.setSort('alternative', 'asc');
+                    sorted.s = 'relevancy';
+                    sorted.ss = false;
+
+                    table.setSort([
+                        {
+                            column: 'relevancy',
+                            dir: 'desc'
+                        },
+                        {
+                            column: 'alternative',
+                            dir: 'asc'
                         }
-                    }
+                    ]);
 
                     worker.terminate();
                     worker = null;
@@ -292,7 +306,7 @@ document.querySelector('.help').addEventListener('click', () => {
 
         document.querySelector('.qualifiers').style.display = 'block';
 
-        for (const value of ['.tabulator-cell[tabindex], .tabulator-cell a, .tabulator-cell select, .tabulator-cell span[tabindex], .tabulator-col[tabindex]']) {
+        for (const value of ['.tabulator-cell[tabindex]:not([tabulator-field="progress"]), .tabulator-cell a, .tabulator-cell select, .tabulator-cell span[tabindex], .tabulator-col[tabindex]']) {
             document.querySelectorAll(value).forEach((element) => {
                 element.classList.add('no-tab');
                 element.setAttribute('tabindex', -1);
@@ -357,7 +371,7 @@ document.querySelector('header .menu').addEventListener('click', () => {
 
             document.querySelector('.all').innerHTML = total;
 
-            for (const value of [':not(.side) > :not(div) > .menu', 'div[tabindex]:not(.menu):not(.overlay)', ':not(.import):not(.stats):not(.tab) > a', 'input', 'select', ':not(.export):not(.import) > span[tabindex], code']) {
+            for (const value of [':not(.side) > :not(div) > .menu', 'div[tabindex]:not(.menu):not(.overlay):not(.tabulator-tableHolder):not(.tabulator-cell[tabulator-field="progress"])', ':not(.import):not(.stats):not(.tab) > a', 'input', 'select', ':not(.export):not(.import) > span[tabindex], code']) {
                 document.querySelectorAll(value).forEach((element) => {
                     element.classList.add('no-tab');
                     element.setAttribute('tabindex', -1);
@@ -392,7 +406,7 @@ document.querySelector('.side .menu').addEventListener('click', () => {
         return;
     }
 
-    for (const value of ['.tabulator-cell[tabindex], .tabulator-cell a, .tabulator-cell select, .tabulator-cell span[tabindex], .tabulator-col[tabindex]']) {
+    for (const value of ['.tabulator-cell[tabindex]:not([tabulator-field="progress"]), .tabulator-cell a, .tabulator-cell select, .tabulator-cell span[tabindex], .tabulator-col[tabindex]']) {
         document.querySelectorAll(value).forEach((element) => {
             element.classList.add('no-tab');
             element.setAttribute('tabindex', -1);
@@ -422,7 +436,7 @@ document.querySelector('.overlay').addEventListener('click', () => {
         return;
     }
 
-    for (const value of ['.tabulator-cell[tabindex], .tabulator-cell a, .tabulator-cell select, .tabulator-cell span[tabindex], .tabulator-col[tabindex]']) {
+    for (const value of ['.tabulator-cell[tabindex]:not([tabulator-field="progress"]), .tabulator-cell a, .tabulator-cell select, .tabulator-cell span[tabindex], .tabulator-col[tabindex]']) {
         document.querySelectorAll(value).forEach((element) => {
             element.classList.add('no-tab');
             element.setAttribute('tabindex', -1);
@@ -502,12 +516,6 @@ document.querySelectorAll('.tab').forEach((element) => {
 
         const q = `${element.querySelector('a').dataset.query} `;
 
-        if (document.querySelector('.selected-tab')) {
-            document.querySelector('.selected-tab').classList.remove('selected-tab');
-        }
-
-        element.querySelector('a').classList.add('selected-tab');
-
         if (document.querySelector('.side').style.display === 'flex') {
             document.querySelector('.side').style.display = '';
             document.querySelector('.overlay').style.display = '';
@@ -526,7 +534,7 @@ document.querySelectorAll('.tab').forEach((element) => {
         });
 
         document.querySelector('.search').value = q;
-        searchFunction(null, q, null, true);
+        searchFunction(null, q, null);
     });
 
     element.querySelector('a').addEventListener('click', (e) => {
@@ -725,10 +733,6 @@ document.querySelector('.mismatched').addEventListener('click', (e) => {
 
     const q = 'is:mismatched ';
 
-    if (document.querySelector('.selected-tab')) {
-        document.querySelector('.selected-tab').classList.remove('selected-tab');
-    }
-
     if (document.querySelector('.side').style.display === 'flex') {
         document.querySelector('.side').style.display = '';
         document.querySelector('.overlay').style.display = '';
@@ -747,7 +751,7 @@ document.querySelector('.mismatched').addEventListener('click', (e) => {
     });
 
     document.querySelector('.search').value = q;
-    searchFunction(null, q, null, true);
+    searchFunction(null, q, null);
 });
 
 document.querySelector('.import').addEventListener('click', () => {
@@ -1160,10 +1164,7 @@ document.querySelector('.export').addEventListener('click', () => {
             //
             // myanimelist
             //      my_rewatching
-            //
-            // tsuzuku
             //      series_episodes
-            //      series_season
             //      series_title
             //      series_type
             //
@@ -1171,6 +1172,10 @@ document.querySelector('.export').addEventListener('click', () => {
             //      my_finish_date
             //      my_score
             //      my_start_date
+            //
+            // tsuzuku
+            //      my_skipping
+            //      series_season
             xml +=
             '    <anime>\n' +
             '        <my_finish_date>0000-00-00</my_finish_date>\n' +

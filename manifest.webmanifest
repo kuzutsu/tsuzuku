@@ -2,10 +2,11 @@
     "name": "Tsuzuku",
     "short_name": "Tsuzuku",
     "start_url": "./",
+    "id": "./",
     "display": "standalone",
     "lang": "en",
-    "background_color": "#fff",
-    "theme_color": "#fff",
+    "background_color": "#000",
+    "theme_color": "#000",
     "icons": [
         {
             "src": "./images/logo-192.png",

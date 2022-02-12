@@ -35,52 +35,48 @@
                 <span class="side-title">Personal list</span>
             </div>
             <div style="overflow: auto;">
-                <div class="tab" style="height: 40px; display: flex; align-items: center; padding: 0 19px;">
-                    <a href="./?query=status%253Aall%2520" data-query="status:all" style="margin-right: auto;">All</a>
-                    <span class="all" style="color: #a7abb7;">0</span>
+                <div class="tab" style="padding: 0 19px;">
+                    <a href="./?query=status%253Aall%2520" data-query="status:all">All</a>
+                    <span class="all">0</span>
                 </div>
-                <div class="tab" style="height: 40px; display: flex; align-items: center; padding: 0 19px 0 15px; border-left: 4px solid #fff;">
+                <div class="tab" style="border-left: 4px solid var(--status-completed);">
                     <a href="./?query=status%253Acompleted%2520" data-query="status:completed" style="margin-right: auto;">Completed</a>
-                    <a class="mismatched" href="./?query=is%253Amismatched%2520" title="Mismatched" style="display: none; align-items: center; margin-right: auto;">
-                        <svg viewBox="0 0 24 24" width="17" height="17" style="fill: #ffeb3b;">
+                    <a class="mismatched" href="./?query=is%253Amismatched%2520" title="Mismatched" style="display: none; align-items: center;">
+                        <svg viewBox="0 0 24 24" width="17" height="17">
                             <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"></path>
                         </svg>
                     </a>
-                    <span class="completed" style="color: #a7abb7;">0</span>
+                    <span class="completed">0</span>
                 </div>
-                <div class="tab" style="height: 40px; display: flex; align-items: center; padding: 0 19px 0 15px; border-left: 4px solid #f44336;">
-                    <a href="./?query=status%253Adropped%2520" data-query="status:dropped" style="margin-right: auto;">Dropped</a>
-                    <span class="dropped" style="color: #a7abb7;">0</span>
+                <div class="tab" style="border-left: 4px solid var(--status-dropped);">
+                    <a href="./?query=status%253Adropped%2520" data-query="status:dropped">Dropped</a>
+                    <span class="dropped">0</span>
                 </div>
-                <div class="tab" style="height: 40px; display: flex; align-items: center; padding: 0 19px 0 15px; border-left: 4px solid #ff9800;">
-                    <a href="./?query=status%253Apaused%2520" data-query="status:paused" style="margin-right: auto;">Paused</a>
-                    <span class="paused" style="color: #a7abb7;">0</span>
+                <div class="tab" style="border-left: 4px solid var(--status-paused);">
+                    <a href="./?query=status%253Apaused%2520" data-query="status:paused">Paused</a>
+                    <span class="paused">0</span>
                 </div>
-                <div class="tab" style="height: 40px; display: flex; align-items: center; padding: 0 19px 0 15px; border-left: 4px solid #9e9e9e;">
-                    <a href="./?query=status%253Aplanning%2520" data-query="status:planning" style="margin-right: auto;">Planning</a>
-                    <span class="planning" style="color: #a7abb7;">0</span>
+                <div class="tab" style="border-left: 4px solid var(--status-planning);">
+                    <a href="./?query=status%253Aplanning%2520" data-query="status:planning">Planning</a>
+                    <span class="planning">0</span>
                 </div>
-                <div class="tab" style="height: 40px; display: flex; align-items: center; padding: 0 19px 0 15px; border-left: 4px solid #03a9f4;">
-                    <a href="./?query=status%253Arewatching%2520" data-query="status:rewatching" style="margin-right: auto;">Rewatching</a>
-                    <span class="rewatching" style="color: #a7abb7;">0</span>
+                <div class="tab" style="border-left: 4px solid var(--status-rewatching);">
+                    <a href="./?query=status%253Arewatching%2520" data-query="status:rewatching">Rewatching</a>
+                    <span class="rewatching">0</span>
                 </div>
-                <div class="tab" style="height: 40px; display: flex; align-items: center; padding: 0 19px;">
-                    <a href="./?query=status%253Askipping%2520" data-query="status:skipping" style="margin-right: auto;">Skipping</a>
-                    <span class="skipping" style="color: #a7abb7;">0</span>
+                <div class="tab" style="padding: 0 19px;">
+                    <a href="./?query=status%253Askipping%2520" data-query="status:skipping">Skipping</a>
+                    <span class="skipping">0</span>
                 </div>
-                <div class="tab" style="height: 40px; display: flex; align-items: center; padding: 0 19px 0 15px; border-left: 4px solid #8bc34a;">
-                    <a href="./?query=status%253Awatching%2520" data-query="status:watching" style="margin-right: auto;">Watching</a>
-                    <span class="watching" style="color: #a7abb7;">0</span>
+                <div class="tab" style="border-left: 4px solid var(--status-watching);">
+                    <a href="./?query=status%253Awatching%2520" data-query="status:watching">Watching</a>
+                    <span class="watching">0</span>
                 </div>
-                <!--<div style="height: 40px; display: flex; align-items: center;"></div>
-                <div class="stats" style="height: 40px; display: flex; align-items: center; padding: 0 19px;">
-                    <a href="./stats">Stats</a>
-                </div>-->
                 <div style="height: 40px; display: flex; align-items: center;"></div>
-                <div class="import" style="height: 40px; display: flex; align-items: center; padding: 0 19px;">
+                <div class="import">
                     <span tabindex="0">Import</span>
                 </div>
-                <div class="export" style="height: 40px; display: flex; align-items: center; padding: 0 19px;">
+                <div class="export">
                     <span tabindex="0">Export</span>
                 </div>
             </div>
@@ -175,10 +171,7 @@
                         </svg>
                     </a>
                 </div>
-            </div><!--
-            <div style="position: absolute; top: 40px; height: 40px; z-index: 4;">
-                Regex
-            </div>-->
+            </div>
             <div class="qualifiers">
                 <table>
                     <tr>
@@ -197,7 +190,7 @@
                     </tr>
                     <tr>
                         <td><code data-value="is:new" tabindex="0">is:new</code></td>
-                        <td>Matches new database entries since last app launch</td>
+                        <td>Matches new database entries since last online</td>
                     </tr>
                     <tr>
                         <td><code data-value="is:ongoing" tabindex="0">is:ongoing</code></td>
@@ -241,7 +234,7 @@
                     </tr>
                 </table>
             </div>
-            <div class="database-container"></div>
+            <div class="database-container" style="display: none;"></div>
         </main>
         <script src="./global.js"></script>
         <script>

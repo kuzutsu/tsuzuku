@@ -8,23 +8,25 @@
 }
 
 .database-container {
-    height: auto;
-    max-height: calc(100% - 40px);
+    height: calc(100% - 40px);
     width: 100%;
 }
 
 .tabulator-tableHolder {
     height: 100%;
+    outline: none;
+    overflow: auto;
 }
 
 .top-container {
-    width: 100%;
-    display: none;
     align-items: center;
+    display: none;
+    width: 100%;
 }
 
 .tabulator-cell {
     height: 100% !important;
+    position: relative;
 }
 
 .tabulator-frozen {
@@ -46,16 +48,16 @@
 }
 
 [data-status="Completed"] [tabulator-field="color"] {
-    background: #e4e2e6 !important;
+    background: var(--status-completed) !important;
 }
 
 [data-status="Rewatching"] .indicator,
 [data-status="Rewatching"] [tabulator-field="color"] {
-    background: #03a9f4 !important;
+    background: var(--status-rewatching) !important;
 }
 
 [data-status="Planning"] [tabulator-field="color"] {
-    background: #9e9e9e !important;
+    background: var(--status-planning) !important;
 }
 
 [data-status="Skipping"] {
@@ -64,34 +66,34 @@
 
 [data-status="Watching"] .indicator,
 [data-status="Watching"] [tabulator-field="color"] {
-    background: #8bc34a !important;
+    background: var(--status-watching) !important;
 }
 
 [data-status="Dropped"] .indicator,
 [data-status="Dropped"] [tabulator-field="color"] {
-    background: #f44336 !important;
+    background: var(--status-dropped) !important;
 }
 
 [data-status="Paused"] .indicator,
 [data-status="Paused"] [tabulator-field="color"] {
-    background: #ff9800 !important;
+    background: var(--status-paused) !important;
 }
 
 .search {
-    width: 100%;
     border: 0;
     min-width: 100px;
+    width: 100%;
 }
 
 [tabulator-field="picture"] img {
-    pointer-events: none;
     background: var(--background-hover);
+    pointer-events: none;
 }
 
 .tabulator-cell[tabulator-field="picture"] svg,
 .tabulator-cell[tabulator-field="picture2"] svg {
-    position: absolute;
     display: none;
+    position: absolute;
 }
 
 .tabulator-selected .check {
@@ -191,8 +193,8 @@
 }
 
 .tabulator-col {
-    height: 40px;
     align-items: center;
+    height: 40px;
 }
 
 .tabulator-col-content {
@@ -201,23 +203,23 @@
 
 #number:disabled {
     background: var(--background);
-    color: #a7abb7;
+    color: var(--disabled);
     pointer-events: none;
 }
 
 .title {
-    color: #a7abb7;
+    color: var(--disabled);
 }
 
 .importing,
 .loading,
 .nothing,
 .searching {
-    display: flex;
     align-items: center;
+    display: flex;
+    flex-direction: column;
     justify-content: center;
     text-align: center;
-    flex-direction: column;
 }
 
 .loading {
@@ -246,7 +248,7 @@ header option {
 header option:disabled,
 .season option:disabled,
 .year option:disabled {
-    color: #a7abb7;
+    color: var(--disabled);
 }
 
 .season option,
@@ -296,13 +298,8 @@ header option:disabled,
 
 .tabulator-cell[tabulator-field="alternative"] {
     overflow-wrap: anywhere;
-    white-space: normal;
     padding: 4px 0;
-}
-
-.tabulator-tableHolder {
-    outline: none;
-    overflow: auto;
+    white-space: normal;
 }
 
 .tabulator {
@@ -319,17 +316,13 @@ header option:disabled,
 }
 
 .tabulator-col-sorter {
-    position: absolute;
-    top: 0;
     bottom: 0;
+    position: absolute;
     right: 0;
+    top: 0;
 }
 
 .tabulator-col-content {
-    position: relative;
-}
-
-.tabulator-cell {
     position: relative;
 }
 
@@ -351,8 +344,8 @@ header option:disabled,
 }
 
 .tabulator-row {
-    display: flex;
     align-items: center;
+    display: flex;
 }
 
 .tabulator-frozen {
@@ -363,11 +356,6 @@ select {
     font-size: 14px;
 }
 
-.selected-tab {
-    color: var(--color) !important;
-    font-weight: 500;
-}
-
 input {
     font-size: 14px;
     padding: 0;
@@ -376,18 +364,13 @@ input {
 .related-container,
 .search-container,
 .season-container {
-    padding: 0 19px;
-    overflow: auto;
     height: 40px;
+    overflow: auto;
+    padding: 0 19px;
 }
 
 .hide .tabulator-cell[tabulator-field="picture"] img {
     display: none;
-}
-
-.tab,
-.tabulator-cell[tabulator-field="season"] span:hover {
-    cursor: pointer;
 }
 
 .header-selected .header-title,
@@ -404,7 +387,7 @@ input {
 }
 
 ::placeholder {
-    color: #a7abb7;
+    color: var(--disabled);
     opacity: 1;
 }
 
@@ -418,37 +401,40 @@ input {
 .error select:disabled,
 .error .tabulator-col[tabulator-field="progress"] .tabulator-col-title,
 .error .tabulator-col[tabulator-field="status"] .tabulator-col-title {
-    color: #a7abb7;
+    color: var(--disabled);
 }
 
 .error .menu svg {
-    fill: #a7abb7;
+    fill: var(--disabled);
 }
 
 .side {
-    height: 100%;
-    width: 200px;
     background: var(--background);
-    position: absolute;
-    z-index: 4;
+    box-shadow: 0 1px 2px 0 var(--shadow), 0 1px 3px 1px var(--shadow);
     display: none;
     flex-direction: column;
     font-size: 14px;
-    box-shadow: 0 1px 2px 0 var(--shadow), 0 1px 3px 1px var(--shadow);
+    height: 100%;
+    position: absolute;
+    width: 200px;
+    z-index: 4;
 }
 
 .overlay {
-    height: 100%;
-    width: 100%;
-    position: absolute;
-    z-index: 3;
     background: var(--background);
     display: none;
+    height: 100%;
     opacity: 0.8;
+    position: absolute;
+    width: 100%;
+    z-index: 3;
 }
 
 .tab {
-    cursor: default;
+    align-items: center;
+    display: flex;
+    height: 40px;
+    padding: 0 19px 0 15px; 
 }
 
 .export:hover,
@@ -459,8 +445,9 @@ input {
 }
 
 .export2 {
-    margin-top: 11.5px;
     border: 1px solid var(--color);
+    display: inline-flex;
+    margin-top: 11.5px;
     padding: 10.5px;
 }
 
@@ -474,13 +461,13 @@ input {
 }
 
 .progress {
-    background: #f44336;
+    background: var(--progress);
     height: 4px;
     width: 0;
 }
 
 .found {
-    background: #8bc34a !important;
+    background: var(--progress-found) !important;
 }
 
 .myanimelist,
@@ -492,26 +479,26 @@ input {
 .tabulator-row:focus-within .relations,
 .tabulator-row:hover .myanimelist,
 .tabulator-row:hover .relations {
-    display: inline-flex;
     align-items: center;
+    display: inline-flex;
 }
 
 .qualifiers {
-    position: absolute;
-    z-index: 2;
     background: var(--background);
-    padding: 19px;
-    height: calc(100% - 40px);
-    width: 100%;
-    overflow: auto;
     display: none;
+    height: calc(100% - 40px);
+    overflow: auto;
+    padding: 19px;
+    position: absolute;
     top: 40px;
+    width: 100%;
+    z-index: 2;
 }
 
 code {
+    background: var(--background-hover);
     font-family: monospace;
     padding: 4px;
-    background: var(--background-hover);
 }
 
 td {
@@ -525,4 +512,33 @@ tr {
 
 .mono {
     font-family: monospace;
+}
+
+[tabulator-field="alternative"] .tabulator-col-sorter {
+    display: none;
+}
+
+.alt-sorted [tabulator-field="alternative"] .tabulator-col-sorter {
+    display: block;
+}
+
+.mismatched svg,
+[title="Mismatched"] svg {
+    fill: var(--mismatched);
+}
+
+.tab span {
+    color: var(--disabled);
+}
+
+.tab a:last-of-type {
+    margin-right: auto;
+}
+
+.export,
+.import {
+    align-items: center;
+    display: flex;
+    height: 40px;
+    padding: 0 19px;
 }

@@ -29,11 +29,11 @@ While offline, thumbnails will not load unless cached
 | `alt:false` | [**life alt:false**](https://kuzutsu.github.io/tsuzuku/?query=life%2520alt%253Afalse%2520) matches canonical titles with "life" (matches *ReLIFE* but **not** *Nichijou*)<br><br>[**world alt:false**](https://kuzutsu.github.io/tsuzuku/?query=world%2520alt%253Afalse%2520) matches canonical titles with "world" (matches *Accel World* but **not** *Re:Zero kara Hajimeru Isekai Seikatsu*)
 | `is:dead` | [**is:dead**](https://kuzutsu.github.io/tsuzuku/?query=is%253Adead%2520) matches saved titles removed from the database
 | `is:mismatched` | [**is:mismatched**](https://kuzutsu.github.io/tsuzuku/?query=is%253Amismatched%2520) matches completed titles with progress different from number of episodes
-| `is:new` | [**is:new**](https://kuzutsu.github.io/tsuzuku/?query=is%253Anew%2520) matches new database entries since last app launch
+| `is:new` | [**is:new**](https://kuzutsu.github.io/tsuzuku/?query=is%253Anew%2520) matches new database entries since last online
 | `is:ongoing` | [**is:ongoing**](https://kuzutsu.github.io/tsuzuku/?query=is%253Aongoing%2520) matches ongoing titles
 | `is:selected` | [**is:selected**](https://kuzutsu.github.io/tsuzuku/?query=is%253Aselected%2520) matches selected titles
 | <code>random:<i>NUMBER</i></code> | [**random:5**](https://kuzutsu.github.io/tsuzuku/?query=random%253A5%2520) randomly selects five titles<br><br>[**magical random:10**](https://kuzutsu.github.io/tsuzuku/?query=magical%2520random%253A10%2520) randomly selects 10 titles with "magical"
-| `regex:true` | [**senpai$ regex:true**](https://kuzutsu.github.io/tsuzuku/?query=senpai%2524%2520regex%253Atrue%2520) matches titles ending with "senpai" (matches *Tejina-senpai* **and** *Seishun Buta Yarou wa Bunny Girl Senpai no Yume wo Minai*)<br><br>[**senpai$ regex:true alt:false**](https://kuzutsu.github.io/tsuzuku/?query=senpai%2524%2520regex%253Atrue%2520alt%253Afalse%2520) matches canonical titles ending with "senpai" (matches *Tejina-senpai* but **not** *Seishun Buta Yarou wa Bunny Girl Senpai no Yume wo Minai*)
+| `regex:true` | [**senpai$ regex:true**](https://kuzutsu.github.io/tsuzuku/?query=senpai%2524%2520regex%253Atrue%2520) matches titles ending with "senpai" (matches *Tejina-senpai* and *Seishun Buta Yarou wa Bunny Girl Senpai no Yume wo Minai*)<br><br>[**senpai$ regex:true alt:false**](https://kuzutsu.github.io/tsuzuku/?query=senpai%2524%2520regex%253Atrue%2520alt%253Afalse%2520) matches canonical titles ending with "senpai" (matches *Tejina-senpai* but **not** *Seishun Buta Yarou wa Bunny Girl Senpai no Yume wo Minai*)
 
 #### OR-type
 Separate with `|`, no spaces
@@ -61,9 +61,9 @@ Examples:
 * Before 2019 ([`year:<2019`](https://kuzutsu.github.io/tsuzuku/?query=year%253A%253C2019))
 
 ### Mass change status
-Click on thumbnails to select
+Click on thumbnail to select
 
-On desktop, hold `Shift` to select range
+To select range, hold `Shift` on desktop or hold down thumbnail on mobile
 
 ### List layout
 Click on image icon to toggle

@@ -1,4 +1,4 @@
-const sw = '62';
+const sw = '63';
 
 addEventListener('install', (event) => {
     event.waitUntil(
@@ -33,18 +33,13 @@ addEventListener('install', (event) => {
                 './images/logo-maskable-192.png',
                 './images/logo-maskable-512.png',
 
-                // stats
-                // './stats/',
-                // './stats/index.css',
-                // './stats/index.js',
-
                 // tags
                 './tags/',
                 './tags/index.css',
                 './tags/index.js',
 
                 // third-party
-                'https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js',
+                'https://cdn.jsdelivr.net/npm/fuse.js@6.5.3/dist/fuse.min.js',
                 'https://cdn.jsdelivr.net/npm/tabulator-tables@4.9.3/dist/js/modules/edit.min.js',
                 'https://cdn.jsdelivr.net/npm/tabulator-tables@4.9.3/dist/js/modules/filter.min.js',
                 'https://cdn.jsdelivr.net/npm/tabulator-tables@4.9.3/dist/js/modules/format.min.js',
@@ -91,7 +86,7 @@ addEventListener('fetch', (event) => {
                 }
 
                 return response;
-            });
+            }).catch(() => cached);
 
             return cached || fetched;
         }))
