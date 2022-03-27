@@ -1936,13 +1936,6 @@ fetch(source)
 
                     row.getCell('alternative').getElement().querySelector('.indicator').style.width = `${width}%`;
                     row.getCell('progress').getElement().querySelector('span:not(.add)').title = `${Math.round(width)}%`;
-
-                    // side effect of tabulator tweak
-                    new ResizeObserver(() => {
-                        row.getElement().querySelectorAll('.tabulator-cell:not([tabulator-field="alternative"])').forEach((cell) => {
-                            cell.style.height = `${row.getElement().querySelector('[tabulator-field="alternative"]').clientHeight}px`;
-                        });
-                    }).observe(row.getElement().querySelector('[tabulator-field="alternative"]'));
                 },
                 sortOrderReverse: true,
                 tableBuilt: function () {
@@ -1962,15 +1955,6 @@ fetch(source)
 
                     document.querySelector('.tabulator-header').remove();
                     document.querySelector('.tabulator-tableHolder').prepend(header);
-
-                    // side effect of tabulator tweak
-                    new ResizeObserver(() => {
-                        document.querySelectorAll('.tabulator-row').forEach((row) => {
-                            row.querySelectorAll('.tabulator-cell:not([tabulator-field="alternative"])').forEach((cell) => {
-                                cell.style.height = `${row.querySelector('[tabulator-field="alternative"]').clientHeight}px`;
-                            });
-                        });
-                    }).observe(document.querySelector('.tabulator'));
                 }
             });
         });
