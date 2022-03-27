@@ -143,34 +143,6 @@
                         <span class="related-title"></span>
                     </span>
                 </div>
-                <div class="season-container" style="width: 100%; display: none; align-items: center;">
-                    <a class="prev" target="_blank" rel="noreferrer" title="Previous season" data-exists="false" style="display: inline-flex; align-items: center; margin-right: 19px;">
-                        <svg viewBox="0 0 24 24" width="17" height="17">
-                            <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"></path>
-                        </svg>
-                    </a>
-                    <select class="season" title="Season" style="margin-right: 19px;">
-                        <option selected disabled>Season</option>
-                        <option>Winter</option>
-                        <option>Spring</option>
-                        <option>Summer</option>
-                        <option>Fall</option>
-                        <option>TBA</option>
-                    </select>
-                    <select class="year" title="Year" style="margin-right: 19px;">
-                        <option selected disabled>Year</option>
-                    </select>
-                    <span class="enter2" title="Search" tabindex="0" style="display: inline-flex; align-items: center; margin-right: 19px;">
-                        <svg viewBox="0 0 24 24" width="17" height="17">
-                            <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"></path>
-                        </svg>
-                    </span>
-                    <a class="next" target="_blank" rel="noreferrer" title="Next season" data-exists="false" style="display: inline-flex; align-items: center;">
-                        <svg viewBox="0 0 24 24" width="17" height="17">
-                            <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path>
-                        </svg>
-                    </a>
-                </div>
             </div>
             <div class="qualifiers">
                 <table>
@@ -180,13 +152,13 @@
                     </tr>
                     <tr>
                         <td><code data-value2="episodes:" tabindex="0">episodes:<span style="font-style: italic; font-family: inherit;">EPISODES</span></code></td>
-                        <td>Matches titles with desired number of episodes</td>
+                        <td>Matches anime with desired number of episodes</td>
                     </tr>
                         <td><code data-value="is:dead" tabindex="0">is:dead</code></td>
-                        <td>Matches saved titles removed from the database</td>
+                        <td>Matches anime in personal list removed from the database</td>
                     <tr> 
                         <td><code data-value="is:mismatched" tabindex="0">is:mismatched</code></td>
-                        <td>Matches completed titles with progress different from number of episodes</td>
+                        <td>Matches anime in completed list with progress different from number of episodes</td>
                     </tr>
                     <tr>
                         <td><code data-value="is:new" tabindex="0">is:new</code></td>
@@ -194,19 +166,19 @@
                     </tr>
                     <tr>
                         <td><code data-value="is:ongoing" tabindex="0">is:ongoing</code></td>
-                        <td>Matches ongoing titles</td>
+                        <td>Matches ongoing anime</td>
                     </tr>
                     <tr>
                         <td><code data-value="is:selected" tabindex="0">is:selected</code></td>
-                        <td>Matches selected titles</td>
+                        <td>Matches selected anime</td>
                     </tr>
                     <tr>
                         <td><code data-value2="progress:" tabindex="0">progress:<span style="font-style: italic; font-family: inherit;">PROGRESS</span></code></td>
-                        <td>Matches titles with desired progress (absolute or relative to number of episodes)</td>
+                        <td>Matches anime with desired progress (absolute or relative to number of episodes)</td>
                     </tr>
                     <tr>
                         <td><code data-value2="random:" tabindex="0">random:<span style="font-style: italic; font-family: inherit;">NUMBER</span></code></td>
-                        <td>Randomly selects desired number of titles from search result</td>
+                        <td>Randomly selects desired number of anime from search result</td>
                     </tr>
                     <tr>
                         <td><code data-value="regex:true" tabindex="0">regex:true</code></td>
@@ -214,42 +186,59 @@
                     </tr>
                     <tr>
                         <td><code data-value2="season:" tabindex="0">season:<span style="font-style: italic; font-family: inherit;">SEASON</span></code></td>
-                        <td>Matches titles in desired season (<span class="mono">winter</span>, <span class="mono">spring</span>, <span class="mono">summer</span>, <span class="mono">fall</span>, <span class="mono">tba</span>)</td>
+                        <td>Matches anime in desired season (<span class="mono">winter</span>, <span class="mono">spring</span>, <span class="mono">summer</span>, <span class="mono">fall</span>, <span class="mono">tba</span>)</td>
                     </tr>
                     <tr>
                         <td><code data-value2="status:" tabindex="0">status:<span style="font-style: italic; font-family: inherit;">STATUS</span></code></td>
-                        <td>Matches titles with desired status (<span class="mono">all</span>, <span class="mono">none</span>, <span class="mono">completed</span>, <span class="mono">dropped</span>, <span class="mono">paused</span>, <span class="mono">planning</span>, <span class="mono">rewatching</span>, <span class="mono">skipping</span>, <span class="mono">watching</span>)</td>
+                        <td>Matches anime with desired status (<span class="mono">all</span>, <span class="mono">none</span>, <span class="mono">completed</span>, <span class="mono">dropped</span>, <span class="mono">paused</span>, <span class="mono">planning</span>, <span class="mono">rewatching</span>, <span class="mono">skipping</span>, <span class="mono">watching</span>)</td>
                     </tr>
                     <tr>
                         <td><code data-value2="tag:" tabindex="0">tag:<span style="font-style: italic; font-family: inherit;">TAG</span></code></td>
-                        <td>Matches titles with desired tag</td>
+                        <td>Matches anime with desired tag</td>
                     </tr>
                     <tr>
                         <td><code data-value2="type:" tabindex="0">type:<span style="font-style: italic; font-family: inherit;">TYPE</span></code></td>
-                        <td>Matches titles of desired type (<span class="mono">tv</span>, <span class="mono">movie</span>, <span class="mono">ova</span>, <span class="mono">ona</span>, <span class="mono">special</span>, <span class="mono">tba</span>)</td>
+                        <td>Matches anime of desired type (<span class="mono">tv</span>, <span class="mono">movie</span>, <span class="mono">ova</span>, <span class="mono">ona</span>, <span class="mono">special</span>, <span class="mono">tba</span>)</td>
                     </tr>
                     <tr>
                         <td><code data-value2="year:" tabindex="0">year:<span style="font-style: italic; font-family: inherit;">YEAR</span></code></td>
-                        <td>Matches titles in desired year</td>
+                        <td>Matches anime in desired year</td>
                     </tr>
                 </table>
             </div>
             <div class="database-container" style="display: none;"></div>
         </main>
-        <script src="./global.js"></script>
+        <script type="module" src="./global.js"></script>
         <script>
-            switch (localStorage.getItem('thumbnails')) {
-                case 'hide':
-                    document.body.classList.add('hide');
-                    document.querySelector('.thumbnails path').setAttribute('d', 'M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z');
-                    break;
+            const
+                settings = {
+                    thumbnails: true
+                },
+                settings2 = {};
 
-                case 'show':
-                    break;
+            let value = null;
 
-                default:
-                    localStorage.setItem('thumbnails', 'show');
-                    break;
+            try {
+                const map = new Map(Object.entries(JSON.parse(localStorage.getItem('tsuzuku'))));
+
+                for (const [key, value] of Object.entries(settings)) {
+                    if (map.has(key)) {
+                        settings2[key] = map.get(key);
+                    } else {
+                        settings2[key] = value;
+                    }
+                }
+
+                localStorage.setItem('tsuzuku', JSON.stringify(settings2));
+            } catch (e) {
+                localStorage.setItem('tsuzuku', JSON.stringify(settings));
+            }
+
+            value = JSON.parse(localStorage.getItem('tsuzuku'));
+
+            if (!value.thumbnails) {
+                document.body.classList.add('hide');
+                document.querySelector('.thumbnails path').setAttribute('d', 'M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z');
             }
         </script>
         <script defer src="https://cdn.jsdelivr.net/npm/tabulator-tables@4.9.3/dist/js/tabulator_core.min.js"></script>

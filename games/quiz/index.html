@@ -52,40 +52,46 @@
                     </svg>
                 </span>
             </div>
-            <div class="settings-container" style="display: none; flex-direction: column; height: 280px; min-height: 280px;">
-                <div style="display: inline-flex; white-space: nowrap; width: 100%; height: 40px; align-items: center; user-select: none;">
-                    <span style="color: #a7abb7;">※ Changing any setting will reset both scores</span>
+            <div class="settings-container" style="display: none; flex-direction: column;">
+                <div class="label">
+                    <span style="color: var(--disabled);">※ Changing any setting will reset both scores</span>
                 </div>
                 <div style="display: flex;">
                     <div style="display: flex; flex-direction: column;">
-                        <div style="display: inline-flex; white-space: nowrap; width: 100%; height: 40px; align-items: center; user-select: none;">
+                        <div class="label">
                             <label for="selection">Selection</label>
                         </div>
-                        <div style="display: inline-flex; white-space: nowrap; width: 100%; height: 40px; align-items: center; user-select: none;">
+                        <div class="label">
                             <label for="type">Type</label>
                         </div>
-                        <div style="display: inline-flex; white-space: nowrap; width: 100%; height: 40px; align-items: center; user-select: none;"> 
-                            <label for="operators">Enable operators</label>
+                        <div class="label"> 
+                            <label for="operators">Enable operators (<span class="mono">&lt;</span>, <span class="mono">&gt;</span>, <span class="mono">&lt;=</span>, <span class="mono">&gt;=</span>)</label>
                         </div>
-                        <div style="display: inline-flex; white-space: nowrap; width: 100%; height: 40px; align-items: center; user-select: none;">
+                        <div class="label">
                             <label for="choices">Number of choices</label>
                         </div>
-                        <div style="display: inline-flex; white-space: nowrap; width: 100%; height: 40px; align-items: center; user-select: none;"> 
+                        <div class="label"> 
+                            <label for="auto-submit">Automatic submit</label>
+                        </div>
+                        <div class="label"> 
+                            <label for="skip">Enable skipping</label>
+                        </div>
+                        <div class="label"> 
                             <label for="negative">Enable negative score</label>
                         </div>
-                        <div style="display: inline-flex; white-space: nowrap; width: 100%; height: 40px; align-items: center; user-select: none;">
+                        <div class="label">
                             <label for="reset-incorrect">Reset score when incorrect</label>
                         </div>
                     </div>
                     <div style="width: 100%; min-width: 19px;"></div>
                     <div style="display: flex; flex-direction: column;">
-                        <div style="display: inline-flex; white-space: nowrap; width: 100%; height: 40px; align-items: center; user-select: none; justify-content: flex-end;">
+                        <div class="input">
                             <select id="selection">
                                 <option>single</option>
                                 <option>multiple</option>
                             </select>
                         </div>
-                        <div style="display: inline-flex; white-space: nowrap; width: 100%; height: 40px; align-items: center; user-select: none; justify-content: flex-end;">
+                        <div class="input">
                             <select id="type">
                                 <option>tag</option>
                                 <option>year</option>
@@ -94,10 +100,10 @@
                                 <option>random</option>
                             </select>
                         </div>
-                        <div style="display: inline-flex; white-space: nowrap; width: 100%; height: 40px; align-items: center; user-select: none; justify-content: flex-end;">
+                        <div class="input">
                             <input id="operators" type="checkbox"></input>
                         </div>
-                        <div style="display: inline-flex; white-space: nowrap; width: 100%; height: 40px; align-items: center; user-select: none; justify-content: flex-end;">
+                        <div class="input">
                             <select id="choices">
                                 <option>2</option>
                                 <option>3</option>
@@ -111,10 +117,16 @@
                                 <option>random</option>
                             </select>
                         </div>
-                        <div style="display: inline-flex; white-space: nowrap; width: 100%; height: 40px; align-items: center; user-select: none; justify-content: flex-end;">
+                        <div class="input">
+                            <input id="auto-submit" type="checkbox"></input>
+                        </div>
+                        <div class="input">
+                            <input id="skip" type="checkbox"></input>
+                        </div>
+                        <div class="input">
                             <input id="negative" type="checkbox"></input>
                         </div>
-                        <div style="display: inline-flex; white-space: nowrap; width: 100%; height: 40px; align-items: center; user-select: none; justify-content: flex-end;">
+                        <div class="input">
                             <input id="reset-incorrect" type="checkbox"></input>
                         </div>
                     </div>
@@ -133,10 +145,12 @@
             </div>
             <div class="choice"></div>
         </main>
-        <script src="../../global.js"></script>
+        <script type="module" src="../../global.js"></script>
         <script>
-            if (!localStorage.getItem('quiz')) {
-                localStorage.setItem('quiz', JSON.stringify({
+            const
+                settings = {
+                    autoSubmit: false,
+                    cheat: {},
                     choices: 4,
                     high: 0,
                     negative: true,
@@ -144,17 +158,38 @@
                     resetIncorrect: false,
                     score: 0,
                     selection: 'single',
+                    skip: true,
                     type: 'tag'
-                }));
+                },
+                settings2 = {};
+
+            let value = null;
+
+            try {
+                const map = new Map(Object.entries(JSON.parse(localStorage.getItem('quiz'))));
+
+                for (const [key, value] of Object.entries(settings)) {
+                    if (map.has(key)) {
+                        settings2[key] = map.get(key);
+                    } else {
+                        settings2[key] = value;
+                    }
+                }
+
+                localStorage.setItem('quiz', JSON.stringify(settings2));
+            } catch (e) {
+                localStorage.setItem('quiz', JSON.stringify(settings));
             }
 
-            const value = JSON.parse(localStorage.getItem('quiz'));
+            value = JSON.parse(localStorage.getItem('quiz'));
 
             document.querySelector('#choices').value = value.choices;
             document.querySelector('#selection').value = value.selection;
             document.querySelector('#type').value = value.type;
 
             document.querySelector('#operators').checked = value.operators;
+            document.querySelector('#auto-submit').checked = value.autoSubmit;
+            document.querySelector('#skip').checked = value.skip;
             document.querySelector('#negative').checked = value.negative;
             document.querySelector('#reset-incorrect').checked = value.resetIncorrect;
 
@@ -166,7 +201,15 @@
                 document.querySelector('#operators').setAttribute('disabled', '');
             }
 
-            if (document.querySelector('#reset-incorrect').checked) {
+            if (value.selection === 'multiple') {
+                document.querySelector('[for="auto-submit"]').style.color = 'var(--disabled)';
+                document.querySelector('#auto-submit').setAttribute('disabled', '');
+            } else {
+                document.querySelector('[for="auto-submit"]').style.color = '';
+                document.querySelector('#auto-submit').removeAttribute('disabled');
+            }
+
+            if (value.resetIncorrect) {
                 document.querySelector('[for="negative"]').style.color = 'var(--disabled)';
                 document.querySelector('#negative').setAttribute('disabled', '');
             } else {

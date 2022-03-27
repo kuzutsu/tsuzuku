@@ -16,6 +16,11 @@
     font-weight: 500;
 }
 
+.mono {
+    color: inherit;
+    font-family: monospace;
+}
+
 .choice div[style] span {
     color: #fff;
 }
@@ -41,16 +46,16 @@ select {
 .menu,
 .query {
     align-items: center;
+    display: none;
+    overflow: auto;
     padding: 0 19px;
     white-space: nowrap;
-    overflow: auto;
-    display: none;
 }
 
 .settings-container {
+    overflow: auto;
     padding: 0 19px;
     width: 100%;
-    overflow: auto;
 }
 
 .menu,
@@ -69,29 +74,29 @@ select {
 }
 
 .reload {
-    display: flex;
     align-items: center;
-    justify-content: center;
+    display: flex;
     height: 40px;
-    width: 40px;
+    justify-content: center;
     min-height: 40px;
     min-width: 40px;
+    width: 40px;
 }
 
 .theme {
-    display: flex;
     align-items: center;
+    display: flex;
     justify-content: center;
 }
 
 .picture {
     height: 40px;
-    width: 40px;
     min-height: 40px;
     min-width: 40px;
     object-fit: cover;
-    user-select: none;
     pointer-events: none;
+    user-select: none;
+    width: 40px;
 }
 
 .dim {
@@ -99,18 +104,19 @@ select {
 }
 
 .title {
-    overflow-wrap: anywhere;
     /*min-width: 100px;*/
+    overflow-wrap: anywhere;
     padding: 4px 0;
 }
 
 .query-container {
-    width: 100%;
     min-width: 100px;
     overflow: auto;
+    width: 100%;
 }
 
 .choice {
+    display: none;
     overflow: auto;
 }
 
@@ -120,8 +126,8 @@ select {
 
 .choice div:focus-within .myanimelist,
 .choice div:hover .myanimelist {
-    display: inline-flex;
     align-items: center;
+    display: inline-flex;
 }
 
 .choice div {
@@ -130,4 +136,23 @@ select {
 
 select {
     border: 1px solid #fff;
+}
+
+.input,
+.label {
+    align-items: center;
+    display: inline-flex;
+    height: 40px;
+    min-height: 40px;
+    user-select: none;
+    white-space: nowrap;
+    width: 100%;
+}
+
+.input {
+    justify-content: flex-end;
+}
+
+.choice > div:not(:first-child) {
+    margin-top: 1px;
 }

@@ -1,3 +1,5 @@
+const source = 'https://raw.githubusercontent.com/manami-project/anime-offline-database/master/anime-offline-database-minified.json';
+
 document.body.addEventListener('keydown', (e) => {
     if (e.key !== 'Enter' || e.repeat) {
         return;
@@ -26,3 +28,7 @@ if ('serviceWorker' in navigator) {
             });
         });
 }
+
+export {
+    source
+};

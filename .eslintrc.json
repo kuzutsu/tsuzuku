@@ -6,6 +6,8 @@
     },
     "globals": {
         "Fuse": "readonly",
+        "Row": "readonly",
+        "RowManager": "readonly",
         "Tabulator": "readonly"
     },
     "extends": "eslint:all",
@@ -17,6 +19,7 @@
         "array-element-newline": "off",
         "capitalized-comments": "off",
         "complexity": "off",
+        "consistent-this": "off",
         "dot-location": "off",
         "eol-last": "off",
         "func-names": "off",

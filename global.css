@@ -29,21 +29,23 @@
     --background-hover: #353535;
     --color: #fff;
     --disabled: #a7abb7;
-    --mismatched: #ffeb3b;
-    --new: #8bc34a;
-    --progress: #f44336;
-    --progress-found: #8bc34a;
-    --r18: #f44336;
-    --selected: #4065ba;
+    --green: #14ac53;
+    --mismatched: #f5cf11;
+    --new: #14ac53;
+    --progress: #f54336;
+    --progress-found: #14ac53;
+    --red: #f54336;
+    --r18: #f54336;
+    --selected: #4065b3;
     --selected-color: #fff;
     --selected-hover: #5a79c1;
     --shadow: #000;
     --status-completed: #fff;
-    --status-dropped: #f44336;
-    --status-paused: #ff9800;
+    --status-dropped: #f54336;
+    --status-paused: #f5cf11;
     --status-planning: #9e9e9e;
     --status-rewatching: #03a9f4;
-    --status-watching: #8bc34a;
+    --status-watching: #14ac53;
 }
 
 html {

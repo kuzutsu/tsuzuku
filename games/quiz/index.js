@@ -1,10 +1,13 @@
+import {
+    source
+} from '../../global.js';
+
 const
     choice = [],
     choice2 = [2, 3, 4, 5, 6, 7, 8, 9, 10],
     database = [],
     episodes = [],
     episodes2 = new Map(),
-    green = '#2e7d32',
     max = {
         episode: null,
         year: null
@@ -14,7 +17,6 @@ const
         year: null
     },
     operators = ['', '<', '>', '<=', '>='],
-    red = '#c62828',
     seasons = ['fall', 'spring', 'summer', 'winter'],
     tags = [],
     tags2 = new Map(),
@@ -26,7 +28,7 @@ let choice3 = null,
     choices = null,
     type = null;
 
-fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/master/anime-offline-database-minified.json')
+fetch(source)
     .then((response) => response.json())
     .then((data) => {
         const d = data.data;
@@ -40,7 +42,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                     m = d[i].sources.filter((sources) => sources.match(/myanimelist\.net/gu)),
                     y = d[i].animeSeason.year;
 
-                let source = null;
+                let source2 = null;
 
                 if (!m.length) {
                     continue;
@@ -51,7 +53,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                 }
 
                 if (d[i].sources.filter((sources) => sources.match(/myanimelist\.net/gu)).length) {
-                    source = /myanimelist\.net/gu;
+                    source2 = /myanimelist\.net/gu;
                 }
 
                 if (d[i].picture === 'https://cdn.myanimelist.net/images/qm_50.gif') {
@@ -62,7 +64,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                     continue;
                 }
 
-                for (const value of d[i].sources.filter((sources) => sources.match(source))) {
+                for (const value of d[i].sources.filter((sources) => sources.match(source2))) {
                     const tt = d[i].tags.map((t) => t.replace(/\s/gu, '_'));
 
                     for (const value2 of tt) {
@@ -152,12 +154,78 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                 return count;
             }
 
-            function game() {
+            function submit() {
+                const c = JSON.parse(localStorage.getItem('quiz'));
+
+                let incorrect = false,
+                    score = 0;
+
+                for (let i = 0; i < choice3; i++) {
+                    if (choice.indexOf(i) > -1) {
+                        if (document.querySelector(`.choice div:nth-child(${i + 1})`).classList.contains('selected')) {
+                            document.querySelector(`.choice div:nth-child(${i + 1})`).classList.remove('selected');
+                            document.querySelector(`.choice div:nth-child(${i + 1})`).style.background = 'var(--green)';
+                            score += 1;
+                        } else {
+                            if (c.selection === 'multiple') {
+                                document.querySelector(`.choice div:nth-child(${i + 1})`).style.background = 'var(--red)';
+                                score -= 1;
+                                incorrect = true;
+                            }
+                        }
+                    } else {
+                        if (document.querySelector(`.choice div:nth-child(${i + 1})`).classList.contains('selected')) {
+                            document.querySelector(`.choice div:nth-child(${i + 1})`).classList.remove('selected');
+                            document.querySelector(`.choice div:nth-child(${i + 1})`).style.background = 'var(--red)';
+                            score -= 1;
+                            incorrect = true;
+                        } else {
+                            if (c.selection === 'multiple') {
+                                document.querySelector(`.choice div:nth-child(${i + 1})`).style.background = 'var(--green)';
+                                score += 1;
+                            }
+                        }
+
+                        document.querySelector(`.choice div:nth-child(${i + 1})`).classList.add('dim');
+                    }
+                }
+
+                if (c.resetIncorrect && incorrect) {
+                    c.score = 0;
+                } else {
+                    c.score += score;
+                }
+
+                if (!c.negative && c.score < 0) {
+                    c.score = 0;
+                }
+
+                document.querySelector('.score').innerHTML = c.score;
+
+                if (c.score > c.high) {
+                    c.high = c.score;
+                    document.querySelector('.high').innerHTML = c.high;
+                }
+
+                document.querySelector('.submit').innerHTML = 'Next';
+
+                c.cheat = {};
+
+                localStorage.setItem('quiz', JSON.stringify(c));
+            }
+
+            function game(start) {
                 const
                     c = JSON.parse(localStorage.getItem('quiz')),
                     choices2 = [],
-                    operator = operators[Math.round(Math.random() * (operators.length - 1))],
-                    season = seasons[Math.round(Math.random() * (seasons.length - 1))];
+                    operator =
+                        start && c.cheat.operator
+                            ? c.cheat.operator
+                            : operators[Math.round(Math.random() * (operators.length - 1))],
+                    season =
+                        start && c.cheat.season
+                            ? c.cheat.season
+                            : seasons[Math.round(Math.random() * (seasons.length - 1))];
 
                 choice3 =
                     c.choices === 'random'
@@ -165,46 +233,75 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                         : c.choices;
 
                 choices =
-                    c.selection === 'single'
-                        ? 1
-                        : Math.round(Math.random() * choice3);
+                    c.selection === 'multiple'
+                        ? Math.round(Math.random() * choice3)
+                        : 1;
 
                 document.querySelector('.score').innerHTML = c.score;
                 document.querySelector('.high').innerHTML = c.high;
-                document.querySelector('.submit').innerHTML = 'Submit';
                 document.querySelector('.choice').innerHTML = '';
 
-                if (c.type === 'random') {
-                    type = types[Math.round(Math.random() * (types.length - 1))];
+                document.querySelector('.submit').innerHTML =
+                    c.autoSubmit && c.selection !== 'multiple'
+                        ? ''
+                        : 'Submit';
+
+                if (c.skip) {
+                    document.querySelector('.reload svg').style.fill = '';
+                    document.querySelector('.reload').title = 'Skip';
                 } else {
-                    if (['episodes', 'year'].indexOf(c.type) > -1) {
-                        if (c.operators) {
-                            type = `${c.type} (with operators)`;
-                        } else {
-                            type = `${c.type} (without operators)`;
-                        }
+                    document.querySelector('.reload svg').style.fill = 'var(--disabled)';
+                    document.querySelector('.reload').title = 'Skipping disabled';
+                }
+
+                if (start && c.cheat.type) {
+                    type = c.cheat.type;
+                } else {
+                    if (c.type === 'random') {
+                        type = types[Math.round(Math.random() * (types.length - 1))];
                     } else {
-                        type = c.type;
+                        if (['episodes', 'year'].indexOf(c.type) > -1) {
+                            if (c.operators) {
+                                type = `${c.type} (with operators)`;
+                            } else {
+                                type = `${c.type} (without operators)`;
+                            }
+                        } else {
+                            type = c.type;
+                        }
                     }
                 }
 
                 choice.splice(0);
 
                 if (choices) {
-                    for (let i = 0; i < choices; i++) {
-                        let n = Math.round(Math.random() * (choice3 - 1));
+                    if (start && c.cheat.choice) {
+                        choice.push(...c.cheat.choice);
+                    } else {
+                        for (let i = 0; i < choices; i++) {
+                            let n = Math.round(Math.random() * (choice3 - 1));
 
-                        while (choice.indexOf(n) > -1) {
-                            n = Math.round(Math.random() * (choice3 - 1));
+                            while (choice.indexOf(n) > -1) {
+                                n = Math.round(Math.random() * (choice3 - 1));
+                            }
+
+                            choice.push(n);
                         }
-
-                        choice.push(n);
                     }
                 }
 
-                let episode = episodes[Math.round(Math.random() * (episodes.length - 1))],
-                    tag = tags[Math.round(Math.random() * (tags.length - 1))],
-                    year = years[Math.round(Math.random() * (years.length - 1))];
+                let episode =
+                        start && c.cheat.episode
+                            ? c.cheat.episode
+                            : episodes[Math.round(Math.random() * (episodes.length - 1))],
+                    tag =
+                        start && c.cheat.tag
+                            ? c.cheat.tag
+                            : tags[Math.round(Math.random() * (tags.length - 1))],
+                    year =
+                        start && c.cheat.year
+                            ? c.cheat.year
+                            : years[Math.round(Math.random() * (years.length - 1))];
 
                 document.querySelector('.query a').href = '../../?query=';
 
@@ -318,7 +415,12 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
 
                 for (let i = 0; i < choice3; i++) {
                     const div = document.createElement('div');
-                    let random = Math.round(Math.random() * (database.length - 1));
+                    let random =
+                        start && c.cheat.link && c.cheat.link.length === choice3
+                            ? database.findIndex((ii) => ii.link === c.cheat.link[i]) > -1
+                                ? database.findIndex((ii) => ii.link === c.cheat.link[i])
+                                : Math.round(Math.random() * (database.length - 1))
+                            : Math.round(Math.random() * (database.length - 1));
 
                     switch (type) {
                         case 'episodes (without operators)':
@@ -540,26 +642,39 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                             return;
                         }
 
-                        if (c.selection === 'single' && document.querySelector('.selected')) {
+                        if (c.selection !== 'multiple' && document.querySelector('.selected')) {
                             document.querySelector('.selected').classList.remove('selected');
                         }
 
                         e.currentTarget.classList.toggle('selected');
+
+                        if (c.autoSubmit && c.selection !== 'multiple') {
+                            div.blur();
+                            submit();
+                        }
                     });
 
                     document.querySelector('.choice').appendChild(div);
                 }
 
+                c.cheat = {
+                    choice: choice,
+                    episode: episode,
+                    link: choices2,
+                    operator: operator,
+                    season: season,
+                    tag: tag,
+                    type: type,
+                    year: year
+                };
+
                 localStorage.setItem('quiz', JSON.stringify(c));
             }
 
-            game();
+            game(true);
 
-            document.querySelector('.submit').addEventListener('click', (e) => {
+            document.querySelector('.submit').addEventListener('click', () => {
                 const c = JSON.parse(localStorage.getItem('quiz'));
-
-                let incorrect = false,
-                    score = 0;
 
                 if (document.querySelector('.choice div[style]')) {
                     game();
@@ -567,60 +682,11 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                     return;
                 }
 
-                if (c.selection === 'single' && !document.querySelector('.selected')) {
+                if (c.selection !== 'multiple' && !document.querySelector('.selected')) {
                     return;
                 }
 
-                e.target.innerHTML = 'Next';
-
-                for (let i = 0; i < choice3; i++) {
-                    if (choice.indexOf(i) > -1) {
-                        if (document.querySelector(`.choice div:nth-child(${i + 1})`).classList.contains('selected')) {
-                            document.querySelector(`.choice div:nth-child(${i + 1})`).classList.remove('selected');
-                            document.querySelector(`.choice div:nth-child(${i + 1})`).style.background = green;
-                            score += 1;
-                        } else {
-                            if (c.selection !== 'single') {
-                                document.querySelector(`.choice div:nth-child(${i + 1})`).style.background = red;
-                                score -= 1;
-                                incorrect = true;
-                            }
-                        }
-                    } else {
-                        if (document.querySelector(`.choice div:nth-child(${i + 1})`).classList.contains('selected')) {
-                            document.querySelector(`.choice div:nth-child(${i + 1})`).classList.remove('selected');
-                            document.querySelector(`.choice div:nth-child(${i + 1})`).style.background = red;
-                            score -= 1;
-                            incorrect = true;
-                        } else {
-                            if (c.selection !== 'single') {
-                                document.querySelector(`.choice div:nth-child(${i + 1})`).style.background = green;
-                                score += 1;
-                            }
-                        }
-
-                        document.querySelector(`.choice div:nth-child(${i + 1})`).classList.add('dim');
-                    }
-                }
-
-                if (c.resetIncorrect && incorrect) {
-                    c.score = 0;
-                } else {
-                    c.score += score;
-                }
-
-                if (!c.negative && c.score < 0) {
-                    c.score = 0;
-                }
-
-                document.querySelector('.score').innerHTML = c.score;
-
-                if (c.score > c.high) {
-                    c.high = c.score;
-                    document.querySelector('.high').innerHTML = c.high;
-                }
-
-                localStorage.setItem('quiz', JSON.stringify(c));
+                submit();
             });
 
             document.querySelector('#selection').addEventListener('change', (e) => {
@@ -630,6 +696,14 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                 c.score = 0;
                 c.high = 0;
 
+                if (e.target.value === 'multiple') {
+                    document.querySelector('[for="auto-submit"]').style.color = 'var(--disabled)';
+                    document.querySelector('#auto-submit').setAttribute('disabled', '');
+                } else {
+                    document.querySelector('[for="auto-submit"]').style.color = '';
+                    document.querySelector('#auto-submit').removeAttribute('disabled');
+                }
+
                 localStorage.setItem('quiz', JSON.stringify(c));
                 game();
             });
@@ -638,6 +712,28 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                 const c = JSON.parse(localStorage.getItem('quiz'));
 
                 c.choices = Number(e.target.value) || e.target.value;
+                c.score = 0;
+                c.high = 0;
+
+                localStorage.setItem('quiz', JSON.stringify(c));
+                game();
+            });
+
+            document.querySelector('#auto-submit').addEventListener('change', (e) => {
+                const c = JSON.parse(localStorage.getItem('quiz'));
+
+                c.autoSubmit = e.target.checked;
+                c.score = 0;
+                c.high = 0;
+
+                localStorage.setItem('quiz', JSON.stringify(c));
+                game();
+            });
+
+            document.querySelector('#skip').addEventListener('change', (e) => {
+                const c = JSON.parse(localStorage.getItem('quiz'));
+
+                c.skip = e.target.checked;
                 c.score = 0;
                 c.high = 0;
 
@@ -708,8 +804,12 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
             document.querySelector('.settings').addEventListener('click', () => {
                 if (document.querySelector('.settings-container').style.display === 'none') {
                     document.querySelector('.settings-container').style.display = 'flex';
+                    document.querySelector('.query').style.display = '';
+                    document.querySelector('.choice').style.display = '';
                 } else {
                     document.querySelector('.settings-container').style.display = 'none';
+                    document.querySelector('.query').style.display = 'inline-flex';
+                    document.querySelector('.choice').style.display = 'block';
                 }
             });
 
@@ -732,10 +832,17 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
             });
 
             document.querySelector('.reload').addEventListener('click', () => {
+                const c = JSON.parse(localStorage.getItem('quiz'));
+
+                if (!c.skip) {
+                    return;
+                }
+
                 game();
             });
 
             document.querySelector('.loading').remove();
+            document.querySelector('.choice').style.display = 'block';
             document.querySelector('.menu').style.display = 'inline-flex';
             document.querySelector('.query').style.display = 'inline-flex';
         }, 100);

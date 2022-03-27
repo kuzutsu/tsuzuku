@@ -8,8 +8,7 @@ import {
     sorted,
     svg,
     t,
-    title,
-    years
+    title
 } from './fetchFunction.js';
 
 const index = {
@@ -238,19 +237,23 @@ document.querySelector('.thumbnails').addEventListener('click', () => {
         return;
     }
 
-    if (localStorage.getItem('thumbnails') === 'hide') {
-        document.body.classList.remove('hide');
-        t.getColumn('picture').show();
-        t.getColumn('picture2').hide();
-        document.querySelector('.thumbnails path').setAttribute('d', 'M21.9 21.9l-8.49-8.49l0 0L3.59 3.59l0 0L2.1 2.1L0.69 3.51L3 5.83V19c0 1.1 0.9 2 2 2h13.17l2.31 2.31L21.9 21.9z M5 18 l3.5-4.5l2.5 3.01L12.17 15l3 3H5z M21 18.17L5.83 3H19c1.1 0 2 0.9 2 2V18.17z');
-        localStorage.setItem('thumbnails', 'show');
-    } else {
+    const c = JSON.parse(localStorage.getItem('tsuzuku'));
+
+    if (c.thumbnails) {
         document.body.classList.add('hide');
         t.getColumn('picture').hide();
         t.getColumn('picture2').show();
         document.querySelector('.thumbnails path').setAttribute('d', 'M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z');
-        localStorage.setItem('thumbnails', 'hide');
+        c.thumbnails = false;
+    } else {
+        document.body.classList.remove('hide');
+        t.getColumn('picture').show();
+        t.getColumn('picture2').hide();
+        document.querySelector('.thumbnails path').setAttribute('d', 'M21.9 21.9l-8.49-8.49l0 0L3.59 3.59l0 0L2.1 2.1L0.69 3.51L3 5.83V19c0 1.1 0.9 2 2 2h13.17l2.31 2.31L21.9 21.9z M5 18 l3.5-4.5l2.5 3.01L12.17 15l3 3H5z M21 18.17L5.83 3H19c1.1 0 2 0.9 2 2V18.17z');
+        c.thumbnails = true;
     }
+
+    localStorage.setItem('tsuzuku', JSON.stringify(c));
 
     t.redraw(true);
 });
@@ -313,8 +316,6 @@ document.querySelector('.help').addEventListener('click', () => {
             });
         }
     }
-
-    document.querySelector('.search').focus();
 });
 
 document.querySelector('header .menu').addEventListener('click', () => {
@@ -540,186 +541,6 @@ document.querySelectorAll('.tab').forEach((element) => {
     element.querySelector('a').addEventListener('click', (e) => {
         e.preventDefault();
     });
-});
-
-function prev(season, year) {
-    const
-        seasons = ['Winter', 'Spring', 'Summer', 'Fall', 'TBA'],
-        year2 =
-            year === 'TBA'
-                ? null
-                : Number(year),
-        year3 = Array.from(years).sort();
-
-    if (seasons.indexOf(season)) {
-        return {
-            exists: true,
-            season: seasons[seasons.indexOf(season) - 1],
-            year: String(year2) || 'TBA'
-        };
-    }
-
-    if (year3.indexOf(year2)) {
-        return {
-            exists: true,
-            season: seasons[seasons.length - 1],
-            year: String(year3[year3.indexOf(year2) - 1]) || 'TBA'
-        };
-    }
-
-    return {
-        exists: false
-    };
-}
-
-
-function next(season, year) {
-    const
-        seasons = ['Winter', 'Spring', 'Summer', 'Fall', 'TBA'],
-        year2 =
-            year === 'TBA'
-                ? null
-                : Number(year),
-        year3 = Array.from(years).sort();
-
-    if (seasons.indexOf(season) < seasons.length - 1) {
-        return {
-            exists: true,
-            season: seasons[seasons.indexOf(season) + 1],
-            year: String(year2) || 'TBA'
-        };
-    }
-
-    if (year3.indexOf(year2) < year3.length - 1) {
-        return {
-            exists: true,
-            season: seasons[0],
-            year: String(year3[year3.indexOf(year2) + 1]) || 'TBA'
-        };
-    }
-
-    return {
-        exists: false
-    };
-}
-
-document.querySelector('.prev').addEventListener('click', (e) => {
-    e.preventDefault();
-
-    if (e.currentTarget.dataset.exists !== 'true') {
-        return;
-    }
-
-    document.querySelector('.season').value = e.currentTarget.dataset.season;
-    document.querySelector('.year').value = e.currentTarget.dataset.year;
-    document.querySelector('.search').value = `season:${e.currentTarget.dataset.season.toLowerCase()} year:${e.currentTarget.dataset.year.toLowerCase()} `;
-    searchFunction();
-
-    const
-        n = next(e.currentTarget.dataset.season, e.currentTarget.dataset.year),
-        p = prev(e.currentTarget.dataset.season, e.currentTarget.dataset.year);
-
-    if (p.exists) {
-        e.currentTarget.href = `./?query=${escape(encodeURIComponent(`season:${p.season.toLowerCase()} year:${p.year.toLowerCase()} `))}`;
-        e.currentTarget.dataset.exists = 'true';
-        e.currentTarget.dataset.season = p.season;
-        e.currentTarget.dataset.year = p.year;
-    } else {
-        e.currentTarget.removeAttribute('href');
-        e.currentTarget.dataset.exists = 'false';
-        e.currentTarget.dataset.season = '';
-        e.currentTarget.dataset.year = '';
-    }
-
-    if (n.exists) {
-        document.querySelector('.next').href = `./?query=${escape(encodeURIComponent(`season:${n.season.toLowerCase()} year:${n.year.toLowerCase()} `))}`;
-        document.querySelector('.next').dataset.exists = 'true';
-        document.querySelector('.next').dataset.season = n.season;
-        document.querySelector('.next').dataset.year = n.year;
-    } else {
-        document.querySelector('.next').removeAttribute('href');
-        document.querySelector('.next').dataset.exists = 'false';
-        document.querySelector('.next').dataset.season = '';
-        document.querySelector('.next').dataset.year = '';
-    }
-});
-
-document.querySelector('.next').addEventListener('click', (e) => {
-    e.preventDefault();
-
-    if (e.currentTarget.dataset.exists !== 'true') {
-        return;
-    }
-
-    document.querySelector('.season').value = e.currentTarget.dataset.season;
-    document.querySelector('.year').value = e.currentTarget.dataset.year;
-    document.querySelector('.search').value = `season:${e.currentTarget.dataset.season.toLowerCase()} year:${e.currentTarget.dataset.year.toLowerCase()} `;
-    searchFunction();
-
-    const
-        n = next(e.currentTarget.dataset.season, e.currentTarget.dataset.year),
-        p = prev(e.currentTarget.dataset.season, e.currentTarget.dataset.year);
-
-    if (p.exists) {
-        document.querySelector('.prev').href = `./?query=${escape(encodeURIComponent(`season:${p.season.toLowerCase()} year:${p.year.toLowerCase()} `))}`;
-        document.querySelector('.prev').dataset.exists = 'true';
-        document.querySelector('.prev').dataset.season = p.season;
-        document.querySelector('.prev').dataset.year = p.year;
-    } else {
-        document.querySelector('.prev').removeAttribute('href');
-        document.querySelector('.prev').dataset.exists = 'false';
-        document.querySelector('.prev').dataset.season = '';
-        document.querySelector('.prev').dataset.year = '';
-    }
-
-    if (n.exists) {
-        e.currentTarget.href = `./?query=${escape(encodeURIComponent(`season:${n.season.toLowerCase()} year:${n.year.toLowerCase()} `))}`;
-        e.currentTarget.dataset.exists = 'true';
-        e.currentTarget.dataset.season = n.season;
-        e.currentTarget.dataset.year = n.year;
-    } else {
-        e.currentTarget.removeAttribute('href');
-        e.currentTarget.dataset.exists = 'false';
-        e.currentTarget.dataset.season = '';
-        e.currentTarget.dataset.year = '';
-    }
-});
-
-document.querySelector('.enter2').addEventListener('click', () => {
-    if (document.querySelector('.season').value === 'Season' || document.querySelector('.year').value === 'Year') {
-        return;
-    }
-
-    const
-        n = next(document.querySelector('.season').value, document.querySelector('.year').value),
-        p = prev(document.querySelector('.season').value, document.querySelector('.year').value);
-
-    if (p.exists) {
-        document.querySelector('.prev').href = `./?query=${escape(encodeURIComponent(`season:${p.season.toLowerCase()} year:${p.year.toLowerCase()} `))}`;
-        document.querySelector('.prev').dataset.exists = 'true';
-        document.querySelector('.prev').dataset.season = p.season;
-        document.querySelector('.prev').dataset.year = p.year;
-    } else {
-        document.querySelector('.prev').removeAttribute('href');
-        document.querySelector('.prev').dataset.exists = 'false';
-        document.querySelector('.prev').dataset.season = '';
-        document.querySelector('.prev').dataset.year = '';
-    }
-
-    if (n.exists) {
-        document.querySelector('.next').href = `./?query=${escape(encodeURIComponent(`season:${n.season.toLowerCase()} year:${n.year.toLowerCase()} `))}`;
-        document.querySelector('.next').dataset.exists = 'true';
-        document.querySelector('.next').dataset.season = n.season;
-        document.querySelector('.next').dataset.year = n.year;
-    } else {
-        document.querySelector('.next').removeAttribute('href');
-        document.querySelector('.next').dataset.exists = 'false';
-        document.querySelector('.next').dataset.season = '';
-        document.querySelector('.next').dataset.year = '';
-    }
-
-    document.querySelector('.search').value = `season:${document.querySelector('.season').value.toLowerCase()} year:${document.querySelector('.year').value.toLowerCase()} `;
-    searchFunction();
 });
 
 document.querySelector('.selected-count').addEventListener('click', () => {

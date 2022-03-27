@@ -3,6 +3,10 @@ import {
     searchFunction
 } from './index.js';
 
+import {
+    source
+} from './global.js';
+
 const
     channel =
         'BroadcastChannel' in window
@@ -28,9 +32,7 @@ const
         indeterminate: '<path d="M19 3H5C3.9 3 3 3.9 3 5v14c0 1.1 0.9 2 2 2h14c1.1 0 2-0.9 2-2V5C21 3.9 20.1 3 19 3z M17 13H7v-2h10V13z"></path>',
         play: '<path d="M8 5v14l11-7z"></path>'
     },
-    // tags = new Set(),
-    title = document.title,
-    years = new Set();
+    title = document.title;
 
 let db2 = null,
     disableSelection = false,
@@ -644,7 +646,7 @@ if (channel) {
     };
 }
 
-fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/master/anime-offline-database-minified.json')
+fetch(source)
 // fetch('anime-offline-database.json')
     .then((response) => response.json())
     .then((data) => {
@@ -719,10 +721,10 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
 
             for (let i = 0; i < d.length; i++) {
                 const
-                    source = /myanimelist\.net/gu,
+                    source2 = /myanimelist\.net/gu,
                     ss = d[i].animeSeason.season,
                     tt = d[i].tags.map((tags2) => tags2.replace(/\s/gu, '_')),
-                    value = d[i].sources.filter((sources) => sources.match(source))[0];
+                    value = d[i].sources.filter((sources) => sources.match(source2))[0];
 
                 let n2 = false,
                     p2 = '',
@@ -783,12 +785,6 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                     }
                 }
 
-                // for (const value2 of d[i].tags) {
-                //     tags.add(value2);
-                // }
-
-                years.add(d[i].animeSeason.year);
-
                 database.push({
                     alternative: d[i].title,
                     dead: false,
@@ -799,7 +795,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                     progress: p2,
                     r18: tt.indexOf('hentai') > -1,
                     relations: [
-                        ...d[i].sources.filter((sources) => sources.match(source) && sources !== value),
+                        ...d[i].sources.filter((sources) => sources.match(source2) && sources !== value),
                         ...d[i].relations.filter((relations) => relations.match(/myanimelist\.net/gu))
                     ],
                     relevancy: 1,
@@ -814,14 +810,6 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
 
                 data5.push(value);
             }
-
-            for (const value of Array.from(years).sort()) {
-                document.querySelector('.year').innerHTML += `<option>${value || 'TBA'}</option>`;
-            }
-
-            // for (const value of Array.from(tags).sort()) {
-            //     document.querySelector('.season-container .tag').innerHTML += `<option>${value}</option>`;
-            // }
 
             for (const [key, value] of map4.entries()) {
                 database.push({
@@ -865,6 +853,38 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
             }
 
             localStorage.setItem('data', JSON.stringify(data5));
+
+            // tabulator tweak to fix incorrect behavior when scrolling
+            RowManager.prototype.initialize = function () {
+                const self = this;
+
+                self.setRenderMode();
+                self.element.appendChild(self.tableElement);
+                self.firstRender = true;
+
+                self.element.addEventListener('scroll', () => {
+                    const
+                        dir = self.scrollTop > self.element.scrollTop,
+                        left = self.element.scrollLeft,
+                        top = self.element.scrollTop;
+
+                    if (self.scrollLeft !== left) {
+                        self.table.options.scrollHorizontal(left);
+                    }
+
+                    self.scrollLeft = left;
+
+                    if (self.scrollTop !== top) {
+                        self.scrollTop = top;
+                        self.scrollVertical(dir);
+                        self.table.options.scrollVertical(top);
+                    }
+                });
+            };
+
+            Row.prototype.setCellHeight = function () {
+                // error if set to null
+            };
 
             t = new Tabulator('.database-container', {
                 cellDblClick: function () {
@@ -915,7 +935,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                             return `<svg viewBox="0 0 24 24" width="17" height="17">${svg.blank}</svg>`;
                         },
                         vertAlign: 'middle',
-                        visible: localStorage.getItem('thumbnails') === 'show',
+                        visible: JSON.parse(localStorage.getItem('tsuzuku')).thumbnails,
                         width: 40
                     },
                     {
@@ -946,7 +966,7 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                             return `<svg viewBox="0 0 24 24" width="17" height="17">${svg.blank}</svg>`;
                         },
                         vertAlign: 'middle',
-                        visible: localStorage.getItem('thumbnails') !== 'show',
+                        visible: !JSON.parse(localStorage.getItem('tsuzuku')).thumbnails,
                         width: 17
                     },
                     {
@@ -1287,6 +1307,8 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                                                     ? temp2
                                                     : ['']
                                             );
+
+                                            cell.getTable().redraw(true);
                                         }, 100);
                                     }
                                 }
@@ -1914,12 +1936,21 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
 
                     row.getCell('alternative').getElement().querySelector('.indicator').style.width = `${width}%`;
                     row.getCell('progress').getElement().querySelector('span:not(.add)').title = `${Math.round(width)}%`;
+
+                    // side effect of tabulator tweak
+                    new ResizeObserver(() => {
+                        row.getElement().querySelectorAll('.tabulator-cell:not([tabulator-field="alternative"])').forEach((cell) => {
+                            cell.style.height = `${row.getElement().querySelector('[tabulator-field="alternative"]').clientHeight}px`;
+                        });
+                    }).observe(row.getElement().querySelector('[tabulator-field="alternative"]'));
                 },
                 sortOrderReverse: true,
                 tableBuilt: function () {
                     document.querySelector('.tabulator-tableHolder').tabIndex = -1;
 
-                    const columns = ['picture', 'picture2', 'alternative', 'type', 'episodes', 'season'];
+                    const
+                        columns = ['picture', 'picture2', 'alternative', 'type', 'episodes', 'season'],
+                        header = document.querySelector('.tabulator-header');
 
                     if (!error) {
                         columns.push(...['progress', 'status']);
@@ -1928,6 +1959,18 @@ fetch('https://raw.githubusercontent.com/manami-project/anime-offline-database/m
                     for (const value of columns) {
                         document.querySelector(`.tabulator-col[tabulator-field="${value}"]`).tabIndex = 0;
                     }
+
+                    document.querySelector('.tabulator-header').remove();
+                    document.querySelector('.tabulator-tableHolder').prepend(header);
+
+                    // side effect of tabulator tweak
+                    new ResizeObserver(() => {
+                        document.querySelectorAll('.tabulator-row').forEach((row) => {
+                            row.querySelectorAll('.tabulator-cell:not([tabulator-field="alternative"])').forEach((cell) => {
+                                cell.style.height = `${row.querySelector('[tabulator-field="alternative"]').clientHeight}px`;
+                            });
+                        });
+                    }).observe(document.querySelector('.tabulator'));
                 }
             });
         });
@@ -2087,6 +2130,5 @@ export {
     sorted,
     svg,
     t,
-    title,
-    years
+    title
 };
