@@ -1,7 +1,7 @@
 # [Tsuzuku](https://kuzutsu.github.io/tsuzuku/)
 **Tsuzuku** is an index for the [anime-offline-database](https://github.com/manami-project/anime-offline-database), with games included.
 
-> For now, only entries from MyAnimeList are used by the app.
+> For now, only entries from MyAnimeList are listed.
 
  There's no need to create an account to track progress in Tsuzuku as everything is saved locally in the browser. However, tracking without any backup is **dangerous** as updates may break the app. Although an option to export progress is available, there's no feature to sync progress online. **Clearing site data will also clear progress.** By using Tsuzuku as a tracker, you agree that you're some sort of a daredevil.
 
@@ -50,12 +50,14 @@ Examples:
 Separate with `&`, no spaces, can use `<`, `<=`, `>`, or `>=` for numerals
 * `episodes:`
 * `progress:` (can use absolute or relative values)
+* `rewatched:`
 * `tag:` (replace spaces with `_`, start with `-` to exclude, [tags supported](https://kuzutsu.github.io/tsuzuku/tags/))
 * `year:` (can use `tba`)
 
 Examples:
 * Has 13 episodes ([`episodes:13`](https://kuzutsu.github.io/tsuzuku/?query=episodes%253A13))
 * Has progress higher than 4 but lower than 70% ([`progress:>4&<70%`](https://kuzutsu.github.io/tsuzuku/?query=progress%253A%253E4%2526%253C70%2525))
+* Rewatched 6 times ([`rewatched:6`](https://kuzutsu.github.io/tsuzuku/?query=rewatched%253A6))
 * Based on a manga and comedy ([`tag:based_on_a_manga&comedy`](https://kuzutsu.github.io/tsuzuku/?query=tag%253Abased_on_a_manga%2526comedy))
 * Based on a light novel but not isekai ([`tag:based_on_a_light_novel&-isekai`](https://kuzutsu.github.io/tsuzuku/?query=tag%253Abased_on_a_light_novel%2526-isekai))
 * Before 2019 ([`year:<2019`](https://kuzutsu.github.io/tsuzuku/?query=year%253A%253C2019))
@@ -86,17 +88,10 @@ File is in MyAnimeList XML format
 * Skipped titles will have a Dropped status with 0 progress
 
 ### Import
-Supports files in MyAnimeList XML or AniList GDPR JSON format
-
-| Site | URL |
-| --- | --- |
-| **MyAnimeList** | https://myanimelist.net/panel.php?go=export |
-| **Kitsu** | https://kitsu.io/settings/exports |
-| **AniList** | https://anilist.co/gdpr/download |
+Supports files in MyAnimeList XML format
 
 #### Disclaimer
 * Only status and progress will be imported
-* For MyAnimeList XML, `update_on_import` will be ignored
-* For AniList GDPR JSON, titles not in MyAnimeList will be ignored
+* `update_on_import` will be ignored
 * Saved data will be overwritten
  </details>

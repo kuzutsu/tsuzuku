@@ -10,66 +10,65 @@
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-title" content="Tsuzuku">
         <meta name="apple-mobile-web-app-status-bar-style" content="default">
-        <link rel="icon" href="./images/logo-192.png">
-        <link rel="mask-icon" href="./images/logo.svg" color="#000">
-        <link rel="apple-touch-icon" href="./images/logo-180.png">
-        <link rel="manifest" href="./manifest.webmanifest">
+        <base href="https://kuzutsu.github.io/tsuzuku/">
+        <link rel="icon" href="/images/logo-192.png">
+        <link rel="mask-icon" href="/images/logo.svg" color="#000">
+        <link rel="apple-touch-icon" href="/images/logo-180.png">
+        <link rel="manifest" href="/manifest.webmanifest">
         <link rel="preconnect" href="https://fonts.gstatic.com">
         <link rel="preconnect" href="https://cdn.jsdelivr.net">
         <link rel="preconnect" href="https://raw.githubusercontent.com">
         <link rel="dns-prefetch" href="https://fonts.gstatic.com">
         <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
         <link rel="dns-prefetch" href="https://raw.githubusercontent.com">
-        <link href="./global.css" rel="stylesheet">
-        <link href="./index.css" rel="stylesheet">
+        <link href="/global.css" rel="stylesheet">
+        <link href="/index.css" rel="stylesheet">
     </head>
     <body>
-        <noscript>Tsuzuku can't run without JavaScript</noscript>
+        <noscript>
+            <div class="kao">(＞﹏＜)</div>
+            <div style="margin-top: 11.5px;">Tsuzuku can't run without JavaScript</div>
+        </noscript>
         <aside class="side">
             <div style="height: 50px; min-height: 50px; display: flex; align-items: center; padding: 0 19px;">
-                <div class="menu" title="Close menu" tabindex="0" style="display: inline-flex; align-items: center; margin-right: 19px;">
-                    <svg viewBox="0 0 24 24" width="17" height="17">
-                        <path d="M3 18h13v-2H3V18z M3 13h10v-2H3V13z M3 6v2h13V6H3z M21 15.59L17.42 12L21 8.41L19.59 7l-5 5l5 5L21 15.59z"></path>
-                    </svg>
-                </div>
                 <span class="side-title">Personal list</span>
             </div>
             <div style="overflow: auto;">
                 <div class="tab" style="padding: 0 19px;">
-                    <a href="./?query=status%253Aall%2520" data-query="status:all">All</a>
+                    <a href="/?query=status%253Aall%2520" data-query="status:all">All</a>
                     <span class="all">0</span>
                 </div>
                 <div class="tab" style="border-left: 4px solid var(--status-completed);">
-                    <a href="./?query=status%253Acompleted%2520" data-query="status:completed" style="margin-right: auto;">Completed</a>
-                    <a class="mismatched" href="./?query=is%253Amismatched%2520" title="Mismatched" style="display: none; align-items: center;">
+                    <a href="/?query=status%253Acompleted%2520" data-query="status:completed" style="margin-right: auto;">Completed</a>
+                    <a class="mismatched" href="/?query=is%253Amismatched%2520" title="Mismatched" style="display: none; align-items: center;">
                         <svg viewBox="0 0 24 24" width="17" height="17">
-                            <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"></path>
+                            <path d="M1 21 12 2 23 21ZM11 15H13V10H11ZM12 18Q12.425 18 12.713 17.712Q13 17.425 13 17Q13 16.575 12.713 16.288Q12.425 16 12 16Q11.575 16 11.288 16.288Q11 16.575 11 17Q11 17.425 11.288 17.712Q11.575 18 12 18Z"></path>
                         </svg>
                     </a>
                     <span class="completed">0</span>
                 </div>
                 <div class="tab" style="border-left: 4px solid var(--status-dropped);">
-                    <a href="./?query=status%253Adropped%2520" data-query="status:dropped">Dropped</a>
+                    <a href="/?query=status%253Adropped%2520" data-query="status:dropped">Dropped</a>
                     <span class="dropped">0</span>
                 </div>
                 <div class="tab" style="border-left: 4px solid var(--status-paused);">
-                    <a href="./?query=status%253Apaused%2520" data-query="status:paused">Paused</a>
+                    <a href="/?query=status%253Apaused%2520" data-query="status:paused">Paused</a>
                     <span class="paused">0</span>
                 </div>
                 <div class="tab" style="border-left: 4px solid var(--status-planning);">
-                    <a href="./?query=status%253Aplanning%2520" data-query="status:planning">Planning</a>
+                    <a href="/?query=status%253Aplanning%2520" data-query="status:planning">Planning</a>
                     <span class="planning">0</span>
                 </div>
                 <div class="tab" style="border-left: 4px solid var(--status-rewatching);">
-                    <a href="./?query=status%253Arewatching%2520" data-query="status:rewatching">Rewatching</a>
+                    <a href="/?query=status%253Arewatching%2520" data-query="status:rewatching">Rewatching</a>
                     <span class="rewatching">0</span>
                 </div>
                 <div class="tab" style="padding: 0 19px;">
-                    <a href="./?query=status%253Askipping%2520" data-query="status:skipping">Skipping</a>
+                    <a href="/?query=status%253Askipping%2520" data-query="status:skipping">Skipping</a>
                     <span class="skipping">0</span>
                 </div>
                 <div class="tab" style="border-left: 4px solid var(--status-watching);">
-                    <a href="./?query=status%253Awatching%2520" data-query="status:watching">Watching</a>
+                    <a href="/?query=status%253Awatching%2520" data-query="status:watching">Watching</a>
                     <span class="watching">0</span>
                 </div>
                 <div style="height: 40px; display: flex; align-items: center;"></div>
@@ -79,34 +78,38 @@
                 <div class="export">
                     <span tabindex="0">Export</span>
                 </div>
+                <div style="height: 40px; display: flex; align-items: center;"></div>
+                <div class="reset">
+                    <span tabindex="0">Reset</span>
+                </div>
             </div>
         </aside>
         <div class="overlay" tabindex="0"></div>
         <header>
             <div class="menu" title="Open menu" tabindex="0" style="display: inline-flex; align-items: center; margin-right: 19px;">
                 <svg viewBox="0 0 24 24" width="17" height="17">
-                    <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path>
+                    <path d="M3 18V16H21V18ZM3 13V11H21V13ZM3 8V6H21V8Z"></path>
                 </svg>
             </div>
             <div class="close" title="Unselect all" tabindex="0" style="display: inline-flex; align-items: center; display: none; margin-right: 19px;">
                 <svg viewBox="0 0 24 24" width="17" height="17">
-                    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path>
+                    <path d="M6.4 19 5 17.6 10.6 12 5 6.4 6.4 5 12 10.6 17.6 5 19 6.4 13.4 12 19 17.6 17.6 19 12 13.4Z"></path>
                 </svg>
             </div>
             <span class="header-title">Tsuzuku</span>
             <span class="selected-count" tabindex="0"></span>
             <span class="flex-separator"></span>
-            <a href="./tags/" rel="noreferrer" style="margin-right: 19px;">Tags</a>
-            <a href="./games/" rel="noreferrer" style="margin-right: 19px;">Games</a>
-            <a href="https://github.com/kuzutsu/tsuzuku" rel="noreferrer" target="_blank" style="display: inline-flex; align-items: center; text-decoration: none; margin-right: 19px;">
+            <a href="/tags/" rel="noreferrer">Tags</a>
+            <a href="/games/" rel="noreferrer" style="margin-left: 19px;">Games</a>
+            <a href="https://github.com/kuzutsu/tsuzuku" rel="noreferrer" target="_blank" style="margin-left: 19px; display: inline-flex; align-items: center; text-decoration: none;">
                 <span>GitHub&nbsp;</span>
                 <svg viewBox="0 0 24 24" height="17" width="17">
-                    <path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"></path>
+                    <path d="M21 12V19Q21 19.825 20.413 20.413Q19.825 21 19 21H5Q4.175 21 3.587 20.413Q3 19.825 3 19V5Q3 4.175 3.587 3.587Q4.175 3 5 3H12V5H5Q5 5 5 5Q5 5 5 5V19Q5 19 5 19Q5 19 5 19H19Q19 19 19 19Q19 19 19 19V12ZM9.7 15.7 8.3 14.3 17.6 5H14V3H21V10H19V6.4Z"></path>
                 </svg>
             </a>
-            <div class="thumbnails" title="Toggle thumbnails" tabindex="0" style="display: inline-flex; align-items: center;">
+            <div class="thumbnails" title="Toggle thumbnails" tabindex="0" style="margin-left: 19px; display: inline-flex; align-items: center;">
                 <svg viewBox="0 0 24 24" width="17" height="17">
-                    <path d="M21.9 21.9l-8.49-8.49l0 0L3.59 3.59l0 0L2.1 2.1L0.69 3.51L3 5.83V19c0 1.1 0.9 2 2 2h13.17l2.31 2.31L21.9 21.9z M5 18 l3.5-4.5l2.5 3.01L12.17 15l3 3H5z M21 18.17L5.83 3H19c1.1 0 2 0.9 2 2V18.17z"></path>
+                    <path d="M6 17H18L14.25 12L11.25 16L9 13ZM5 21Q4.175 21 3.587 20.413Q3 19.825 3 19V5Q3 4.175 3.587 3.587Q4.175 3 5 3H19Q19.825 3 20.413 3.587Q21 4.175 21 5V19Q21 19.825 20.413 20.413Q19.825 21 19 21Z"></path>
                 </svg>
             </div>
             <span class="changing" style="margin-left: 19px; display: none;">Changing...</span>
@@ -115,27 +118,17 @@
             <span class="loading">Fetching database...</span>
             <div class="top-container" style="flex-direction: column;">
                 <div class="search-container" style="width: 100%; display: inline-flex; align-items: center;">
-                    <input class="search" type="text" autocomplete="off" placeholder="Search or show all anime" title="Enter query" style="margin-right: 19px;">
-                    <span class="clear" title="Clear" tabindex="0" style="display: none; align-items: center; margin-right: 19px;">
-                        <svg viewBox="0 0 24 24" width="17" height="17">
-                            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path>
-                        </svg>
-                    </span>
-                    <span class="enter" title="Search" tabindex="0" style="display: inline-flex; align-items: center; margin-right: 19px;">
-                        <svg viewBox="0 0 24 24" width="17" height="17">
-                            <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path>
-                        </svg>
-                    </span>
+                    <input class="search" type="search" autocomplete="off" placeholder="Search or show all anime" title="Enter query" style="margin-right: 19px;">
                     <span class="help" title="Help" tabindex="0" style="display: inline-flex; align-items: center;">
                         <svg viewBox="0 0 24 24" width="17" height="17">
-                            <path d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"></path>
+                            <path d="M11.95 18Q12.475 18 12.838 17.637Q13.2 17.275 13.2 16.75Q13.2 16.225 12.838 15.863Q12.475 15.5 11.95 15.5Q11.425 15.5 11.062 15.863Q10.7 16.225 10.7 16.75Q10.7 17.275 11.062 17.637Q11.425 18 11.95 18ZM11.05 14.15H12.9Q12.9 13.325 13.088 12.85Q13.275 12.375 14.15 11.55Q14.8 10.9 15.175 10.312Q15.55 9.725 15.55 8.9Q15.55 7.5 14.525 6.75Q13.5 6 12.1 6Q10.675 6 9.788 6.75Q8.9 7.5 8.55 8.55L10.2 9.2Q10.325 8.75 10.763 8.225Q11.2 7.7 12.1 7.7Q12.9 7.7 13.3 8.137Q13.7 8.575 13.7 9.1Q13.7 9.6 13.4 10.037Q13.1 10.475 12.65 10.85Q11.55 11.825 11.3 12.325Q11.05 12.825 11.05 14.15ZM12 22Q9.95 22 8.125 21.212Q6.3 20.425 4.938 19.075Q3.575 17.725 2.788 15.9Q2 14.075 2 12Q2 9.925 2.788 8.1Q3.575 6.275 4.938 4.925Q6.3 3.575 8.125 2.787Q9.95 2 12 2Q14.1 2 15.925 2.787Q17.75 3.575 19.1 4.925Q20.45 6.275 21.225 8.1Q22 9.925 22 12Q22 14.075 21.225 15.9Q20.45 17.725 19.1 19.075Q17.75 20.425 15.925 21.212Q14.1 22 12 22ZM12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12ZM12 20Q15.35 20 17.675 17.663Q20 15.325 20 12Q20 8.675 17.675 6.337Q15.35 4 12 4Q8.725 4 6.362 6.337Q4 8.675 4 12Q4 15.325 6.362 17.663Q8.725 20 12 20Z"></path>
                         </svg>
                     </span>
                 </div>
                 <div class="related-container" style="width: 100%; display: none; align-items: center;">
                     <span class="return" title="Return" tabindex="0" style="display: inline-flex; align-items: center; margin-right: 19px;">
                         <svg viewBox="0 0 24 24" width="17" height="17">
-                            <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"></path>
+                            <path d="M12 20 4 12 12 4 13.425 5.4 7.825 11H20V13H7.825L13.425 18.6Z"></path>
                         </svg>
                     </span>
                     <span style="white-space: nowrap;">
@@ -143,6 +136,11 @@
                         <span class="related-title"></span>
                     </span>
                 </div>
+            </div>
+            <div class="nothing" style="display: none;">
+                <span class="results">0 results</span>
+                <span class="flex-separator"></span>
+                <span class="enter" tabindex="0">Show more</span>
             </div>
             <div class="qualifiers">
                 <table>
@@ -185,6 +183,10 @@
                         <td>Enables regular expression search (recommended with <span class="mono">alt:false</span>)</td>
                     </tr>
                     <tr>
+                        <td><code data-value2="rewatched:" tabindex="0">rewatched:<span style="font-style: italic; font-family: inherit;">TIMES</span></code></td>
+                        <td>Matches anime rewatched desired number of times</td>
+                    </tr>
+                    <tr>
                         <td><code data-value2="season:" tabindex="0">season:<span style="font-style: italic; font-family: inherit;">SEASON</span></code></td>
                         <td>Matches anime in desired season (<span class="mono">winter</span>, <span class="mono">spring</span>, <span class="mono">summer</span>, <span class="mono">fall</span>, <span class="mono">tba</span>)</td>
                     </tr>
@@ -208,7 +210,7 @@
             </div>
             <div class="database-container" style="display: none;"></div>
         </main>
-        <script type="module" src="./global.js"></script>
+        <script type="module" src="/global.js"></script>
         <script>
             const
                 settings = {
@@ -238,17 +240,9 @@
 
             if (!value.thumbnails) {
                 document.body.classList.add('hide');
-                document.querySelector('.thumbnails path').setAttribute('d', 'M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z');
+                document.querySelector('.thumbnails path').setAttribute('d', 'M21 18.15 19 16.15V5Q19 5 19 5Q19 5 19 5H7.85L5.85 3H19Q19.825 3 20.413 3.587Q21 4.175 21 5ZM19.8 22.6 18.2 21H5Q4.175 21 3.587 20.413Q3 19.825 3 19V5.8L1.4 4.2L2.8 2.8L21.2 21.2ZM6 17 9 13 11.25 16 12.075 14.9 5 7.825V19Q5 19 5 19Q5 19 5 19H16.175L14.175 17ZM12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Z');
             }
         </script>
-        <script defer src="https://cdn.jsdelivr.net/npm/tabulator-tables@4.9.3/dist/js/tabulator_core.min.js"></script>
-        <script defer src="https://cdn.jsdelivr.net/npm/tabulator-tables@4.9.3/dist/js/modules/edit.min.js"></script>
-        <script defer src="https://cdn.jsdelivr.net/npm/tabulator-tables@4.9.3/dist/js/modules/filter.min.js"></script>
-        <script defer src="https://cdn.jsdelivr.net/npm/tabulator-tables@4.9.3/dist/js/modules/format.min.js"></script>
-        <script defer src="https://cdn.jsdelivr.net/npm/tabulator-tables@4.9.3/dist/js/modules/frozen_columns.min.js"></script>
-        <script defer src="https://cdn.jsdelivr.net/npm/tabulator-tables@4.9.3/dist/js/modules/resize_table.min.js"></script>
-        <script defer src="https://cdn.jsdelivr.net/npm/tabulator-tables@4.9.3/dist/js/modules/select_row.min.js"></script>
-        <script defer src="https://cdn.jsdelivr.net/npm/tabulator-tables@4.9.3/dist/js/modules/sort.min.js"></script>
-        <script defer type="module" src="./index.js"></script>
+        <script defer type="module" src="/index.js"></script>
     </body>
 </html>

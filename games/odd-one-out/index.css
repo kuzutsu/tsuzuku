@@ -12,10 +12,6 @@
     user-select: text;
 }
 
-.bold {
-    font-weight: 500;
-}
-
 .choice div[style] span {
     color: #fff;
 }
@@ -154,4 +150,8 @@ select {
 
 .choice > div:not(:first-child) {
     margin-top: 1px;
+}
+
+.submit {
+    color: var(--selected-header)
 }

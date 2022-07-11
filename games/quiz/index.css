@@ -12,10 +12,6 @@
     user-select: text;
 }
 
-.bold {
-    font-weight: 500;
-}
-
 .mono {
     color: inherit;
     font-family: monospace;
@@ -155,4 +151,8 @@ select {
 
 .choice > div:not(:first-child) {
     margin-top: 1px;
+}
+
+.submit {
+    color: var(--selected-header)
 }

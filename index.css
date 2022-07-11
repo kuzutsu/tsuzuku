@@ -1,6 +1,7 @@
 .tabulator-cell[tabulator-field="alternative"],
 .tabulator-cell[tabulator-field="episodes"],
 .tabulator-cell[tabulator-field="progress"],
+.tabulator-cell[tabulator-field="rewatched"],
 .tabulator-cell[tabulator-field="season"],
 .tabulator-cell[tabulator-field="status"],
 .tabulator-cell[tabulator-field="type"] {
@@ -8,12 +9,12 @@
 }
 
 .database-container {
-    height: calc(100% - 40px);
+    max-height: calc(100% - 80px);
     white-space: nowrap;
     width: 100%;
 }
 
-.tabulator-tableHolder {
+.tabulator-tableholder {
     height: auto !important;
     max-height: 100%;
     outline: none;
@@ -96,6 +97,7 @@
 .search {
     border: 0;
     min-width: 100px;
+    outline: none;
     width: 100%;
 }
 
@@ -120,7 +122,8 @@
 
 .tabulator-col[tabulator-field="ongoing"] .tabulator-col-title,
 .tabulator-col[tabulator-field="picture"] .tabulator-col-title,
-.tabulator-col[tabulator-field="picture2"] .tabulator-col-title {
+.tabulator-col[tabulator-field="picture2"] .tabulator-col-title,
+.tabulator-col[tabulator-field="sources"] .tabulator-col-title {
     line-height: 0;
 }
 
@@ -157,15 +160,15 @@
 }
 
 .header-selected {
-    background: var(--selected);
+    background: var(--selected-header);
 }
 
 .header-selected span {
-    color: var(--selected-color) !important;
+    color: var(--selected-header-color) !important;
 }
 
 .header-selected svg {
-    fill: var(--selected-color) !important;
+    fill: var(--selected-header-color) !important;
 }
 
 .header-selected a,
@@ -189,12 +192,17 @@
     background: var(--selected) !important;
 }
 
-.tabulator-selected *:not(.new):not(.r18):not(.title) {
+.tabulator-selected *:not(.new):not(.r18):not(.title):not(select:disabled) {
     color: var(--selected-color) !important;
 }
 
 .tabulator-selected svg {
     fill: var(--selected-color) !important;
+}
+
+.tabulator-selected .tabulator-cell[tabulator-field="picture"] svg,
+.tabulator-selected .tabulator-cell[tabulator-field="picture2"] svg {
+    fill: var(--selected-header) !important;
 }
 
 .tabulator-selected:focus-within,
@@ -223,7 +231,6 @@
 
 .importing,
 .loading,
-.nothing,
 .searching {
     align-items: center;
     display: flex;
@@ -238,21 +245,35 @@
 }
 
 .importing,
-.nothing,
 .searching {
     flex-grow: 1;
     position: relative;
 }
 
+.nothing {
+    align-items: center;
+    display: flex;
+    height: 40px;
+    padding: 0 19px;
+    position: relative;
+    white-space: nowrap;
+}
+
+.nothing .enter {
+    color: var(--selected-header);
+    display: none;
+    font-weight: 500;
+}
+
 header select {
     background: transparent;
     border: 0;
-    color: var(--selected-color);
+    color: var(--selected-header-color);
 }
 
 header option {
-    background: var(--selected);
-    color: var(--selected-color);
+    background: var(--selected-header);
+    color: var(--selected-header-color);
 }
 
 header option:disabled {
@@ -366,12 +387,13 @@ input {
     display: none;
 }
 
-.selected-count {
+.selected-count span:first-child {
     font-weight: 500;
 }
 
 .header-selected .selected-count {
-    display: block;
+    display: flex;
+    flex-direction: column;
 }
 
 ::placeholder {
@@ -388,8 +410,9 @@ input {
 
 .error select:disabled,
 .error .tabulator-col[tabulator-field="progress"] .tabulator-col-title,
+.error .tabulator-col[tabulator-field="rewatched"] .tabulator-col-title,
 .error .tabulator-col[tabulator-field="status"] .tabulator-col-title {
-    color: var(--disabled);
+    color: var(--disabled) !important;
 }
 
 .error .menu svg {
@@ -397,8 +420,8 @@ input {
 }
 
 .side {
-    background: var(--background);
-    box-shadow: 0 1px 2px 0 var(--shadow), 0 1px 3px 1px var(--shadow);
+    background: var(--side);
+    box-shadow: var(--shadow);
     display: none;
     flex-direction: column;
     font-size: 14px;
@@ -427,24 +450,26 @@ input {
 
 .export:hover,
 .import:hover,
-.stats:hover,
+.reset:hover,
 .tab:hover {
-    background: var(--background-hover);
+    background: var(--side-hover);
 }
 
 .export2 {
-    border: 1px solid var(--color);
+    background: var(--selected-header);
+    color: var(--selected-header-color);
     display: inline-flex;
+    font-weight: 500;
     margin-top: 11.5px;
     padding: 10.5px;
 }
 
 .export2:hover {
-    background: var(--color);
-    color: var(--background);
+    background: var(--selected-header-hover);
 }
 
 .side-title {
+    color: var(--header-color);
     font-weight: 500;
 }
 
@@ -474,13 +499,13 @@ input {
 .qualifiers {
     background: var(--background);
     display: none;
-    height: calc(100% - 40px);
+    height: calc(100% - 80px);
     overflow: auto;
     padding: 19px;
     position: absolute;
-    top: 40px;
+    top: 80px;
     width: 100%;
-    z-index: 2;
+    z-index: 3;
 }
 
 code {
@@ -524,7 +549,8 @@ tr {
 }
 
 .export,
-.import {
+.import,
+.reset {
     align-items: center;
     display: flex;
     height: 40px;
@@ -573,6 +599,7 @@ tr {
 }
 
 .tabulator-header {
+    margin-left: 0 !important;
     position: sticky;
     top: 0;
     z-index: 2

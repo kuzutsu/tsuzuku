@@ -1,4 +1,4 @@
-const sw = '64';
+const sw = '65';
 
 addEventListener('install', (event) => {
     event.waitUntil(
@@ -6,48 +6,41 @@ addEventListener('install', (event) => {
             .open(sw)
             .then((c) => c.addAll([
                 // main
-                './',
-                './fetchFunction.js',
-                './global.css',
-                './global.js',
-                './index.css',
-                './index.js',
-                './manifest.webmanifest',
-                './worker.js',
+                '/',
+                '/fetchFunction.js',
+                '/global.css',
+                '/global.js',
+                '/index.css',
+                '/index.js',
+                '/manifest.webmanifest',
+                '/worker.js',
 
                 // games
-                './games/',
-                './games/index.css',
-                './games/odd-one-out/',
-                './games/odd-one-out/index.css',
-                './games/odd-one-out/index.js',
-                './games/quiz/',
-                './games/quiz/index.css',
-                './games/quiz/index.js',
+                '/games/',
+                '/games/index.css',
+                '/games/odd-one-out/',
+                '/games/odd-one-out/index.css',
+                '/games/odd-one-out/index.js',
+                '/games/quiz/',
+                '/games/quiz/index.css',
+                '/games/quiz/index.js',
 
                 // images
-                './images/logo.svg',
-                './images/logo-180.png',
-                './images/logo-192.png',
-                './images/logo-512.png',
-                './images/logo-maskable-192.png',
-                './images/logo-maskable-512.png',
+                '/images/logo.svg',
+                '/images/logo-180.png',
+                '/images/logo-192.png',
+                '/images/logo-512.png',
+                '/images/logo-maskable-192.png',
+                '/images/logo-maskable-512.png',
 
                 // tags
-                './tags/',
-                './tags/index.css',
-                './tags/index.js',
+                '/tags/',
+                '/tags/index.css',
+                '/tags/index.js',
 
                 // third-party
-                'https://cdn.jsdelivr.net/npm/fuse.js@6.5.3/dist/fuse.min.js',
-                'https://cdn.jsdelivr.net/npm/tabulator-tables@4.9.3/dist/js/modules/edit.min.js',
-                'https://cdn.jsdelivr.net/npm/tabulator-tables@4.9.3/dist/js/modules/filter.min.js',
-                'https://cdn.jsdelivr.net/npm/tabulator-tables@4.9.3/dist/js/modules/format.min.js',
-                'https://cdn.jsdelivr.net/npm/tabulator-tables@4.9.3/dist/js/modules/frozen_columns.min.js',
-                'https://cdn.jsdelivr.net/npm/tabulator-tables@4.9.3/dist/js/modules/resize_table.min.js',
-                'https://cdn.jsdelivr.net/npm/tabulator-tables@4.9.3/dist/js/modules/select_row.min.js',
-                'https://cdn.jsdelivr.net/npm/tabulator-tables@4.9.3/dist/js/modules/sort.min.js',
-                'https://cdn.jsdelivr.net/npm/tabulator-tables@4.9.3/dist/js/tabulator_core.min.js',
+                'https://cdn.jsdelivr.net/npm/fuse.js@6.6.2/dist/fuse.min.js',
+                'https://cdn.jsdelivr.net/npm/tabulator-tables@5.3.0/dist/js/tabulator_esm.min.js',
                 'https://fonts.gstatic.com/s/roboto/v29/KFOmCnqEu92Fr1Mu4mxK.woff2',
                 'https://fonts.gstatic.com/s/roboto/v29/KFOlCnqEu92Fr1MmEU9fBBc4.woff2',
                 'https://raw.githubusercontent.com/manami-project/anime-offline-database/master/anime-offline-database-minified.json'

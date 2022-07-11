@@ -1,5 +1,5 @@
 if (typeof Fuse === 'undefined') {
-    importScripts('https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js');
+    importScripts('https://cdn.jsdelivr.net/npm/fuse.js@6.6.2/dist/fuse.min.js');
 }
 
 function is(value1, type, value2) {
@@ -46,6 +46,7 @@ addEventListener('message', (event) => {
         progress = null,
         random = 0,
         regex = false,
+        rewatched = false,
         season = null,
         status = null,
         tags = null,
@@ -91,9 +92,9 @@ addEventListener('message', (event) => {
         v = v.replace(/\btype:(?:\|?(?:tv|movie|ova|ona|special|tba)\b)+/giu, '');
     }
 
-    if ((/\bstatus:(?:\|?(?:all|none|watching|rewatching|completed|paused|dropped|planning|skipping)\b)+/giu).test(v)) {
-        status = (/\bstatus:(?:\|?(?:all|none|watching|rewatching|completed|paused|dropped|planning|skipping)\b)+/giu).exec(v)[0].replace(/status:/giu, '').split('|');
-        v = v.replace(/\bstatus:(?:\|?(?:all|none|watching|rewatching|completed|paused|dropped|planning|skipping)\b)+/giu, '');
+    if ((/\bstatus:(?:\|?(?:all|none|watching|completed|paused|dropped|planning|rewatching|skipping)\b)+/giu).test(v)) {
+        status = (/\bstatus:(?:\|?(?:all|none|watching|completed|paused|dropped|planning|rewatching|skipping)\b)+/giu).exec(v)[0].replace(/status:/giu, '').split('|');
+        v = v.replace(/\bstatus:(?:\|?(?:all|none|watching|completed|paused|dropped|planning|rewatching|skipping)\b)+/giu, '');
     }
 
     if ((/\bseason:(?:\|?(?:winter|spring|summer|fall|tba)\b)+/giu).test(v)) {
@@ -104,6 +105,11 @@ addEventListener('message', (event) => {
     if ((/\btag:\S+\b/giu).test(v)) {
         tags = (/\btag:\S+\b/giu).exec(v)[0].replace(/tag:/giu, '').split('&');
         v = v.replace(/\btag:\S+\b/giu, '');
+    }
+
+    if ((/\brewatched:(?:&?(?:<=|>=|<|>)?(?:0|[1-9][0-9]*)\b)+/giu).test(v)) {
+        rewatched = (/\brewatched:(?:&?(?:<=|>=|<|>)?(?:0|[1-9][0-9]*)\b)+/giu).exec(v)[0].replace(/rewatched:/giu, '').split('&');
+        v = v.replace(/\brewatched:(?:&?(?:<=|>=|<|>)?(?:0|[1-9][0-9]*)\b)+/giu, '');
     }
 
     if ((/\bis:selected\b/giu).test(v)) {
@@ -268,6 +274,21 @@ addEventListener('message', (event) => {
             }
         }
 
+        if (rewatched) {
+            let c = false;
+
+            for (const value of rewatched) {
+                if (!is(d.rewatched, (value.match(/<=|>=|<|>/giu) || '').toString(), value.match(/0|[1-9][0-9]*/giu).toString())) {
+                    c = true;
+                    break;
+                }
+            }
+
+            if (c) {
+                continue;
+            }
+        }
+
         if (ongoing) {
             if (!d.ongoing) {
                 continue;
@@ -347,7 +368,7 @@ addEventListener('message', (event) => {
                     ignoreLocation: true,
                     includeScore: true,
                     keys: ['title'],
-                    threshold: 0.25
+                    threshold: 0.2
                 }).search(v.trim());
 
                 if (result.length) {
@@ -390,6 +411,11 @@ addEventListener('message', (event) => {
     if (random && f.length > random) {
         ff = [];
         uu = [];
+
+        postMessage({
+            all: f.length,
+            message: 'random'
+        });
 
         while (random--) {
             const r = Math.round(Math.random() * (f.length - 1));

@@ -13,7 +13,7 @@ document.body.addEventListener('keydown', (e) => {
 if ('serviceWorker' in navigator) {
     navigator
         .serviceWorker
-        .register('https://kuzutsu.github.io/tsuzuku/sw.js')
+        .register('/sw.js')
         .then((registration) => {
             registration.addEventListener('updatefound', () => {
                 const r = registration.installing;

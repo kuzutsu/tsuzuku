@@ -3,21 +3,24 @@ import {
     disableSelection,
     error,
     error2,
-    r,
     selected,
     sorted,
     svg,
     t,
     title
-} from './fetchFunction.js';
+} from '/fetchFunction.js';
 
 const index = {
     dimension: null,
     error: false,
-    lastRow: null
+    lastRow: null,
+    quick: false,
+    random: 0,
+    related: false
 };
 
 let help = false,
+    timeout = null,
     worker = null;
 
 function searchFunction(tt, qq, p) {
@@ -25,15 +28,15 @@ function searchFunction(tt, qq, p) {
         query = qq || document.querySelector('.search').value,
         table = tt || t;
 
-    if (document.querySelector('.nothing')) {
-        document.querySelector('.nothing').remove();
-    } else {
-        document.querySelector('.tabulator').style.display = 'none';
+    if (timeout) {
+        clearTimeout(timeout);
     }
 
-    if (document.querySelector('.search').value) {
-        document.querySelector('.clear').style.display = 'inline-flex';
+    if (index.related) {
+        index.related = false;
     }
+
+    document.querySelector('.tabulator').style.display = 'none';
 
     if (document.querySelector('.importing')) {
         document.querySelector('.top-container').style.display = 'inline-flex';
@@ -47,6 +50,7 @@ function searchFunction(tt, qq, p) {
     }
 
     if (document.querySelector('.qualifiers').style.display) {
+        document.querySelector('.help svg').innerHTML = svg.helpClose;
         document.querySelector('.qualifiers').style.display = '';
     }
 
@@ -54,28 +58,26 @@ function searchFunction(tt, qq, p) {
         document.querySelector('.searching').remove();
     }
 
+    if (document.querySelector('.nothing')) {
+        document.querySelector('.nothing .results').innerHTML = 'Searching...';
+        document.querySelector('.nothing .enter').style.display = '';
+    }
+
     document.querySelector('main').insertAdjacentHTML('beforeend',
         '<div class="searching">' +
             '<div class="progress" style="left: 0; position: absolute; top: 0;"></div>' +
-            '<span>Searching...</span>' +
         '</div>'
     );
 
-    if (r) {
-        for (const value of r) {
-            value.update({
-                alternative: value.getData().title,
-                relevancy: 1
-            });
-        }
-    }
+    index.quick = false;
+    index.random = 0;
 
     if (worker) {
         worker.terminate();
         worker = null;
     }
 
-    worker = new Worker('./worker.js');
+    worker = new Worker('/worker.js');
 
     worker.postMessage({
         data: table.getData(),
@@ -89,10 +91,10 @@ function searchFunction(tt, qq, p) {
         switch (event.data.message) {
             case 'clear':
                 if (document.querySelector('.searching')) {
-                    document.querySelector('.searching span').innerHTML = 'Filtering table...';
+                    document.querySelector('.nothing .results').innerHTML = 'Filtering table...';
                 }
 
-                setTimeout(() => {
+                timeout = setTimeout(() => {
                     index.dimension = null;
 
                     table.clearFilter();
@@ -126,10 +128,10 @@ function searchFunction(tt, qq, p) {
 
             case 'error':
                 if (document.querySelector('.searching')) {
-                    document.querySelector('.searching span').innerHTML = 'Filtering table...';
+                    document.querySelector('.nothing .results').innerHTML = 'Filtering table...';
                 }
 
-                setTimeout(() => {
+                timeout = setTimeout(() => {
                     index.dimension = null;
                     index.query = event.data.query;
                     index.error = true;
@@ -179,12 +181,16 @@ function searchFunction(tt, qq, p) {
                 document.querySelector('.progress').style.width = event.data.progress;
                 break;
 
+            case 'random':
+                index.random = event.data.all;
+                break;
+
             case 'success':
                 if (document.querySelector('.searching')) {
-                    document.querySelector('.searching span').innerHTML = 'Filtering table...';
+                    document.querySelector('.nothing .results').innerHTML = 'Filtering table...';
                 }
 
-                setTimeout(() => {
+                timeout = setTimeout(() => {
                     index.dimension = event.data.update;
                     index.query = event.data.query;
                     index.error = false;
@@ -243,13 +249,13 @@ document.querySelector('.thumbnails').addEventListener('click', () => {
         document.body.classList.add('hide');
         t.getColumn('picture').hide();
         t.getColumn('picture2').show();
-        document.querySelector('.thumbnails path').setAttribute('d', 'M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z');
+        document.querySelector('.thumbnails path').setAttribute('d', 'M21 18.15 19 16.15V5Q19 5 19 5Q19 5 19 5H7.85L5.85 3H19Q19.825 3 20.413 3.587Q21 4.175 21 5ZM19.8 22.6 18.2 21H5Q4.175 21 3.587 20.413Q3 19.825 3 19V5.8L1.4 4.2L2.8 2.8L21.2 21.2ZM6 17 9 13 11.25 16 12.075 14.9 5 7.825V19Q5 19 5 19Q5 19 5 19H16.175L14.175 17ZM12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Z');
         c.thumbnails = false;
     } else {
         document.body.classList.remove('hide');
         t.getColumn('picture').show();
         t.getColumn('picture2').hide();
-        document.querySelector('.thumbnails path').setAttribute('d', 'M21.9 21.9l-8.49-8.49l0 0L3.59 3.59l0 0L2.1 2.1L0.69 3.51L3 5.83V19c0 1.1 0.9 2 2 2h13.17l2.31 2.31L21.9 21.9z M5 18 l3.5-4.5l2.5 3.01L12.17 15l3 3H5z M21 18.17L5.83 3H19c1.1 0 2 0.9 2 2V18.17z');
+        document.querySelector('.thumbnails path').setAttribute('d', 'M6 17H18L14.25 12L11.25 16L9 13ZM5 21Q4.175 21 3.587 20.413Q3 19.825 3 19V5Q3 4.175 3.587 3.587Q4.175 3 5 3H19Q19.825 3 20.413 3.587Q21 4.175 21 5V19Q21 19.825 20.413 20.413Q19.825 21 19 21Z');
         c.thumbnails = true;
     }
 
@@ -266,31 +272,32 @@ document.querySelector('.close').addEventListener('click', () => {
     index.lastRow = null;
 
     document.querySelector('.header-selected').classList.remove('header-selected');
-    document.querySelector('.header-status').remove();
-    document.querySelector('header .menu').style.display = 'inline-flex';
+
+    if (document.querySelector('.header-status')) {
+        document.querySelector('.header-status').remove();
+    }
+
+    if (document.querySelector('header .menu')) {
+        document.querySelector('header .menu').style.display = 'inline-flex';
+    }
+
     document.head.querySelector('[name="theme-color"]').content = '#000';
 
     t.getColumn('picture').getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.blank;
+    t.getColumn('picture').getElement().querySelector('.tabulator-col-title svg').style.fill = '';
     t.getColumn('picture2').getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.blank;
+    t.getColumn('picture2').getElement().querySelector('.tabulator-col-title svg').style.fill = '';
     t.deselectRow();
 
     selected.s = false;
     selected.ss.splice(0);
 });
 
-document.querySelector('.search').addEventListener('keydown', (e) => {
-    if (e.key !== 'Enter' || e.repeat) {
-        return;
-    }
-
-    e.target.blur();
-    searchFunction();
-});
-
 document.querySelector('.help').addEventListener('click', () => {
     if (document.querySelector('.qualifiers').style.display) {
         help = false;
 
+        document.querySelector('.help svg').innerHTML = svg.helpClose;
         document.querySelector('.qualifiers').style.display = '';
 
         for (const value of ['a.no-tab, select.no-tab']) {
@@ -307,9 +314,16 @@ document.querySelector('.help').addEventListener('click', () => {
     } else {
         help = true;
 
+        document.querySelector('.help svg').innerHTML = svg.helpOpen;
         document.querySelector('.qualifiers').style.display = 'block';
 
-        for (const value of ['.tabulator-cell[tabindex]:not([tabulator-field="progress"]), .tabulator-cell a, .tabulator-cell select, .tabulator-cell span[tabindex], .tabulator-col[tabindex]']) {
+        for (const value of [
+            '.tabulator-cell[tabindex]:not([tabulator-field="progress"])',
+            '.tabulator-cell a',
+            '.tabulator-cell select',
+            '.tabulator-cell span[tabindex]',
+            '.tabulator-col[tabindex]'
+        ]) {
             document.querySelectorAll(value).forEach((element) => {
                 element.classList.add('no-tab');
                 element.setAttribute('tabindex', -1);
@@ -339,9 +353,6 @@ document.querySelector('header .menu').addEventListener('click', () => {
             if (document.querySelector('.side').style.display === '') {
                 document.querySelector('.side').style.display = 'flex';
                 document.querySelector('.overlay').style.display = 'block';
-
-                document.querySelector('header .menu').blur();
-                document.querySelector('.side .menu').focus();
             }
 
             for (const value of ['completed', 'dropped', 'paused', 'planning', 'rewatching', 'skipping', 'watching']) {
@@ -361,7 +372,7 @@ document.querySelector('header .menu').addEventListener('click', () => {
             });
 
             if (mismatched.length) {
-                document.querySelector('[data-query="status:completed"]').style.marginRight = '9.5px';
+                document.querySelector('[data-query="status:completed"]').style.marginRight = '2.125px';
                 document.querySelector('.mismatched').style.display = 'inline-flex';
                 document.querySelector('.mismatched').title = `${mismatched.length} mismatched`;
             } else {
@@ -372,7 +383,14 @@ document.querySelector('header .menu').addEventListener('click', () => {
 
             document.querySelector('.all').innerHTML = total;
 
-            for (const value of [':not(.side) > :not(div) > .menu', 'div[tabindex]:not(.menu):not(.overlay):not(.tabulator-tableHolder):not(.tabulator-cell[tabulator-field="progress"])', ':not(.import):not(.stats):not(.tab) > a', 'input', 'select', ':not(.export):not(.import) > span[tabindex], code']) {
+            for (const value of [
+                ':not(.side) > :not(div) > .menu',
+                'div[tabindex]:not(.menu):not(.overlay):not(.tabulator-tableholder):not(.tabulator-cell[tabulator-field="progress"]):not(.tabulator-cell[tabulator-field="rewatched"])',
+                ':not(.tab) > a',
+                'input',
+                'select',
+                ':not(.export):not(.import):not(.reset) > span[tabindex], code'
+            ]) {
                 document.querySelectorAll(value).forEach((element) => {
                     element.classList.add('no-tab');
                     element.setAttribute('tabindex', -1);
@@ -380,39 +398,6 @@ document.querySelector('header .menu').addEventListener('click', () => {
             }
         }
     };
-});
-
-document.querySelector('.side .menu').addEventListener('click', () => {
-    if (document.querySelector('.side').style.display === 'flex') {
-        document.querySelector('.side').style.display = '';
-        document.querySelector('.overlay').style.display = '';
-
-        document.querySelector('header .menu').focus();
-        document.querySelector('.side .menu').blur();
-    }
-
-    for (const value of ['a.no-tab, input.no-tab, select.no-tab']) {
-        document.querySelectorAll(value).forEach((element) => {
-            element.classList.remove('no-tab');
-            element.removeAttribute('tabindex');
-        });
-    }
-
-    document.querySelectorAll('.no-tab').forEach((element) => {
-        element.classList.remove('no-tab');
-        element.setAttribute('tabindex', 0);
-    });
-
-    if (!help) {
-        return;
-    }
-
-    for (const value of ['.tabulator-cell[tabindex]:not([tabulator-field="progress"]), .tabulator-cell a, .tabulator-cell select, .tabulator-cell span[tabindex], .tabulator-col[tabindex]']) {
-        document.querySelectorAll(value).forEach((element) => {
-            element.classList.add('no-tab');
-            element.setAttribute('tabindex', -1);
-        });
-    }
 });
 
 document.querySelector('.overlay').addEventListener('click', () => {
@@ -437,7 +422,13 @@ document.querySelector('.overlay').addEventListener('click', () => {
         return;
     }
 
-    for (const value of ['.tabulator-cell[tabindex]:not([tabulator-field="progress"]), .tabulator-cell a, .tabulator-cell select, .tabulator-cell span[tabindex], .tabulator-col[tabindex]']) {
+    for (const value of [
+        '.tabulator-cell[tabindex]:not([tabulator-field="progress"])',
+        '.tabulator-cell a',
+        '.tabulator-cell select',
+        '.tabulator-cell span[tabindex]',
+        '.tabulator-col[tabindex]'
+    ]) {
         document.querySelectorAll(value).forEach((element) => {
             element.classList.add('no-tab');
             element.setAttribute('tabindex', -1);
@@ -445,13 +436,8 @@ document.querySelector('.overlay').addEventListener('click', () => {
     }
 });
 
-document.querySelector('.clear').addEventListener('click', () => {
-    document.querySelector('.clear').style.display = 'none';
-    document.querySelector('.search').value = '';
-    document.querySelector('.search').focus();
-});
-
 document.querySelector('.enter').addEventListener('click', () => {
+    index.quick = false;
     searchFunction();
 });
 
@@ -471,24 +457,33 @@ document.querySelector('.return').addEventListener('click', () => {
     searchFunction();
 });
 
-document.querySelector('.clear').addEventListener('dragenter', () => {
-    document.querySelector('.clear').style.display = 'none';
-    document.querySelector('.search').value = '';
-    document.querySelector('.search').focus();
-});
-
-document.querySelector('.search').addEventListener('focus', (e) => {
-    if (e.target.value) {
-        document.querySelector('.clear').style.display = 'inline-flex';
+document.querySelector('.search').addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' || e.repeat) {
+        return;
     }
+
+    index.quick = false;
+    e.target.blur();
+    searchFunction();
 });
 
 document.querySelector('.search').addEventListener('input', (e) => {
-    if (e.target.value) {
-        document.querySelector('.clear').style.display = 'inline-flex';
-    } else {
-        document.querySelector('.clear').style.display = 'none';
+    if (timeout) {
+        clearTimeout(timeout);
     }
+
+    timeout = setTimeout(() => {
+        index.dimension = null;
+        index.quick = true;
+
+        t.setFilter('title', 'like', e.target.value);
+        t.redraw(true);
+
+        if (worker) {
+            worker.terminate();
+            worker = null;
+        }
+    }, 300);
 });
 
 document.querySelectorAll('code').forEach((element) => {
@@ -508,6 +503,23 @@ document.querySelectorAll('code').forEach((element) => {
         }
 
         document.querySelector('.search').focus();
+
+        if (timeout) {
+            clearTimeout(timeout);
+        }
+
+        timeout = setTimeout(() => {
+            index.dimension = null;
+            index.quick = true;
+
+            t.setFilter('title', 'like', e.target.value);
+            t.redraw(true);
+
+            if (worker) {
+                worker.terminate();
+                worker = null;
+            }
+        }, 300);
     });
 });
 
@@ -594,10 +606,6 @@ document.querySelector('.import').addEventListener('click', () => {
             document.querySelector('.overlay').style.display = '';
         }
 
-        if (document.querySelector('.nothing')) {
-            document.querySelector('.nothing').remove();
-        }
-
         document.querySelector('.top-container').style.display = 'none';
         document.querySelector('.tabulator').style.display = 'none';
         document.querySelector('main').insertAdjacentHTML('beforeend',
@@ -618,7 +626,6 @@ document.querySelector('.import').addEventListener('click', () => {
 
             function status(s, r2, t2, s2) {
                 switch (s) {
-                    case 2:
                     case 'Completed':
                         if (r2) {
                             return 'Rewatching';
@@ -626,7 +633,6 @@ document.querySelector('.import').addEventListener('click', () => {
 
                         return 'Completed';
 
-                    case 3:
                     case 'Dropped':
                         if (s2) {
                             return 'Skipping';
@@ -634,19 +640,12 @@ document.querySelector('.import').addEventListener('click', () => {
 
                         return 'Dropped';
 
-                    case 4:
                     case 'On-Hold':
                         return 'Paused';
 
-                    case 1:
                     case 'Plan to Watch':
                         return 'Planning';
 
-                    case 5:
-                        return 'Rewatching';
-
-                    case 0:
-                    case 'Watching':
                     default:
                         if (t2) {
                             return 'Rewatching';
@@ -656,19 +655,15 @@ document.querySelector('.import').addEventListener('click', () => {
                 }
             }
 
-            let count = 0;
+            let a2 = null,
+                count = 0;
 
-            // anilist
-            //      0 = watching
-            //      1 = planning
-            //      2 = completed
-            //      3 = dropped
-            //      4 = paused
-            //      5 = rewatching
-            try {
-                const a = JSON.parse(event.target.result);
+            const a = new DOMParser().parseFromString(event.target.result, 'application/xml').querySelector('myanimelist');
 
-                if (!a.lists) {
+            if (a) {
+                a2 = a.querySelectorAll('anime');
+
+                if (!a2.length) {
                     if (document.querySelector('.importing')) {
                         document.querySelector('.importing').remove();
                     }
@@ -682,228 +677,56 @@ document.querySelector('.import').addEventListener('click', () => {
 
                     return;
                 }
-
-                if (document.querySelector('.importing span')) {
-                    document.querySelector('.importing span').innerHTML = 'Importing...';
+            } else {
+                if (document.querySelector('.importing')) {
+                    document.querySelector('.importing').remove();
                 }
 
-                for (const value of a.lists) {
-                    const
-                        s = `https://anilist.co/anime/${value.series_id}`,
-                        s2 = status(value.status),
-                        s3 = s2 === 'Planning'
-                            ? ''
-                            : value.progress || '0',
-                        ss = t.searchRows((d, dd) => d.sources2[2] === dd.v, {
-                            v: s
-                        })[0];
+                document.querySelector('.top-container').style.display = 'inline-flex';
+                document.querySelector('.tabulator').style.display = '';
 
-                    if (ss) {
-                        const d = db2().add({
-                            episodes: ss.getData().episodes,
+                input.remove();
+
+                searchFunction(null, null, true);
+
+                return;
+            }
+
+            if (document.querySelector('.importing span')) {
+                document.querySelector('.importing span').innerHTML = 'Importing...';
+            }
+
+            for (const value of a2) {
+                const
+                    s = Number(parse(value, 'series_animedb_id'))
+                        ? `https://myanimelist.net/anime/${parse(value, 'series_animedb_id')}`
+                        : parse(value, 'series_animedb_id'),
+                    s2 = status(parse(value, 'my_status'), Number(parse(value, 'my_rewatching')), Number(parse(value, 'my_times_watched')), Number(parse(value, 'my_skipping'))),
+                    s3 = s2 === 'Planning' || s2 === 'Skipping'
+                        ? ''
+                        : parse(value, 'my_watched_episodes') || '0',
+                    s4 = parse(value, 'my_times_watched'),
+                    ss = t.searchRows('sources', '=', s)[0];
+
+                if (ss) {
+                    const d = db2().add({
+                        episodes: ss.getData().episodes,
+                        progress: s3,
+                        rewatched: s4,
+                        season: ss.getData().season,
+                        source: s,
+                        status: s2,
+                        title: ss.getData().title,
+                        type: ss.getData().type
+                    });
+
+                    d.onsuccess = () => {
+                        ss.update({
                             progress: s3,
-                            season: ss.getData().season,
-                            source: ss.getData().sources,
-                            status: s2,
-                            title: ss.getData().title,
-                            type: ss.getData().type
+                            rewatched: s4,
+                            status: s2
                         });
 
-                        d.onsuccess = () => {
-                            ss.update({
-                                progress: s3,
-                                status: s2
-                            });
-
-                            count++;
-
-                            if (count === a.lists.length) {
-                                setTimeout(() => {
-                                    if (document.querySelector('.importing')) {
-                                        document.querySelector('.importing').remove();
-                                    }
-
-                                    document.querySelector('.top-container').style.display = 'inline-flex';
-                                    document.querySelector('.tabulator').style.display = '';
-
-                                    input.remove();
-
-                                    searchFunction(null, null, true);
-                                }, 100);
-                            }
-                        };
-
-                        d.onerror = () => {
-                            db2().get(ss.getData().sources).onsuccess = (event2) => {
-                                const result = event2.target.result;
-
-                                result.progress = s3;
-                                result.status = s2;
-
-                                db2().put(result).onsuccess = () => {
-                                    ss.update({
-                                        progress: s3,
-                                        status: s2
-                                    });
-
-                                    count++;
-
-                                    if (count === a.lists.length) {
-                                        setTimeout(() => {
-                                            if (document.querySelector('.importing')) {
-                                                document.querySelector('.importing').remove();
-                                            }
-
-                                            document.querySelector('.top-container').style.display = 'inline-flex';
-                                            document.querySelector('.tabulator').style.display = '';
-
-                                            input.remove();
-
-                                            searchFunction(null, null, true);
-                                        }, 100);
-                                    }
-                                };
-                            };
-                        };
-                    } else {
-                        count++;
-
-                        if (count === a.lists.length) {
-                            setTimeout(() => {
-                                if (document.querySelector('.importing')) {
-                                    document.querySelector('.importing').remove();
-                                }
-
-                                document.querySelector('.top-container').style.display = 'inline-flex';
-                                document.querySelector('.tabulator').style.display = '';
-
-                                input.remove();
-
-                                searchFunction(null, null, true);
-                            }, 100);
-                        }
-                    }
-                }
-            // myanimelist
-            } catch {
-                const a = new DOMParser().parseFromString(event.target.result, 'application/xml').querySelector('myanimelist');
-                let a2 = null;
-
-                if (a) {
-                    a2 = a.querySelectorAll('anime');
-
-                    if (!a2.length) {
-                        if (document.querySelector('.importing')) {
-                            document.querySelector('.importing').remove();
-                        }
-
-                        document.querySelector('.top-container').style.display = 'inline-flex';
-                        document.querySelector('.tabulator').style.display = '';
-
-                        input.remove();
-
-                        searchFunction(null, null, true);
-
-                        return;
-                    }
-                } else {
-                    if (document.querySelector('.importing')) {
-                        document.querySelector('.importing').remove();
-                    }
-
-                    document.querySelector('.top-container').style.display = 'inline-flex';
-                    document.querySelector('.tabulator').style.display = '';
-
-                    input.remove();
-
-                    searchFunction(null, null, true);
-
-                    return;
-                }
-
-                if (document.querySelector('.importing span')) {
-                    document.querySelector('.importing span').innerHTML = 'Importing...';
-                }
-
-                for (const value of a2) {
-                    const
-                        s = Number(parse(value, 'series_animedb_id'))
-                            ? `https://myanimelist.net/anime/${parse(value, 'series_animedb_id')}`
-                            : parse(value, 'series_animedb_id'),
-                        s2 = status(parse(value, 'my_status'), Number(parse(value, 'my_rewatching')), Number(parse(value, 'my_times_watched')), Number(parse(value, 'my_skipping'))),
-                        s3 = s2 === 'Planning' || s2 === 'Skipping'
-                            ? ''
-                            : parse(value, 'my_watched_episodes') || '0',
-                        ss = t.searchRows('sources', '=', s)[0];
-
-                    if (ss) {
-                        const d = db2().add({
-                            episodes: ss.getData().episodes,
-                            progress: s3,
-                            season: ss.getData().season,
-                            source: s,
-                            status: s2,
-                            title: ss.getData().title,
-                            type: ss.getData().type
-                        });
-
-                        d.onsuccess = () => {
-                            ss.update({
-                                progress: s3,
-                                status: s2
-                            });
-
-                            count++;
-
-                            if (count === a2.length) {
-                                setTimeout(() => {
-                                    if (document.querySelector('.importing')) {
-                                        document.querySelector('.importing').remove();
-                                    }
-
-                                    document.querySelector('.top-container').style.display = 'inline-flex';
-                                    document.querySelector('.tabulator').style.display = '';
-
-                                    input.remove();
-
-                                    searchFunction(null, null, true);
-                                }, 100);
-                            }
-                        };
-
-                        d.onerror = () => {
-                            db2().get(s).onsuccess = (event2) => {
-                                const result = event2.target.result;
-
-                                result.progress = s3;
-                                result.status = s2;
-
-                                db2().put(result).onsuccess = () => {
-                                    ss.update({
-                                        progress: s3,
-                                        status: s2
-                                    });
-
-                                    count++;
-
-                                    if (count === a2.length) {
-                                        setTimeout(() => {
-                                            if (document.querySelector('.importing')) {
-                                                document.querySelector('.importing').remove();
-                                            }
-
-                                            document.querySelector('.top-container').style.display = 'inline-flex';
-                                            document.querySelector('.tabulator').style.display = '';
-
-                                            input.remove();
-
-                                            searchFunction(null, null, true);
-                                        }, 100);
-                                    }
-                                };
-                            };
-                        };
-                    } else {
                         count++;
 
                         if (count === a2.length) {
@@ -920,6 +743,58 @@ document.querySelector('.import').addEventListener('click', () => {
                                 searchFunction(null, null, true);
                             }, 100);
                         }
+                    };
+
+                    d.onerror = () => {
+                        db2().get(s).onsuccess = (event2) => {
+                            const result = event2.target.result;
+
+                            result.progress = s3;
+                            result.rewatched = s4;
+                            result.status = s2;
+
+                            db2().put(result).onsuccess = () => {
+                                ss.update({
+                                    progress: s3,
+                                    rewatched: s4,
+                                    status: s2
+                                });
+
+                                count++;
+
+                                if (count === a2.length) {
+                                    setTimeout(() => {
+                                        if (document.querySelector('.importing')) {
+                                            document.querySelector('.importing').remove();
+                                        }
+
+                                        document.querySelector('.top-container').style.display = 'inline-flex';
+                                        document.querySelector('.tabulator').style.display = '';
+
+                                        input.remove();
+
+                                        searchFunction(null, null, true);
+                                    }, 100);
+                                }
+                            };
+                        };
+                    };
+                } else {
+                    count++;
+
+                    if (count === a2.length) {
+                        setTimeout(() => {
+                            if (document.querySelector('.importing')) {
+                                document.querySelector('.importing').remove();
+                            }
+
+                            document.querySelector('.top-container').style.display = 'inline-flex';
+                            document.querySelector('.tabulator').style.display = '';
+
+                            input.remove();
+
+                            searchFunction(null, null, true);
+                        }, 100);
                     }
                 }
             }
@@ -976,27 +851,6 @@ document.querySelector('.export').addEventListener('click', () => {
                     break;
             }
 
-            // kitsu
-            //      my_status
-            //      my_times_watched
-            //      my_watched_episodes
-            //      series_animedb_id
-            //      update_on_import
-            //
-            // myanimelist
-            //      my_rewatching
-            //      series_episodes
-            //      series_title
-            //      series_type
-            //
-            // anilist
-            //      my_finish_date
-            //      my_score
-            //      my_start_date
-            //
-            // tsuzuku
-            //      my_skipping
-            //      series_season
             xml +=
             '    <anime>\n' +
             '        <my_finish_date>0000-00-00</my_finish_date>\n' +
@@ -1005,7 +859,7 @@ document.querySelector('.export').addEventListener('click', () => {
             `        <my_skipping>${skipping}</my_skipping>\n` +
             '        <my_start_date>0000-00-00</my_start_date>\n' +
             `        <my_status>${status}</my_status>\n` +
-            `        <my_times_watched>${rewatching}</my_times_watched>\n` +
+            `        <my_times_watched>${cursor.value.rewatched}</my_times_watched>\n` +
             `        <my_watched_episodes>${progress}</my_watched_episodes>\n` +
             `        <series_animedb_id>${
                 cursor.key.match(/myanimelist/gu)
@@ -1037,10 +891,8 @@ document.querySelector('.export').addEventListener('click', () => {
 onpopstate = () => {
     if (new URLSearchParams(location.search).get('query')) {
         document.querySelector('.search').value = decodeURIComponent(new URLSearchParams(location.search).get('query'));
-        document.querySelector('.clear').style.display = 'inline-flex';
     } else {
         document.querySelector('.search').value = '';
-        document.querySelector('.clear').style.display = 'none';
     }
 
     if (document.querySelector('.related-container').style.display === 'inline-flex') {

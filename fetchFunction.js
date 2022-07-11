@@ -1,11 +1,36 @@
 import {
+    EditModule,
+    FilterModule,
+    FormatModule,
+    FrozenColumnsModule,
+    InteractionModule,
+    ResizeTableModule,
+    SelectRowModule,
+    SortModule,
+    Tabulator
+} from 'https://cdn.jsdelivr.net/npm/tabulator-tables@5.3.0/dist/js/tabulator_esm.js';
+
+Tabulator.registerModule(
+    [
+        EditModule,
+        FilterModule,
+        FormatModule,
+        FrozenColumnsModule,
+        InteractionModule,
+        ResizeTableModule,
+        SelectRowModule,
+        SortModule
+    ]
+);
+
+import {
     index,
     searchFunction
-} from './index.js';
+} from '/index.js';
 
 import {
     source
-} from './global.js';
+} from '/global.js';
 
 const
     channel =
@@ -26,15 +51,18 @@ const
     },
     status = ['', 'Completed', 'Dropped', 'Paused', 'Planning', 'Rewatching', 'Skipping', 'Watching'],
     svg = {
-        arrow: '<path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z"></path>',
-        blank: '<path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"></path>',
-        check: '<path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>',
-        indeterminate: '<path d="M19 3H5C3.9 3 3 3.9 3 5v14c0 1.1 0.9 2 2 2h14c1.1 0 2-0.9 2-2V5C21 3.9 20.1 3 19 3z M17 13H7v-2h10V13z"></path>',
-        play: '<path d="M8 5v14l11-7z"></path>'
+        arrow: '<path d="M11 20V7.825L5.4 13.425L4 12L12 4L20 12L18.6 13.425L13 7.825V20Z"></path>',
+        blank: '<path d="M5 21Q4.175 21 3.587 20.413Q3 19.825 3 19V5Q3 4.175 3.587 3.587Q4.175 3 5 3H19Q19.825 3 20.413 3.587Q21 4.175 21 5V19Q21 19.825 20.413 20.413Q19.825 21 19 21ZM5 19H19Q19 19 19 19Q19 19 19 19V5Q19 5 19 5Q19 5 19 5H5Q5 5 5 5Q5 5 5 5V19Q5 19 5 19Q5 19 5 19Z"></path>',
+        check: '<path d="M5 21Q4.175 21 3.587 20.413Q3 19.825 3 19V5Q3 4.175 3.587 3.587Q4.175 3 5 3H19Q19.825 3 20.413 3.587Q21 4.175 21 5V19Q21 19.825 20.413 20.413Q19.825 21 19 21ZM10.6 16.2 17.65 9.15 16.25 7.75 10.6 13.4 7.75 10.55 6.35 11.95Z"></path>',
+        helpClose: '<path d="M11.95 18Q12.475 18 12.838 17.637Q13.2 17.275 13.2 16.75Q13.2 16.225 12.838 15.863Q12.475 15.5 11.95 15.5Q11.425 15.5 11.062 15.863Q10.7 16.225 10.7 16.75Q10.7 17.275 11.062 17.637Q11.425 18 11.95 18ZM11.05 14.15H12.9Q12.9 13.325 13.088 12.85Q13.275 12.375 14.15 11.55Q14.8 10.9 15.175 10.312Q15.55 9.725 15.55 8.9Q15.55 7.5 14.525 6.75Q13.5 6 12.1 6Q10.675 6 9.788 6.75Q8.9 7.5 8.55 8.55L10.2 9.2Q10.325 8.75 10.763 8.225Q11.2 7.7 12.1 7.7Q12.9 7.7 13.3 8.137Q13.7 8.575 13.7 9.1Q13.7 9.6 13.4 10.037Q13.1 10.475 12.65 10.85Q11.55 11.825 11.3 12.325Q11.05 12.825 11.05 14.15ZM12 22Q9.95 22 8.125 21.212Q6.3 20.425 4.938 19.075Q3.575 17.725 2.788 15.9Q2 14.075 2 12Q2 9.925 2.788 8.1Q3.575 6.275 4.938 4.925Q6.3 3.575 8.125 2.787Q9.95 2 12 2Q14.1 2 15.925 2.787Q17.75 3.575 19.1 4.925Q20.45 6.275 21.225 8.1Q22 9.925 22 12Q22 14.075 21.225 15.9Q20.45 17.725 19.1 19.075Q17.75 20.425 15.925 21.212Q14.1 22 12 22ZM12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12ZM12 20Q15.35 20 17.675 17.663Q20 15.325 20 12Q20 8.675 17.675 6.337Q15.35 4 12 4Q8.725 4 6.362 6.337Q4 8.675 4 12Q4 15.325 6.362 17.663Q8.725 20 12 20Z"></path>',
+        helpOpen: '<path d="M12 22Q9.95 22 8.125 21.212Q6.3 20.425 4.938 19.075Q3.575 17.725 2.788 15.9Q2 14.075 2 12Q2 9.925 2.788 8.1Q3.575 6.275 4.938 4.925Q6.3 3.575 8.125 2.787Q9.95 2 12 2Q14.1 2 15.925 2.787Q17.75 3.575 19.1 4.925Q20.45 6.275 21.225 8.1Q22 9.925 22 12Q22 14.075 21.225 15.9Q20.45 17.725 19.1 19.075Q17.75 20.425 15.925 21.212Q14.1 22 12 22ZM11.05 14.15H12.9Q12.9 13.325 13.088 12.85Q13.275 12.375 14.15 11.55Q14.8 10.9 15.175 10.312Q15.55 9.725 15.55 8.9Q15.55 7.5 14.525 6.75Q13.5 6 12.1 6Q10.675 6 9.788 6.75Q8.9 7.5 8.55 8.55L10.2 9.2Q10.325 8.75 10.763 8.225Q11.2 7.7 12.1 7.7Q12.9 7.7 13.3 8.137Q13.7 8.575 13.7 9.1Q13.7 9.6 13.4 10.037Q13.1 10.475 12.65 10.85Q11.55 11.825 11.3 12.325Q11.05 12.825 11.05 14.15ZM11.95 18Q12.475 18 12.838 17.637Q13.2 17.275 13.2 16.75Q13.2 16.225 12.838 15.863Q12.475 15.5 11.95 15.5Q11.425 15.5 11.062 15.863Q10.7 16.225 10.7 16.75Q10.7 17.275 11.062 17.637Q11.425 18 11.95 18Z"></path>',
+        indeterminate: '<path d="M7 13H17V11H7ZM5 21Q4.175 21 3.587 20.413Q3 19.825 3 19V5Q3 4.175 3.587 3.587Q4.175 3 5 3H19Q19.825 3 20.413 3.587Q21 4.175 21 5V19Q21 19.825 20.413 20.413Q19.825 21 19 21Z"></path>',
+        play: '<path d="M8 19V5L19 12Z"></path>'
     },
     title = document.title;
 
 let db2 = null,
+    dimension2 = null,
     disableSelection = false,
     error = false,
     error2 = false,
@@ -158,13 +186,15 @@ function clickCell(e, cell, shift) {
             }
         }
 
+        document.querySelector('.selected-count').innerHTML = `<span>${cell.getTable().getSelectedRows().length} selected</span>`;
+
         if (cell.getTable().getSelectedRows().length > active) {
-            document.querySelector('.selected-count').innerHTML = `${cell.getTable().getSelectedRows().length} selected (${active} active)`;
-        } else {
-            document.querySelector('.selected-count').innerHTML = `${cell.getTable().getSelectedRows().length} selected`;
+            document.querySelector('.selected-count').innerHTML += `<span>${active} active</span>`;
         }
 
-        document.querySelector('header .menu').style.display = 'none';
+        if (document.querySelector('header .menu')) {
+            document.querySelector('header .menu').style.display = 'none';
+        }
 
         if (document.querySelector('.header-status')) {
             document.querySelector('.header-status').remove();
@@ -194,7 +224,9 @@ function clickCell(e, cell, shift) {
             for (const value of cell.getTable().getSelectedRows()) {
                 ddd.push(
                     new Promise((resolve2) => {
-                        const p = value.getData().progress;
+                        const
+                            p = value.getData().progress || '0',
+                            r2 = value.getData().rewatched || '0';
 
                         if (hstatus.value) {
                             const d2 = db2().add({
@@ -205,6 +237,10 @@ function clickCell(e, cell, shift) {
                                         : ['Planning', 'Skipping'].indexOf(hstatus.value) > -1
                                             ? ''
                                             : '0',
+                                rewatched:
+                                    ['Planning', 'Skipping'].indexOf(hstatus.value) > -1
+                                        ? ''
+                                        : '0',
                                 season: value.getData().season,
                                 source: value.getData().sources,
                                 status: hstatus.value,
@@ -213,9 +249,10 @@ function clickCell(e, cell, shift) {
                             });
 
                             d2.onsuccess = () => {
-                                if (hstatus.value === 'Completed' && value.getData().episodes) {
+                                if (hstatus.value === 'Completed') {
                                     value.update({
-                                        progress: value.getData().episodes,
+                                        progress: value.getData().episodes || '0',
+                                        rewatched: '0',
                                         status: hstatus.value
                                     });
 
@@ -226,6 +263,7 @@ function clickCell(e, cell, shift) {
                                 if (hstatus.value === 'Planning' || hstatus.value === 'Skipping') {
                                     value.update({
                                         progress: '',
+                                        rewatched: '',
                                         status: hstatus.value
                                     });
 
@@ -235,6 +273,7 @@ function clickCell(e, cell, shift) {
 
                                 value.update({
                                     progress: '0',
+                                    rewatched: '0',
                                     status: hstatus.value
                                 });
 
@@ -247,14 +286,20 @@ function clickCell(e, cell, shift) {
                                         result = event.target.result,
                                         status2 = result.status;
 
-                                    if (hstatus.value === 'Completed' && value.getData().episodes) {
-                                        result.progress = value.getData().episodes;
+                                    if (hstatus.value === 'Completed') {
+                                        result.progress = value.getData().episodes || '0';
+                                        result.rewatched =
+                                            status2 === 'Rewatching'
+                                                ? Number(value.getData().rewatched) + 1
+                                                : value.getData().rewatched;
                                     } else {
                                         if (hstatus.value === 'Planning' || hstatus.value === 'Skipping') {
                                             result.progress = '';
+                                            result.rewatched = '';
                                         } else {
                                             if (status2 === 'Planning' || status2 === 'Skipping') {
                                                 result.progress = '0';
+                                                result.rewatched = '0';
                                             }
                                         }
                                     }
@@ -262,7 +307,7 @@ function clickCell(e, cell, shift) {
                                     result.status = hstatus.value;
 
                                     db2().put(result).onsuccess = () => {
-                                        if (hstatus.value === 'Completed' && value.getData().episodes) {
+                                        if (hstatus.value === 'Completed') {
                                             value.getElement().dataset.progress = '';
 
                                             // force update
@@ -271,7 +316,11 @@ function clickCell(e, cell, shift) {
                                             });
 
                                             value.update({
-                                                progress: value.getData().episodes,
+                                                progress: value.getData().episodes || '0',
+                                                rewatched:
+                                                    status2 === 'Rewatching'
+                                                        ? Number(value.getData().rewatched) + 1
+                                                        : value.getData().rewatched,
                                                 status: hstatus.value
                                             });
 
@@ -284,6 +333,7 @@ function clickCell(e, cell, shift) {
 
                                             value.update({
                                                 progress: '',
+                                                rewatched: '',
                                                 status: hstatus.value
                                             });
 
@@ -294,6 +344,7 @@ function clickCell(e, cell, shift) {
                                         if (status2 === 'Planning' || status2 === 'Skipping') {
                                             value.update({
                                                 progress: '0',
+                                                rewatched: '0',
                                                 status: hstatus.value
                                             });
 
@@ -308,6 +359,7 @@ function clickCell(e, cell, shift) {
 
                                         value.update({
                                             progress: p,
+                                            rewatched: r2,
                                             status: hstatus.value
                                         });
 
@@ -321,6 +373,7 @@ function clickCell(e, cell, shift) {
 
                                 value.update({
                                     progress: '',
+                                    rewatched: '',
                                     status: ''
                                 });
 
@@ -339,26 +392,37 @@ function clickCell(e, cell, shift) {
         });
 
         document.querySelector('header').insertAdjacentElement('beforeend', hstatus);
-        document.head.querySelector('[name="theme-color"]').content = '#4065ba';
+        document.head.querySelector('[name="theme-color"]').content = '#a6c6f7';
 
         if (selected.s) {
             cell.getColumn().getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.check;
+            cell.getColumn().getElement().querySelector('.tabulator-col-title svg').style.fill = 'var(--selected-header)';
         } else {
             if (selected.ss.length) {
                 cell.getColumn().getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.indeterminate;
+                cell.getColumn().getElement().querySelector('.tabulator-col-title svg').style.fill = 'var(--selected-header)';
             } else {
                 cell.getColumn().getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.blank;
+                cell.getColumn().getElement().querySelector('.tabulator-col-title svg').style.fill = '';
             }
         }
     } else {
         index.lastRow = null;
 
         document.querySelector('header').classList.remove('header-selected');
-        document.querySelector('.header-status').remove();
-        document.querySelector('header .menu').style.display = 'inline-flex';
+
+        if (document.querySelector('.header-status')) {
+            document.querySelector('.header-status').remove();
+        }
+
+        if (document.querySelector('header .menu')) {
+            document.querySelector('header .menu').style.display = 'inline-flex';
+        }
+
         document.head.querySelector('[name="theme-color"]').content = '#000';
 
         cell.getColumn().getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.blank;
+        cell.getColumn().getElement().querySelector('.tabulator-col-title svg').style.fill = '';
     }
 }
 
@@ -367,6 +431,7 @@ function clickHeader(e, column) {
         return;
     }
 
+    e.stopImmediatePropagation();
     index.lastRow = null;
 
     if (selected.ss.length) {
@@ -402,18 +467,22 @@ function clickHeader(e, column) {
             }
         }
 
+        document.querySelector('.selected-count').innerHTML = `<span>${column.getTable().getSelectedRows().length} selected</span>`;
+
         if (column.getTable().getSelectedRows().length > active) {
-            document.querySelector('.selected-count').innerHTML = `${column.getTable().getSelectedRows().length} selected (${active} active)`;
-        } else {
-            document.querySelector('.selected-count').innerHTML = `${column.getTable().getSelectedRows().length} selected`;
+            document.querySelector('.selected-count').innerHTML += `<span>${active} active</span>`;
         }
 
-        document.querySelector('header .menu').style.display = 'none';
+        if (document.querySelector('header .menu')) {
+            document.querySelector('header .menu').style.display = 'none';
+        }
 
         if (selected.s) {
             column.getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.check;
+            column.getElement().querySelector('.tabulator-col-title svg').style.fill = 'var(--selected-header)';
         } else {
             column.getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.blank;
+            column.getElement().querySelector('.tabulator-col-title svg').style.fill = '';
         }
 
         if (document.querySelector('.header-status')) {
@@ -444,7 +513,9 @@ function clickHeader(e, column) {
             for (const value of column.getTable().getSelectedRows()) {
                 ddd.push(
                     new Promise((resolve2) => {
-                        const p = value.getData().progress;
+                        const
+                            p = value.getData().progress || '0',
+                            r2 = value.getData().rewatched || '0';
 
                         if (hstatus.value) {
                             const d2 = db2().add({
@@ -455,6 +526,10 @@ function clickHeader(e, column) {
                                         : ['Planning', 'Skipping'].indexOf(hstatus.value) > -1
                                             ? ''
                                             : '0',
+                                rewatched:
+                                    ['Planning', 'Skipping'].indexOf(hstatus.value) > -1
+                                        ? ''
+                                        : '0',
                                 season: value.getData().season,
                                 source: value.getData().sources,
                                 status: hstatus.value,
@@ -463,9 +538,10 @@ function clickHeader(e, column) {
                             });
 
                             d2.onsuccess = () => {
-                                if (hstatus.value === 'Completed' && value.getData().episodes) {
+                                if (hstatus.value === 'Completed') {
                                     value.update({
-                                        progress: value.getData().episodes,
+                                        progress: value.getData().episodes || '0',
+                                        rewatched: '0',
                                         status: hstatus.value
                                     });
 
@@ -476,6 +552,7 @@ function clickHeader(e, column) {
                                 if (hstatus.value === 'Planning' || hstatus.value === 'Skipping') {
                                     value.update({
                                         progress: '',
+                                        rewatched: '',
                                         status: hstatus.value
                                     });
 
@@ -485,6 +562,7 @@ function clickHeader(e, column) {
 
                                 value.update({
                                     progress: '0',
+                                    rewatched: '0',
                                     status: hstatus.value
                                 });
 
@@ -497,14 +575,20 @@ function clickHeader(e, column) {
                                         result = event.target.result,
                                         status2 = result.status;
 
-                                    if (hstatus.value === 'Completed' && value.getData().episodes) {
-                                        result.progress = value.getData().episodes;
+                                    if (hstatus.value === 'Completed') {
+                                        result.progress = value.getData().episodes || '0';
+                                        result.rewatched =
+                                            status2 === 'Rewatching'
+                                                ? Number(value.getData().rewatched) + 1
+                                                : value.getData().rewatched;
                                     } else {
                                         if (hstatus.value === 'Planning' || hstatus.value === 'Skipping') {
                                             result.progress = '';
+                                            result.rewatched = '';
                                         } else {
                                             if (status2 === 'Planning' || status2 === 'Skipping') {
                                                 result.progress = '0';
+                                                result.rewatched = '0';
                                             }
                                         }
                                     }
@@ -512,7 +596,7 @@ function clickHeader(e, column) {
                                     result.status = hstatus.value;
 
                                     db2().put(result).onsuccess = () => {
-                                        if (hstatus.value === 'Completed' && value.getData().episodes) {
+                                        if (hstatus.value === 'Completed') {
                                             value.getElement().dataset.progress = '';
 
                                             // force update
@@ -521,7 +605,11 @@ function clickHeader(e, column) {
                                             });
 
                                             value.update({
-                                                progress: value.getData().episodes,
+                                                progress: value.getData().episodes || '0',
+                                                rewatched:
+                                                    status2 === 'Rewatching'
+                                                        ? Number(value.getData().rewatched) + 1
+                                                        : value.getData().rewatched,
                                                 status: hstatus.value
                                             });
 
@@ -534,6 +622,7 @@ function clickHeader(e, column) {
 
                                             value.update({
                                                 progress: '',
+                                                rewatched: '',
                                                 status: hstatus.value
                                             });
 
@@ -544,6 +633,7 @@ function clickHeader(e, column) {
                                         if (status2 === 'Planning' || status2 === 'Skipping') {
                                             value.update({
                                                 progress: '0',
+                                                rewatched: '0',
                                                 status: hstatus.value
                                             });
 
@@ -558,6 +648,7 @@ function clickHeader(e, column) {
 
                                         value.update({
                                             progress: p,
+                                            rewatched: r2,
                                             status: hstatus.value
                                         });
 
@@ -571,6 +662,7 @@ function clickHeader(e, column) {
 
                                 value.update({
                                     progress: '',
+                                    rewatched: '',
                                     status: ''
                                 });
 
@@ -589,12 +681,20 @@ function clickHeader(e, column) {
         });
 
         document.querySelector('header').insertAdjacentElement('beforeend', hstatus);
-        document.head.querySelector('[name="theme-color"]').content = '#4065ba';
+        document.head.querySelector('[name="theme-color"]').content = '#a6c6f7';
     } else {
         document.querySelector('header').classList.remove('header-selected');
         column.getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.blank;
-        document.querySelector('.header-status').remove();
-        document.querySelector('header .menu').style.display = 'inline-flex';
+        column.getElement().querySelector('.tabulator-col-title svg').style.fill = '';
+
+        if (document.querySelector('.header-status')) {
+            document.querySelector('.header-status').remove();
+        }
+
+        if (document.querySelector('header .menu')) {
+            document.querySelector('header .menu').style.display = 'inline-flex';
+        }
+
         document.head.querySelector('[name="theme-color"]').content = '#000';
     }
 }
@@ -647,7 +747,6 @@ if (channel) {
 }
 
 fetch(source)
-// fetch('anime-offline-database.json')
     .then((response) => response.json())
     .then((data) => {
         const d = data.data;
@@ -662,6 +761,7 @@ fetch(source)
                     index2 = [
                         'episodes',
                         'progress',
+                        'rewatched',
                         'season',
                         'status',
                         'title',
@@ -690,6 +790,7 @@ fetch(source)
                         map4.set(cursor.key, {
                             episodes: cursor.value.episodes,
                             progress: cursor.value.progress,
+                            rewatched: cursor.value.rewatched,
                             season: cursor.value.season,
                             status: cursor.value.status,
                             title: cursor.value.title,
@@ -712,35 +813,38 @@ fetch(source)
             if (value6 === 'error') {
                 error = true;
                 document.body.classList.add('error');
-                document.querySelector('header .menu').title = 'Can\'t track, import, or export without IndexedDB';
+                document.querySelector('header .menu').remove();
+
+                /* document.querySelector('header .menu').title = 'Can\'t track, import, or export without IndexedDB'; */
             }
 
-            for (let ii = 0; ii < status.length; ii++) {
-                statuses += `<option>${status[ii]}</option>`;
+            for (const ii of status) {
+                statuses += `<option>${ii}</option>`;
             }
 
-            for (let i = 0; i < d.length; i++) {
+            for (const i of d) {
                 const
                     source2 = /myanimelist\.net/gu,
-                    ss = d[i].animeSeason.season,
-                    tt = d[i].tags.map((tags2) => tags2.replace(/\s/gu, '_')),
-                    value = d[i].sources.filter((sources) => sources.match(source2))[0];
+                    ss = i.animeSeason.season,
+                    tt = i.tags.map((tags2) => tags2.replace(/\s/gu, '_')),
+                    value = i.sources.filter((sources) => sources.match(source2))[0];
 
                 let n2 = false,
                     p2 = '',
+                    r2 = '',
                     s = '',
                     s2 = '',
                     ttt = '';
 
-                if (!d[i].sources.filter((sources) => sources.match(/myanimelist\.net/gu)).length) {
+                if (!i.sources.filter((sources) => sources.match(/myanimelist\.net/gu)).length) {
                     continue;
                 }
 
-                if (d[i].picture === 'https://cdn.myanimelist.net/images/qm_50.gif') {
+                if (i.picture === 'https://cdn.myanimelist.net/images/qm_50.gif') {
                     continue;
                 }
 
-                if (d[i].tags.indexOf('anime influenced') > -1) {
+                if (i.tags.indexOf('anime influenced') > -1) {
                     continue;
                 }
 
@@ -752,8 +856,8 @@ fetch(source)
                     s = `${ss.replace(ss.substr(1), ss.substr(1).toLowerCase())} `;
                 }
 
-                if (d[i].animeSeason.year) {
-                    s += d[i].animeSeason.year;
+                if (i.animeSeason.year) {
+                    s += i.animeSeason.year;
                 } else {
                     s = '';
                 }
@@ -772,39 +876,41 @@ fetch(source)
 
                 if (map4.has(value)) {
                     p2 = map4.get(value).progress;
+                    r2 = map4.get(value).rewatched;
                     s2 = map4.get(value).status;
 
                     map4.delete(value);
                 }
 
-                if (d[i].type !== 'UNKNOWN') {
-                    if (['MOVIE', 'SPECIAL'].indexOf(d[i].type) > -1) {
-                        ttt = d[i].type.replace(d[i].type.substr(1), d[i].type.substr(1).toLowerCase());
+                if (i.type !== 'UNKNOWN') {
+                    if (['MOVIE', 'SPECIAL'].indexOf(i.type) > -1) {
+                        ttt = i.type.replace(i.type.substr(1), i.type.substr(1).toLowerCase());
                     } else {
-                        ttt = d[i].type;
+                        ttt = i.type;
                     }
                 }
 
                 database.push({
-                    alternative: d[i].title,
+                    alternative: i.title,
                     dead: false,
-                    episodes: d[i].episodes || '',
+                    episodes: i.episodes || '',
                     new: n2,
-                    ongoing: d[i].status === 'ONGOING',
-                    picture: d[i].picture,
+                    ongoing: i.status === 'ONGOING',
+                    picture: i.picture,
                     progress: p2,
                     r18: tt.indexOf('hentai') > -1,
                     relations: [
-                        ...d[i].sources.filter((sources) => sources.match(source2) && sources !== value),
-                        ...d[i].relations.filter((relations) => relations.match(/myanimelist\.net/gu))
+                        ...i.sources.filter((sources) => sources.match(source2) && sources !== value),
+                        ...i.relations.filter((relations) => relations.match(/myanimelist\.net/gu))
                     ],
                     relevancy: 1,
+                    rewatched: r2,
                     season: s,
                     sources: value,
                     status: s2,
-                    synonyms: d[i].synonyms,
+                    synonyms: i.synonyms,
                     tags: tt,
-                    title: d[i].title,
+                    title: i.title,
                     type: ttt
                 });
 
@@ -823,6 +929,7 @@ fetch(source)
                     r18: false,
                     relations: [],
                     relevancy: 1,
+                    rewatched: value.rewatched,
                     season: value.season,
                     sources: key,
                     status: value.status,
@@ -855,6 +962,7 @@ fetch(source)
             localStorage.setItem('data', JSON.stringify(data5));
 
             // tabulator tweak to fix incorrect behavior when scrolling
+            /*
             RowManager.prototype.initialize = function () {
                 const self = this;
 
@@ -885,10 +993,12 @@ fetch(source)
             Row.prototype.setCellHeight = function () {
                 // error if set to null
             };
+            */
 
             t = new Tabulator('.database-container', {
-                cellDblClick: function () {
-                    return false;
+                columnDefaults: {
+                    headerSortTristate: true,
+                    vertAlign: 'middle'
                 },
                 columnHeaderSortMulti: false,
                 columns: [
@@ -934,7 +1044,6 @@ fetch(source)
                         titleFormatter: function () {
                             return `<svg viewBox="0 0 24 24" width="17" height="17">${svg.blank}</svg>`;
                         },
-                        vertAlign: 'middle',
                         visible: JSON.parse(localStorage.getItem('tsuzuku')).thumbnails,
                         width: 40
                     },
@@ -965,7 +1074,6 @@ fetch(source)
                         titleFormatter: function () {
                             return `<svg viewBox="0 0 24 24" width="17" height="17">${svg.blank}</svg>`;
                         },
-                        vertAlign: 'middle',
                         visible: !JSON.parse(localStorage.getItem('tsuzuku')).thumbnails,
                         width: 17
                     },
@@ -987,7 +1095,7 @@ fetch(source)
                                 a = document.createElement('a'),
                                 v = 'is:ongoing ';
 
-                            a.href = `./?query=${escape(encodeURIComponent(v))}`;
+                            a.href = `/?query=${escape(encodeURIComponent(v))}`;
                             a.title = 'Ongoing';
                             a.innerHTML = `<svg viewBox="3 2 20 20" width="17" height="17">${svg.play}</svg>`;
                             a.style.display = 'inline-flex';
@@ -1008,7 +1116,6 @@ fetch(source)
                         titleFormatter: function () {
                             return `<svg viewBox="3 2 20 20" width="17" height="17">${svg.play}</svg>`;
                         },
-                        vertAlign: 'middle',
                         width: 17
                     },
                     {
@@ -1040,7 +1147,7 @@ fetch(source)
                                     v = 'tag:hentai ';
 
                                 r18.classList.add('r18');
-                                r18.href = `./?query=${escape(encodeURIComponent(v))}`;
+                                r18.href = `/?query=${escape(encodeURIComponent(v))}`;
                                 r18.style.color = 'var(--r18)';
                                 r18.style.fontWeight = 500;
                                 r18.style.userSelect = 'none';
@@ -1062,7 +1169,7 @@ fetch(source)
                                     v = 'is:new ';
 
                                 n.classList.add('new');
-                                n.href = `./?query=${escape(encodeURIComponent(v))}`;
+                                n.href = `/?query=${escape(encodeURIComponent(v))}`;
                                 n.style.color = 'var(--new)';
                                 n.style.fontWeight = 500;
                                 n.style.userSelect = 'none';
@@ -1083,7 +1190,7 @@ fetch(source)
                                 '<span style="user-select: none;">&nbsp;</span>' +
                                 `<a href="${cell.getRow().getData().sources}" target="_blank" rel="noreferrer" title="MyAnimeList" style="align-items: center; display: inline-flex;">` +
                                     '<svg viewBox="0 0 24 24" height="17" width="17">' +
-                                        '<path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"></path>' +
+                                        '<path d="M21 12V19Q21 19.825 20.413 20.413Q19.825 21 19 21H5Q4.175 21 3.587 20.413Q3 19.825 3 19V5Q3 4.175 3.587 3.587Q4.175 3 5 3H12V5H5Q5 5 5 5Q5 5 5 5V19Q5 19 5 19Q5 19 5 19H19Q19 19 19 19Q19 19 19 19V12ZM9.7 15.7 8.3 14.3 17.6 5H14V3H21V10H19V6.4Z"></path>' +
                                     '</svg>' +
                                 '</a>';
 
@@ -1111,8 +1218,7 @@ fetch(source)
 
                             return slice(a).localeCompare(slice(b));
                         },
-                        title: 'Title',
-                        vertAlign: 'middle'
+                        title: 'Title'
                     },
                     {
                         field: 'type',
@@ -1125,7 +1231,6 @@ fetch(source)
                             alignEmptyValues: 'bottom'
                         },
                         title: 'Type',
-                        vertAlign: 'middle',
                         width: 100
                     },
                     {
@@ -1140,7 +1245,6 @@ fetch(source)
                             alignEmptyValues: 'bottom'
                         },
                         title: 'Episodes',
-                        vertAlign: 'middle',
                         width: 100
                     },
                     {
@@ -1166,7 +1270,7 @@ fetch(source)
 
                             v += ' ';
 
-                            a.href = `./?query=${escape(encodeURIComponent(v))}`;
+                            a.href = `/?query=${escape(encodeURIComponent(v))}`;
                             a.innerHTML = cell.getValue();
                             a.addEventListener('click', (e) => {
                                 e.preventDefault();
@@ -1214,12 +1318,15 @@ fetch(source)
                             alignEmptyValues: 'bottom'
                         },
                         title: 'Season',
-                        vertAlign: 'middle',
                         width: 100
                     },
                     {
                         formatter: function (cell) {
                             const relations = document.createElement('span');
+
+                            if (index.related) {
+                                return '';
+                            }
 
                             relations.classList.add('relations');
                             relations.style.fontWeight = 500;
@@ -1230,6 +1337,8 @@ fetch(source)
                                 const
                                     temp = [cell.getRow().getData().sources, ...cell.getRow().getData().relations],
                                     temp2 = [];
+
+                                index.related = true;
 
                                 if (document.querySelector('.search-container').style.display === 'inline-flex') {
                                     document.querySelector('.search-container').style.display = 'none';
@@ -1246,9 +1355,11 @@ fetch(source)
                                 document.querySelector('main').insertAdjacentHTML('beforeend',
                                     '<div class="searching">' +
                                         '<div class="progress" style="left: 0; position: absolute; top: 0;"></div>' +
-                                        '<span>Searching...</span>' +
                                     '</div>'
                                 );
+
+                                document.querySelector('.nothing .results').innerHTML = 'Searching...';
+                                document.querySelector('.nothing .enter').style.display = '';
 
                                 function tempFunction() {
                                     temp.forEach((ttt) => {
@@ -1280,15 +1391,6 @@ fetch(source)
                                     if (temp.length) {
                                         tempFunction();
                                     } else {
-                                        if (r) {
-                                            for (const value of r) {
-                                                value.update({
-                                                    alternative: value.getData().title,
-                                                    relevancy: 1
-                                                });
-                                            }
-                                        }
-
                                         index.dimension = null;
 
                                         if (temp2.length) {
@@ -1298,7 +1400,7 @@ fetch(source)
                                         document.querySelector('.progress').style.width = '100%';
 
                                         if (document.querySelector('.searching')) {
-                                            document.querySelector('.searching span').innerHTML = 'Filtering table...';
+                                            document.querySelector('.nothing .results').innerHTML = 'Filtering table...';
                                         }
 
                                         setTimeout(() => {
@@ -1320,31 +1422,122 @@ fetch(source)
                         },
                         headerSort: false,
                         hozAlign: 'center',
-                        vertAlign: 'middle',
                         width: 100
                     },
-
-                    /*
                     {
-                        field: 'watched',
-                        formatter: function (cell) {
-                            if (cell.getRow().getData().status === 'Completed') {
-                                return '1';
+                        editable: function () {
+                            return false;
+                        },
+                        editor: function (cell, rendered, success) {
+                            if (error) {
+                                return false;
                             }
 
-                            return '';
+                            const input = document.createElement('input');
+
+                            input.type = 'number';
+                            input.min = 0;
+                            input.max = 9999;
+                            input.placeholder = 0;
+                            input.autocomplete = 'off';
+                            input.value = cell.getValue();
+                            input.title = 'Enter times rewatched';
+
+                            input.addEventListener('input', () => {
+                                new Promise((resolve) => {
+                                    const d2 = db2().add({
+                                        episodes: cell.getRow().getData().episodes,
+                                        progress: cell.getRow().getData().progress,
+                                        rewatched: cell.getRow().getData().watched,
+                                        season: cell.getRow().getData().season,
+                                        source: cell.getRow().getData().sources,
+                                        status: cell.getRow().getData().status,
+                                        title: cell.getRow().getData().title,
+                                        type: cell.getRow().getData().type
+                                    });
+
+                                    d2.onerror = () => resolve();
+                                    d2.onsuccess = () => resolve();
+                                }).then(() => {
+                                    db2().get(cell.getRow().getData().sources).onsuccess = (event) => {
+                                        const result = event.target.result;
+
+                                        if (input.value <= 0) {
+                                            result.rewatched = '0';
+                                        } else if (input.value >= 9999) {
+                                            result.rewatched = 9999;
+                                        } else {
+                                            result.rewatched = input.value;
+                                        }
+
+                                        db2().put(result).onsuccess = () => {
+                                            channelMessage();
+                                        };
+                                    };
+                                });
+                            });
+
+                            input.addEventListener('keydown', (e) => {
+                                if (e.key !== 'Enter' || e.repeat) {
+                                    return;
+                                }
+
+                                input.blur();
+                            });
+
+                            input.addEventListener('blur', () => {
+                                if (input.value <= 0) {
+                                    success('0');
+                                } else if (input.value >= 9999) {
+                                    success(9999);
+                                } else {
+                                    success(input.value);
+                                }
+                            });
+
+                            rendered(() => {
+                                input.focus();
+                            });
+
+                            return input;
+                        },
+                        field: 'rewatched',
+                        formatter: function (cell) {
+                            const span = document.createElement('span');
+
+                            cell.getElement().tabIndex = -1;
+
+                            if (['Completed', 'Dropped', 'Paused', 'Watching'].indexOf(cell.getRow().getData().status) > -1) {
+                                span.tabIndex = 0;
+                            }
+
+                            span.innerHTML = cell.getValue();
+                            span.addEventListener('click', () => {
+                                if (error) {
+                                    return;
+                                }
+
+                                if (['', 'Planning', 'Skipping'].indexOf(cell.getRow().getData().status) > -1) {
+                                    return;
+                                }
+
+                                cell.edit(true);
+                            });
+
+                            return span;
+                        },
+                        headerClick: function (e, column) {
+                            customSort(e, column);
                         },
                         headerHozAlign: 'center',
-                        headerSort: false,
                         hozAlign: 'center',
-                        titleFormatter: function () {
-                            return 'Watched';
+                        sorter: 'number',
+                        sorterParams: {
+                            alignEmptyValues: 'bottom'
                         },
-                        vertAlign: 'middle',
+                        title: 'Rewatched',
                         width: 100
                     },
-                    */
-
                     {
                         editable: function () {
                             return false;
@@ -1373,7 +1566,8 @@ fetch(source)
                                         source: cell.getRow().getData().sources,
                                         status: cell.getRow().getData().status,
                                         title: cell.getRow().getData().title,
-                                        type: cell.getRow().getData().type
+                                        type: cell.getRow().getData().type,
+                                        watched: cell.getRow().getData().watched
                                     });
 
                                     d2.onerror = () => resolve();
@@ -1495,7 +1689,7 @@ fetch(source)
                             span2.title = '+1';
                             span2.style.display = 'inline-flex';
                             span2.style.marginLeft = '2.125px';
-                            span2.innerHTML = '<svg viewBox="0 0 24 24" height="17" width="17"><path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"></path></svg>';
+                            span2.innerHTML = '<svg viewBox="0 0 24 24" height="17" width="17"><path d="M11 17H13V13H17V11H13V7H11V11H7V13H11ZM5 21Q4.175 21 3.587 20.413Q3 19.825 3 19V5Q3 4.175 3.587 3.587Q4.175 3 5 3H19Q19.825 3 20.413 3.587Q21 4.175 21 5V19Q21 19.825 20.413 20.413Q19.825 21 19 21Z"></path></svg>';
 
                             span2.addEventListener('dblclick', () => {
                                 getSelection().removeAllRanges();
@@ -1514,7 +1708,8 @@ fetch(source)
                                         source: cell.getRow().getData().sources,
                                         status: cell.getRow().getData().status,
                                         title: cell.getRow().getData().title,
-                                        type: cell.getRow().getData().type
+                                        type: cell.getRow().getData().type,
+                                        watched: cell.getRow().getData().watched
                                     });
 
                                     d2.onerror = () => resolve();
@@ -1588,12 +1783,12 @@ fetch(source)
                                 });
                             });
 
-                            a.href = `./?query=${escape(encodeURIComponent(v))}`;
+                            a.href = `/?query=${escape(encodeURIComponent(v))}`;
                             a.title = 'Mismatched';
                             a.style.display = 'inline-flex';
                             a.style.alignItems = 'center';
                             a.style.marginLeft = '2.125px';
-                            a.innerHTML = '<svg viewBox="0 0 24 24" height="17" width="17"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"></path></svg>';
+                            a.innerHTML = '<svg viewBox="0 0 24 24" height="17" width="17" style="fill: var(--mismatched) !important;"><path d="M1 21 12 2 23 21ZM11 15H13V10H11ZM12 18Q12.425 18 12.713 17.712Q13 17.425 13 17Q13 16.575 12.713 16.288Q12.425 16 12 16Q11.575 16 11.288 16.288Q11 16.575 11 17Q11 17.425 11.288 17.712Q11.575 18 12 18Z"></path></svg>';
 
                             a.addEventListener('click', (e) => {
                                 e.preventDefault();
@@ -1625,7 +1820,6 @@ fetch(source)
                             alignEmptyValues: 'bottom'
                         },
                         title: 'Progress',
-                        vertAlign: 'middle',
                         width: 100
                     },
                     {
@@ -1645,7 +1839,9 @@ fetch(source)
                                     return;
                                 }
 
-                                const p = cell.getRow().getData().progress;
+                                const
+                                    p = cell.getRow().getData().progress || '0',
+                                    r2 = cell.getRow().getData().rewatched || '0';
 
                                 if (select.value) {
                                     const d2 = db2().add({
@@ -1656,6 +1852,10 @@ fetch(source)
                                                 : ['Planning', 'Skipping'].indexOf(select.value) > -1
                                                     ? ''
                                                     : '0',
+                                        rewatched:
+                                            ['Planning', 'Skipping'].indexOf(select.value) > -1
+                                                ? ''
+                                                : '0',
                                         season: cell.getRow().getData().season,
                                         source: cell.getRow().getData().sources,
                                         status: select.value,
@@ -1666,9 +1866,10 @@ fetch(source)
                                     d2.onsuccess = () => {
                                         channelMessage();
 
-                                        if (select.value === 'Completed' && cell.getRow().getData().episodes) {
+                                        if (select.value === 'Completed') {
                                             cell.getRow().update({
-                                                progress: cell.getRow().getData().episodes,
+                                                progress: cell.getRow().getData().episodes || '0',
+                                                rewatched: '0',
                                                 status: select.value
                                             });
 
@@ -1678,6 +1879,7 @@ fetch(source)
                                         if (select.value === 'Planning' || select.value === 'Skipping') {
                                             cell.getRow().update({
                                                 progress: '',
+                                                rewatched: '',
                                                 status: select.value
                                             });
 
@@ -1686,6 +1888,7 @@ fetch(source)
 
                                         cell.getRow().update({
                                             progress: '0',
+                                            rewatched: '0',
                                             status: select.value
                                         });
                                     };
@@ -1696,14 +1899,20 @@ fetch(source)
                                                 result = event.target.result,
                                                 status2 = result.status;
 
-                                            if (select.value === 'Completed' && cell.getRow().getData().episodes) {
-                                                result.progress = cell.getRow().getData().episodes;
+                                            if (select.value === 'Completed') {
+                                                result.progress = cell.getRow().getData().episodes || '0';
+                                                result.rewatched =
+                                                    status2 === 'Rewatching'
+                                                        ? Number(cell.getRow().getData().rewatched) + 1
+                                                        : cell.getRow().getData().rewatched;
                                             } else {
                                                 if (select.value === 'Planning' || select.value === 'Skipping') {
                                                     result.progress = '';
+                                                    result.rewatched = '';
                                                 } else {
                                                     if (status2 === 'Planning' || status2 === 'Skipping') {
                                                         result.progress = '0';
+                                                        result.rewatched = '0';
                                                     }
                                                 }
                                             }
@@ -1713,7 +1922,7 @@ fetch(source)
                                             db2().put(result).onsuccess = () => {
                                                 channelMessage();
 
-                                                if (select.value === 'Completed' && cell.getRow().getData().episodes) {
+                                                if (select.value === 'Completed') {
                                                     cell.getRow().getElement().dataset.progress = '';
 
                                                     // force update
@@ -1722,7 +1931,11 @@ fetch(source)
                                                     });
 
                                                     cell.getRow().update({
-                                                        progress: cell.getRow().getData().episodes,
+                                                        progress: cell.getRow().getData().episodes || '0',
+                                                        rewatched:
+                                                            status2 === 'Rewatching'
+                                                                ? Number(cell.getRow().getData().rewatched) + 1
+                                                                : cell.getRow().getData().rewatched,
                                                         status: select.value
                                                     });
 
@@ -1734,6 +1947,7 @@ fetch(source)
 
                                                     cell.getRow().update({
                                                         progress: '',
+                                                        rewatched: '',
                                                         status: select.value
                                                     });
 
@@ -1743,6 +1957,7 @@ fetch(source)
                                                 if (status2 === 'Planning' || status2 === 'Skipping') {
                                                     cell.getRow().update({
                                                         progress: '0',
+                                                        rewatched: '0',
                                                         status: select.value
                                                     });
 
@@ -1756,6 +1971,7 @@ fetch(source)
 
                                                 cell.getRow().update({
                                                     progress: p,
+                                                    rewatched: r2,
                                                     status: select.value
                                                 });
                                             };
@@ -1767,6 +1983,7 @@ fetch(source)
 
                                         cell.getRow().update({
                                             progress: '',
+                                            rewatched: '',
                                             status: ''
                                         });
 
@@ -1787,7 +2004,6 @@ fetch(source)
                             alignEmptyValues: 'bottom'
                         },
                         title: 'Status',
-                        vertAlign: 'middle',
                         width: 100
                     },
                     {
@@ -1802,109 +2018,8 @@ fetch(source)
                     }
                 ],
                 data: database,
-                dataFiltered: function (filters, rows) {
-                    r = rows;
-                    sorted.ss = false;
-                    selected.s = true;
-
-                    selected.ss.splice(0);
-
-                    for (const value of rows) {
-                        if (value.isSelected()) {
-                            selected.ss.push(value);
-                        } else {
-                            if (selected.s) {
-                                selected.s = false;
-                            }
-                        }
-                    }
-
-                    if (this.getSelectedRows().length > selected.ss.length) {
-                        document.querySelector('.selected-count').innerHTML = `${this.getSelectedRows().length} selected (${selected.ss.length} active)`;
-                    } else {
-                        document.querySelector('.selected-count').innerHTML = `${this.getSelectedRows().length} selected`;
-                    }
-
-                    if (selected.s) {
-                        this.getColumn('picture').getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.check;
-                    } else {
-                        if (selected.ss.length) {
-                            this.getColumn('picture').getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.indeterminate;
-                        } else {
-                            this.getColumn('picture').getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.blank;
-                        }
-                    }
-
-                    if (index.dimension) {
-                        for (const value of rows) {
-                            value.update({
-                                alternative: index.dimension.find((i) => i.source === value.getData().sources).alternative,
-                                relevancy: index.dimension.find((i) => i.source === value.getData().sources).relevancy
-                            });
-                        }
-                    }
-
-                    if (document.querySelector('.searching')) {
-                        document.querySelector('.searching').remove();
-                    }
-
-                    if (rows.length) {
-                        document.querySelector('.tabulator').style.display = '';
-                    } else {
-                        document.querySelector('main').insertAdjacentHTML('beforeend',
-                            `<div class="nothing">${
-                                index.error
-                                    ? 'Invalid regular expression'
-                                    : 'Nothing found'
-                            }</div>`
-                        );
-                    }
-                },
-                dataLoaded: function () {
-                    document.querySelector('.tabulator').style.display = 'none';
-
-                    if (new URLSearchParams(location.search).get('query')) {
-                        const value = decodeURIComponent(new URLSearchParams(location.search).get('query'));
-
-                        document.querySelector('.search').value = value;
-                        document.querySelector('.clear').style.display = 'inline-flex';
-                    } else {
-                        document.querySelector('.search').value = '';
-                        document.querySelector('.clear').style.display = 'none';
-                    }
-
-                    document.querySelector('.loading').remove();
-                    document.querySelector('.top-container').style.display = 'inline-flex';
-
-                    searchFunction(this, null, true);
-                },
-                dataSorted: function (sorters) {
-                    if (sorters.length) {
-                        if (sorters[0].field === 'alternative') {
-                            document.body.classList.add('alt-sorted');
-                        } else {
-                            document.body.classList.remove('alt-sorted');
-                        }
-
-                        return;
-                    }
-
-                    sorted.s = 'relevancy';
-                    sorted.ss = false;
-
-                    this.setSort([
-                        {
-                            column: 'relevancy',
-                            dir: 'desc'
-                        },
-                        {
-                            column: 'alternative',
-                            dir: 'asc'
-                        }
-                    ]);
-                },
+                debugInitialization: false,
                 headerSortElement: `<svg viewBox="0 0 24 24" width="17" height="17">${svg.arrow}</svg>`,
-                headerSortTristate: true,
                 index: 'sources',
                 initialSort: [
                     {
@@ -1913,7 +2028,6 @@ fetch(source)
                     }
                 ],
                 layout: 'fitColumns',
-                resizableColumns: false,
                 rowFormatter: function (row) {
                     let width = null;
 
@@ -1937,25 +2051,199 @@ fetch(source)
                     row.getCell('alternative').getElement().querySelector('.indicator').style.width = `${width}%`;
                     row.getCell('progress').getElement().querySelector('span:not(.add)').title = `${Math.round(width)}%`;
                 },
-                sortOrderReverse: true,
-                tableBuilt: function () {
-                    document.querySelector('.tabulator-tableHolder').tabIndex = -1;
+                sortOrderReverse: true
+            });
 
-                    const
-                        columns = ['picture', 'picture2', 'alternative', 'type', 'episodes', 'season'],
-                        header = document.querySelector('.tabulator-header');
+            t.on('cellDblClick', () => false);
 
-                    if (!error) {
-                        columns.push(...['progress', 'status']);
+            t.on('dataFiltered', (filters, rows) => {
+                r = rows;
+                sorted.ss = false;
+                selected.s = true;
+
+                selected.ss.splice(0);
+
+                for (const value of rows) {
+                    if (value.isSelected()) {
+                        selected.ss.push(value);
+                    } else {
+                        if (selected.s) {
+                            selected.s = false;
+                        }
                     }
-
-                    for (const value of columns) {
-                        document.querySelector(`.tabulator-col[tabulator-field="${value}"]`).tabIndex = 0;
-                    }
-
-                    document.querySelector('.tabulator-header').remove();
-                    document.querySelector('.tabulator-tableHolder').prepend(header);
                 }
+
+                document.querySelector('.selected-count').innerHTML = `<span>${t.getSelectedRows().length} selected</span>`;
+
+                if (t.getSelectedRows().length > selected.ss.length) {
+                    document.querySelector('.selected-count').innerHTML += `<span>${selected.ss.length} active</span>`;
+                }
+
+                if (selected.s) {
+                    t.getColumn('picture').getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.check;
+                    t.getColumn('picture').getElement().querySelector('.tabulator-col-title svg').style.fill = 'var(--selected-header)';
+                } else {
+                    if (selected.ss.length) {
+                        t.getColumn('picture').getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.indeterminate;
+                        t.getColumn('picture').getElement().querySelector('.tabulator-col-title svg').style.fill = 'var(--selected-header)';
+                    } else {
+                        t.getColumn('picture').getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.blank;
+                        t.getColumn('picture').getElement().querySelector('.tabulator-col-title svg').style.fill = '';
+                    }
+                }
+
+                if (index.dimension) {
+                    if (index.quick) {
+                        if (dimension2) {
+                            for (const value of dimension2) {
+                                value.update({
+                                    alternative: value.getData().title,
+                                    relevancy: 1
+                                });
+                            }
+
+                            dimension2 = null;
+                        }
+                    } else {
+                        for (const value of rows) {
+                            value.update({
+                                alternative: index.dimension.find((i) => i.source === value.getData().sources).alternative,
+                                relevancy: index.dimension.find((i) => i.source === value.getData().sources).relevancy
+                            });
+                        }
+
+                        dimension2 = rows;
+                    }
+                } else {
+                    if (dimension2) {
+                        for (const value of dimension2) {
+                            value.update({
+                                alternative: value.getData().title,
+                                relevancy: 1
+                            });
+                        }
+
+                        dimension2 = null;
+                    }
+                }
+
+                if (document.querySelector('.searching')) {
+                    document.querySelector('.searching').remove();
+                }
+
+                document.querySelector('.nothing .enter').innerHTML = 'Show more';
+
+                if (index.quick) {
+                    if (rows.length) {
+                        document.querySelector('.tabulator').style.display = '';
+                        document.querySelector('.nothing .results').innerHTML =
+                            rows.length === 1
+                                ? '1 result'
+                                : `${rows.length} results`;
+
+                        if (filters.length && filters[0].value) {
+                            document.querySelector('.nothing .enter').style.display = 'inline-flex';
+                        } else {
+                            document.querySelector('.nothing .enter').style.display = '';
+                        }
+                    } else {
+                        document.querySelector('.tabulator').style.display = 'none';
+                        document.querySelector('.nothing .results').innerHTML = '0 results';
+                        document.querySelector('.nothing .enter').style.display = 'inline-flex';
+                    }
+                } else {
+                    if (rows.length) {
+                        document.querySelector('.tabulator').style.display = '';
+                        document.querySelector('.nothing .results').innerHTML =
+                            index.random
+                                ? `${rows.length} of ${index.random} results`
+                                : rows.length === 1
+                                    ? '1 result'
+                                    : `${rows.length} results`;
+
+                        if (index.random) {
+                            document.querySelector('.nothing .enter').innerHTML = 'Randomize';
+                            document.querySelector('.nothing .enter').style.display = 'inline-flex';
+                        } else {
+                            document.querySelector('.nothing .enter').style.display = '';
+                        }
+                    } else {
+                        document.querySelector('.tabulator').style.display = 'none';
+                        document.querySelector('.nothing .results').innerHTML =
+                            index.error
+                                ? 'Invalid regular expression'
+                                : '0 results';
+                        document.querySelector('.nothing .enter').style.display = '';
+                    }
+                }
+
+                if (index.related) {
+                    document.querySelector('.nothing .enter').style.display = '';
+                }
+            });
+
+            t.on('dataProcessed', () => {
+                document.querySelector('.tabulator').style.display = 'none';
+                document.querySelector('.nothing').style.display = '';
+
+                if (new URLSearchParams(location.search).get('query')) {
+                    const value = decodeURIComponent(new URLSearchParams(location.search).get('query'));
+                    document.querySelector('.search').value = value;
+                } else {
+                    document.querySelector('.search').value = '';
+                }
+
+                document.querySelector('.loading').remove();
+                document.querySelector('.top-container').style.display = 'inline-flex';
+
+                searchFunction(t, null, true);
+            });
+
+            t.on('dataSorted', (sorters) => {
+                if (sorters.length) {
+                    if (sorters[0].field === 'alternative') {
+                        document.body.classList.add('alt-sorted');
+                    } else {
+                        document.body.classList.remove('alt-sorted');
+                    }
+
+                    return;
+                }
+
+                sorted.s = 'relevancy';
+                sorted.ss = false;
+
+                setTimeout(() => {
+                    t.setSort([
+                        {
+                            column: 'relevancy',
+                            dir: 'desc'
+                        },
+                        {
+                            column: 'alternative',
+                            dir: 'asc'
+                        }
+                    ]);
+                }, 0);
+            });
+
+            t.on('tableBuilt', () => {
+                document.querySelector('.tabulator-tableholder').tabIndex = -1;
+
+                const
+                    columns = ['picture', 'picture2', 'alternative', 'type', 'episodes', 'season'],
+                    header = document.querySelector('.tabulator-header');
+
+                if (!error) {
+                    columns.push(...['progress', 'status']);
+                }
+
+                for (const value of columns) {
+                    document.querySelector(`.tabulator-col[tabulator-field="${value}"]`).tabIndex = 0;
+                }
+
+                document.querySelector('.tabulator-header').remove();
+                document.querySelector('.tabulator-tableholder').prepend(header);
             });
         });
     })
@@ -1968,6 +2256,7 @@ fetch(source)
                     index2 = [
                         'episodes',
                         'progress',
+                        'rewatched',
                         'season',
                         'status',
                         'title',
@@ -1996,6 +2285,7 @@ fetch(source)
                         map4.set(cursor.key, {
                             episodes: cursor.value.episodes,
                             progress: cursor.value.progress,
+                            rewatched: cursor.value.rewatched,
                             season: cursor.value.season,
                             status: cursor.value.status,
                             title: cursor.value.title,
@@ -2020,7 +2310,7 @@ fetch(source)
                 return;
             }
 
-            document.querySelector('.loading').innerHTML += '<span class="export2">Export personal list</span>';
+            document.querySelector('.loading').innerHTML += '<span class="export2" tabindex="0">Export personal list</span>';
 
             document.querySelector('.export2').addEventListener('click', () => {
                 let xml =
@@ -2073,7 +2363,7 @@ fetch(source)
                         `        <my_skipping>${skipping}</my_skipping>\n` +
                         '        <my_start_date>0000-00-00</my_start_date>\n' +
                         `        <my_status>${status2}</my_status>\n` +
-                        `        <my_times_watched>${rewatching}</my_times_watched>\n` +
+                        `        <my_times_watched>${cursor.value.rewatched}</my_times_watched>\n` +
                         `        <my_watched_episodes>${progress}</my_watched_episodes>\n` +
                         `        <series_animedb_id>${
                             cursor.key.match(/myanimelist/gu)
@@ -2109,7 +2399,6 @@ export {
     disableSelection,
     error,
     error2,
-    r,
     selected,
     sorted,
     svg,

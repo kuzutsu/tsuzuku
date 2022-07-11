@@ -10,23 +10,27 @@
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-title" content="Tsuzuku">
         <meta name="apple-mobile-web-app-status-bar-style" content="default">
-        <link rel="icon" href="../../images/logo-192.png">
-        <link rel="mask-icon" href="../../images/logo.svg" color="#000">
-        <link rel="apple-touch-icon" href="../../images/logo-180.png">
-        <link rel="manifest" href="../../manifest.webmanifest">
+        <base href="https://kuzutsu.github.io/tsuzuku/">
+        <link rel="icon" href="/images/logo-192.png">
+        <link rel="mask-icon" href="/images/logo.svg" color="#000">
+        <link rel="apple-touch-icon" href="/images/logo-180.png">
+        <link rel="manifest" href="/manifest.webmanifest">
         <link rel="preconnect" href="https://fonts.gstatic.com">
         <link rel="preconnect" href="https://raw.githubusercontent.com">
         <link rel="dns-prefetch" href="https://fonts.gstatic.com">
         <link rel="dns-prefetch" href="https://raw.githubusercontent.com">
-        <link href="../../global.css" rel="stylesheet">
-        <link href="./index.css" rel="stylesheet">
+        <link href="/global.css" rel="stylesheet">
+        <link href="/games/odd-one-out/index.css" rel="stylesheet">
     </head>
     <body>
-        <noscript>Tsuzuku can't run without JavaScript</noscript>
+        <noscript>
+            <div class="kao">(＞﹏＜)</div>
+            <div style="margin-top: 11.5px;">Tsuzuku can't run without JavaScript</div>
+        </noscript>
         <header>
-            <a href="../" title="Games" style="display: inline-flex; align-items: center; margin-right: 19px;">
+            <a href="/games/" title="Games" style="display: inline-flex; align-items: center; margin-right: 19px;">
                 <svg viewBox="0 0 24 24" width="17" height="17">
-                    <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"></path>
+                    <path d="M12 20 4 12 12 4 13.425 5.4 7.825 11H20V13H7.825L13.425 18.6Z"></path>
                 </svg>
             </a>
             <span class="bold">Odd One Out</span>
@@ -34,7 +38,7 @@
             <a href="https://github.com/kuzutsu/tsuzuku" rel="noreferrer" target="_blank" style="display: inline-flex; align-items: center; text-decoration: none;">
                 <span>GitHub&nbsp;</span>
                 <svg viewBox="0 0 24 24" height="17" width="17">
-                    <path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"></path>
+                    <path d="M21 12V19Q21 19.825 20.413 20.413Q19.825 21 19 21H5Q4.175 21 3.587 20.413Q3 19.825 3 19V5Q3 4.175 3.587 3.587Q4.175 3 5 3H12V5H5Q5 5 5 5Q5 5 5 5V19Q5 19 5 19Q5 19 5 19H19Q19 19 19 19Q19 19 19 19V12ZM9.7 15.7 8.3 14.3 17.6 5H14V3H21V10H19V6.4Z"></path>
                 </svg>
             </a>
         </header>
@@ -48,7 +52,7 @@
                 <span style="width: 100%; min-width: 19px;"></span>
                 <span class="settings" title="Settings" tabindex="0" style="display: inline-flex; align-items: center;">
                     <svg viewBox="0 0 24 24" width="17" height="17">
-                        <path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"></path>
+                        <path d="M9.25 22 8.85 18.8Q8.525 18.675 8.238 18.5Q7.95 18.325 7.675 18.125L4.7 19.375L1.95 14.625L4.525 12.675Q4.5 12.5 4.5 12.337Q4.5 12.175 4.5 12Q4.5 11.825 4.5 11.662Q4.5 11.5 4.525 11.325L1.95 9.375L4.7 4.625L7.675 5.875Q7.95 5.675 8.25 5.5Q8.55 5.325 8.85 5.2L9.25 2H14.75L15.15 5.2Q15.475 5.325 15.763 5.5Q16.05 5.675 16.325 5.875L19.3 4.625L22.05 9.375L19.475 11.325Q19.5 11.5 19.5 11.662Q19.5 11.825 19.5 12Q19.5 12.175 19.5 12.337Q19.5 12.5 19.45 12.675L22.025 14.625L19.275 19.375L16.325 18.125Q16.05 18.325 15.75 18.5Q15.45 18.675 15.15 18.8L14.75 22ZM12.05 15.5Q13.5 15.5 14.525 14.475Q15.55 13.45 15.55 12Q15.55 10.55 14.525 9.525Q13.5 8.5 12.05 8.5Q10.575 8.5 9.562 9.525Q8.55 10.55 8.55 12Q8.55 13.45 9.562 14.475Q10.575 15.5 12.05 15.5ZM12.05 13.5Q11.425 13.5 10.988 13.062Q10.55 12.625 10.55 12Q10.55 11.375 10.988 10.938Q11.425 10.5 12.05 10.5Q12.675 10.5 13.113 10.938Q13.55 11.375 13.55 12Q13.55 12.625 13.113 13.062Q12.675 13.5 12.05 13.5ZM12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12ZM11 20H12.975L13.325 17.35Q14.1 17.15 14.763 16.762Q15.425 16.375 15.975 15.825L18.45 16.85L19.425 15.15L17.275 13.525Q17.4 13.175 17.45 12.787Q17.5 12.4 17.5 12Q17.5 11.6 17.45 11.212Q17.4 10.825 17.275 10.475L19.425 8.85L18.45 7.15L15.975 8.2Q15.425 7.625 14.763 7.237Q14.1 6.85 13.325 6.65L13 4H11.025L10.675 6.65Q9.9 6.85 9.238 7.237Q8.575 7.625 8.025 8.175L5.55 7.15L4.575 8.85L6.725 10.45Q6.6 10.825 6.55 11.2Q6.5 11.575 6.5 12Q6.5 12.4 6.55 12.775Q6.6 13.15 6.725 13.525L4.575 15.15L5.55 16.85L8.025 15.8Q8.575 16.375 9.238 16.762Q9.9 17.15 10.675 17.35Z"></path>
                     </svg>
                 </span>
             </div>
@@ -117,7 +121,7 @@
             <div class="query">
                 <span class="reload" title="Reload" tabindex="0" style="margin-right: 19px;">
                     <svg viewBox="0 0 24 24" width="17" height="17">
-                        <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"></path>
+                        <path d="M12 20Q8.65 20 6.325 17.675Q4 15.35 4 12Q4 8.65 6.325 6.325Q8.65 4 12 4Q13.725 4 15.3 4.713Q16.875 5.425 18 6.75V4H20V11H13V9H17.2Q16.4 7.6 15.013 6.8Q13.625 6 12 6Q9.5 6 7.75 7.75Q6 9.5 6 12Q6 14.5 7.75 16.25Q9.5 18 12 18Q13.925 18 15.475 16.9Q17.025 15.8 17.65 14H19.75Q19.05 16.65 16.9 18.325Q14.75 20 12 20Z"></path>
                     </svg>
                 </span>
                 <div class="query-container" style="margin-right: 19px;">
@@ -127,7 +131,7 @@
             </div>
             <div class="choice"></div>
         </main>
-        <script type="module" src="../../global.js"></script>
+        <script type="module" src="/global.js"></script>
         <script>
             const
                 settings = {
@@ -179,6 +183,6 @@
                 document.querySelector('#negative').removeAttribute('disabled');
             }
         </script>
-        <script defer type="module" src="./index.js"></script>
+        <script defer type="module" src="/games/odd-one-out/index.js"></script>
     </body>
 </html>

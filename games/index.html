@@ -10,21 +10,25 @@
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-title" content="Tsuzuku">
         <meta name="apple-mobile-web-app-status-bar-style" content="default">
-        <link rel="icon" href="../images/logo-192.png">
-        <link rel="mask-icon" href="../images/logo.svg" color="#000">
-        <link rel="apple-touch-icon" href="../images/logo-180.png">
-        <link rel="manifest" href="../manifest.webmanifest">
+        <base href="https://kuzutsu.github.io/tsuzuku/">
+        <link rel="icon" href="/images/logo-192.png">
+        <link rel="mask-icon" href="/images/logo.svg" color="#000">
+        <link rel="apple-touch-icon" href="/images/logo-180.png">
+        <link rel="manifest" href="/manifest.webmanifest">
         <link rel="preconnect" href="https://fonts.gstatic.com">
         <link rel="dns-prefetch" href="https://fonts.gstatic.com">
-        <link href="../global.css" rel="stylesheet">
-        <link href="./index.css" rel="stylesheet">
+        <link href="/global.css" rel="stylesheet">
+        <link href="/games/index.css" rel="stylesheet">
     </head>
     <body>
-        <noscript>Tsuzuku can't run without JavaScript</noscript>
+        <noscript>
+            <div class="kao">(＞﹏＜)</div>
+            <div style="margin-top: 11.5px;">Tsuzuku can't run without JavaScript</div>
+        </noscript>
         <header>
             <a href="../" title="Tsuzuku" style="display: inline-flex; align-items: center; margin-right: 19px;">
                 <svg viewBox="0 0 24 24" width="17" height="17">
-                    <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"></path>
+                    <path d="M12 20 4 12 12 4 13.425 5.4 7.825 11H20V13H7.825L13.425 18.6Z"></path>
                 </svg>
             </a>
             <span class="bold">Games</span>
@@ -32,16 +36,24 @@
             <a href="https://github.com/kuzutsu/tsuzuku" rel="noreferrer" target="_blank" style="display: inline-flex; align-items: center; text-decoration: none;">
                 <span>GitHub&nbsp;</span>
                 <svg viewBox="0 0 24 24" height="17" width="17">
-                    <path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"></path>
+                    <path d="M21 12V19Q21 19.825 20.413 20.413Q19.825 21 19 21H5Q4.175 21 3.587 20.413Q3 19.825 3 19V5Q3 4.175 3.587 3.587Q4.175 3 5 3H12V5H5Q5 5 5 5Q5 5 5 5V19Q5 19 5 19Q5 19 5 19H19Q19 19 19 19Q19 19 19 19V12ZM9.7 15.7 8.3 14.3 17.6 5H14V3H21V10H19V6.4Z"></path>
                 </svg>
             </a>
         </header>
         <main>
+            <!--
+            <div>
+                <span>
+                    <a href="./name-that-anime/">Name that anime!</a>
+                </span>
+                <span class="info">Identify the anime from its cropped visual</span>
+            </div>
+            -->
             <div>
                 <span>
                     <a href="./odd-one-out/">Odd one out</a>
                 </span>
-                <span class="info">Select the anime that doesn't belong in the group</span>
+                <span class="info">Select the only anime that doesn't have something in common with the rest</span>
             </div>
             <div>
                 <span>
