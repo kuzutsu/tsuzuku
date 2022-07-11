@@ -1,6 +1,6 @@
 import {
     source
-} from '/global.js';
+} from '../../global.js';
 
 const
     choice = [],
@@ -305,7 +305,7 @@ fetch(source)
                             ? c.cheat.year
                             : years[Math.round(Math.random() * (years.length - 1))];
 
-                document.querySelector('.query a').href = '/?query=';
+                document.querySelector('.query a').href = '../../?query=';
 
                 switch (type) {
                     case 'episodes (without operators)':

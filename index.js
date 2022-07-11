@@ -8,7 +8,7 @@ import {
     svg,
     t,
     title
-} from '/fetchFunction.js';
+} from './fetchFunction.js';
 
 const index = {
     dimension: null,
@@ -77,7 +77,7 @@ function searchFunction(tt, qq, p) {
         worker = null;
     }
 
-    worker = new Worker('/worker.js');
+    worker = new Worker('./worker.js');
 
     worker.postMessage({
         data: table.getData(),

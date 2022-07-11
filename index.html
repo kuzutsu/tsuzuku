@@ -10,19 +10,18 @@
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-title" content="Tsuzuku">
         <meta name="apple-mobile-web-app-status-bar-style" content="default">
-        <base href="https://kuzutsu.github.io/tsuzuku/">
-        <link rel="icon" href="/images/logo-192.png">
-        <link rel="mask-icon" href="/images/logo.svg" color="#000">
-        <link rel="apple-touch-icon" href="/images/logo-180.png">
-        <link rel="manifest" href="/manifest.webmanifest">
+        <link rel="icon" href="./images/logo-192.png">
+        <link rel="mask-icon" href="./images/logo.svg" color="#000">
+        <link rel="apple-touch-icon" href="./images/logo-180.png">
+        <link rel="manifest" href="./manifest.webmanifest">
         <link rel="preconnect" href="https://fonts.gstatic.com">
         <link rel="preconnect" href="https://cdn.jsdelivr.net">
         <link rel="preconnect" href="https://raw.githubusercontent.com">
         <link rel="dns-prefetch" href="https://fonts.gstatic.com">
         <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
         <link rel="dns-prefetch" href="https://raw.githubusercontent.com">
-        <link href="/global.css" rel="stylesheet">
-        <link href="/index.css" rel="stylesheet">
+        <link href="./global.css" rel="stylesheet">
+        <link href="./index.css" rel="stylesheet">
     </head>
     <body>
         <noscript>
@@ -35,12 +34,12 @@
             </div>
             <div style="overflow: auto;">
                 <div class="tab" style="padding: 0 19px;">
-                    <a href="/?query=status%253Aall%2520" data-query="status:all">All</a>
+                    <a href="./?query=status%253Aall%2520" data-query="status:all">All</a>
                     <span class="all">0</span>
                 </div>
                 <div class="tab" style="border-left: 4px solid var(--status-completed);">
-                    <a href="/?query=status%253Acompleted%2520" data-query="status:completed" style="margin-right: auto;">Completed</a>
-                    <a class="mismatched" href="/?query=is%253Amismatched%2520" title="Mismatched" style="display: none; align-items: center;">
+                    <a href="./?query=status%253Acompleted%2520" data-query="status:completed" style="margin-right: auto;">Completed</a>
+                    <a class="mismatched" href="./?query=is%253Amismatched%2520" title="Mismatched" style="display: none; align-items: center;">
                         <svg viewBox="0 0 24 24" width="17" height="17">
                             <path d="M1 21 12 2 23 21ZM11 15H13V10H11ZM12 18Q12.425 18 12.713 17.712Q13 17.425 13 17Q13 16.575 12.713 16.288Q12.425 16 12 16Q11.575 16 11.288 16.288Q11 16.575 11 17Q11 17.425 11.288 17.712Q11.575 18 12 18Z"></path>
                         </svg>
@@ -48,27 +47,27 @@
                     <span class="completed">0</span>
                 </div>
                 <div class="tab" style="border-left: 4px solid var(--status-dropped);">
-                    <a href="/?query=status%253Adropped%2520" data-query="status:dropped">Dropped</a>
+                    <a href="./?query=status%253Adropped%2520" data-query="status:dropped">Dropped</a>
                     <span class="dropped">0</span>
                 </div>
                 <div class="tab" style="border-left: 4px solid var(--status-paused);">
-                    <a href="/?query=status%253Apaused%2520" data-query="status:paused">Paused</a>
+                    <a href="./?query=status%253Apaused%2520" data-query="status:paused">Paused</a>
                     <span class="paused">0</span>
                 </div>
                 <div class="tab" style="border-left: 4px solid var(--status-planning);">
-                    <a href="/?query=status%253Aplanning%2520" data-query="status:planning">Planning</a>
+                    <a href="./?query=status%253Aplanning%2520" data-query="status:planning">Planning</a>
                     <span class="planning">0</span>
                 </div>
                 <div class="tab" style="border-left: 4px solid var(--status-rewatching);">
-                    <a href="/?query=status%253Arewatching%2520" data-query="status:rewatching">Rewatching</a>
+                    <a href="./?query=status%253Arewatching%2520" data-query="status:rewatching">Rewatching</a>
                     <span class="rewatching">0</span>
                 </div>
                 <div class="tab" style="padding: 0 19px;">
-                    <a href="/?query=status%253Askipping%2520" data-query="status:skipping">Skipping</a>
+                    <a href="./?query=status%253Askipping%2520" data-query="status:skipping">Skipping</a>
                     <span class="skipping">0</span>
                 </div>
                 <div class="tab" style="border-left: 4px solid var(--status-watching);">
-                    <a href="/?query=status%253Awatching%2520" data-query="status:watching">Watching</a>
+                    <a href="./?query=status%253Awatching%2520" data-query="status:watching">Watching</a>
                     <span class="watching">0</span>
                 </div>
                 <div style="height: 40px; display: flex; align-items: center;"></div>
@@ -78,10 +77,12 @@
                 <div class="export">
                     <span tabindex="0">Export</span>
                 </div>
+                <!--
                 <div style="height: 40px; display: flex; align-items: center;"></div>
                 <div class="reset">
                     <span tabindex="0">Reset</span>
                 </div>
+                -->
             </div>
         </aside>
         <div class="overlay" tabindex="0"></div>
@@ -99,8 +100,8 @@
             <span class="header-title">Tsuzuku</span>
             <span class="selected-count" tabindex="0"></span>
             <span class="flex-separator"></span>
-            <a href="/tags/" rel="noreferrer">Tags</a>
-            <a href="/games/" rel="noreferrer" style="margin-left: 19px;">Games</a>
+            <a href="./tags/" rel="noreferrer">Tags</a>
+            <a href="./games/" rel="noreferrer" style="margin-left: 19px;">Games</a>
             <a href="https://github.com/kuzutsu/tsuzuku" rel="noreferrer" target="_blank" style="margin-left: 19px; display: inline-flex; align-items: center; text-decoration: none;">
                 <span>GitHub&nbsp;</span>
                 <svg viewBox="0 0 24 24" height="17" width="17">
@@ -210,7 +211,7 @@
             </div>
             <div class="database-container" style="display: none;"></div>
         </main>
-        <script type="module" src="/global.js"></script>
+        <script type="module" src="./global.js"></script>
         <script>
             const
                 settings = {
@@ -243,6 +244,6 @@
                 document.querySelector('.thumbnails path').setAttribute('d', 'M21 18.15 19 16.15V5Q19 5 19 5Q19 5 19 5H7.85L5.85 3H19Q19.825 3 20.413 3.587Q21 4.175 21 5ZM19.8 22.6 18.2 21H5Q4.175 21 3.587 20.413Q3 19.825 3 19V5.8L1.4 4.2L2.8 2.8L21.2 21.2ZM6 17 9 13 11.25 16 12.075 14.9 5 7.825V19Q5 19 5 19Q5 19 5 19H16.175L14.175 17ZM12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Z');
             }
         </script>
-        <script defer type="module" src="/index.js"></script>
+        <script defer type="module" src="./index.js"></script>
     </body>
 </html>

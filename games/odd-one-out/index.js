@@ -1,6 +1,6 @@
 import {
     source
-} from '/global.js';
+} from '../../global.js';
 
 const
     choice = [],
@@ -118,7 +118,7 @@ fetch(source)
                 switch (type) {
                     case 'year':
                         document.querySelector('.query-container').innerHTML =
-                            `<a href="/?query=${escape(encodeURIComponent(`year:${query} `))}" rel="noreferrer">` +
+                            `<a href="../../?query=${escape(encodeURIComponent(`year:${query} `))}" rel="noreferrer">` +
                                 '<span>year:</span>' +
                                 `<span class="bold">${query}</span>` +
                             '</a>';
@@ -126,7 +126,7 @@ fetch(source)
 
                     default:
                         document.querySelector('.query-container').innerHTML =
-                            `<a href="/?query=${escape(encodeURIComponent(`tag:${query} `))}" rel="noreferrer">` +
+                            `<a href="../../?query=${escape(encodeURIComponent(`tag:${query} `))}" rel="noreferrer">` +
                                 '<span>tag:</span>' +
                                 `<span class="bold">${query}</span>` +
                             '</a>';

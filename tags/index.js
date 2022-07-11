@@ -1,6 +1,6 @@
 import {
     source
-} from '/global.js';
+} from '../global.js';
 
 fetch(source)
     .then((response) => response.json())

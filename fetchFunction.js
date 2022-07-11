@@ -26,11 +26,11 @@ Tabulator.registerModule(
 import {
     index,
     searchFunction
-} from '/index.js';
+} from './index.js';
 
 import {
     source
-} from '/global.js';
+} from './global.js';
 
 const
     channel =
