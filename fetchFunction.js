@@ -1095,7 +1095,7 @@ fetch(source)
                                 a = document.createElement('a'),
                                 v = 'is:ongoing ';
 
-                            a.href = `/?query=${escape(encodeURIComponent(v))}`;
+                            a.href = `./?query=${escape(encodeURIComponent(v))}`;
                             a.title = 'Ongoing';
                             a.innerHTML = `<svg viewBox="3 2 20 20" width="17" height="17">${svg.play}</svg>`;
                             a.style.display = 'inline-flex';
@@ -1147,7 +1147,7 @@ fetch(source)
                                     v = 'tag:hentai ';
 
                                 r18.classList.add('r18');
-                                r18.href = `/?query=${escape(encodeURIComponent(v))}`;
+                                r18.href = `./?query=${escape(encodeURIComponent(v))}`;
                                 r18.style.color = 'var(--r18)';
                                 r18.style.fontWeight = 500;
                                 r18.style.userSelect = 'none';
@@ -1169,7 +1169,7 @@ fetch(source)
                                     v = 'is:new ';
 
                                 n.classList.add('new');
-                                n.href = `/?query=${escape(encodeURIComponent(v))}`;
+                                n.href = `./?query=${escape(encodeURIComponent(v))}`;
                                 n.style.color = 'var(--new)';
                                 n.style.fontWeight = 500;
                                 n.style.userSelect = 'none';
@@ -1270,7 +1270,7 @@ fetch(source)
 
                             v += ' ';
 
-                            a.href = `/?query=${escape(encodeURIComponent(v))}`;
+                            a.href = `./?query=${escape(encodeURIComponent(v))}`;
                             a.innerHTML = cell.getValue();
                             a.addEventListener('click', (e) => {
                                 e.preventDefault();
@@ -1783,7 +1783,7 @@ fetch(source)
                                 });
                             });
 
-                            a.href = `/?query=${escape(encodeURIComponent(v))}`;
+                            a.href = `./?query=${escape(encodeURIComponent(v))}`;
                             a.title = 'Mismatched';
                             a.style.display = 'inline-flex';
                             a.style.alignItems = 'center';
