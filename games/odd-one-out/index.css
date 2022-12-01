@@ -1,5 +1,5 @@
 .selected {
-    background: var(--selected);
+    background: var(--selected) !important;
 }
 
 .selected:focus-within,
@@ -7,27 +7,30 @@
     background: var(--selected-hover) !important;
 }
 
+.mono {
+    color: inherit;
+    font-family: monospace;
+}
+
+.choice > div[style] span,
 .selected .title {
     color: var(--selected-color);
-    user-select: text;
 }
 
-.choice div[style] span {
-    color: #fff;
+.choice > div[style] svg,
+.selected svg {
+    fill: var(--selected-color);
 }
 
-.link {
-    line-height: 0;
-}
-
-.choice div {
+.choice > div {
     align-items: center;
+    /* background: var(--background-hover); */
     display: flex;
-    padding: 0 19px;
+    min-width: 300px;
 }
 
-.choice div:focus-within,
-.choice div:hover,
+.choice > div:focus-within,
+.choice > div:hover,
 .picture {
     background: var(--background-hover);
     opacity: 1;
@@ -43,13 +46,13 @@ select {
     align-items: center;
     display: none;
     overflow: auto;
-    padding: 0 19px;
+    padding: 0 38px;
     white-space: nowrap;
 }
 
 .settings-container {
     overflow: auto;
-    padding: 0 19px;
+    padding: 0 38px;
     width: 100%;
 }
 
@@ -60,28 +63,9 @@ select {
 }
 
 .menu,
+.reload,
 .submit {
     user-select: none;
-}
-
-.score {
-    cursor: default;
-}
-
-.reload {
-    align-items: center;
-    display: flex;
-    height: 40px;
-    justify-content: center;
-    min-height: 40px;
-    min-width: 40px;
-    width: 40px;
-}
-
-.theme {
-    align-items: center;
-    display: flex;
-    justify-content: center;
 }
 
 .picture {
@@ -99,9 +83,10 @@ select {
 }
 
 .title {
-    /*min-width: 100px;*/
+    /* min-width: 100px; */
     overflow-wrap: anywhere;
     padding: 4px 0;
+    user-select: text;
 }
 
 .query-container {
@@ -113,24 +98,30 @@ select {
 .choice {
     display: none;
     overflow: auto;
+    padding: 11.5px 19px;
 }
 
-.myanimelist {
+.source {
+    align-items: center;
+    display: inline-flex;
+    margin: 0 17px;
+    min-width: 17px;
+    width: 17px;
+}
+
+.source a {
     display: none;
 }
 
-.choice div:focus-within .myanimelist,
-.choice div:hover .myanimelist {
+.choice > div:focus-within .source a,
+.choice > div:hover .source a {
     align-items: center;
     display: inline-flex;
 }
 
-.choice div {
-    min-width: 300px;
-}
-
 select {
-    border: 1px solid #fff;
+    border: 0;
+    border-bottom: 1px solid var(--color);
 }
 
 .input,
@@ -149,9 +140,33 @@ select {
 }
 
 .choice > div:not(:first-child) {
-    margin-top: 1px;
+    margin-top: 11.5px;
 }
 
+.reset-high,
+.reset-score {
+    color: var(--reset);
+}
+
+.reload,
 .submit {
-    color: var(--selected-header)
+    color: var(--selected-header);
+}
+
+.min,
+.minus,
+.plus {
+    display: none;
+}
+
+.min {
+    color: var(--disabled);
+}
+
+.minus {
+    color: var(--red);
+}
+
+.plus {
+    color: var(--green);
 }

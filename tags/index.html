@@ -3,7 +3,7 @@
     <head>
         <title>Tags</title>
         <meta charset="utf-8">
-        <meta name="description" content="Unofficial web app for the anime-offline-database">
+        <meta name="description" content="a certain anime index + tracker + games">
         <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
         <meta name="theme-color" content="#000">
         <meta name="color-scheme" content="dark">
@@ -24,10 +24,7 @@
         <link href="./index.css" rel="stylesheet">
     </head>
     <body>
-        <noscript>
-            <div class="kao">(＞﹏＜)</div>
-            <div style="margin-top: 11.5px;">Tsuzuku can't run without JavaScript</div>
-        </noscript>
+        <noscript>Tsuzuku can't run without JavaScript</noscript>
         <header>
             <a href="../" title="Tsuzuku" style="display: inline-flex; align-items: center; margin-right: 19px;">
                 <svg viewBox="0 0 24 24" width="17" height="17">
@@ -43,7 +40,12 @@
                 </svg>
             </a>
         </header>
-        <main>Fetching database...</main>
+        <main>
+            <div class="container"></div>
+        </main>
+        <footer>
+            <div class="loading">Fetching database<span class="el">.</span><span class="lip">.</span><span class="sis">.</span></div>
+        </footer>
         <script type="module" src="../global.js"></script>
         <script defer type="module" src="./index.js"></script>
     </body>

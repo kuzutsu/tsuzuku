@@ -28,14 +28,17 @@ const
 
 let choice3 = null,
     choices = null,
-    type = null;
+    type = null,
+    updated = '???';
 
 fetch(source)
     .then((response) => response.json())
     .then((data) => {
         const d = data.data;
 
-        document.querySelector('.loading').innerHTML = 'Building game...';
+        updated = data.lastUpdate;
+
+        document.querySelector('.loading').innerHTML = 'Building game<span class="el">.</span><span class="lip">.</span><span class="sis">.</span>';
 
         setTimeout(() => {
             for (let i = 0; i < d.length; i++) {
@@ -95,6 +98,7 @@ fetch(source)
                     database.push({
                         episodes: e,
                         link: value,
+                        // picture: d[i].picture.replace(d[i].picture.substr(d[i].picture.lastIndexOf('.')), '.webp'),
                         picture: d[i].picture,
                         season: d[i].animeSeason.season.toLowerCase(),
                         tags: tt,
@@ -160,45 +164,68 @@ fetch(source)
                 const c = JSON.parse(localStorage.getItem('quiz'));
 
                 let incorrect = false,
-                    score = 0;
+                    minus = 0,
+                    plus = 0;
 
                 for (let i = 0; i < choice3; i++) {
                     if (choice.indexOf(i) > -1) {
-                        if (document.querySelector(`.choice div:nth-child(${i + 1})`).classList.contains('selected')) {
-                            document.querySelector(`.choice div:nth-child(${i + 1})`).classList.remove('selected');
-                            document.querySelector(`.choice div:nth-child(${i + 1})`).style.background = 'var(--green)';
-                            score += 1;
+                        if (document.querySelector(`.choice > div:nth-child(${i + 1})`).classList.contains('selected')) {
+                            document.querySelector(`.choice > div:nth-child(${i + 1})`).classList.remove('selected');
+                            document.querySelector(`.choice > div:nth-child(${i + 1})`).style.background = 'var(--green)';
+                            plus += 1;
                         } else {
-                            if (c.selection === 'multiple') {
-                                document.querySelector(`.choice div:nth-child(${i + 1})`).style.background = 'var(--red)';
-                                score -= 1;
+                            if (c.selection === '0 or more') {
+                                document.querySelector(`.choice > div:nth-child(${i + 1})`).style.background = 'var(--red)';
+                                minus += 1;
                                 incorrect = true;
                             }
                         }
                     } else {
-                        if (document.querySelector(`.choice div:nth-child(${i + 1})`).classList.contains('selected')) {
-                            document.querySelector(`.choice div:nth-child(${i + 1})`).classList.remove('selected');
-                            document.querySelector(`.choice div:nth-child(${i + 1})`).style.background = 'var(--red)';
-                            score -= 1;
+                        if (document.querySelector(`.choice > div:nth-child(${i + 1})`).classList.contains('selected')) {
+                            document.querySelector(`.choice > div:nth-child(${i + 1})`).classList.remove('selected');
+                            document.querySelector(`.choice > div:nth-child(${i + 1})`).style.background = 'var(--red)';
+                            minus += 1;
                             incorrect = true;
                         } else {
-                            if (c.selection === 'multiple') {
-                                document.querySelector(`.choice div:nth-child(${i + 1})`).style.background = 'var(--green)';
-                                score += 1;
+                            if (c.selection === '0 or more') {
+                                document.querySelector(`.choice > div:nth-child(${i + 1})`).style.background = 'var(--green)';
+                                plus += 1;
                             }
                         }
 
-                        document.querySelector(`.choice div:nth-child(${i + 1})`).classList.add('dim');
+                        document.querySelector(`.choice > div:nth-child(${i + 1})`).classList.add('dim');
                     }
                 }
 
-                if (c.resetIncorrect && incorrect) {
-                    c.score = 0;
+                if (plus) {
+                    document.querySelector('.plus').innerHTML = `+${plus}`;
+                    document.querySelector('.plus').style.display = 'inline';
                 } else {
-                    c.score += score;
+                    document.querySelector('.plus').innerHTML = '';
+                    document.querySelector('.plus').style.display = '';
+                }
+
+                if (minus) {
+                    document.querySelector('.minus').innerHTML = `-${minus}`;
+                    document.querySelector('.minus').style.display = 'inline';
+                } else {
+                    document.querySelector('.minus').innerHTML = '';
+                    document.querySelector('.minus').style.display = '';
+                }
+
+                c.score += plus - minus;
+
+                if (c.resetIncorrect && incorrect) {
+                    document.querySelector('.min').innerHTML = 'Reset';
+                    document.querySelector('.min').style.display = 'inline';
+
+                    c.score = 0;
                 }
 
                 if (!c.negative && c.score < 0) {
+                    document.querySelector('.min').innerHTML = 'Min reached';
+                    document.querySelector('.min').style.display = 'inline';
+
                     c.score = 0;
                 }
 
@@ -209,7 +236,12 @@ fetch(source)
                     document.querySelector('.high').innerHTML = c.high;
                 }
 
+                if (c.skip) {
+                    document.querySelector('.reload').style.display = 'none';
+                }
+
                 document.querySelector('.submit').innerHTML = 'Next';
+                document.querySelector('.submit').style.display = '';
 
                 c.cheat = {};
 
@@ -229,31 +261,37 @@ fetch(source)
                             ? c.cheat.season
                             : seasons[Math.round(Math.random() * (seasons.length - 1))];
 
-                choice3 =
-                    c.choices === 'random'
-                        ? choice2[Math.round(Math.random() * (choice2.length - 1))]
-                        : c.choices;
-
-                choices =
-                    c.selection === 'multiple'
-                        ? Math.round(Math.random() * choice3)
-                        : 1;
-
                 document.querySelector('.score').innerHTML = c.score;
                 document.querySelector('.high').innerHTML = c.high;
+
+                document.querySelector('.plus').style.display = '';
+                document.querySelector('.plus').innerHTML = '';
+                document.querySelector('.minus').style.display = '';
+                document.querySelector('.minus').innerHTML = '';
+                document.querySelector('.min').style.display = '';
+                document.querySelector('.min').innerHTML = '';
+
                 document.querySelector('.choice').innerHTML = '';
 
-                document.querySelector('.submit').innerHTML =
-                    c.autoSubmit && c.selection !== 'multiple'
-                        ? ''
-                        : 'Submit';
+                if (c.autoSubmit && c.selection !== '0 or more') {
+                    document.querySelector('.submit').style.color = '';
+                    document.querySelector('.submit').innerHTML = '';
+                    document.querySelector('.submit').style.display = 'none';
+                } else {
+                    if (c.selection === '0 or more') {
+                        document.querySelector('.submit').style.color = '';
+                    } else {
+                        document.querySelector('.submit').style.color = 'var(--disabled)';
+                    }
+
+                    document.querySelector('.submit').innerHTML = 'Submit';
+                    document.querySelector('.submit').style.display = '';
+                }
 
                 if (c.skip) {
-                    document.querySelector('.reload svg').style.fill = '';
-                    document.querySelector('.reload').title = 'Skip';
+                    document.querySelector('.reload').style.display = '';
                 } else {
-                    document.querySelector('.reload svg').style.fill = 'var(--disabled)';
-                    document.querySelector('.reload').title = 'Skipping disabled';
+                    document.querySelector('.reload').style.display = 'none';
                 }
 
                 if (start && c.cheat.type) {
@@ -273,6 +311,21 @@ fetch(source)
                         }
                     }
                 }
+
+                if (start && c.cheat.choices) {
+                    choice3 = c.cheat.choices;
+                } else {
+                    if (c.choices === 'random') {
+                        choice3 = choice2[Math.round(Math.random() * (choice2.length - 1))];
+                    } else {
+                        choice3 = c.choices;
+                    }
+                }
+
+                choices =
+                    c.selection === '0 or more'
+                        ? Math.round(Math.random() * choice3)
+                        : 1;
 
                 choice.splice(0);
 
@@ -417,6 +470,7 @@ fetch(source)
 
                 for (let i = 0; i < choice3; i++) {
                     const div = document.createElement('div');
+
                     let random =
                         start && c.cheat.link && c.cheat.link.length === choice3
                             ? database.findIndex((ii) => ii.link === c.cheat.link[i]) > -1
@@ -623,34 +677,35 @@ fetch(source)
                     div.tabIndex = 0;
                     div.innerHTML =
                         `<img class="picture" src="${database[random].picture}" loading="lazy" alt style="margin-right: 19px;">` +
-                        '<span>' +
-                            `<span class="title">${database[random].title}</span>` +
-                            '<span class="myanimelist">' +
-                                '<span style="user-select: none;">&nbsp;</span>' +
-                                `<a href="${database[random].link}" target="_blank" rel="noreferrer" title="MyAnimeList" style="display: inline-flex; align-items: center;">` +
-                                    '<svg viewBox="0 0 24 24" height="17" width="17">' +
-                                        '<path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"></path>' +
-                                    '</svg>' +
-                                '</a>' +
-                            '</span>' +
-                        '</span>';
+                        `<span class="title" style="width: 100%;">${database[random].title}</span>` +
+                        '<div class="source">' +
+                            `<a href="${database[random].link}" target="_blank" rel="noreferrer" title="Go to source">` +
+                                '<svg viewBox="0 0 24 24" height="17" width="17">' +
+                                    '<path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"></path>' +
+                                '</svg>' +
+                            '</a>' +
+                        '</div>';
 
                     div.addEventListener('click', (e) => {
                         if (e.target.classList.contains('source')) {
                             return;
                         }
 
-                        if (document.querySelector('.choice div[style]')) {
+                        if (document.querySelector('.choice > div[style]')) {
                             return;
                         }
 
-                        if (c.selection !== 'multiple' && document.querySelector('.selected')) {
+                        if (!c.autoSubmit && c.selection !== '0 or more') {
+                            document.querySelector('.submit').style.color = '';
+                        }
+
+                        if (c.selection !== '0 or more' && document.querySelector('.selected')) {
                             document.querySelector('.selected').classList.remove('selected');
                         }
 
                         e.currentTarget.classList.toggle('selected');
 
-                        if (c.autoSubmit && c.selection !== 'multiple') {
+                        if (c.autoSubmit && c.selection !== '0 or more') {
                             div.blur();
                             submit();
                         }
@@ -661,6 +716,7 @@ fetch(source)
 
                 c.cheat = {
                     choice: choice,
+                    choices: choice3,
                     episode: episode,
                     link: choices2,
                     operator: operator,
@@ -678,13 +734,13 @@ fetch(source)
             document.querySelector('.submit').addEventListener('click', () => {
                 const c = JSON.parse(localStorage.getItem('quiz'));
 
-                if (document.querySelector('.choice div[style]')) {
+                if (document.querySelector('.choice > div[style]')) {
                     game();
 
                     return;
                 }
 
-                if (c.selection !== 'multiple' && !document.querySelector('.selected')) {
+                if (c.selection !== '0 or more' && !document.querySelector('.selected')) {
                     return;
                 }
 
@@ -698,12 +754,16 @@ fetch(source)
                 c.score = 0;
                 c.high = 0;
 
-                if (e.target.value === 'multiple') {
+                if (e.target.value === '0 or more') {
                     document.querySelector('[for="auto-submit"]').style.color = 'var(--disabled)';
+                    document.querySelector('[for="auto-submit"]').parentElement.style.display = 'none';
                     document.querySelector('#auto-submit').setAttribute('disabled', '');
+                    document.querySelector('#auto-submit').parentElement.style.display = 'none';
                 } else {
                     document.querySelector('[for="auto-submit"]').style.color = '';
+                    document.querySelector('[for="auto-submit"]').parentElement.style.display = '';
                     document.querySelector('#auto-submit').removeAttribute('disabled');
+                    document.querySelector('#auto-submit').parentElement.style.display = '';
                 }
 
                 localStorage.setItem('quiz', JSON.stringify(c));
@@ -763,10 +823,14 @@ fetch(source)
 
                 if (document.querySelector('#reset-incorrect').checked) {
                     document.querySelector('[for="negative"]').style.color = 'var(--disabled)';
+                    document.querySelector('[for="negative"]').parentElement.style.display = 'none';
                     document.querySelector('#negative').setAttribute('disabled', '');
+                    document.querySelector('#negative').parentElement.style.display = 'none';
                 } else {
                     document.querySelector('[for="negative"]').style.color = '';
+                    document.querySelector('[for="negative"]').parentElement.style.display = '';
                     document.querySelector('#negative').removeAttribute('disabled');
+                    document.querySelector('#negative').parentElement.style.display = '';
                 }
 
                 localStorage.setItem('quiz', JSON.stringify(c));
@@ -793,10 +857,14 @@ fetch(source)
 
                 if (['episodes', 'year'].indexOf(e.target.value) > -1) {
                     document.querySelector('[for="operators"]').style.color = '';
+                    document.querySelector('[for="operators"]').parentElement.style.display = '';
                     document.querySelector('#operators').removeAttribute('disabled');
+                    document.querySelector('#operators').parentElement.style.display = '';
                 } else {
                     document.querySelector('[for="operators"]').style.color = 'var(--disabled)';
+                    document.querySelector('[for="operators"]').parentElement.style.display = 'none';
                     document.querySelector('#operators').setAttribute('disabled', '');
+                    document.querySelector('#operators').parentElement.style.display = 'none';
                 }
 
                 localStorage.setItem('quiz', JSON.stringify(c));
@@ -817,22 +885,24 @@ fetch(source)
                 }
             });
 
-            document.querySelector('.score').addEventListener('click', (e) => {
+            document.querySelector('.reset-score').addEventListener('click', () => {
                 const c = JSON.parse(localStorage.getItem('quiz'));
 
                 c.score = 0;
-                e.target.innerHTML = c.score;
+                document.querySelector('.score').innerHTML = c.score;
 
                 localStorage.setItem('quiz', JSON.stringify(c));
+                game();
             });
 
-            document.querySelector('.high').addEventListener('click', (e) => {
+            document.querySelector('.reset-high').addEventListener('click', () => {
                 const c = JSON.parse(localStorage.getItem('quiz'));
 
                 c.high = 0;
-                e.target.innerHTML = c.high;
+                document.querySelector('.high').innerHTML = c.high;
 
                 localStorage.setItem('quiz', JSON.stringify(c));
+                game();
             });
 
             document.querySelector('.reload').addEventListener('click', () => {
@@ -845,7 +915,7 @@ fetch(source)
                 game();
             });
 
-            document.querySelector('.loading').remove();
+            document.querySelector('.loading').innerHTML = `Database as of ${updated}`;
             document.querySelector('.choice').style.display = 'block';
             document.querySelector('.menu').style.display = 'inline-flex';
             document.querySelector('.query').style.display = 'inline-flex';

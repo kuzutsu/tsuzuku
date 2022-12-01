@@ -1,28 +1,28 @@
 {
     "name": "Tsuzuku",
     "short_name": "Tsuzuku",
-    "start_url": "./",
-    "id": "./",
+    "start_url": "https://kuzutsu.github.io/tsuzuku/",
+    "id": "https://kuzutsu.github.io/tsuzuku/",
     "display": "standalone",
     "lang": "en",
     "background_color": "#000",
     "theme_color": "#000",
     "icons": [
         {
-            "src": "./images/logo-192.png",
+            "src": "https://kuzutsu.github.io/tsuzuku/images/logo-192.png",
             "sizes": "192x192"
         },
         {
-            "src": "./images/logo-maskable-192.png",
+            "src": "https://kuzutsu.github.io/tsuzuku/images/logo-maskable-192.png",
             "sizes": "192x192",
             "purpose": "maskable"
         },
         {
-            "src": "./images/logo-512.png",
+            "src": "https://kuzutsu.github.io/tsuzuku/images/logo-512.png",
             "sizes": "512x512"
         },
         {
-            "src": "./images/logo-maskable-512.png",
+            "src": "https://kuzutsu.github.io/tsuzuku/images/logo-maskable-512.png",
             "sizes": "512x512",
             "purpose": "maskable"
         }

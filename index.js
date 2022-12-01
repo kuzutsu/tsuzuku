@@ -1,23 +1,29 @@
 import {
+    built,
     db2,
     disableSelection,
     error,
     error2,
     selected,
-    sorted,
     svg,
     t,
-    title
+    title,
+    updated,
+    years2
 } from './fetchFunction.js';
 
-const index = {
-    dimension: null,
-    error: false,
-    lastRow: null,
-    quick: false,
-    random: 0,
-    related: false
-};
+const
+    index = {
+        count: false,
+        dimension: null,
+        lastRow: null,
+        message: null,
+        qualifiers: 0,
+        quick: false,
+        random: 0,
+        related: false
+    },
+    seasons = ['winter', 'spring', 'summer', 'fall', 'tba'];
 
 let help = false,
     timeout = null,
@@ -32,15 +38,19 @@ function searchFunction(tt, qq, p) {
         clearTimeout(timeout);
     }
 
-    if (index.related) {
-        index.related = false;
+    if (document.querySelector('.search').value) {
+        document.querySelector('.clear').style.display = 'inline-flex';
     }
+
+    index.related = false;
+    index.count = false;
 
     document.querySelector('.tabulator').style.display = 'none';
 
-    if (document.querySelector('.importing')) {
-        document.querySelector('.top-container').style.display = 'inline-flex';
-        document.querySelector('.importing').remove();
+    // simplify
+    if (['Checking file<span class="el">.</span><span class="lip">.</span><span class="sis">.</span>', 'Importing<span class="el">.</span><span class="lip">.</span><span class="sis">.</span>'].indexOf(document.querySelector('.loading').innerHTML) > -1) {
+        document.querySelector('main').style.display = '';
+        document.querySelector('.loading').innerHTML = `Database as of ${updated}`;
     }
 
     if (document.querySelector('.related-container').style.display === 'inline-flex') {
@@ -52,6 +62,7 @@ function searchFunction(tt, qq, p) {
     if (document.querySelector('.qualifiers').style.display) {
         document.querySelector('.help svg').innerHTML = svg.helpClose;
         document.querySelector('.qualifiers').style.display = '';
+        document.querySelector('.overlay2').style.display = '';
     }
 
     if (document.querySelector('.searching')) {
@@ -59,8 +70,18 @@ function searchFunction(tt, qq, p) {
     }
 
     if (document.querySelector('.nothing')) {
-        document.querySelector('.nothing .results').innerHTML = 'Searching...';
+        document.querySelector('.nothing .results').innerHTML = 'Searching<span class="el">.</span><span class="lip">.</span><span class="sis">.</span>';
+        document.querySelector('.nothing .current').style.display = '';
         document.querySelector('.nothing .enter').style.display = '';
+    }
+
+    if (document.querySelector('.seasonal')) {
+        document.querySelector('.seasonal .previous').style.display = '';
+        document.querySelector('.seasonal .next').style.display = '';
+    }
+
+    if (document.querySelector('.return')) {
+        document.querySelector('.return').style.display = '';
     }
 
     document.querySelector('main').insertAdjacentHTML('beforeend',
@@ -69,6 +90,7 @@ function searchFunction(tt, qq, p) {
         '</div>'
     );
 
+    index.qualifiers = 0;
     index.quick = false;
     index.random = 0;
 
@@ -86,12 +108,12 @@ function searchFunction(tt, qq, p) {
     });
 
     worker.addEventListener('message', (event) => {
-        const url = new URL(location.href.replace(location.search, ''));
+        const url = new URL(location.href.replace(location.search, '').replace(location.hash, ''));
 
         switch (event.data.message) {
             case 'clear':
                 if (document.querySelector('.searching')) {
-                    document.querySelector('.nothing .results').innerHTML = 'Filtering table...';
+                    document.querySelector('.nothing .results').innerHTML = 'Filtering table<span class="el">.</span><span class="lip">.</span><span class="sis">.</span>';
                 }
 
                 timeout = setTimeout(() => {
@@ -99,9 +121,6 @@ function searchFunction(tt, qq, p) {
 
                     table.clearFilter();
                     table.redraw(true);
-
-                    sorted.s = 'relevancy';
-                    sorted.ss = false;
 
                     table.setSort([
                         {
@@ -126,53 +145,6 @@ function searchFunction(tt, qq, p) {
 
                 break;
 
-            case 'error':
-                if (document.querySelector('.searching')) {
-                    document.querySelector('.nothing .results').innerHTML = 'Filtering table...';
-                }
-
-                timeout = setTimeout(() => {
-                    index.dimension = null;
-                    index.query = event.data.query;
-                    index.error = true;
-
-                    table.setFilter('sources', 'in', event.data.filter);
-                    table.redraw(true);
-
-                    sorted.s = 'relevancy';
-                    sorted.ss = false;
-
-                    table.setSort([
-                        {
-                            column: 'relevancy',
-                            dir: 'desc'
-                        },
-                        {
-                            column: 'alternative',
-                            dir: 'asc'
-                        }
-                    ]);
-
-                    worker.terminate();
-                    worker = null;
-
-                    if (query) {
-                        url.searchParams.set('query', encodeURIComponent(query));
-                    }
-
-                    if (!p) {
-                        history.pushState({}, '', url);
-                    }
-
-                    if (query) {
-                        document.title = `${query} - ${title}`;
-                    } else {
-                        document.title = title;
-                    }
-                }, 100);
-
-                break;
-
             case 'found':
                 document.querySelector('.progress').classList.add('found');
                 break;
@@ -187,19 +159,55 @@ function searchFunction(tt, qq, p) {
 
             case 'success':
                 if (document.querySelector('.searching')) {
-                    document.querySelector('.nothing .results').innerHTML = 'Filtering table...';
+                    document.querySelector('.nothing .results').innerHTML = 'Filtering table<span class="el">.</span><span class="lip">.</span><span class="sis">.</span>';
                 }
 
                 timeout = setTimeout(() => {
                     index.dimension = event.data.update;
                     index.query = event.data.query;
-                    index.error = false;
+                    index.message = event.data.message2;
+
+                    if (event.data.seasonal && event.data.seasonal.count === 3) {
+                        const
+                            nextSeason = seasons.indexOf(event.data.seasonal.season) + 1,
+                            nextYear = years2.indexOf(event.data.seasonal.year) + 1,
+                            prevSeason = seasons.indexOf(event.data.seasonal.season) - 1,
+                            prevYear = years2.indexOf(event.data.seasonal.year) - 1;
+
+                        let n2 = '',
+                            p2 = '';
+
+                        index.count = true;
+
+                        if (seasons[prevSeason] && event.data.seasonal.year !== 'tba') {
+                            p2 = `season:${seasons[prevSeason]} year:${event.data.seasonal.year} `;
+                        } else {
+                            if (years2[prevYear]) {
+                                p2 = `season:${seasons[seasons.length - 1]} year:${years2[prevYear]} `;
+                            }
+                        }
+
+                        if (seasons[nextSeason]) {
+                            n2 = `season:${seasons[nextSeason]} year:${event.data.seasonal.year} `;
+                        } else {
+                            if (years2[nextYear]) {
+                                if (years2[nextYear] === 'tba') {
+                                    n2 = 'season:tba year:tba ';
+                                } else {
+                                    n2 = `season:${seasons[0]} year:${years2[nextYear]} `;
+                                }
+                            }
+                        }
+
+                        document.querySelector('.seasonal .previous').dataset.value = p2;
+                        document.querySelector('.seasonal .next').dataset.value = n2;
+                    } else {
+                        document.querySelector('.seasonal .previous').dataset.value = '';
+                        document.querySelector('.seasonal .next').dataset.value = '';
+                    }
 
                     table.setFilter('sources', 'in', event.data.filter);
                     table.redraw(true);
-
-                    sorted.s = 'relevancy';
-                    sorted.ss = false;
 
                     table.setSort([
                         {
@@ -224,7 +232,7 @@ function searchFunction(tt, qq, p) {
                     }
 
                     if (query) {
-                        document.title = `${query} - ${title}`;
+                        document.title = `${query} - ${title} (full search)`;
                     } else {
                         document.title = title;
                     }
@@ -238,8 +246,82 @@ function searchFunction(tt, qq, p) {
     });
 }
 
-document.querySelector('.thumbnails').addEventListener('click', () => {
-    if (!t) {
+function qualifiers(v) {
+    let q = 0;
+
+    if ((/\bepisodes:(?:&?(?:<=|>=|<|>)?(?:0|[1-9][0-9]*)\b)+/giu).test(v)) {
+        q += 1;
+    }
+
+    if ((/\bprogress:(?:&?(?:<=|>=|<|>)?(?:0|[1-9][0-9]*)(?:%\B|\b))+/giu).test(v)) {
+        q += 1;
+    }
+
+    if ((/\byear:(?:tba\b|(?:&?(?:<=|>=|<|>)?[1-9][0-9]{3}\b)+)/giu).test(v)) {
+        q += 1;
+    }
+
+    if ((/\btype:(?:\|?(?:tv|movie|ova|ona|special|tba)\b)+/giu).test(v)) {
+        q += 1;
+    }
+
+    if ((/\bstatus:(?:\|?(?:all|none|watching|completed|paused|dropped|planning|rewatching|skipping)\b)+/giu).test(v)) {
+        q += 1;
+    }
+
+    if ((/\bseason:(?:\|?(?:winter|spring|summer|fall|tba)\b)+/giu).test(v)) {
+        q += 1;
+    }
+
+    if ((/\btag:\S+\b/giu).test(v)) {
+        q += 1;
+    }
+
+    if ((/\brewatched:(?:&?(?:<=|>=|<|>)?(?:0|[1-9][0-9]*)\b)+/giu).test(v)) {
+        q += 1;
+    }
+
+    if ((/\bis:selected\b/giu).test(v)) {
+        q += 1;
+    }
+
+    if ((/\bis:ongoing\b/giu).test(v)) {
+        q += 1;
+    }
+
+    if ((/\bis:new\b/giu).test(v)) {
+        q += 1;
+    }
+
+    if ((/\bis:dead\b/giu).test(v)) {
+        q += 1;
+    }
+
+    if ((/\bis:mismatched\b/giu).test(v)) {
+        q += 1;
+    }
+
+    if ((/\bregex:true\b/giu).test(v)) {
+        q += 1;
+    }
+
+    if ((/\balt:false\b/giu).test(v)) {
+        q += 1;
+    }
+
+    if ((/\bcase:true\b/giu).test(v)) {
+        q += 1;
+    }
+
+    if ((/\brandom:[1-9][0-9]*\b/giu).test(v)) {
+        q += 1;
+    }
+
+    return q;
+}
+
+document.querySelector('#toggle-thumbnails').addEventListener('change', () => {
+    if (!built) {
         return;
     }
 
@@ -249,19 +331,35 @@ document.querySelector('.thumbnails').addEventListener('click', () => {
         document.body.classList.add('hide');
         t.getColumn('picture').hide();
         t.getColumn('picture2').show();
-        document.querySelector('.thumbnails path').setAttribute('d', 'M21 18.15 19 16.15V5Q19 5 19 5Q19 5 19 5H7.85L5.85 3H19Q19.825 3 20.413 3.587Q21 4.175 21 5ZM19.8 22.6 18.2 21H5Q4.175 21 3.587 20.413Q3 19.825 3 19V5.8L1.4 4.2L2.8 2.8L21.2 21.2ZM6 17 9 13 11.25 16 12.075 14.9 5 7.825V19Q5 19 5 19Q5 19 5 19H16.175L14.175 17ZM12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Z');
         c.thumbnails = false;
     } else {
         document.body.classList.remove('hide');
         t.getColumn('picture').show();
         t.getColumn('picture2').hide();
-        document.querySelector('.thumbnails path').setAttribute('d', 'M6 17H18L14.25 12L11.25 16L9 13ZM5 21Q4.175 21 3.587 20.413Q3 19.825 3 19V5Q3 4.175 3.587 3.587Q4.175 3 5 3H19Q19.825 3 20.413 3.587Q21 4.175 21 5V19Q21 19.825 20.413 20.413Q19.825 21 19 21Z');
         c.thumbnails = true;
     }
 
     localStorage.setItem('tsuzuku', JSON.stringify(c));
 
     t.redraw(true);
+});
+
+document.querySelector('#toggle-progress').addEventListener('change', () => {
+    if (!built) {
+        return;
+    }
+
+    const c = JSON.parse(localStorage.getItem('tsuzuku'));
+
+    if (c.progress) {
+        document.body.classList.add('hide2');
+        c.progress = false;
+    } else {
+        document.body.classList.remove('hide2');
+        c.progress = true;
+    }
+
+    localStorage.setItem('tsuzuku', JSON.stringify(c));
 });
 
 document.querySelector('.close').addEventListener('click', () => {
@@ -281,16 +379,32 @@ document.querySelector('.close').addEventListener('click', () => {
         document.querySelector('header .menu').style.display = 'inline-flex';
     }
 
+    if (document.querySelector('.copy')) {
+        document.querySelector('.copy').style.display = 'none';
+    }
+
     document.head.querySelector('[name="theme-color"]').content = '#000';
 
+    t.getColumn('picture').getElement().querySelector('.tabulator-col-title').title = 'Select all search results';
     t.getColumn('picture').getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.blank;
     t.getColumn('picture').getElement().querySelector('.tabulator-col-title svg').style.fill = '';
+
+    t.getColumn('picture2').getElement().querySelector('.tabulator-col-title').title = 'Select all search results';
     t.getColumn('picture2').getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.blank;
     t.getColumn('picture2').getElement().querySelector('.tabulator-col-title svg').style.fill = '';
+
     t.deselectRow();
 
     selected.s = false;
     selected.ss.splice(0);
+});
+
+document.querySelector('.copy').addEventListener('click', () => {
+    if (disableSelection) {
+        return;
+    }
+
+    t.copyToClipboard('selected');
 });
 
 document.querySelector('.help').addEventListener('click', () => {
@@ -299,8 +413,9 @@ document.querySelector('.help').addEventListener('click', () => {
 
         document.querySelector('.help svg').innerHTML = svg.helpClose;
         document.querySelector('.qualifiers').style.display = '';
+        document.querySelector('.overlay2').style.display = '';
 
-        for (const value of ['a.no-tab, select.no-tab']) {
+        for (const value of ['a.no-tab', 'select.no-tab']) {
             document.querySelectorAll(value).forEach((element) => {
                 element.classList.remove('no-tab');
                 element.removeAttribute('tabindex');
@@ -311,11 +426,14 @@ document.querySelector('.help').addEventListener('click', () => {
             element.classList.remove('no-tab');
             element.setAttribute('tabindex', 0);
         });
+
+        document.querySelector('.search').focus();
     } else {
         help = true;
 
         document.querySelector('.help svg').innerHTML = svg.helpOpen;
         document.querySelector('.qualifiers').style.display = 'block';
+        document.querySelector('.overlay2').style.display = 'block';
 
         for (const value of [
             '.tabulator-cell[tabindex]:not([tabulator-field="progress"])',
@@ -330,6 +448,26 @@ document.querySelector('.help').addEventListener('click', () => {
             });
         }
     }
+});
+
+document.querySelector('.overlay2').addEventListener('click', () => {
+    help = false;
+
+    document.querySelector('.help svg').innerHTML = svg.helpClose;
+    document.querySelector('.qualifiers').style.display = '';
+    document.querySelector('.overlay2').style.display = '';
+
+    for (const value of ['a.no-tab', 'select.no-tab']) {
+        document.querySelectorAll(value).forEach((element) => {
+            element.classList.remove('no-tab');
+            element.removeAttribute('tabindex');
+        });
+    }
+
+    document.querySelectorAll('.no-tab').forEach((element) => {
+        element.classList.remove('no-tab');
+        element.setAttribute('tabindex', 0);
+    });
 });
 
 document.querySelector('header .menu').addEventListener('click', () => {
@@ -372,7 +510,7 @@ document.querySelector('header .menu').addEventListener('click', () => {
             });
 
             if (mismatched.length) {
-                document.querySelector('[data-query="status:completed"]').style.marginRight = '2.125px';
+                document.querySelector('[data-query="status:completed"]').style.marginRight = '9.5px';
                 document.querySelector('.mismatched').style.display = 'inline-flex';
                 document.querySelector('.mismatched').title = `${mismatched.length} mismatched`;
             } else {
@@ -389,7 +527,8 @@ document.querySelector('header .menu').addEventListener('click', () => {
                 ':not(.tab) > a',
                 'input',
                 'select',
-                ':not(.export):not(.import):not(.reset) > span[tabindex], code'
+                ':not(.export):not(.import):not(.reset) > span[tabindex]',
+                'code'
             ]) {
                 document.querySelectorAll(value).forEach((element) => {
                     element.classList.add('no-tab');
@@ -406,7 +545,7 @@ document.querySelector('.overlay').addEventListener('click', () => {
         document.querySelector('.overlay').style.display = '';
     }
 
-    for (const value of ['a.no-tab, input.no-tab, select.no-tab']) {
+    for (const value of ['a.no-tab', 'input.no-tab', 'select.no-tab']) {
         document.querySelectorAll(value).forEach((element) => {
             element.classList.remove('no-tab');
             element.removeAttribute('tabindex');
@@ -436,16 +575,190 @@ document.querySelector('.overlay').addEventListener('click', () => {
     }
 });
 
+document.querySelector('.clear').addEventListener('click', () => {
+    document.querySelector('.clear').style.display = 'none';
+    document.querySelector('.search').value = '';
+    document.querySelector('.search').focus();
+    document.querySelector('.blur').style.display = '';
+    document.querySelector('.seasonal .previous').dataset.value = '';
+    document.querySelector('.seasonal .next').dataset.value = '';
+
+    if (timeout) {
+        clearTimeout(timeout);
+    }
+
+    timeout = setTimeout(() => {
+        const url = new URL(location.href.replace(location.search, '').replace(location.hash, ''));
+
+        index.dimension = null;
+        index.qualifiers = qualifiers(document.querySelector('.search').value);
+        index.quick = true;
+
+        t.setFilter('title', 'like', document.querySelector('.search').value);
+        t.redraw(true);
+
+        if (worker) {
+            worker.terminate();
+            worker = null;
+        }
+
+        document.querySelector('.blur').style.display = 'none';
+
+        url.hash = '';
+        history.pushState({}, '', url);
+
+        document.title = title;
+    }, 300);
+});
+
+document.querySelector('.clear').addEventListener('dragenter', () => {
+    document.querySelector('.clear').style.display = 'none';
+    document.querySelector('.search').value = '';
+    document.querySelector('.search').focus();
+    document.querySelector('.blur').style.display = '';
+    document.querySelector('.seasonal .previous').dataset.value = '';
+    document.querySelector('.seasonal .next').dataset.value = '';
+
+    if (timeout) {
+        clearTimeout(timeout);
+    }
+
+    timeout = setTimeout(() => {
+        const url = new URL(location.href.replace(location.search, '').replace(location.hash, ''));
+
+        index.dimension = null;
+        index.qualifiers = qualifiers(document.querySelector('.search').value);
+        index.quick = true;
+
+        t.setFilter('title', 'like', document.querySelector('.search').value);
+        t.redraw(true);
+
+        if (worker) {
+            worker.terminate();
+            worker = null;
+        }
+
+        document.querySelector('.blur').style.display = 'none';
+
+        url.hash = document.querySelector('.search').value;
+        history.pushState({}, '', url);
+
+        document.title = title;
+    }, 300);
+});
+
+document.querySelector('.search').addEventListener('focus', (e) => {
+    if (e.target.value) {
+        document.querySelector('.clear').style.display = 'inline-flex';
+    }
+});
+
 document.querySelector('.enter').addEventListener('click', () => {
     index.quick = false;
+    document.querySelector('.blur').style.display = 'none';
     searchFunction();
 });
 
+document.querySelector('.current').addEventListener('click', () => {
+    let season = null,
+        year = new Date().getFullYear();
+
+    switch (new Date().getMonth()) {
+        case 0:
+        case 1:
+            season = 'winter';
+            break;
+        case 2:
+        case 3:
+        case 4:
+            season = 'spring';
+            break;
+        case 5:
+        case 6:
+        case 7:
+            season = 'summer';
+            break;
+        case 8:
+        case 9:
+        case 10:
+            season = 'fall';
+            break;
+        case 11:
+            season = 'winter';
+            year += 1;
+            break;
+        default:
+            break;
+    }
+
+    document.querySelector('.search').value = `season:${season} year:${year} `;
+    searchFunction();
+});
+
+document.querySelectorAll('.seasonal span').forEach((element) => {
+    element.addEventListener('click', (e) => {
+        if (!e.currentTarget.dataset.value) {
+            return;
+        }
+
+        document.querySelector('.search').value = e.currentTarget.dataset.value;
+        searchFunction();
+    });
+});
+
+// same as onpopstate, separate
 document.querySelector('.return').addEventListener('click', () => {
+    index.related = false;
+
     if (document.querySelector('.related-container').style.display === 'inline-flex') {
         document.querySelector('.related-container').style.display = 'none';
         document.querySelector('.search-container').style.display = 'inline-flex';
         document.querySelector('.related-title').innerHTML = '';
+    }
+
+    if (document.querySelector('.return')) {
+        document.querySelector('.return').style.display = '';
+    }
+
+    if (location.hash) {
+        document.querySelector('.search').value = decodeURIComponent(location.hash.slice(1));
+        document.querySelector('.clear').style.display = 'inline-flex';
+        document.querySelector('.blur').style.display = '';
+
+        if (timeout) {
+            clearTimeout(timeout);
+        }
+
+        timeout = setTimeout(() => {
+            index.dimension = null;
+            index.quick = true;
+
+            t.setFilter('title', 'like', document.querySelector('.search').value);
+            t.redraw(true);
+
+            if (worker) {
+                worker.terminate();
+                worker = null;
+            }
+
+            document.querySelector('.blur').style.display = 'none';
+
+            if (document.querySelector('.search').value) {
+                document.title = `${document.querySelector('.search').value} - ${title} (quick search)`;
+            } else {
+                document.title = title;
+            }
+        }, 300);
+
+        return;
+    }
+
+    if (new URLSearchParams(location.search).get('query')) {
+        document.querySelector('.search').value = decodeURIComponent(new URLSearchParams(location.search).get('query'));
+        document.querySelector('.clear').style.display = 'inline-flex';
+    } else {
+        document.querySelector('.search').value = '';
+        document.querySelector('.clear').style.display = 'none';
     }
 
     document.querySelector('.tabulator').style.display = 'none';
@@ -454,7 +767,7 @@ document.querySelector('.return').addEventListener('click', () => {
         document.querySelector('.searching').remove();
     }
 
-    searchFunction();
+    searchFunction(null, null, true);
 });
 
 document.querySelector('.search').addEventListener('keydown', (e) => {
@@ -464,16 +777,30 @@ document.querySelector('.search').addEventListener('keydown', (e) => {
 
     index.quick = false;
     e.target.blur();
+    document.querySelector('.blur').style.display = 'none';
     searchFunction();
 });
 
 document.querySelector('.search').addEventListener('input', (e) => {
+    if (e.target.value) {
+        document.querySelector('.clear').style.display = 'inline-flex';
+    } else {
+        document.querySelector('.clear').style.display = 'none';
+    }
+
+    document.querySelector('.blur').style.display = '';
+    document.querySelector('.seasonal .previous').dataset.value = '';
+    document.querySelector('.seasonal .next').dataset.value = '';
+
     if (timeout) {
         clearTimeout(timeout);
     }
 
     timeout = setTimeout(() => {
+        const url = new URL(location.href.replace(location.search, '').replace(location.hash, ''));
+
         index.dimension = null;
+        index.qualifiers = qualifiers(e.target.value);
         index.quick = true;
 
         t.setFilter('title', 'like', e.target.value);
@@ -482,6 +809,17 @@ document.querySelector('.search').addEventListener('input', (e) => {
         if (worker) {
             worker.terminate();
             worker = null;
+        }
+
+        document.querySelector('.blur').style.display = 'none';
+
+        url.hash = e.target.value;
+        history.pushState({}, '', url);
+
+        if (e.target.value) {
+            document.title = `${e.target.value} - ${title} (quick search)`;
+        } else {
+            document.title = title;
         }
     }, 300);
 });
@@ -503,22 +841,31 @@ document.querySelectorAll('code').forEach((element) => {
         }
 
         document.querySelector('.search').focus();
+        document.querySelector('.blur').style.display = '';
 
         if (timeout) {
             clearTimeout(timeout);
         }
 
         timeout = setTimeout(() => {
+            const url = new URL(location.href.replace(location.search, '').replace(location.hash, ''));
+
             index.dimension = null;
+            index.qualifiers = qualifiers(document.querySelector('.search').value);
             index.quick = true;
 
-            t.setFilter('title', 'like', e.target.value);
+            t.setFilter('title', 'like', document.querySelector('.search').value);
             t.redraw(true);
 
             if (worker) {
                 worker.terminate();
                 worker = null;
             }
+
+            document.querySelector('.blur').style.display = 'none';
+
+            url.hash = document.querySelector('.search').value;
+            history.pushState({}, '', url);
         }, 300);
     });
 });
@@ -534,7 +881,7 @@ document.querySelectorAll('.tab').forEach((element) => {
             document.querySelector('.overlay').style.display = '';
         }
 
-        for (const value of ['a.no-tab, input.no-tab, select.no-tab']) {
+        for (const value of ['a.no-tab', 'input.no-tab', 'select.no-tab']) {
             document.querySelectorAll(value).forEach((element2) => {
                 element2.classList.remove('no-tab');
                 element2.removeAttribute('tabindex');
@@ -571,7 +918,7 @@ document.querySelector('.mismatched').addEventListener('click', (e) => {
         document.querySelector('.overlay').style.display = '';
     }
 
-    for (const value of ['a.no-tab, input.no-tab, select.no-tab']) {
+    for (const value of ['a.no-tab', 'input.no-tab', 'select.no-tab']) {
         document.querySelectorAll(value).forEach((element2) => {
             element2.classList.remove('no-tab');
             element2.removeAttribute('tabindex');
@@ -587,7 +934,7 @@ document.querySelector('.mismatched').addEventListener('click', (e) => {
     searchFunction(null, q, null);
 });
 
-document.querySelector('.import').addEventListener('click', () => {
+document.querySelector('.import span').addEventListener('click', () => {
     if (error) {
         return;
     }
@@ -595,7 +942,7 @@ document.querySelector('.import').addEventListener('click', () => {
     const input = document.createElement('input');
 
     input.type = 'file';
-    input.accept = 'application/json,application/xml';
+    input.accept = 'application/xml';
     input.addEventListener('change', (e) => {
         const
             file = e.target.files[0],
@@ -606,13 +953,8 @@ document.querySelector('.import').addEventListener('click', () => {
             document.querySelector('.overlay').style.display = '';
         }
 
-        document.querySelector('.top-container').style.display = 'none';
-        document.querySelector('.tabulator').style.display = 'none';
-        document.querySelector('main').insertAdjacentHTML('beforeend',
-            '<div class="importing">' +
-                '<span>Checking file...</span>' +
-            '</div>'
-        );
+        document.querySelector('main').style.display = 'none';
+        document.querySelector('.loading').innerHTML = 'Checking file<span class="el">.</span><span class="lip">.</span><span class="sis">.</span>';
 
         reader.readAsText(file);
         reader.onload = (event) => {
@@ -664,37 +1006,19 @@ document.querySelector('.import').addEventListener('click', () => {
                 a2 = a.querySelectorAll('anime');
 
                 if (!a2.length) {
-                    if (document.querySelector('.importing')) {
-                        document.querySelector('.importing').remove();
-                    }
-
-                    document.querySelector('.top-container').style.display = 'inline-flex';
-                    document.querySelector('.tabulator').style.display = '';
-
                     input.remove();
-
                     searchFunction(null, null, true);
 
                     return;
                 }
             } else {
-                if (document.querySelector('.importing')) {
-                    document.querySelector('.importing').remove();
-                }
-
-                document.querySelector('.top-container').style.display = 'inline-flex';
-                document.querySelector('.tabulator').style.display = '';
-
                 input.remove();
-
                 searchFunction(null, null, true);
 
                 return;
             }
 
-            if (document.querySelector('.importing span')) {
-                document.querySelector('.importing span').innerHTML = 'Importing...';
-            }
+            document.querySelector('.loading').innerHTML = 'Importing<span class="el">.</span><span class="lip">.</span><span class="sis">.</span>';
 
             for (const value of a2) {
                 const
@@ -731,15 +1055,7 @@ document.querySelector('.import').addEventListener('click', () => {
 
                         if (count === a2.length) {
                             setTimeout(() => {
-                                if (document.querySelector('.importing')) {
-                                    document.querySelector('.importing').remove();
-                                }
-
-                                document.querySelector('.top-container').style.display = 'inline-flex';
-                                document.querySelector('.tabulator').style.display = '';
-
                                 input.remove();
-
                                 searchFunction(null, null, true);
                             }, 100);
                         }
@@ -764,15 +1080,7 @@ document.querySelector('.import').addEventListener('click', () => {
 
                                 if (count === a2.length) {
                                     setTimeout(() => {
-                                        if (document.querySelector('.importing')) {
-                                            document.querySelector('.importing').remove();
-                                        }
-
-                                        document.querySelector('.top-container').style.display = 'inline-flex';
-                                        document.querySelector('.tabulator').style.display = '';
-
                                         input.remove();
-
                                         searchFunction(null, null, true);
                                     }, 100);
                                 }
@@ -784,15 +1092,7 @@ document.querySelector('.import').addEventListener('click', () => {
 
                     if (count === a2.length) {
                         setTimeout(() => {
-                            if (document.querySelector('.importing')) {
-                                document.querySelector('.importing').remove();
-                            }
-
-                            document.querySelector('.top-container').style.display = 'inline-flex';
-                            document.querySelector('.tabulator').style.display = '';
-
                             input.remove();
-
                             searchFunction(null, null, true);
                         }, 100);
                     }
@@ -804,7 +1104,7 @@ document.querySelector('.import').addEventListener('click', () => {
     input.click();
 });
 
-document.querySelector('.export').addEventListener('click', () => {
+document.querySelector('.export span').addEventListener('click', () => {
     if (error) {
         return;
     }
@@ -888,17 +1188,64 @@ document.querySelector('.export').addEventListener('click', () => {
     };
 });
 
+document.querySelector('.reset span').addEventListener('click', () => {
+    db2().clear().onsuccess = () => {
+        location.reload();
+    };
+});
+
 onpopstate = () => {
-    if (new URLSearchParams(location.search).get('query')) {
-        document.querySelector('.search').value = decodeURIComponent(new URLSearchParams(location.search).get('query'));
-    } else {
-        document.querySelector('.search').value = '';
-    }
+    index.related = false;
 
     if (document.querySelector('.related-container').style.display === 'inline-flex') {
         document.querySelector('.related-container').style.display = 'none';
         document.querySelector('.search-container').style.display = 'inline-flex';
         document.querySelector('.related-title').innerHTML = '';
+    }
+
+    if (document.querySelector('.return')) {
+        document.querySelector('.return').style.display = '';
+    }
+
+    if (location.hash) {
+        document.querySelector('.search').value = decodeURIComponent(location.hash.slice(1));
+        document.querySelector('.clear').style.display = 'inline-flex';
+        document.querySelector('.blur').style.display = '';
+
+        if (timeout) {
+            clearTimeout(timeout);
+        }
+
+        timeout = setTimeout(() => {
+            index.dimension = null;
+            index.quick = true;
+
+            t.setFilter('title', 'like', document.querySelector('.search').value);
+            t.redraw(true);
+
+            if (worker) {
+                worker.terminate();
+                worker = null;
+            }
+
+            document.querySelector('.blur').style.display = 'none';
+
+            if (document.querySelector('.search').value) {
+                document.title = `${document.querySelector('.search').value} - ${title} (quick search)`;
+            } else {
+                document.title = title;
+            }
+        }, 300);
+
+        return;
+    }
+
+    if (new URLSearchParams(location.search).get('query')) {
+        document.querySelector('.search').value = decodeURIComponent(new URLSearchParams(location.search).get('query'));
+        document.querySelector('.clear').style.display = 'inline-flex';
+    } else {
+        document.querySelector('.search').value = '';
+        document.querySelector('.clear').style.display = 'none';
     }
 
     document.querySelector('.tabulator').style.display = 'none';
@@ -912,5 +1259,6 @@ onpopstate = () => {
 
 export {
     index,
+    qualifiers,
     searchFunction
 };

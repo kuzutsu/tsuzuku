@@ -1,32 +1,31 @@
-# [Tsuzuku](https://kuzutsu.github.io/tsuzuku/)
-**Tsuzuku** is an index for the [anime-offline-database](https://github.com/manami-project/anime-offline-database), with games included.
+# [**Tsuzuku**](https://kuzutsu.github.io/tsuzuku/)
+Also known as *There's No Anime Tracking App Out There That's Right For Me, So I Decided to Create My Own Even Though I Suck at Coding and Call It "Tsuzuku" Because I Also Suck at Naming*
 
-> For now, only entries from MyAnimeList are listed.
 
- There's no need to create an account to track progress in Tsuzuku as everything is saved locally in the browser. However, tracking without any backup is **dangerous** as updates may break the app. Although an option to export progress is available, there's no feature to sync progress online. **Clearing site data will also clear progress.** By using Tsuzuku as a tracker, you agree that you're some sort of a daredevil.
+### Features
+* **Index**<br>Tsuzuku is mobile-friendly, offline-ready, and installable as a PWA. Everything is cached immediately upon first launch, except thumbnails, which are cached only when they show up in the viewport. Thus, only thumbnails that you've seen before will load offline, but the functionality of the app will remain the same.
 
-## Dependencies
-* anime-offline-database
-* [Fuse](https://github.com/krisk/fuse)
-* [Roboto](https://github.com/googlefonts/roboto)
-* [Tabulator](https://github.com/olifolkerd/tabulator)
+* **Tracker**<br>There's no need to create an account to track progress in Tsuzuku as everything is saved locally in the browser. However, tracking without any backup is **dangerous** as updates may break the app. Although an option to export progress is available, there's no feature to sync it online. **Clearing site data will clear all progress.** By using Tsuzuku as your tracker, you agree that you're comfortable with your progress being at risk.
+
+* **Games**<br>Tsuzuku includes [**Quiz**](https://kuzutsu.github.io/tsuzuku/games/quiz/) and [**Odd One Out**](https://kuzutsu.github.io/tsuzuku/games/odd-one-out/).
+
+
+### Third-party
+* [**anime-offline-database**](https://github.com/manami-project/anime-offline-database) (database)
+* [**Tabulator**](https://github.com/olifolkerd/tabulator) (table)
+* [**Fuse**](https://github.com/krisk/fuse) (fuzzy matching)
+* [**Roboto**](https://github.com/googlefonts/roboto) (font)
+
 
 <details>
-<summary><i>To be continued...</i></summary>
+<summary>To be continued...</summary>
 
 ## Features
-### Auto-update
-Checks for updates every app launch and downloads them when available
-
-### Offline-ready
-Install as PWA
-
-While offline, thumbnails will not load unless cached
-
 ### Search qualifiers
 | Qualifier | Example |
 | --- | --- |
 | `alt:false` | [**life alt:false**](https://kuzutsu.github.io/tsuzuku/?query=life%2520alt%253Afalse%2520) matches canonical titles with "life" (matches *ReLIFE* but **not** *Nichijou*)<br><br>[**world alt:false**](https://kuzutsu.github.io/tsuzuku/?query=world%2520alt%253Afalse%2520) matches canonical titles with "world" (matches *Accel World* but **not** *Re:Zero kara Hajimeru Isekai Seikatsu*)
+| `case:true` | [**IS case:true**](https://kuzutsu.github.io/tsuzuku/?query=IS%2520case%253Atrue%2520) matches titles with "IS" (matches *IS: Infinite Stratos* but **not** *Isekai Shokudou*)
 | `is:dead` | [**is:dead**](https://kuzutsu.github.io/tsuzuku/?query=is%253Adead%2520) matches saved titles removed from the database
 | `is:mismatched` | [**is:mismatched**](https://kuzutsu.github.io/tsuzuku/?query=is%253Amismatched%2520) matches completed titles with progress different from number of episodes
 | `is:new` | [**is:new**](https://kuzutsu.github.io/tsuzuku/?query=is%253Anew%2520) matches new database entries since last online
@@ -62,36 +61,20 @@ Examples:
 * Based on a light novel but not isekai ([`tag:based_on_a_light_novel&-isekai`](https://kuzutsu.github.io/tsuzuku/?query=tag%253Abased_on_a_light_novel%2526-isekai))
 * Before 2019 ([`year:<2019`](https://kuzutsu.github.io/tsuzuku/?query=year%253A%253C2019))
 
-### Mass change status
-Click on thumbnail to select
 
-To select range, hold `Shift` on desktop or hold down thumbnail on mobile
+### Batch change status
+* Click on thumbnail to select
+* To select range, hold `Shift` on desktop or hold down thumbnail on mobile
 
-### List layout
-Click on image icon to toggle
-
-### Games
-Click on score to reset
-
-#### Odd one out
-Query will only appear after submitting an answer
-
-#### Quiz
-In single selection mode (default), there is only one correct answer
-
-In multiple selection mode, there may be one, multiple, or no correct answers
 
 ### Export
-File is in MyAnimeList XML format
-
-#### Disclaimer
+* File is in MyAnimeList XML format
 * Skipped titles will have a Dropped status with 0 progress
 
-### Import
-Supports files in MyAnimeList XML format
 
-#### Disclaimer
-* Only status and progress will be imported
+### Import
+* Supports files in MyAnimeList XML format
+* Only `series_animedb_id`, `my_status`, `my_watched_episodes`, `my_times_watched`, and `my_rewatching` will be imported
 * `update_on_import` will be ignored
 * Saved data will be overwritten
  </details>

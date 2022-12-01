@@ -1,10 +1,16 @@
-main {
-    overflow: auto;
+.container {
+    display: flex;
+    flex-direction: column;
     flex-wrap: wrap;
+    overflow: auto;
 }
 
-main div {
-    padding: 11.5px 19px;
+.container div {
     overflow-wrap: anywhere;
+    padding: 11.5px 19px;
     width: 250px;
+}
+
+.container .bold:not(:nth-of-type(1)) {
+    margin-top: 17px;
 }

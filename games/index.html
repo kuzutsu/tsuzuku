@@ -3,7 +3,7 @@
     <head>
         <title>Games</title>
         <meta charset="utf-8">
-        <meta name="description" content="Unofficial web app for the anime-offline-database">
+        <meta name="description" content="a certain anime index + tracker + games">
         <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
         <meta name="theme-color" content="#000">
         <meta name="color-scheme" content="dark">
@@ -20,10 +20,7 @@
         <link href="./index.css" rel="stylesheet">
     </head>
     <body>
-        <noscript>
-            <div class="kao">(＞﹏＜)</div>
-            <div style="margin-top: 11.5px;">Tsuzuku can't run without JavaScript</div>
-        </noscript>
+        <noscript>Tsuzuku can't run without JavaScript</noscript>
         <header>
             <a href="../" title="Tsuzuku" style="display: inline-flex; align-items: center; margin-right: 19px;">
                 <svg viewBox="0 0 24 24" width="17" height="17">
@@ -40,25 +37,31 @@
             </a>
         </header>
         <main>
-            <!--
-            <div>
-                <span>
-                    <a href="./name-that-anime/">Name that anime!</a>
-                </span>
-                <span class="info">Identify the anime from its cropped visual</span>
+            <div style="display: flex; flex-direction: row;">
+                <div style="align-items: center; min-width: 17px !important; width: 17px !important;">
+                    <svg viewBox="0 0 24 24" height="17" width="17">
+                        <path d="m8.4 17 3.6-3.6 3.6 3.6 1.4-1.4-3.6-3.6L17 8.4 15.6 7 12 10.6 8.4 7 7 8.4l3.6 3.6L7 15.6ZM5 21q-.825 0-1.413-.587Q3 19.825 3 19V5q0-.825.587-1.413Q4.175 3 5 3h14q.825 0 1.413.587Q21 4.175 21 5v14q0 .825-.587 1.413Q19.825 21 19 21Zm0-2h14V5H5v14ZM5 5v14V5Z"></path>
+                    </svg>
+                </div>
+                <div style="margin-left: 19px;">
+                    <span>
+                        <a href="./odd-one-out/">Odd one out</a>
+                    </span>
+                    <span class="info">Select the only anime that doesn't belong in the group</span>
+                </div>
             </div>
-            -->
-            <div>
-                <span>
-                    <a href="./odd-one-out/">Odd one out</a>
-                </span>
-                <span class="info">Select the only anime that doesn't have something in common with the rest</span>
-            </div>
-            <div>
-                <span>
-                    <a href="./quiz/">Quiz</a>
-                </span>
-                <span class="info">Select the correct anime</span>
+            <div style="display: flex; flex-direction: row;">
+                <div style="align-items: center; min-width: 17px !important; width: 17px !important;">
+                    <svg viewBox="0 0 24 24" height="17" width="17">
+                        <path d="M10.6 16q0-2.025.363-2.913.362-.887 1.537-1.937 1.025-.9 1.562-1.563.538-.662.538-1.512 0-1.025-.687-1.7Q13.225 5.7 12 5.7q-1.275 0-1.938.775-.662.775-.937 1.575L6.55 6.95q.525-1.6 1.925-2.775Q9.875 3 12 3q2.625 0 4.038 1.463 1.412 1.462 1.412 3.512 0 1.25-.537 2.138-.538.887-1.688 2.012Q14 13.3 13.738 13.912q-.263.613-.263 2.088Zm1.4 6q-.825 0-1.412-.587Q10 20.825 10 20q0-.825.588-1.413Q11.175 18 12 18t1.413.587Q14 19.175 14 20q0 .825-.587 1.413Q12.825 22 12 22Z"></path>
+                    </svg>
+                </div>
+                <div style="margin-left: 19px;">
+                    <span>
+                        <a href="./quiz/">Quiz</a>
+                    </span>
+                    <span class="info">Select the correct anime</span>
+                </div>
             </div>
         </main>
         <script type="module" src="../global.js"></script>

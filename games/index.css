@@ -2,8 +2,11 @@ main {
     overflow: auto;
 }
 
-main div {
+main > div {
     padding: 11.5px 19px;
+}
+
+main div {
     display: inline-flex;
     width: 100%;
     min-width: 100px;

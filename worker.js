@@ -29,23 +29,35 @@ function is(value1, type, value2) {
     }
 }
 
+function removeReserved(text) {
+    return text.replace(/</gu, '&lt;').replace(/>/gu, '&gt;');
+}
+
 addEventListener('message', (event) => {
     const
         f = [],
+        ss = {
+            count: 0,
+            season: null,
+            year: null
+        },
         u = [];
 
     let alt = true,
-        dd = null,
+        case2 = false,
+        dd = 'data',
         dead = false,
         episodes = null,
         ff = null,
         found = false,
+        message = null,
         mismatched = false,
         n = false,
         ongoing = false,
         progress = null,
         random = 0,
         regex = false,
+        // related = null,
         rewatched = false,
         season = null,
         status = null,
@@ -75,86 +87,142 @@ addEventListener('message', (event) => {
     if ((/\bepisodes:(?:&?(?:<=|>=|<|>)?(?:0|[1-9][0-9]*)\b)+/giu).test(v)) {
         episodes = (/\bepisodes:(?:&?(?:<=|>=|<|>)?(?:0|[1-9][0-9]*)\b)+/giu).exec(v)[0].replace(/episodes:/giu, '').split('&');
         v = v.replace(/\bepisodes:(?:&?(?:<=|>=|<|>)?(?:0|[1-9][0-9]*)\b)+/giu, '');
+
+        ss.count = 0;
     }
 
     if ((/\bprogress:(?:&?(?:<=|>=|<|>)?(?:0|[1-9][0-9]*)(?:%\B|\b))+/giu).test(v)) {
         progress = (/\bprogress:(?:&?(?:<=|>=|<|>)?(?:0|[1-9][0-9]*)(?:%\B|\b))+/giu).exec(v)[0].replace(/progress:/giu, '').split('&');
         v = v.replace(/\bprogress:(?:&?(?:<=|>=|<|>)?(?:0|[1-9][0-9]*)(?:%\B|\b))+/giu, '');
+
+        ss.count = 0;
     }
 
     if ((/\byear:(?:tba\b|(?:&?(?:<=|>=|<|>)?[1-9][0-9]{3}\b)+)/giu).test(v)) {
         year = (/\byear:(?:tba\b|(?:&?(?:<=|>=|<|>)?[1-9][0-9]{3}\b)+)/giu).exec(v)[0].replace(/year:/giu, '').split('&');
         v = v.replace(/\byear:(?:tba\b|(?:&?(?:<=|>=|<|>)?[1-9][0-9]{3}\b)+)/giu, '');
+
+        if (year.length === 1 && (year[0].length === 4 || year[0].toLowerCase() === 'tba')) {
+            ss.count += 1;
+            ss.year = year[0].toLowerCase();
+        }
     }
 
     if ((/\btype:(?:\|?(?:tv|movie|ova|ona|special|tba)\b)+/giu).test(v)) {
         type = (/\btype:(?:\|?(?:tv|movie|ova|ona|special|tba)\b)+/giu).exec(v)[0].replace(/type:/giu, '').split('|');
         v = v.replace(/\btype:(?:\|?(?:tv|movie|ova|ona|special|tba)\b)+/giu, '');
+
+        ss.count = 0;
     }
 
     if ((/\bstatus:(?:\|?(?:all|none|watching|completed|paused|dropped|planning|rewatching|skipping)\b)+/giu).test(v)) {
         status = (/\bstatus:(?:\|?(?:all|none|watching|completed|paused|dropped|planning|rewatching|skipping)\b)+/giu).exec(v)[0].replace(/status:/giu, '').split('|');
         v = v.replace(/\bstatus:(?:\|?(?:all|none|watching|completed|paused|dropped|planning|rewatching|skipping)\b)+/giu, '');
+
+        ss.count = 0;
     }
 
     if ((/\bseason:(?:\|?(?:winter|spring|summer|fall|tba)\b)+/giu).test(v)) {
         season = (/\bseason:(?:\|?(?:winter|spring|summer|fall|tba)\b)+/giu).exec(v)[0].replace(/season:/giu, '').split('|');
         v = v.replace(/\bseason:(?:\|?(?:winter|spring|summer|fall|tba)\b)+/giu, '');
+
+        if (season.length === 1) {
+            ss.count += 1;
+            ss.season = season[0].toLowerCase();
+        }
     }
 
     if ((/\btag:\S+\b/giu).test(v)) {
         tags = (/\btag:\S+\b/giu).exec(v)[0].replace(/tag:/giu, '').split('&');
         v = v.replace(/\btag:\S+\b/giu, '');
+
+        ss.count = 0;
     }
 
     if ((/\brewatched:(?:&?(?:<=|>=|<|>)?(?:0|[1-9][0-9]*)\b)+/giu).test(v)) {
         rewatched = (/\brewatched:(?:&?(?:<=|>=|<|>)?(?:0|[1-9][0-9]*)\b)+/giu).exec(v)[0].replace(/rewatched:/giu, '').split('&');
         v = v.replace(/\brewatched:(?:&?(?:<=|>=|<|>)?(?:0|[1-9][0-9]*)\b)+/giu, '');
+
+        ss.count = 0;
     }
+
+    // if ((/\brelated:[1-9][0-9]*\b/giu).test(v)) {
+    //     related = (/\brelated:[1-9][0-9]*\b/giu).exec(v)[0].replace(/related:/giu, '');
+    //     v = v.replace(/\brelated:[1-9][0-9]*\b/giu, '');
+
+    //     ss.count = 0;
+    // }
 
     if ((/\bis:selected\b/giu).test(v)) {
         dd = 'selected';
         v = v.replace(/\bis:selected\b/giu, '');
-    } else {
-        dd = 'data';
+
+        ss.count = 0;
     }
 
     if ((/\bis:ongoing\b/giu).test(v)) {
         ongoing = true;
         v = v.replace(/\bis:ongoing\b/giu, '');
+
+        ss.count = 0;
     }
 
     if ((/\bis:new\b/giu).test(v)) {
         n = true;
         v = v.replace(/\bis:new\b/giu, '');
+
+        ss.count = 0;
     }
 
     if ((/\bis:dead\b/giu).test(v)) {
         dead = true;
         v = v.replace(/\bis:dead\b/giu, '');
+
+        ss.count = 0;
     }
 
     if ((/\bis:mismatched\b/giu).test(v)) {
         mismatched = true;
         v = v.replace(/\bis:mismatched\b/giu, '');
+
+        ss.count = 0;
     }
 
     if ((/\bregex:true\b/giu).test(v)) {
         regex = true;
         v = v.replace(/\bregex:true\b/giu, '');
+
+        ss.count = 0;
     }
 
     if ((/\balt:false\b/giu).test(v)) {
         alt = false;
         v = v.replace(/\balt:false\b/giu, '');
+
+        ss.count = 0;
+    }
+
+    if ((/\bcase:true\b/giu).test(v)) {
+        case2 = true;
+        v = v.replace(/\bcase:true\b/giu, '');
+
+        ss.count = 0;
     }
 
     if ((/\brandom:[1-9][0-9]*\b/giu).test(v)) {
         random = Number((/\brandom:[1-9][0-9]*\b/giu).exec(v)[0].replace(/random:/giu, ''));
         v = v.replace(/\brandom:[1-9][0-9]*\b/giu, '');
+
+        ss.count = 0;
+    }
+
+    if (!v.trim()) {
+        ss.count += 1;
     }
 
     for (const d of event.data[dd]) {
+        d.relevancy = 1;
+
         postMessage({
             message: 'progress',
             progress: `${(event.data[dd].indexOf(d) + 1) / event.data[dd].length * 100}%`
@@ -323,6 +391,10 @@ addEventListener('message', (event) => {
 
         if (v.trim()) {
             if (regex) {
+                const r2 = case2
+                    ? 'gu'
+                    : 'giu';
+
                 let r = false;
 
                 if (alt) {
@@ -331,23 +403,28 @@ addEventListener('message', (event) => {
 
                 try {
                     for (const value of tt) {
-                        if (value.match(RegExp(v.trim(), 'giu'))) {
+                        if (value.match(RegExp(v.trim(), r2))) {
                             r = true;
 
-                            if (value !== d.title) {
-                                d.alternative = `${value}&nbsp;<span class="title">${d.title}</span>`;
+                            if (value === d.title) {
+                                d.alternative = removeReserved(d.title);
+                            } else {
+                                d.alternative = `${removeReserved(value)}&nbsp;<span class="title">${removeReserved(d.title)}</span>`;
                             }
 
                             break;
                         }
                     }
                 } catch (error) {
-                    postMessage({
-                        filter: [''],
-                        message: 'error'
-                    });
+                    message = 'Invalid regular expression';
+                    break;
 
-                    return;
+                    // postMessage({
+                    //     filter: [''],
+                    //     message: 'error'
+                    // });
+
+                    // return;
                 }
 
                 if (!r) {
@@ -367,6 +444,7 @@ addEventListener('message', (event) => {
                 const result = new Fuse(t, {
                     ignoreLocation: true,
                     includeScore: true,
+                    isCaseSensitive: case2,
                     keys: ['title'],
                     threshold: 0.2
                 }).search(v.trim());
@@ -377,10 +455,24 @@ addEventListener('message', (event) => {
                     continue;
                 }
 
-                if (result[0].item.title !== d.title) {
-                    d.alternative = `${result[0].item.title}&nbsp;<span class="title">${d.title}</span>`;
+                if (result[0].item.title === d.title) {
+                    d.alternative = removeReserved(d.title);
+                } else {
+                    d.alternative = `${removeReserved(result[0].item.title)}&nbsp;<span class="title">${removeReserved(d.title)}</span>`;
                 }
             }
+        } else {
+            if (regex) {
+                message = 'Missing regular expression';
+                break;
+            }
+
+            if (case2 || !alt) {
+                message = 'Missing search query';
+                break;
+            }
+
+            d.alternative = removeReserved(d.title);
         }
 
         if (!found) {
@@ -402,7 +494,9 @@ addEventListener('message', (event) => {
     if (!found) {
         postMessage({
             filter: [''],
-            message: 'success'
+            message: 'success',
+            message2: message,
+            seasonal: ss
         });
 
         return;
@@ -432,6 +526,7 @@ addEventListener('message', (event) => {
         filter: ff || f,
         message: 'success',
         query: v.trim(),
+        seasonal: ss,
         update: uu || u
     });
 });

@@ -33,9 +33,10 @@
     --header-color: #fff;
     --mismatched: #f4b400;
     --new: #0f9d58;
-    --progress: #db4437;
-    --progress-found: #0f9d58;
+    --progress: #9aa0a6;
+    --progress-found: #a6c6f7;
     --red: #db4437;
+    --reset: #f6aea9;
     --r18: #db4437;
     --selected: #2d3e54;
     --selected-color: #fff;
@@ -51,6 +52,7 @@
     --status-paused: #f4b400;
     --status-planning: #9aa0a6;
     --status-rewatching: #4285f4;
+    --status-skipping: #2d2d2d;
     --status-watching: #0f9d58;
 }
 
@@ -68,6 +70,7 @@ html {
 body {
     display: flex;
     flex-direction: column;
+    font-size: 14px;
     height: 100%;
     margin: 0;
     position: relative;
@@ -75,16 +78,15 @@ body {
 }
 
 header,
-main,
-noscript {
+main {
     background: var(--background);
 }
 
 header {
     align-items: center;
     display: flex;
-    font-size: 14px;
     height: 50px;
+    min-height: 50px;
     overflow: auto;
     padding: 0 19px;
     position: relative;
@@ -93,18 +95,28 @@ header {
     z-index: 1;
 }
 
+footer {
+    align-items: center;
+    display: flex;
+    height: 50px;
+    justify-content: center;
+    min-height: 50px;
+}
+
 main {
     display: flex;
     flex-direction: column;
-    font-size: 14px;
-    height: calc(100% - 50px);
+    height: auto;
+    max-height: calc(100% - 100px);
     position: relative;
 }
 
+/*
 header,
 main {
     box-shadow: var(--shadow);
 }
+*/
 
 .separator {
     min-width: 19px;
@@ -154,9 +166,10 @@ input[type="text"] {
 
 noscript {
     align-items: center;
+    background: var(--side);
+    color: var(--disabled);
     display: flex;
     flex-direction: column;
-    font-size: 14px;
     height: 100%;
     justify-content: center;
     min-width: 100px;
@@ -166,36 +179,83 @@ noscript {
     z-index: 2;
 }
 
-.kao {
-    align-items: center;
-    color: var(--side);
-    display: flex;
-    font-size: 14vw;
-    font-weight: 500;
-    white-space: nowrap;
-}
-
-@media only screen and (max-width: 100px) {
-    .kao {
-        font-size: 14px;
-    }
-}
-
-@media only screen and (min-width: calc(100px / 0.14)) {
-    .kao {
-        font-size: 100px;
-    }
-}
-
 .loading {
-    align-items: center;
-    display: flex;
-    height: 100%;
-    justify-content: center;
-    position: relative;
-    text-align: center;
+    color: var(--disabled);
+    white-space: nowrap;
 }
 
 .bold {
     font-weight: 500;
+}
+
+.el,
+.lip,
+.sis {
+    color: inherit;
+}
+
+.el {
+    animation: 1.5s 0.375s linear infinite el;
+}
+
+.lip {
+    animation: 1.5s 0.375s linear infinite lip;
+}
+
+.sis {
+    animation: 1.5s 0.375s linear infinite sis;
+}
+
+@keyframes el {
+    0% {
+        color: transparent;
+    }
+
+    24% {
+        color: transparent;
+    }
+
+    25% {
+        color: inherit;
+    }
+
+    100% {
+        color: inherit;
+    }
+}
+
+@keyframes lip {
+    0% {
+        color: transparent;
+    }
+
+    49% {
+        color: transparent;
+    }
+
+    50% {
+        color: inherit;
+    }
+
+    100% {
+        color: inherit;
+    }
+}
+
+@keyframes sis {
+    0% {
+        color: transparent;
+    }
+
+    74% {
+        color: transparent;
+    }
+
+    75% {
+        color: inherit;
+    }
+
+    100% {
+        color: inherit;
+    }
 }

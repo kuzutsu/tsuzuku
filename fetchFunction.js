@@ -1,5 +1,7 @@
 import {
+    ClipboardModule,
     EditModule,
+    ExportModule,
     FilterModule,
     FormatModule,
     FrozenColumnsModule,
@@ -8,11 +10,13 @@ import {
     SelectRowModule,
     SortModule,
     Tabulator
-} from 'https://cdn.jsdelivr.net/npm/tabulator-tables@5.3.0/dist/js/tabulator_esm.js';
+} from 'https://cdn.jsdelivr.net/npm/tabulator-tables@5.4.2/dist/js/tabulator_esm.min.js';
 
 Tabulator.registerModule(
     [
+        ClipboardModule,
         EditModule,
+        ExportModule,
         FilterModule,
         FormatModule,
         FrozenColumnsModule,
@@ -25,10 +29,12 @@ Tabulator.registerModule(
 
 import {
     index,
+    qualifiers,
     searchFunction
 } from './index.js';
 
 import {
+    removeReserved,
     source
 } from './global.js';
 
@@ -37,6 +43,7 @@ const
         'BroadcastChannel' in window
             ? new BroadcastChannel('tsuzuku')
             : null,
+    data4 = [],
     data5 = [],
     database = [],
     database2 = {},
@@ -45,11 +52,12 @@ const
         s: true,
         ss: []
     },
-    sorted = {
-        s: 'relevancy',
-        ss: false
+    sorted2 = {
+        dir: 'desc',
+        field: 'relevancy'
     },
     status = ['', 'Completed', 'Dropped', 'Paused', 'Planning', 'Rewatching', 'Skipping', 'Watching'],
+    // move to images
     svg = {
         arrow: '<path d="M11 20V7.825L5.4 13.425L4 12L12 4L20 12L18.6 13.425L13 7.825V20Z"></path>',
         blank: '<path d="M5 21Q4.175 21 3.587 20.413Q3 19.825 3 19V5Q3 4.175 3.587 3.587Q4.175 3 5 3H19Q19.825 3 20.413 3.587Q21 4.175 21 5V19Q21 19.825 20.413 20.413Q19.825 21 19 21ZM5 19H19Q19 19 19 19Q19 19 19 19V5Q19 5 19 5Q19 5 19 5H5Q5 5 5 5Q5 5 5 5V19Q5 19 5 19Q5 19 5 19Z"></path>',
@@ -57,18 +65,25 @@ const
         helpClose: '<path d="M11.95 18Q12.475 18 12.838 17.637Q13.2 17.275 13.2 16.75Q13.2 16.225 12.838 15.863Q12.475 15.5 11.95 15.5Q11.425 15.5 11.062 15.863Q10.7 16.225 10.7 16.75Q10.7 17.275 11.062 17.637Q11.425 18 11.95 18ZM11.05 14.15H12.9Q12.9 13.325 13.088 12.85Q13.275 12.375 14.15 11.55Q14.8 10.9 15.175 10.312Q15.55 9.725 15.55 8.9Q15.55 7.5 14.525 6.75Q13.5 6 12.1 6Q10.675 6 9.788 6.75Q8.9 7.5 8.55 8.55L10.2 9.2Q10.325 8.75 10.763 8.225Q11.2 7.7 12.1 7.7Q12.9 7.7 13.3 8.137Q13.7 8.575 13.7 9.1Q13.7 9.6 13.4 10.037Q13.1 10.475 12.65 10.85Q11.55 11.825 11.3 12.325Q11.05 12.825 11.05 14.15ZM12 22Q9.95 22 8.125 21.212Q6.3 20.425 4.938 19.075Q3.575 17.725 2.788 15.9Q2 14.075 2 12Q2 9.925 2.788 8.1Q3.575 6.275 4.938 4.925Q6.3 3.575 8.125 2.787Q9.95 2 12 2Q14.1 2 15.925 2.787Q17.75 3.575 19.1 4.925Q20.45 6.275 21.225 8.1Q22 9.925 22 12Q22 14.075 21.225 15.9Q20.45 17.725 19.1 19.075Q17.75 20.425 15.925 21.212Q14.1 22 12 22ZM12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12ZM12 20Q15.35 20 17.675 17.663Q20 15.325 20 12Q20 8.675 17.675 6.337Q15.35 4 12 4Q8.725 4 6.362 6.337Q4 8.675 4 12Q4 15.325 6.362 17.663Q8.725 20 12 20Z"></path>',
         helpOpen: '<path d="M12 22Q9.95 22 8.125 21.212Q6.3 20.425 4.938 19.075Q3.575 17.725 2.788 15.9Q2 14.075 2 12Q2 9.925 2.788 8.1Q3.575 6.275 4.938 4.925Q6.3 3.575 8.125 2.787Q9.95 2 12 2Q14.1 2 15.925 2.787Q17.75 3.575 19.1 4.925Q20.45 6.275 21.225 8.1Q22 9.925 22 12Q22 14.075 21.225 15.9Q20.45 17.725 19.1 19.075Q17.75 20.425 15.925 21.212Q14.1 22 12 22ZM11.05 14.15H12.9Q12.9 13.325 13.088 12.85Q13.275 12.375 14.15 11.55Q14.8 10.9 15.175 10.312Q15.55 9.725 15.55 8.9Q15.55 7.5 14.525 6.75Q13.5 6 12.1 6Q10.675 6 9.788 6.75Q8.9 7.5 8.55 8.55L10.2 9.2Q10.325 8.75 10.763 8.225Q11.2 7.7 12.1 7.7Q12.9 7.7 13.3 8.137Q13.7 8.575 13.7 9.1Q13.7 9.6 13.4 10.037Q13.1 10.475 12.65 10.85Q11.55 11.825 11.3 12.325Q11.05 12.825 11.05 14.15ZM11.95 18Q12.475 18 12.838 17.637Q13.2 17.275 13.2 16.75Q13.2 16.225 12.838 15.863Q12.475 15.5 11.95 15.5Q11.425 15.5 11.062 15.863Q10.7 16.225 10.7 16.75Q10.7 17.275 11.062 17.637Q11.425 18 11.95 18Z"></path>',
         indeterminate: '<path d="M7 13H17V11H7ZM5 21Q4.175 21 3.587 20.413Q3 19.825 3 19V5Q3 4.175 3.587 3.587Q4.175 3 5 3H19Q19.825 3 20.413 3.587Q21 4.175 21 5V19Q21 19.825 20.413 20.413Q19.825 21 19 21Z"></path>',
+        link: '<path d="M21 12V19Q21 19.825 20.413 20.413Q19.825 21 19 21H5Q4.175 21 3.587 20.413Q3 19.825 3 19V5Q3 4.175 3.587 3.587Q4.175 3 5 3H12V5H5Q5 5 5 5Q5 5 5 5V19Q5 19 5 19Q5 19 5 19H19Q19 19 19 19Q19 19 19 19V12ZM9.7 15.7 8.3 14.3 17.6 5H14V3H21V10H19V6.4Z"></path>',
         play: '<path d="M8 19V5L19 12Z"></path>'
     },
-    title = document.title;
+    title = document.title,
+    years = new Set(),
+    years2 = [];
 
-let db2 = null,
+let built = false,
+    db2 = null,
     dimension2 = null,
     disableSelection = false,
     error = false,
     error2 = false,
+    f = null,
     r = null,
     statuses = '',
-    t = null;
+    t = null,
+    updated = '???',
+    updated2 = false;
 
 function channelMessage() {
     if (channel) {
@@ -186,10 +201,10 @@ function clickCell(e, cell, shift) {
             }
         }
 
-        document.querySelector('.selected-count').innerHTML = `<span>${cell.getTable().getSelectedRows().length} selected</span>`;
+        document.querySelector('.selected-count').innerHTML = `<span class="count-selected">${cell.getTable().getSelectedRows().length} selected</span>`;
 
         if (cell.getTable().getSelectedRows().length > active) {
-            document.querySelector('.selected-count').innerHTML += `<span>${active} active</span>`;
+            document.querySelector('.selected-count').innerHTML += `<span>${active} from search results</span>`;
         }
 
         if (document.querySelector('header .menu')) {
@@ -198,6 +213,10 @@ function clickCell(e, cell, shift) {
 
         if (document.querySelector('.header-status')) {
             document.querySelector('.header-status').remove();
+        }
+
+        if (document.querySelector('.copy')) {
+            document.querySelector('.copy').style.display = 'inline-flex';
         }
 
         const hstatus = document.createElement('select');
@@ -219,6 +238,7 @@ function clickCell(e, cell, shift) {
             channelMessage();
             disableSelection = true;
             document.querySelector('.changing').style.display = '';
+            document.querySelector('.copy').style.display = 'none';
             hstatus.style.display = 'none';
 
             for (const value of cell.getTable().getSelectedRows()) {
@@ -387,21 +407,25 @@ function clickCell(e, cell, shift) {
             Promise.all(ddd).then(() => {
                 disableSelection = false;
                 document.querySelector('.changing').style.display = 'none';
+                document.querySelector('.copy').style.display = 'inline-flex';
                 hstatus.style.display = '';
             });
         });
 
-        document.querySelector('header').insertAdjacentElement('beforeend', hstatus);
+        document.querySelector('.copy').insertAdjacentElement('beforebegin', hstatus);
         document.head.querySelector('[name="theme-color"]').content = '#a6c6f7';
 
         if (selected.s) {
+            cell.getColumn().getElement().querySelector('.tabulator-col-title').title = 'Unselect all search results';
             cell.getColumn().getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.check;
             cell.getColumn().getElement().querySelector('.tabulator-col-title svg').style.fill = 'var(--selected-header)';
         } else {
             if (selected.ss.length) {
+                cell.getColumn().getElement().querySelector('.tabulator-col-title').title = 'Unselect all search results';
                 cell.getColumn().getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.indeterminate;
                 cell.getColumn().getElement().querySelector('.tabulator-col-title svg').style.fill = 'var(--selected-header)';
             } else {
+                cell.getColumn().getElement().querySelector('.tabulator-col-title').title = 'Select all search results';
                 cell.getColumn().getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.blank;
                 cell.getColumn().getElement().querySelector('.tabulator-col-title svg').style.fill = '';
             }
@@ -419,8 +443,13 @@ function clickCell(e, cell, shift) {
             document.querySelector('header .menu').style.display = 'inline-flex';
         }
 
+        if (document.querySelector('.copy')) {
+            document.querySelector('.copy').style.display = 'none';
+        }
+
         document.head.querySelector('[name="theme-color"]').content = '#000';
 
+        cell.getColumn().getElement().querySelector('.tabulator-col-title').title = 'Select all search results';
         cell.getColumn().getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.blank;
         cell.getColumn().getElement().querySelector('.tabulator-col-title svg').style.fill = '';
     }
@@ -467,10 +496,10 @@ function clickHeader(e, column) {
             }
         }
 
-        document.querySelector('.selected-count').innerHTML = `<span>${column.getTable().getSelectedRows().length} selected</span>`;
+        document.querySelector('.selected-count').innerHTML = `<span class="count-selected">${column.getTable().getSelectedRows().length} selected</span>`;
 
         if (column.getTable().getSelectedRows().length > active) {
-            document.querySelector('.selected-count').innerHTML += `<span>${active} active</span>`;
+            document.querySelector('.selected-count').innerHTML += `<span>${active} from search results</span>`;
         }
 
         if (document.querySelector('header .menu')) {
@@ -478,15 +507,21 @@ function clickHeader(e, column) {
         }
 
         if (selected.s) {
+            column.getElement().querySelector('.tabulator-col-title').title = 'Unselect all search results';
             column.getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.check;
             column.getElement().querySelector('.tabulator-col-title svg').style.fill = 'var(--selected-header)';
         } else {
+            column.getElement().querySelector('.tabulator-col-title').title = 'Select all search results';
             column.getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.blank;
             column.getElement().querySelector('.tabulator-col-title svg').style.fill = '';
         }
 
         if (document.querySelector('.header-status')) {
             document.querySelector('.header-status').remove();
+        }
+
+        if (document.querySelector('.copy')) {
+            document.querySelector('.copy').style.display = 'inline-flex';
         }
 
         const hstatus = document.createElement('select');
@@ -508,6 +543,7 @@ function clickHeader(e, column) {
             channelMessage();
             disableSelection = true;
             document.querySelector('.changing').style.display = '';
+            document.querySelector('.copy').style.display = 'none';
             hstatus.style.display = 'none';
 
             for (const value of column.getTable().getSelectedRows()) {
@@ -676,14 +712,16 @@ function clickHeader(e, column) {
             Promise.all(ddd).then(() => {
                 disableSelection = false;
                 document.querySelector('.changing').style.display = 'none';
+                document.querySelector('.copy').style.display = 'inline-flex';
                 hstatus.style.display = '';
             });
         });
 
-        document.querySelector('header').insertAdjacentElement('beforeend', hstatus);
+        document.querySelector('.copy').insertAdjacentElement('beforebegin', hstatus);
         document.head.querySelector('[name="theme-color"]').content = '#a6c6f7';
     } else {
         document.querySelector('header').classList.remove('header-selected');
+        column.getElement().querySelector('.tabulator-col-title').title = 'Select all search results';
         column.getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.blank;
         column.getElement().querySelector('.tabulator-col-title svg').style.fill = '';
 
@@ -695,45 +733,117 @@ function clickHeader(e, column) {
             document.querySelector('header .menu').style.display = 'inline-flex';
         }
 
+        if (document.querySelector('.copy')) {
+            document.querySelector('.copy').style.display = 'none';
+        }
+
         document.head.querySelector('[name="theme-color"]').content = '#000';
     }
 }
 
 function customSort(e, column) {
-    const custom = [];
-    let direction = '';
-
     e.stopImmediatePropagation();
 
-    if (sorted.s === column.getField()) {
-        if (sorted.ss) {
-            sorted.s = 'alternative';
-            sorted.ss = false;
-            column.getTable().clearSort();
-            return;
+    if (sorted2.dir === 'asc') {
+        if (column.getField() === sorted2.field) {
+            if (column.getField() === 'alternative') {
+                setTimeout(() => {
+                    column.getTable().setSort([
+                        {
+                            column: 'alternative',
+                            dir: 'desc'
+                        }
+                    ]);
+                }, 0);
+            } else {
+                setTimeout(() => {
+                    column.getTable().setSort([
+                        {
+                            column: column.getField(),
+                            dir: 'desc'
+                        },
+                        {
+                            column: 'alternative',
+                            dir: 'asc'
+                        }
+                    ]);
+                }, 0);
+            }
+        } else {
+            if (column.getField() === 'alternative') {
+                setTimeout(() => {
+                    column.getTable().setSort([
+                        {
+                            column: 'alternative',
+                            dir: 'asc'
+                        }
+                    ]);
+                }, 0);
+            } else {
+                setTimeout(() => {
+                    column.getTable().setSort([
+                        {
+                            column: column.getField(),
+                            dir: 'asc'
+                        },
+                        {
+                            column: 'alternative',
+                            dir: 'asc'
+                        }
+                    ]);
+                }, 0);
+            }
         }
-
-        sorted.ss = true;
-        direction = 'desc';
-    } else {
-        sorted.s = column.getField();
-        sorted.ss = false;
-        direction = 'asc';
     }
 
-    custom.push({
-        column: column.getField(),
-        dir: direction
-    });
+    if (sorted2.dir === 'desc') {
+        if (column.getField() === sorted2.field) {
+            setTimeout(() => {
+                column.getTable().setSort([
+                    {
+                        column: 'relevancy',
+                        dir: 'desc'
+                    },
+                    {
+                        column: 'alternative',
+                        dir: 'asc'
+                    }
+                ]);
+            }, 0);
+        } else {
+            if (column.getField() === 'alternative') {
+                setTimeout(() => {
+                    column.getTable().setSort([
+                        {
+                            column: 'alternative',
+                            dir: 'asc'
+                        }
+                    ]);
+                }, 0);
+            } else {
+                setTimeout(() => {
+                    column.getTable().setSort([
+                        {
+                            column: column.getField(),
+                            dir: 'asc'
+                        },
+                        {
+                            column: 'alternative',
+                            dir: 'asc'
+                        }
+                    ]);
+                }, 0);
+            }
+        }
+    }
+}
 
-    if (column.getField() !== 'alternative') {
-        custom.push({
-            column: 'alternative',
-            dir: 'asc'
-        });
+function quick() {
+    if (index.quick && !index.related) {
+        return ' (quick)';
     }
 
-    column.getTable().setSort(custom);
+    return '';
 }
 
 if (channel) {
@@ -751,7 +861,15 @@ fetch(source)
     .then((data) => {
         const d = data.data;
 
-        document.querySelector('.loading').innerHTML = 'Building table...';
+        updated = data.lastUpdate;
+
+        if (localStorage.getItem('updated') && localStorage.getItem('updated') !== updated) {
+            updated2 = true;
+        }
+
+        localStorage.setItem('updated', updated);
+
+        document.querySelector('.loading').innerHTML = 'Building table<span class="el">.</span><span class="lip">.</span><span class="sis">.</span>';
 
         new Promise((resolve) => {
             const db = indexedDB.open('tsuzuku', 1);
@@ -806,16 +924,20 @@ fetch(source)
                 };
             };
         }).then((value6) => {
-            const set4 = localStorage.getItem('new')
-                ? new Set(JSON.parse(localStorage.getItem('new')))
-                : new Set();
+            const
+                set4 = localStorage.getItem('data')
+                    ? new Set(JSON.parse(localStorage.getItem('data')))
+                    : new Set(),
+                set5 = localStorage.getItem('new')
+                    ? new Set(JSON.parse(localStorage.getItem('new')))
+                    : new Set();
 
             if (value6 === 'error') {
                 error = true;
                 document.body.classList.add('error');
                 document.querySelector('header .menu').remove();
 
-                /* document.querySelector('header .menu').title = 'Can\'t track, import, or export without IndexedDB'; */
+                // document.querySelector('header .menu').title = 'Can\'t track, import, or export without IndexedDB';
             }
 
             for (const ii of status) {
@@ -848,10 +970,6 @@ fetch(source)
                     continue;
                 }
 
-                // if (data5.indexOf(value) > -1) {
-                //     continue;
-                // }
-
                 if (ss !== 'UNDEFINED') {
                     s = `${ss.replace(ss.substr(1), ss.substr(1).toLowerCase())} `;
                 }
@@ -870,8 +988,15 @@ fetch(source)
                     }
                 }
 
-                if (set4.has(value)) {
-                    n2 = true;
+                if (updated2) {
+                    if (!set4.has(value)) {
+                        n2 = true;
+                        data5.push(value);
+                    }
+                } else {
+                    if (set5.has(value)) {
+                        n2 = true;
+                    }
                 }
 
                 if (map4.has(value)) {
@@ -889,6 +1014,8 @@ fetch(source)
                         ttt = i.type;
                     }
                 }
+
+                years.add((i.animeSeason.year || 'tba').toString());
 
                 database.push({
                     alternative: i.title,
@@ -914,7 +1041,7 @@ fetch(source)
                     type: ttt
                 });
 
-                data5.push(value);
+                data4.push(value);
             }
 
             for (const [key, value] of map4.entries()) {
@@ -940,62 +1067,56 @@ fetch(source)
                 });
             }
 
-            if (localStorage.getItem('data')) {
-                const
-                    set = new Set(data5),
-                    set2 = new Set(JSON.parse(localStorage.getItem('data'))),
-                    set3 = [];
+            localStorage.setItem('data', JSON.stringify(data4));
 
-                for (const value of set) {
-                    if (set2.has(value)) {
-                        continue;
-                    }
-
-                    set3.push(value);
-                }
-
-                if (set3[0]) {
-                    localStorage.setItem('new', JSON.stringify(set3));
-                }
+            if (updated2) {
+                localStorage.setItem('new', JSON.stringify(data5));
             }
 
-            localStorage.setItem('data', JSON.stringify(data5));
+            years2.push(...years);
+            years2.sort();
 
             // tabulator tweak to fix incorrect behavior when scrolling
-            /*
-            RowManager.prototype.initialize = function () {
-                const self = this;
+            // doesn't work starting 66
 
-                self.setRenderMode();
-                self.element.appendChild(self.tableElement);
-                self.firstRender = true;
+            // RowManager.prototype.initialize = function () {
+            //     const self = this;
 
-                self.element.addEventListener('scroll', () => {
-                    const
-                        dir = self.scrollTop > self.element.scrollTop,
-                        left = self.element.scrollLeft,
-                        top = self.element.scrollTop;
+            //     self.setRenderMode();
+            //     self.element.appendChild(self.tableElement);
+            //     self.firstRender = true;
 
-                    if (self.scrollLeft !== left) {
-                        self.table.options.scrollHorizontal(left);
-                    }
+            //     self.element.addEventListener('scroll', () => {
+            //         const
+            //             dir = self.scrollTop > self.element.scrollTop,
+            //             left = self.element.scrollLeft,
+            //             top = self.element.scrollTop;
 
-                    self.scrollLeft = left;
+            //         if (self.scrollLeft !== left) {
+            //             self.table.options.scrollHorizontal(left);
+            //         }
 
-                    if (self.scrollTop !== top) {
-                        self.scrollTop = top;
-                        self.scrollVertical(dir);
-                        self.table.options.scrollVertical(top);
-                    }
-                });
-            };
+            //         self.scrollLeft = left;
 
-            Row.prototype.setCellHeight = function () {
-                // error if set to null
-            };
-            */
+            //         if (self.scrollTop !== top) {
+            //             self.scrollTop = top;
+            //             self.scrollVertical(dir);
+            //             self.table.options.scrollVertical(top);
+            //         }
+            //     });
+            // };
+
+            // Row.prototype.setCellHeight = function () {
+            //     // error if set to null
+            // };
 
             t = new Tabulator('.database-container', {
+                clipboard: 'copy',
+                clipboardCopyConfig: {
+                    formatCells: false
+                },
+                clipboardCopyRowRange: 'selected',
+                clipboardCopyStyled: false,
                 columnDefaults: {
                     headerSortTristate: true,
                     vertAlign: 'middle'
@@ -1004,6 +1125,7 @@ fetch(source)
                 columns: [
                     {
                         // padding
+                        clipboard: false,
                         field: 'color',
                         frozen: true,
                         headerSort: false,
@@ -1012,6 +1134,7 @@ fetch(source)
                     },
                     {
                         // padding
+                        clipboard: false,
                         frozen: true,
                         headerSort: false,
                         minWidth: 15,
@@ -1024,13 +1147,16 @@ fetch(source)
                         cellTapHold: function (e, cell) {
                             clickCell(e, cell, true);
                         },
+                        clipboard: false,
                         field: 'picture',
                         formatter: function (cell) {
                             cell.getElement().tabIndex = 0;
 
                             return (
-                                `<svg class="blank" viewBox="0 0 24 24" width="17" height="17">${svg.blank}</svg>` +
+                                // `<svg class="blank" viewBox="0 0 24 24" width="17" height="17">${svg.blank}</svg>` +
                                 `<svg class="check" viewBox="0 0 24 24" width="17" height="17">${svg.check}</svg>` +
+                                // replace with document.createElement('img')
+                                // `<img src="${cell.getValue().replace(cell.getValue().substr(cell.getValue().lastIndexOf('.')), '.webp')}" loading="lazy" alt style="height: 40px; object-fit: cover; user-select: none; width: 40px;" onerror="this.src = &quot;${cell.getValue()}&quot;;">`
                                 `<img src="${cell.getValue()}" loading="lazy" alt style="height: 40px; object-fit: cover; user-select: none; width: 40px;">`
                             );
                         },
@@ -1041,8 +1167,16 @@ fetch(source)
                         headerHozAlign: 'center',
                         headerSort: false,
                         hozAlign: 'center',
-                        titleFormatter: function () {
+                        titleFormatter: function (h) {
+                            h.getElement().title = 'Select all search results';
+
                             return `<svg viewBox="0 0 24 24" width="17" height="17">${svg.blank}</svg>`;
+
+                            // return (
+                            //     '<div title="Select all search results">' +
+                            //         `<svg viewBox="0 0 24 24" width="17" height="17">${svg.blank}</svg>` +
+                            //     '</div>'
+                            // );
                         },
                         visible: JSON.parse(localStorage.getItem('tsuzuku')).thumbnails,
                         width: 40
@@ -1054,13 +1188,18 @@ fetch(source)
                         cellTapHold: function (e, cell) {
                             clickCell(e, cell, true);
                         },
+                        clipboard: false,
                         field: 'picture2',
                         formatter: function (cell) {
                             cell.getElement().tabIndex = 0;
 
                             return (
-                                `<svg class="blank" viewBox="0 0 24 24" width="17" height="17">${svg.blank}</svg>` +
-                                `<svg class="check" viewBox="0 0 24 24" width="17" height="17">${svg.check}</svg>`
+                                '<span class="blank" title="Select">' +
+                                    `<svg viewBox="0 0 24 24" width="17" height="17">${svg.blank}</svg>` +
+                                '</span>' +
+                                '<span class="check" title="Unselect">' +
+                                    `<svg viewBox="0 0 24 24" width="17" height="17">${svg.check}</svg>` +
+                                '</span>'
                             );
                         },
                         frozen: true,
@@ -1071,14 +1210,23 @@ fetch(source)
                         headerSort: false,
                         hozAlign: 'center',
                         minWidth: 17,
-                        titleFormatter: function () {
+                        titleFormatter: function (h) {
+                            h.getElement().title = 'Select all search results';
+
                             return `<svg viewBox="0 0 24 24" width="17" height="17">${svg.blank}</svg>`;
+
+                            // return (
+                            //     '<div title="Select all search results">' +
+                            //         `<svg viewBox="0 0 24 24" width="17" height="17">${svg.blank}</svg>` +
+                            //     '</div>'
+                            // );
                         },
                         visible: !JSON.parse(localStorage.getItem('tsuzuku')).thumbnails,
                         width: 17
                     },
                     {
                         // padding
+                        clipboard: false,
                         frozen: true,
                         headerSort: false,
                         minWidth: 19,
@@ -1113,27 +1261,35 @@ fetch(source)
                         headerSort: false,
                         hozAlign: 'center',
                         minWidth: 17,
-                        titleFormatter: function () {
+                        titleClipboard: 'Ongoing',
+                        titleFormatter: function (h) {
+                            h.getElement().title = 'Ongoing';
+
                             return `<svg viewBox="3 2 20 20" width="17" height="17">${svg.play}</svg>`;
                         },
                         width: 17
                     },
                     {
                         // padding
+                        clipboard: false,
                         headerSort: false,
                         minWidth: 19,
                         width: 19
                     },
                     {
+                        clipboard: false,
                         field: 'alternative',
                         formatter: function (cell) {
                             const
                                 div = document.createElement('div'),
                                 fragment = new DocumentFragment(),
-                                span = document.createElement('span'),
-                                span2 = document.createElement('span');
+                                span = document.createElement('span');
 
-                            span.innerHTML = `<span>${cell.getValue()}</span>`;
+                            if (!f.length || (f.length && f[0].field === 'title') || index.related) {
+                                span.innerHTML = removeReserved(cell.getValue());
+                            } else {
+                                span.innerHTML = cell.getValue();
+                            }
 
                             div.classList.add('indicator');
                             div.style.position = 'absolute';
@@ -1185,17 +1341,6 @@ fetch(source)
                                 span.appendChild(n);
                             }
 
-                            span2.classList.add('myanimelist');
-                            span2.innerHTML =
-                                '<span style="user-select: none;">&nbsp;</span>' +
-                                `<a href="${cell.getRow().getData().sources}" target="_blank" rel="noreferrer" title="MyAnimeList" style="align-items: center; display: inline-flex;">` +
-                                    '<svg viewBox="0 0 24 24" height="17" width="17">' +
-                                        '<path d="M21 12V19Q21 19.825 20.413 20.413Q19.825 21 19 21H5Q4.175 21 3.587 20.413Q3 19.825 3 19V5Q3 4.175 3.587 3.587Q4.175 3 5 3H12V5H5Q5 5 5 5Q5 5 5 5V19Q5 19 5 19Q5 19 5 19H19Q19 19 19 19Q19 19 19 19V12ZM9.7 15.7 8.3 14.3 17.6 5H14V3H21V10H19V6.4Z"></path>' +
-                                    '</svg>' +
-                                '</a>';
-
-                            span.appendChild(span2);
-
                             fragment.appendChild(span);
                             fragment.appendChild(div);
 
@@ -1219,6 +1364,53 @@ fetch(source)
                             return slice(a).localeCompare(slice(b));
                         },
                         title: 'Title'
+                    },
+                    {
+                        clipboard: true,
+                        field: 'title',
+                        titleClipboard: 'Title',
+                        visible: false
+                    },
+                    {
+                        clipboard: true,
+                        field: 'r18',
+                        titleClipboard: 'R18+',
+                        visible: false
+                    },
+                    {
+                        // padding
+                        clipboard: false,
+                        headerSort: false,
+                        minWidth: 19,
+                        width: 19
+                    },
+                    {
+                        field: 'sources',
+                        formatter: function (cell) {
+                            const a = document.createElement('a');
+
+                            a.href = cell.getValue();
+                            a.classList.add('source');
+                            a.title = 'Go to source';
+                            a.rel = 'noreferrer';
+                            a.target = '_blank';
+                            a.innerHTML = `<svg viewBox="0 0 24 24" width="17" height="17">${svg.link}</svg>`;
+
+                            return a;
+                        },
+                        headerHozAlign: 'center',
+                        headerSort: false,
+                        hozAlign: 'center',
+                        minWidth: 17,
+                        titleClipboard: 'Source',
+                        width: 17
+                    },
+                    {
+                        // padding
+                        clipboard: false,
+                        headerSort: false,
+                        minWidth: 19,
+                        width: 19
                     },
                     {
                         field: 'type',
@@ -1265,13 +1457,15 @@ fetch(source)
                                     v = `season:tba year:${value}`;
                                 }
                             } else {
-                                v = 'year:tba';
+                                v = 'season:tba year:tba';
                             }
 
                             v += ' ';
 
                             a.href = `./?query=${escape(encodeURIComponent(v))}`;
-                            a.innerHTML = cell.getValue();
+                            a.innerHTML = value
+                                ? cell.getValue()
+                                : 'TBA';
                             a.addEventListener('click', (e) => {
                                 e.preventDefault();
 
@@ -1321,6 +1515,7 @@ fetch(source)
                         width: 100
                     },
                     {
+                        clipboard: false,
                         formatter: function (cell) {
                             const relations = document.createElement('span');
 
@@ -1358,8 +1553,12 @@ fetch(source)
                                     '</div>'
                                 );
 
-                                document.querySelector('.nothing .results').innerHTML = 'Searching...';
+                                document.querySelector('.nothing .results').innerHTML = 'Searching<span class="el">.</span><span class="lip">.</span><span class="sis">.</span>';
+                                document.querySelector('.nothing .current').style.display = '';
                                 document.querySelector('.nothing .enter').style.display = '';
+
+                                document.querySelector('.seasonal .previous').style.display = '';
+                                document.querySelector('.seasonal .next').style.display = '';
 
                                 function tempFunction() {
                                     temp.forEach((ttt) => {
@@ -1400,7 +1599,7 @@ fetch(source)
                                         document.querySelector('.progress').style.width = '100%';
 
                                         if (document.querySelector('.searching')) {
-                                            document.querySelector('.nothing .results').innerHTML = 'Filtering table...';
+                                            document.querySelector('.nothing .results').innerHTML = 'Filtering table<span class="el">.</span><span class="lip">.</span><span class="sis">.</span>';
                                         }
 
                                         setTimeout(() => {
@@ -1411,6 +1610,8 @@ fetch(source)
                                             );
 
                                             cell.getTable().redraw(true);
+
+                                            document.querySelector('.return').style.display = 'inline-flex';
                                         }, 100);
                                     }
                                 }
@@ -1688,7 +1889,7 @@ fetch(source)
                             span2.tabIndex = 0;
                             span2.title = '+1';
                             span2.style.display = 'inline-flex';
-                            span2.style.marginLeft = '2.125px';
+                            span2.style.marginLeft = '9.5px';
                             span2.innerHTML = '<svg viewBox="0 0 24 24" height="17" width="17"><path d="M11 17H13V13H17V11H13V7H11V11H7V13H11ZM5 21Q4.175 21 3.587 20.413Q3 19.825 3 19V5Q3 4.175 3.587 3.587Q4.175 3 5 3H19Q19.825 3 20.413 3.587Q21 4.175 21 5V19Q21 19.825 20.413 20.413Q19.825 21 19 21Z"></path></svg>';
 
                             span2.addEventListener('dblclick', () => {
@@ -1787,7 +1988,8 @@ fetch(source)
                             a.title = 'Mismatched';
                             a.style.display = 'inline-flex';
                             a.style.alignItems = 'center';
-                            a.style.marginLeft = '2.125px';
+                            a.style.marginLeft = '9.5px';
+                            // remove style
                             a.innerHTML = '<svg viewBox="0 0 24 24" height="17" width="17" style="fill: var(--mismatched) !important;"><path d="M1 21 12 2 23 21ZM11 15H13V10H11ZM12 18Q12.425 18 12.713 17.712Q13 17.425 13 17Q13 16.575 12.713 16.288Q12.425 16 12 16Q11.575 16 11.288 16.288Q11 16.575 11 17Q11 17.425 11.288 17.712Q11.575 18 12 18Z"></path></svg>';
 
                             a.addEventListener('click', (e) => {
@@ -2019,7 +2221,8 @@ fetch(source)
                 ],
                 data: database,
                 debugInitialization: false,
-                headerSortElement: `<svg viewBox="0 0 24 24" width="17" height="17">${svg.arrow}</svg>`,
+                headerSortClickElement: 'icon',
+                headerSortElement: '',
                 index: 'sources',
                 initialSort: [
                     {
@@ -2049,16 +2252,17 @@ fetch(source)
                     }
 
                     row.getCell('alternative').getElement().querySelector('.indicator').style.width = `${width}%`;
-                    row.getCell('progress').getElement().querySelector('span:not(.add)').title = `${Math.round(width)}%`;
+
+                    if (row.getCell('progress').getElement().querySelector('span:not(.add)')) {
+                        row.getCell('progress').getElement().querySelector('span:not(.add)').title = `${Math.round(width)}%`;
+                    }
                 },
                 sortOrderReverse: true
             });
 
-            t.on('cellDblClick', () => false);
-
             t.on('dataFiltered', (filters, rows) => {
+                f = filters;
                 r = rows;
-                sorted.ss = false;
                 selected.s = true;
 
                 selected.ss.splice(0);
@@ -2073,20 +2277,23 @@ fetch(source)
                     }
                 }
 
-                document.querySelector('.selected-count').innerHTML = `<span>${t.getSelectedRows().length} selected</span>`;
+                document.querySelector('.selected-count').innerHTML = `<span class="count-selected">${t.getSelectedRows().length} selected</span>`;
 
                 if (t.getSelectedRows().length > selected.ss.length) {
-                    document.querySelector('.selected-count').innerHTML += `<span>${selected.ss.length} active</span>`;
+                    document.querySelector('.selected-count').innerHTML += `<span>${selected.ss.length} from search results</span>`;
                 }
 
                 if (selected.s) {
+                    t.getColumn('picture').getElement().querySelector('.tabulator-col-title').title = 'Unselect all search results';
                     t.getColumn('picture').getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.check;
                     t.getColumn('picture').getElement().querySelector('.tabulator-col-title svg').style.fill = 'var(--selected-header)';
                 } else {
                     if (selected.ss.length) {
+                        t.getColumn('picture').getElement().querySelector('.tabulator-col-title').title = 'Unselect all search results';
                         t.getColumn('picture').getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.indeterminate;
                         t.getColumn('picture').getElement().querySelector('.tabulator-col-title svg').style.fill = 'var(--selected-header)';
                     } else {
+                        t.getColumn('picture').getElement().querySelector('.tabulator-col-title').title = 'Select all search results';
                         t.getColumn('picture').getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.blank;
                         t.getColumn('picture').getElement().querySelector('.tabulator-col-title svg').style.fill = '';
                     }
@@ -2131,26 +2338,42 @@ fetch(source)
                     document.querySelector('.searching').remove();
                 }
 
-                document.querySelector('.nothing .enter').innerHTML = 'Show more';
+                document.querySelector('.nothing .enter').innerHTML = 'Full search (slow)';
 
                 if (index.quick) {
                     if (rows.length) {
                         document.querySelector('.tabulator').style.display = '';
                         document.querySelector('.nothing .results').innerHTML =
                             rows.length === 1
-                                ? '1 result'
-                                : `${rows.length} results`;
+                                ? `1 result${quick()}`
+                                : `${rows.length} results${quick()}`;
 
                         if (filters.length && filters[0].value) {
+                            document.querySelector('.nothing .current').style.display = '';
                             document.querySelector('.nothing .enter').style.display = 'inline-flex';
                         } else {
+                            document.querySelector('.nothing .results').innerHTML = `${rows.length} results`;
+                            document.querySelector('.nothing .current').style.display = 'inline-flex';
                             document.querySelector('.nothing .enter').style.display = '';
                         }
                     } else {
                         document.querySelector('.tabulator').style.display = 'none';
-                        document.querySelector('.nothing .results').innerHTML = '0 results';
+
+                        if (index.qualifiers) {
+                            document.querySelector('.nothing .results').innerHTML =
+                                index.qualifiers === 1
+                                    ? 'Search qualifier detected'
+                                    : 'Search qualifiers detected';
+                        } else {
+                            document.querySelector('.nothing .results').innerHTML = `0 results${quick()}`;
+                        }
+
+                        document.querySelector('.nothing .current').style.display = '';
                         document.querySelector('.nothing .enter').style.display = 'inline-flex';
                     }
+
+                    document.querySelector('.seasonal .previous').style.display = '';
+                    document.querySelector('.seasonal .next').style.display = '';
                 } else {
                     if (rows.length) {
                         document.querySelector('.tabulator').style.display = '';
@@ -2162,58 +2385,72 @@ fetch(source)
                                     : `${rows.length} results`;
 
                         if (index.random) {
+                            document.querySelector('.nothing .current').style.display = '';
                             document.querySelector('.nothing .enter').innerHTML = 'Randomize';
                             document.querySelector('.nothing .enter').style.display = 'inline-flex';
                         } else {
-                            document.querySelector('.nothing .enter').style.display = '';
+                            if (filters.length && filters[0].value) {
+                                document.querySelector('.nothing .current').style.display = '';
+                                document.querySelector('.nothing .enter').style.display = '';
+                            } else {
+                                document.querySelector('.nothing .current').style.display = 'inline-flex';
+                                document.querySelector('.nothing .enter').style.display = '';
+                            }
                         }
                     } else {
                         document.querySelector('.tabulator').style.display = 'none';
-                        document.querySelector('.nothing .results').innerHTML =
-                            index.error
-                                ? 'Invalid regular expression'
-                                : '0 results';
+
+                        if (index.message) {
+                            document.querySelector('.nothing .results').innerHTML = index.message;
+                        } else {
+                            document.querySelector('.nothing .results').innerHTML = '0 results';
+                        }
+
+                        document.querySelector('.nothing .current').style.display = '';
                         document.querySelector('.nothing .enter').style.display = '';
+
+                        document.querySelector('.seasonal .previous').style.display = '';
+                        document.querySelector('.seasonal .next').style.display = '';
+                    }
+
+                    if (index.count) {
+                        if (document.querySelector('.seasonal .previous').dataset.value) {
+                            document.querySelector('.seasonal .previous').style.display = 'inline-flex';
+                        }
+
+                        if (document.querySelector('.seasonal .next').dataset.value) {
+                            document.querySelector('.seasonal .next').style.display = 'inline-flex';
+                        }
                     }
                 }
 
                 if (index.related) {
+                    document.querySelector('.nothing .current').style.display = '';
                     document.querySelector('.nothing .enter').style.display = '';
+
+                    document.querySelector('.seasonal .previous').style.display = '';
+                    document.querySelector('.seasonal .next').style.display = '';
                 }
             });
 
             t.on('dataProcessed', () => {
                 document.querySelector('.tabulator').style.display = 'none';
                 document.querySelector('.nothing').style.display = '';
-
-                if (new URLSearchParams(location.search).get('query')) {
-                    const value = decodeURIComponent(new URLSearchParams(location.search).get('query'));
-                    document.querySelector('.search').value = value;
-                } else {
-                    document.querySelector('.search').value = '';
-                }
-
-                document.querySelector('.loading').remove();
+                document.querySelector('.loading').innerHTML = `Database as of ${updated}`;
                 document.querySelector('.top-container').style.display = 'inline-flex';
 
-                searchFunction(t, null, true);
-            });
+                if (location.hash) {
+                    document.querySelector('.search').value = decodeURIComponent(location.hash.slice(1));
+                    document.querySelector('.clear').style.display = 'inline-flex';
+                    document.querySelector('.blur').style.display = '';
 
-            t.on('dataSorted', (sorters) => {
-                if (sorters.length) {
-                    if (sorters[0].field === 'alternative') {
-                        document.body.classList.add('alt-sorted');
-                    } else {
-                        document.body.classList.remove('alt-sorted');
-                    }
+                    index.dimension = null;
+                    index.qualifiers = qualifiers(document.querySelector('.search').value);
+                    index.quick = true;
 
-                    return;
-                }
+                    t.setFilter('title', 'like', document.querySelector('.search').value);
+                    t.redraw(true);
 
-                sorted.s = 'relevancy';
-                sorted.ss = false;
-
-                setTimeout(() => {
                     t.setSort([
                         {
                             column: 'relevancy',
@@ -2224,7 +2461,48 @@ fetch(source)
                             dir: 'asc'
                         }
                     ]);
-                }, 0);
+
+                    document.querySelector('.blur').style.display = 'none';
+
+                    if (document.querySelector('.search').value) {
+                        document.title = `${document.querySelector('.search').value} - ${title} (quick search)`;
+                    } else {
+                        document.title = title;
+                    }
+
+                    return;
+                }
+
+                if (new URLSearchParams(location.search).get('query')) {
+                    const value = decodeURIComponent(new URLSearchParams(location.search).get('query'));
+                    document.querySelector('.search').value = value;
+                } else {
+                    document.querySelector('.search').value = '';
+                }
+
+                searchFunction(t, null, true);
+            });
+
+            t.on('dataSorted', (sorters) => {
+                if (sorters.length) {
+                    if (sorters[0].field === 'alternative') {
+                        t.getColumn('alternative').getElement().dataset.sorted = '';
+                    } else {
+                        t.getColumn('alternative').getElement().dataset.sorted = 'sorted';
+                    }
+
+                    sorted2.dir = sorters[0].dir;
+                    sorted2.field = sorters[0].field;
+                } else {
+                    sorted2.dir = 'relevancy';
+                    sorted2.field = 'desc';
+                }
+            });
+
+            t.on('tableBuilding', () => {
+                document.querySelector('.database-container').addEventListener('dblclick', (e) => {
+                    e.stopImmediatePropagation();
+                });
             });
 
             t.on('tableBuilt', () => {
@@ -2235,7 +2513,7 @@ fetch(source)
                     header = document.querySelector('.tabulator-header');
 
                 if (!error) {
-                    columns.push(...['progress', 'status']);
+                    columns.push(...['rewatched', 'progress', 'status']);
                 }
 
                 for (const value of columns) {
@@ -2244,6 +2522,18 @@ fetch(source)
 
                 document.querySelector('.tabulator-header').remove();
                 document.querySelector('.tabulator-tableholder').prepend(header);
+
+                document.querySelectorAll('.tabulator-col-sorter-element').forEach((element) => {
+                    element.parentElement.insertAdjacentHTML('beforeend',
+                        '<div class="tabulator-col-sorter">' +
+                            `<svg viewBox="0 0 24 24" width="17" height="17">${svg.arrow}</path></svg>` +
+                        '</div>'
+                    );
+
+                    element.remove();
+                });
+
+                built = true;
             });
         });
     })
@@ -2301,7 +2591,6 @@ fetch(source)
                 };
             };
         }).then(() => {
-            document.querySelector('.thumbnails').remove();
             document.querySelector('.loading').innerHTML = 'Database not found';
 
             error2 = true;
@@ -2310,7 +2599,7 @@ fetch(source)
                 return;
             }
 
-            document.querySelector('.loading').innerHTML += '<span class="export2" tabindex="0">Export personal list</span>';
+            document.querySelector('.loading').innerHTML += ' (<span class="export2" tabindex="0">Export your progress</span>)';
 
             document.querySelector('.export2').addEventListener('click', () => {
                 let xml =
@@ -2395,13 +2684,15 @@ fetch(source)
     });
 
 export {
+    built,
     db2,
     disableSelection,
     error,
     error2,
     selected,
-    sorted,
     svg,
     t,
-    title
+    title,
+    updated,
+    years2
 };

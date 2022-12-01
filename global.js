@@ -1,5 +1,9 @@
 const source = 'https://raw.githubusercontent.com/manami-project/anime-offline-database/master/anime-offline-database-minified.json';
 
+function removeReserved(text) {
+    return text.replace(/</gu, '&lt;').replace(/>/gu, '&gt;');
+}
+
 document.body.addEventListener('keydown', (e) => {
     if (e.key !== 'Enter' || e.repeat) {
         return;
@@ -30,5 +34,6 @@ if ('serviceWorker' in navigator) {
 }
 
 export {
+    removeReserved,
     source
 };

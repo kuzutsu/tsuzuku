@@ -2,6 +2,8 @@ import {
     source
 } from '../global.js';
 
+let updated = '???';
+
 fetch(source)
     .then((response) => response.json())
     .then((data) => {
@@ -10,7 +12,9 @@ fetch(source)
             m = new Map(),
             m2 = [];
 
-        document.querySelector('main').innerHTML = 'Building list...';
+        updated = data.lastUpdate;
+
+        document.querySelector('.loading').innerHTML = 'Building list<span class="el">.</span><span class="lip">.</span><span class="sis">.</span>';
 
         setTimeout(() => {
             for (const value of d) {
@@ -44,22 +48,29 @@ fetch(source)
             m2.push(...m.keys());
             m2.sort();
 
-            let start = '0-9';
-
-            document.querySelector('main').innerHTML = `<div class="bold">${start}</div>`;
+            let start = '',
+                tags = '';
 
             for (const value of m2) {
                 if (isNaN(Number(value[0]))) {
                     if (start !== value[0]) {
                         start = value[0];
-                        document.querySelector('main').innerHTML += `<div class="bold" style="margin-top: 17px;">${start.toUpperCase()}</div>`;
+                        tags += `<div class="bold">${start.toUpperCase()}</div>`;
+                    }
+                } else {
+                    if (!start) {
+                        start = '0-9';
+                        tags += '<div class="bold">0-9</div>';
                     }
                 }
 
-                document.querySelector('main').innerHTML += `<div><a href="../?query=${escape(encodeURIComponent(`tag:${value} `))}">${value}</a> <span style="color: #a7abb7;">(${m.get(value).all})</span></div>`;
+                tags += `<div><a href="../?query=${escape(encodeURIComponent(`tag:${value} `))}">${value}</a> <span style="color: #a7abb7;">(${m.get(value).all})</span></div>`;
             }
+
+            document.querySelector('.loading').innerHTML = `Database as of ${updated}`;
+            document.querySelector('.container').innerHTML = tags;
         }, 100);
     })
     .catch(() => {
-        // document.querySelector('.loading').innerHTML = 'Database not found';
+        document.querySelector('.loading').innerHTML = 'Database not found';
     });

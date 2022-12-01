@@ -1,4 +1,4 @@
-const sw = '66';
+const sw = '67';
 
 addEventListener('install', (event) => {
     event.waitUntil(
@@ -40,7 +40,7 @@ addEventListener('install', (event) => {
 
                 // third-party
                 'https://cdn.jsdelivr.net/npm/fuse.js@6.6.2/dist/fuse.min.js',
-                'https://cdn.jsdelivr.net/npm/tabulator-tables@5.3.0/dist/js/tabulator_esm.min.js',
+                'https://cdn.jsdelivr.net/npm/tabulator-tables@5.4.2/dist/js/tabulator_esm.min.js',
                 'https://fonts.gstatic.com/s/roboto/v29/KFOmCnqEu92Fr1Mu4mxK.woff2',
                 'https://fonts.gstatic.com/s/roboto/v29/KFOlCnqEu92Fr1MmEU9fBBc4.woff2',
                 'https://raw.githubusercontent.com/manami-project/anime-offline-database/master/anime-offline-database-minified.json'

@@ -3,7 +3,7 @@
     <head>
         <title>Quiz</title>
         <meta charset="utf-8">
-        <meta name="description" content="Unofficial web app for the anime-offline-database">
+        <meta name="description" content="a certain anime index + tracker + games">
         <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
         <meta name="theme-color" content="#000">
         <meta name="color-scheme" content="dark">
@@ -22,10 +22,7 @@
         <link href="./index.css" rel="stylesheet">
     </head>
     <body>
-        <noscript>
-            <div class="kao">(＞﹏＜)</div>
-            <div style="margin-top: 11.5px;">Tsuzuku can't run without JavaScript</div>
-        </noscript>
+        <noscript>Tsuzuku can't run without JavaScript</noscript>
         <header>
             <a href="../" title="Games" style="display: inline-flex; align-items: center; margin-right: 19px;">
                 <svg viewBox="0 0 24 24" width="17" height="17">
@@ -42,12 +39,14 @@
             </a>
         </header>
         <main>
-            <span class="loading">Fetching database...</span>
             <div class="menu">
                 <span style="margin-right: 9.5px;">High</span>
-                <span class="high bold" tabindex="0" style="margin-right: 19px;"></span>
+                <span class="high bold" style="margin-right: 19px;"></span>
                 <span style="margin-right: 9.5px;">Score</span>
-                <span class="score bold" tabindex="0"></span>
+                <span class="score bold"></span>
+                <span class="plus bold" style="margin-left: 9.5px;"></span>
+                <span class="minus bold" style="margin-left: 9.5px;"></span>
+                <span class="min bold" style="margin-left: 9.5px;"></span>
                 <span style="width: 100%; min-width: 19px;"></span>
                 <span class="settings" title="Settings" tabindex="0" style="display: inline-flex; align-items: center;">
                     <svg viewBox="0 0 24 24" width="17" height="17">
@@ -62,38 +61,39 @@
                 <div style="display: flex;">
                     <div style="display: flex; flex-direction: column;">
                         <div class="label">
-                            <label for="selection">Selection</label>
+                            <label for="type">Category</label>
                         </div>
                         <div class="label">
-                            <label for="type">Type</label>
-                        </div>
-                        <div class="label"> 
                             <label for="operators">Enable operators (<span class="mono">&lt;</span>, <span class="mono">&gt;</span>, <span class="mono">&lt;=</span>, <span class="mono">&gt;=</span>)</label>
                         </div>
                         <div class="label">
                             <label for="choices">Number of choices</label>
                         </div>
-                        <div class="label"> 
+                        <div class="label">
+                            <label for="selection">Number of correct answers</label>
+                        </div>
+                        <div class="label">
                             <label for="auto-submit">Automatic submit</label>
                         </div>
-                        <div class="label"> 
+                        <div class="label">
                             <label for="skip">Enable skipping</label>
-                        </div>
-                        <div class="label"> 
-                            <label for="negative">Enable negative score</label>
                         </div>
                         <div class="label">
                             <label for="reset-incorrect">Reset score when incorrect</label>
                         </div>
+                        <div class="label">
+                            <label for="negative">Enable negative score</label>
+                        </div>
+                        <div class="label"></div>
+                        <div class="label">
+                            <div class="reset-high bold">Reset high</div>
+                        </div>
+                        <div class="label">
+                            <div class="reset-score bold">Reset score</div>
+                        </div>
                     </div>
                     <div style="width: 100%; min-width: 19px;"></div>
                     <div style="display: flex; flex-direction: column;">
-                        <div class="input">
-                            <select id="selection">
-                                <option>single</option>
-                                <option>multiple</option>
-                            </select>
-                        </div>
                         <div class="input">
                             <select id="type">
                                 <option>tag</option>
@@ -121,33 +121,41 @@
                             </select>
                         </div>
                         <div class="input">
+                            <select id="selection">
+                                <option>1</option>
+                                <option>0 or more</option>
+                            </select>
+                        </div>
+                        <div class="input">
                             <input id="auto-submit" type="checkbox"></input>
                         </div>
                         <div class="input">
                             <input id="skip" type="checkbox"></input>
                         </div>
                         <div class="input">
-                            <input id="negative" type="checkbox"></input>
-                        </div>
-                        <div class="input">
                             <input id="reset-incorrect" type="checkbox"></input>
                         </div>
+                        <div class="input">
+                            <input id="negative" type="checkbox"></input>
+                        </div>
+                        <div class="input"></div>
+                        <div class="input"></div>
+                        <div class="input"></div>
                     </div>
                 </div>
             </div>
             <div class="query">
-                <span class="reload" title="Reload" tabindex="0" style="margin-right: 19px;">
-                    <svg viewBox="0 0 24 24" width="17" height="17">
-                        <path d="M12 20Q8.65 20 6.325 17.675Q4 15.35 4 12Q4 8.65 6.325 6.325Q8.65 4 12 4Q13.725 4 15.3 4.713Q16.875 5.425 18 6.75V4H20V11H13V9H17.2Q16.4 7.6 15.013 6.8Q13.625 6 12 6Q9.5 6 7.75 7.75Q6 9.5 6 12Q6 14.5 7.75 16.25Q9.5 18 12 18Q13.925 18 15.475 16.9Q17.025 15.8 17.65 14H19.75Q19.05 16.65 16.9 18.325Q14.75 20 12 20Z"></path>
-                    </svg>
-                </span>
-                <div class="query-container" style="margin-right: 19px;">
+                <div class="query-container">
                     <a href rel="noreferrer"></a>
                 </div>
-                <span class="submit bold" tabindex="0"></span>
+                <span class="reload bold" tabindex="0" style="margin-left: 19px;">Skip</span>
+                <span class="submit bold" tabindex="0" style="margin-left: 19px;"></span>
             </div>
             <div class="choice"></div>
         </main>
+        <footer>
+            <div class="loading">Fetching database<span class="el">.</span><span class="lip">.</span><span class="sis">.</span></div>
+        </footer>
         <script type="module" src="../../global.js"></script>
         <script>
             const
@@ -160,7 +168,7 @@
                     operators: false,
                     resetIncorrect: false,
                     score: 0,
-                    selection: 'single',
+                    selection: '1',
                     skip: true,
                     type: 'tag'
                 },
@@ -198,26 +206,38 @@
 
             if (['episodes', 'year'].indexOf(value.type) > -1) {
                 document.querySelector('[for="operators"]').style.color = '';
+                document.querySelector('[for="operators"]').parentElement.style.display = '';
                 document.querySelector('#operators').removeAttribute('disabled');
+                document.querySelector('#operators').parentElement.style.display = '';
             } else {
                 document.querySelector('[for="operators"]').style.color = 'var(--disabled)';
+                document.querySelector('[for="operators"]').parentElement.style.display = 'none';
                 document.querySelector('#operators').setAttribute('disabled', '');
+                document.querySelector('#operators').parentElement.style.display = 'none';
             }
 
-            if (value.selection === 'multiple') {
+            if (value.selection === '0 or more') {
                 document.querySelector('[for="auto-submit"]').style.color = 'var(--disabled)';
+                document.querySelector('[for="auto-submit"]').parentElement.style.display = 'none';
                 document.querySelector('#auto-submit').setAttribute('disabled', '');
+                document.querySelector('#auto-submit').parentElement.style.display = 'none';
             } else {
                 document.querySelector('[for="auto-submit"]').style.color = '';
+                document.querySelector('[for="auto-submit"]').parentElement.style.display = '';
                 document.querySelector('#auto-submit').removeAttribute('disabled');
+                document.querySelector('#auto-submit').parentElement.style.display = '';
             }
 
             if (value.resetIncorrect) {
                 document.querySelector('[for="negative"]').style.color = 'var(--disabled)';
+                document.querySelector('[for="negative"]').parentElement.style.display = 'none';
                 document.querySelector('#negative').setAttribute('disabled', '');
+                document.querySelector('#negative').parentElement.style.display = 'none';
             } else {
                 document.querySelector('[for="negative"]').style.color = '';
+                document.querySelector('[for="negative"]').parentElement.style.display = '';
                 document.querySelector('#negative').removeAttribute('disabled');
+                document.querySelector('#negative').parentElement.style.display = '';
             }
         </script>
         <script defer type="module" src="./index.js"></script>
