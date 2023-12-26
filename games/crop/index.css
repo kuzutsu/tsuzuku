@@ -2,12 +2,6 @@
     background: var(--selected);
 }
 
-/* .selected:focus-within, */
-.choice > div:hover {
-    background: var(--background-hover);
-    opacity: 1;
-}
-
 .selected:hover {
     background: var(--selected-hover) !important;
 }
@@ -15,30 +9,6 @@
 .mono {
     color: inherit;
     font-family: monospace;
-}
-
-.choice > div[style] span,
-.selected .title {
-    color: var(--selected-color);
-}
-
-.choice > div[style] svg,
-.selected svg {
-    fill: var(--selected-color);
-}
-
-.choice > div {
-    align-items: center;
-    /* background: var(--background-hover); */
-    display: flex;
-    min-width: 300px;
-}
-
-/* .choice > div:focus-within, */
-/* .choice > div:hover, */
-.picture {
-    background: var(--background-hover);
-    opacity: 1;
 }
 
 option,
@@ -73,16 +43,6 @@ select {
     user-select: none;
 }
 
-.picture {
-    height: 40px;
-    min-height: 40px;
-    min-width: 40px;
-    object-fit: cover;
-    pointer-events: none;
-    user-select: none;
-    width: 40px;
-}
-
 .dim {
     opacity: 0.2;
 }
@@ -100,15 +60,9 @@ select {
     width: 100%;
 } */
 
-.choice {
-    overflow: auto;
-    padding: 11.5px 19px;
-}
-
 .source {
     align-items: center;
     display: inline-flex;
-    margin: 0 17px;
     min-width: 17px;
     width: 17px;
 }
@@ -118,21 +72,12 @@ select {
     display: inline-flex;
 }
 
-div:not(.dim) > .source a {
-    opacity: 0.2;
-}
-
-/* .choice > div:focus-within .source a, */
-.choice > div:hover .source a {
-    opacity: 1;
-}
-
 select {
     border: 0;
     border-bottom: 1px solid var(--color);
 }
 
-.input,
+/* .input, */
 .label {
     align-items: center;
     display: inline-flex;
@@ -143,12 +88,13 @@ select {
     width: 100%;
 }
 
-.input {
-    justify-content: flex-end;
+::placeholder {
+    color: var(--disabled);
+    opacity: 1;
 }
 
-.choice > div:not(:first-child) {
-    margin-top: 11.5px;
+.input {
+    justify-content: flex-end;
 }
 
 .reset-both,
@@ -215,6 +161,15 @@ td:nth-of-type(2) {
 
 .none {
     background: var(--selected);
+}
+
+.answers > div:not(:first-child) {
+    margin-top: 11.5px;
+}
+
+.answers > div:hover {
+    background: var(--background-hover);
+    opacity: 1;
 }
 
 .correct:hover {

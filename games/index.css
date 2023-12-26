@@ -8,19 +8,21 @@ main > div {
 
 main div {
     display: inline-flex;
-    width: 100%;
+    /* width: 100%; */
     min-width: 100px;
     user-select: none;
     flex-direction: column;
-    justify-content: center;
-    overflow-wrap: anywhere;
 }
 
 main div:hover {
     background: var(--background-hover);
 }
 
-main .info {
-    color: #a7abb7;
+.info,
+.scores span {
+    color: var(--disabled);
+}
+
+.info {
     margin-top: 4px;
 }

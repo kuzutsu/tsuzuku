@@ -22,38 +22,47 @@
     box-sizing: border-box;
     color: var(--color);
     font-family: Roboto, sans-serif;
+    outline: none;
 }
 
 :root {
     --background: #000;
     --background-hover: #141613;
-    --color: #e3e3e3;
-    --disabled: #9aa0a6;
-    --green: #0f9d58;
+    --color: #e0e0e0;
+    --deleted: #e0e0e0;
+    --disabled: #9e9e9e;
+    --green: #43a047;
+    --green-hover: #4caf50;
     --header-color: #fff;
-    --mismatched: #f4b400;
-    --new: #0f9d58;
-    --progress: #9aa0a6;
+    /* --mismatched: #7a5a00; */
+    --mismatched: #ffb300;
+    /* --new: #478e6c; */
+    --new: #43a047;
+    /* --ongoing: #6182ba; */
+    --ongoing: #a6c6f7;
+    --progress: #9e9e9e;
     --progress-found: #a6c6f7;
-    --red: #db4437;
-    --reset: #f6aea9;
-    --r18: #db4437;
+    --red: #e53935;
+    --red-hover: #f44336;
+    --reset: #ef9a9a;
+    /* --r18: #ad625b; */
+    /* --r18: #db4437; */
+    --r18: #ef9a9a;
     --selected: #2d3e54;
     --selected-color: #fff;
     --selected-header: #a6c6f7;
     --selected-header-color: #000;
     --selected-header-hover: #7ca2ce;
     --selected-hover: #415062;
-    --shadow: rgba(0, 0, 0, .3) 0 1px 2px 0, rgba(0, 0, 0, .15) 0 2px 6px 2px;
-    --side: #1f1f1f;
+    /* --shadow: rgba(0, 0, 0, .3) 0 1px 2px 0, rgba(0, 0, 0, .15) 0 2px 6px 2px; */
+    --side: #141613;
     --side-hover: #353535;
-    --status-completed: #e3e3e3;
-    --status-dropped: #db4437;
-    --status-paused: #f4b400;
-    --status-planning: #9aa0a6;
-    --status-rewatching: #4285f4;
-    --status-skipping: #2d2d2d;
-    --status-watching: #0f9d58;
+    --status-completed: #e0e0e0;
+    --status-dropped: #e53935;
+    --status-paused: #ffb300;
+    --status-planning: #9e9e9e;
+    --status-skipping: #263238;
+    --status-watching: #43a047;
 }
 
 html {
@@ -64,7 +73,7 @@ html {
 body,
 html {
     background: var(--side);
-    overflow: hidden;
+    /* overflow: hidden; */
 }
 
 body {
@@ -111,12 +120,20 @@ main {
     position: relative;
 }
 
+::-webkit-search-cancel-button {
+    display: none;
+}
+
 /*
 header,
 main {
     box-shadow: var(--shadow);
 }
 */
+
+select:disabled {
+    opacity: 1;
+}
 
 .separator {
     min-width: 19px;
@@ -143,8 +160,10 @@ a:hover {
 
 svg {
     fill: var(--color);
+    vertical-align: middle;
 }
 
+.reload svg,
 svg.disabled {
     fill: var(--disabled);
 }

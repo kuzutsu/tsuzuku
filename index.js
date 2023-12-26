@@ -1,3 +1,11 @@
+
+import {
+    addCommas,
+    searchReplace,
+    svg,
+    tagsDelisted
+} from './global.js';
+
 import {
     built,
     db2,
@@ -5,7 +13,6 @@ import {
     error,
     error2,
     selected,
-    svg,
     t,
     title,
     updated,
@@ -14,20 +21,32 @@ import {
 
 const
     index = {
-        count: false,
         dimension: null,
         lastRow: null,
         message: null,
+        next: false,
+        previous: false,
         qualifiers: 0,
         quick: false,
         random: 0,
-        related: false
+        related: 0
     },
     seasons = ['winter', 'spring', 'summer', 'fall', 'tba'];
 
 let help = false,
+    target = false,
+    target2 = false,
     timeout = null,
     worker = null;
+
+document.querySelector('label[for="toggle-delisted"]').title =
+    'Entries that are delisted are:\n' +
+    '  (1) those without a visual; or\n' +
+    '  (2) those with at least one of the following tags:';
+
+for (const td of tagsDelisted) {
+    document.querySelector('label[for="toggle-delisted"]').title += `\n    - ${td}`;
+}
 
 function searchFunction(tt, qq, p) {
     const
@@ -40,10 +59,13 @@ function searchFunction(tt, qq, p) {
 
     if (document.querySelector('.search').value) {
         document.querySelector('.clear').style.display = 'inline-flex';
+    } else {
+        document.querySelector('.clear').style.display = 'none';
     }
 
-    index.related = false;
-    index.count = false;
+    index.related = 0;
+    index.previous = false;
+    index.next = false;
 
     document.querySelector('.tabulator').style.display = 'none';
 
@@ -51,12 +73,7 @@ function searchFunction(tt, qq, p) {
     if (['Checking file<span class="el">.</span><span class="lip">.</span><span class="sis">.</span>', 'Importing<span class="el">.</span><span class="lip">.</span><span class="sis">.</span>'].indexOf(document.querySelector('.loading').innerHTML) > -1) {
         document.querySelector('main').style.display = '';
         document.querySelector('.loading').innerHTML = `Database as of ${updated}`;
-    }
-
-    if (document.querySelector('.related-container').style.display === 'inline-flex') {
-        document.querySelector('.related-container').style.display = 'none';
-        document.querySelector('.search-container').style.display = 'inline-flex';
-        document.querySelector('.related-title').innerHTML = '';
+        document.querySelector('.reload').style.display = 'inline-flex';
     }
 
     if (document.querySelector('.qualifiers').style.display) {
@@ -72,16 +89,13 @@ function searchFunction(tt, qq, p) {
     if (document.querySelector('.nothing')) {
         document.querySelector('.nothing .results').innerHTML = 'Searching<span class="el">.</span><span class="lip">.</span><span class="sis">.</span>';
         document.querySelector('.nothing .current').style.display = '';
+        document.querySelector('.nothing .related').style.display = '';
         document.querySelector('.nothing .enter').style.display = '';
     }
 
     if (document.querySelector('.seasonal')) {
         document.querySelector('.seasonal .previous').style.display = '';
         document.querySelector('.seasonal .next').style.display = '';
-    }
-
-    if (document.querySelector('.return')) {
-        document.querySelector('.return').style.display = '';
     }
 
     document.querySelector('main').insertAdjacentHTML('beforeend',
@@ -120,7 +134,8 @@ function searchFunction(tt, qq, p) {
                     index.dimension = null;
 
                     table.clearFilter();
-                    table.redraw(true);
+                    table.redraw();
+                    table.rowManager.resetScroll();
 
                     table.setSort([
                         {
@@ -165,9 +180,12 @@ function searchFunction(tt, qq, p) {
                 timeout = setTimeout(() => {
                     index.dimension = event.data.update;
                     index.query = event.data.query;
+                    index.related = event.data.related;
                     index.message = event.data.message2;
 
-                    if (event.data.seasonal && event.data.seasonal.count === 3) {
+                    // 10 = 1 + 9
+                    // 15 = 1 + 5 + 9
+                    if (event.data.seasonal && [10, 15].indexOf(event.data.seasonal.count) > -1) {
                         const
                             nextSeason = seasons.indexOf(event.data.seasonal.season) + 1,
                             nextYear = years2.indexOf(event.data.seasonal.year) + 1,
@@ -175,39 +193,92 @@ function searchFunction(tt, qq, p) {
                             prevYear = years2.indexOf(event.data.seasonal.year) - 1;
 
                         let n2 = '',
-                            p2 = '';
+                            n3 = '',
+                            p2 = '',
+                            p3 = '';
 
-                        index.count = true;
-
-                        if (seasons[prevSeason] && event.data.seasonal.year !== 'tba') {
-                            p2 = `season:${seasons[prevSeason]} year:${event.data.seasonal.year} `;
-                        } else {
+                        if (event.data.seasonal.count === 10) {
                             if (years2[prevYear]) {
-                                p2 = `season:${seasons[seasons.length - 1]} year:${years2[prevYear]} `;
+                                p2 = `year:${years2[prevYear]} `;
+                                p3 = years2[prevYear];
                             }
-                        }
 
-                        if (seasons[nextSeason]) {
-                            n2 = `season:${seasons[nextSeason]} year:${event.data.seasonal.year} `;
-                        } else {
                             if (years2[nextYear]) {
+                                n2 = `year:${years2[nextYear]} `;
+
                                 if (years2[nextYear] === 'tba') {
-                                    n2 = 'season:tba year:tba ';
+                                    n3 = 'TBA';
                                 } else {
-                                    n2 = `season:${seasons[0]} year:${years2[nextYear]} `;
+                                    n3 = years2[nextYear];
+                                }
+                            }
+                        } else {
+                            if (seasons[prevSeason] && event.data.seasonal.year !== 'tba') {
+                                p2 = `season:${seasons[prevSeason]} year:${event.data.seasonal.year} `;
+                                p3 = `${seasons[prevSeason][0].toUpperCase() + seasons[prevSeason].slice(1)} ${event.data.seasonal.year}`;
+                            } else {
+                                if (years2[prevYear]) {
+                                    p2 = `season:${seasons[seasons.length - 1]} year:${years2[prevYear]} `;
+
+                                    if (seasons[seasons.length - 1] === 'tba') {
+                                        p3 = `TBA ${years2[prevYear]}`;
+                                    } else {
+                                        p3 = `${seasons[seasons.length - 1][0].toUpperCase() + seasons[seasons.length - 1].slice(1)} ${years2[prevYear]}`;
+                                    }
+                                }
+                            }
+
+                            if (seasons[nextSeason]) {
+                                n2 = `season:${seasons[nextSeason]} year:${event.data.seasonal.year} `;
+
+                                if (seasons[nextSeason] === 'tba') {
+                                    n3 = `TBA ${event.data.seasonal.year}`;
+                                } else {
+                                    n3 = `${seasons[nextSeason][0].toUpperCase() + seasons[nextSeason].slice(1)} ${event.data.seasonal.year}`;
+                                }
+                            } else {
+                                if (years2[nextYear]) {
+                                    if (years2[nextYear] === 'tba') {
+                                        n2 = 'season:tba year:tba ';
+                                        n3 = 'TBA';
+                                    } else {
+                                        n2 = `season:${seasons[0]} year:${years2[nextYear]} `;
+                                        n3 = `${seasons[0][0].toUpperCase() + seasons[0].slice(1)} ${years2[nextYear]}`;
+                                    }
                                 }
                             }
                         }
 
-                        document.querySelector('.seasonal .previous').dataset.value = p2;
-                        document.querySelector('.seasonal .next').dataset.value = n2;
+                        if (p2 && years2.indexOf(event.data.seasonal.year) > -1) {
+                            index.previous = true;
+
+                            document.querySelector('.seasonal .previous').href = `./?query=${escape(encodeURIComponent(p2))}`;
+                            document.querySelector('.seasonal .previous').innerHTML = `← ${p3}`;
+                        } else {
+                            document.querySelector('.seasonal .previous').href = './';
+                            document.querySelector('.seasonal .previous').innerHTML = '';
+                        }
+
+                        if (n2 && years2.indexOf(event.data.seasonal.year) > -1) {
+                            index.next = true;
+
+                            document.querySelector('.seasonal .next').href = `./?query=${escape(encodeURIComponent(n2))}`;
+                            document.querySelector('.seasonal .next').innerHTML = `${n3} →`;
+                        } else {
+                            document.querySelector('.seasonal .next').href = './';
+                            document.querySelector('.seasonal .next').innerHTML = '';
+                        }
                     } else {
-                        document.querySelector('.seasonal .previous').dataset.value = '';
-                        document.querySelector('.seasonal .next').dataset.value = '';
+                        document.querySelector('.seasonal .previous').href = './';
+                        document.querySelector('.seasonal .previous').innerHTML = '';
+
+                        document.querySelector('.seasonal .next').href = './';
+                        document.querySelector('.seasonal .next').innerHTML = '';
                     }
 
                     table.setFilter('sources', 'in', event.data.filter);
-                    table.redraw(true);
+                    table.redraw();
+                    table.rowManager.resetScroll();
 
                     table.setSort([
                         {
@@ -247,78 +318,54 @@ function searchFunction(tt, qq, p) {
 }
 
 function qualifiers(v) {
-    let q = 0;
-
-    if ((/\bepisodes:(?:&?(?:<=|>=|<|>)?(?:0|[1-9][0-9]*)\b)+/giu).test(v)) {
-        q += 1;
+    for (const value of [
+        'alt:false',
+        'case:true',
+        'eps:(?:tba|(?:<=|>=|<|>)?(?:0|[1-9][0-9]*)(?:&(?:<=|>=|<|>)?(?:0|[1-9][0-9]*))*)',
+        'id:(?:[1-9][0-9]*)(?:\\|[1-9][0-9]*)*',
+        'is:deleted',
+        'is:mismatched',
+        'is:new',
+        'is:now',
+        'is:ongoing',
+        'is:r18',
+        'is:selected',
+        'progress:(?:<=|>=|<|>)?(?:0|[1-9][0-9]*)%?(?:&(?:<=|>=|<|>)?(?:0|[1-9][0-9]*)%?)*',
+        'random:(?:true|[1-9][0-9]*)',
+        'regex:true',
+        'related2:[1-9][0-9]*',
+        'related:[1-9][0-9]*',
+        'season:(?:winter|spring|summer|fall|now|tba)(?:\\|(?:winter|spring|summer|fall|now|tba))*',
+        'similar:[1-9][0-9]*',
+        'status:(?:all|none|watching|completed|paused|dropped|planning|skipping)(?:\\|(?:all|none|watching|completed|paused|dropped|planning|skipping))*',
+        'tag:\\S+(?:\\|\\S+)*',
+        'type:(?:tv|movie|ova|ona|special|tba)(?:\\|(?:tv|movie|ova|ona|special|tba))*',
+        'watched:(?:<=|>=|<|>)?(?:0|[1-9][0-9]*)(?:&(?:<=|>=|<|>)?(?:0|[1-9][0-9]*))*',
+        'year:(?:now|tba|(?:<=|>=|<|>)?[1-9][0-9]{3}(?:&(?:<=|>=|<|>)?[1-9][0-9]{3})*)'
+    ]) {
+        if (RegExp(`(?<=^|\\s)${value}(?=\\s|$)`, 'giv').test(v)) {
+            return true;
+        }
     }
 
-    if ((/\bprogress:(?:&?(?:<=|>=|<|>)?(?:0|[1-9][0-9]*)(?:%\B|\b))+/giu).test(v)) {
-        q += 1;
-    }
-
-    if ((/\byear:(?:tba\b|(?:&?(?:<=|>=|<|>)?[1-9][0-9]{3}\b)+)/giu).test(v)) {
-        q += 1;
-    }
-
-    if ((/\btype:(?:\|?(?:tv|movie|ova|ona|special|tba)\b)+/giu).test(v)) {
-        q += 1;
-    }
-
-    if ((/\bstatus:(?:\|?(?:all|none|watching|completed|paused|dropped|planning|rewatching|skipping)\b)+/giu).test(v)) {
-        q += 1;
-    }
-
-    if ((/\bseason:(?:\|?(?:winter|spring|summer|fall|tba)\b)+/giu).test(v)) {
-        q += 1;
-    }
-
-    if ((/\btag:\S+\b/giu).test(v)) {
-        q += 1;
-    }
-
-    if ((/\brewatched:(?:&?(?:<=|>=|<|>)?(?:0|[1-9][0-9]*)\b)+/giu).test(v)) {
-        q += 1;
-    }
-
-    if ((/\bis:selected\b/giu).test(v)) {
-        q += 1;
-    }
-
-    if ((/\bis:ongoing\b/giu).test(v)) {
-        q += 1;
-    }
-
-    if ((/\bis:new\b/giu).test(v)) {
-        q += 1;
-    }
-
-    if ((/\bis:dead\b/giu).test(v)) {
-        q += 1;
-    }
-
-    if ((/\bis:mismatched\b/giu).test(v)) {
-        q += 1;
-    }
-
-    if ((/\bregex:true\b/giu).test(v)) {
-        q += 1;
-    }
-
-    if ((/\balt:false\b/giu).test(v)) {
-        q += 1;
-    }
-
-    if ((/\bcase:true\b/giu).test(v)) {
-        q += 1;
-    }
-
-    if ((/\brandom:[1-9][0-9]*\b/giu).test(v)) {
-        q += 1;
-    }
-
-    return q;
+    return false;
 }
+
+document.querySelector('#toggle-delisted').addEventListener('change', () => {
+    if (!built) {
+        return;
+    }
+
+    const c = JSON.parse(localStorage.getItem('tsuzuku'));
+
+    if (c.delisted) {
+        c.delisted = false;
+    } else {
+        c.delisted = true;
+    }
+
+    localStorage.setItem('tsuzuku', JSON.stringify(c));
+});
 
 document.querySelector('#toggle-thumbnails').addEventListener('change', () => {
     if (!built) {
@@ -341,7 +388,8 @@ document.querySelector('#toggle-thumbnails').addEventListener('change', () => {
 
     localStorage.setItem('tsuzuku', JSON.stringify(c));
 
-    t.redraw(true);
+    t.redraw();
+    // t.rowManager.resetScroll();
 });
 
 document.querySelector('#toggle-progress').addEventListener('change', () => {
@@ -360,6 +408,30 @@ document.querySelector('#toggle-progress').addEventListener('change', () => {
     }
 
     localStorage.setItem('tsuzuku', JSON.stringify(c));
+});
+
+document.querySelector('#dim-skipping').addEventListener('change', () => {
+    if (!built) {
+        return;
+    }
+
+    const c = JSON.parse(localStorage.getItem('tsuzuku'));
+
+    if (c.dimSkipping) {
+        document.body.classList.remove('dim');
+        c.dimSkipping = false;
+    } else {
+        document.body.classList.add('dim');
+        c.dimSkipping = true;
+    }
+
+    localStorage.setItem('tsuzuku', JSON.stringify(c));
+});
+
+document.querySelector('header').addEventListener('dblclick', () => {
+    if (t) {
+        t.rowManager.resetScroll();
+    }
 });
 
 document.querySelector('.close').addEventListener('click', () => {
@@ -470,77 +542,89 @@ document.querySelector('.overlay2').addEventListener('click', () => {
     });
 });
 
-document.querySelector('header .menu').addEventListener('click', () => {
-    if (error || error2 || !db2) {
-        return;
-    }
+document.querySelectorAll('.menu').forEach((element) => {
+    element.addEventListener('click', () => {
+        const map = new Map();
+        let total = 0;
 
-    const map = new Map();
-    let total = 0;
-
-    db2().openCursor().onsuccess = (event) => {
-        const cursor = event.target.result;
-        let mismatched = null;
-
-        if (cursor) {
-            map.set(cursor.value.status.toLowerCase(), (map.get(cursor.value.status.toLowerCase()) || 0) + 1);
-            total += 1;
-
-            cursor.continue();
-        } else {
-            if (document.querySelector('.side').style.display === '') {
-                document.querySelector('.side').style.display = 'flex';
-                document.querySelector('.overlay').style.display = 'block';
-            }
-
-            for (const value of ['completed', 'dropped', 'paused', 'planning', 'rewatching', 'skipping', 'watching']) {
-                if (map.has(value)) {
-                    document.querySelector(`.${value}`).innerHTML = map.get(value);
-                } else {
-                    document.querySelector(`.${value}`).innerHTML = 0;
-                }
-            }
-
-            mismatched = t.getData().filter((i) => {
-                if (i.status === 'Completed' && Number(i.progress) !== Number(i.episodes)) {
-                    return true;
-                }
-
-                return false;
-            });
-
-            if (mismatched.length) {
-                document.querySelector('[data-query="status:completed"]').style.marginRight = '9.5px';
-                document.querySelector('.mismatched').style.display = 'inline-flex';
-                document.querySelector('.mismatched').title = `${mismatched.length} mismatched`;
-            } else {
-                document.querySelector('[data-query="status:completed"]').style.marginRight = 'auto';
-                document.querySelector('.mismatched').style.display = 'none';
-                document.querySelector('.mismatched').title = 'Mismatched';
-            }
-
-            document.querySelector('.all').innerHTML = total;
-
-            for (const value of [
-                ':not(.side) > :not(div) > .menu',
-                'div[tabindex]:not(.menu):not(.overlay):not(.tabulator-tableholder):not(.tabulator-cell[tabulator-field="progress"]):not(.tabulator-cell[tabulator-field="rewatched"])',
-                ':not(.tab) > a',
-                'input',
-                'select',
-                ':not(.export):not(.import):not(.reset) > span[tabindex]',
-                'code'
-            ]) {
-                document.querySelectorAll(value).forEach((element) => {
-                    element.classList.add('no-tab');
-                    element.setAttribute('tabindex', -1);
-                });
-            }
+        if (document.querySelector('.side').style.display !== 'flex') {
+            document.querySelector('.side').style.display = 'flex';
+            document.querySelector('.overlay').style.display = 'block';
         }
-    };
+
+        for (const value of [
+            ':not(.side) > :not(div) > .menu',
+            'div[tabindex]:not(.menu):not(.overlay):not(.tabulator-tableholder):not(.tabulator-cell[tabulator-field="progress"]):not(.tabulator-cell[tabulator-field="watched"])',
+            ':not(.tab) > a',
+            'input',
+            'select',
+            ':not(.export):not(.import):not(.reset) > span[tabindex]',
+            'code'
+        ]) {
+            document.querySelectorAll(value).forEach((element2) => {
+                element2.classList.add('no-tab');
+                element2.setAttribute('tabindex', -1);
+            });
+        }
+
+        db2().openCursor().onsuccess = (event) => {
+            const cursor = event.target.result;
+
+            if (cursor) {
+                map.set(cursor.value.status.toLowerCase(), (map.get(cursor.value.status.toLowerCase()) || 0) + 1);
+                total += 1;
+
+                cursor.continue();
+            } else {
+                for (const value of ['completed', 'dropped', 'paused', 'planning', 'skipping', 'watching']) {
+                    if (map.has(value)) {
+                        document.querySelector(`#${value} span`).innerHTML = addCommas(map.get(value));
+                    } else {
+                        document.querySelector(`#${value} span`).innerHTML = 0;
+                    }
+                }
+
+                document.querySelector('#all span').innerHTML = addCommas(total);
+
+                if (error2) {
+                    return;
+                }
+
+                let deleted = null,
+                    mismatched = null;
+
+                mismatched = t.getData().filter((i) => {
+                    if (i.episodes && i.status === 'Completed' && Number(i.progress) !== Number(i.episodes)) {
+                        return true;
+                    }
+
+                    return false;
+                });
+
+                if (mismatched.length) {
+                    document.querySelector('#mismatched').style.display = '';
+                    document.querySelector('#mismatched span').innerHTML = addCommas(mismatched.length);
+                } else {
+                    document.querySelector('#mismatched').style.display = 'none';
+                    document.querySelector('#mismatched span').innerHTML = 0;
+                }
+
+                deleted = t.getData().filter((i) => i.deleted);
+
+                if (deleted.length) {
+                    document.querySelector('#deleted').style.display = '';
+                    document.querySelector('#deleted span').innerHTML = addCommas(deleted.length);
+                } else {
+                    document.querySelector('#deleted').style.display = 'none';
+                    document.querySelector('#deleted span').innerHTML = 0;
+                }
+            }
+        };
+    });
 });
 
 document.querySelector('.overlay').addEventListener('click', () => {
-    if (document.querySelector('.side').style.display === 'flex') {
+    if (document.querySelector('.side').style.display) {
         document.querySelector('.side').style.display = '';
         document.querySelector('.overlay').style.display = '';
     }
@@ -580,8 +664,8 @@ document.querySelector('.clear').addEventListener('click', () => {
     document.querySelector('.search').value = '';
     document.querySelector('.search').focus();
     document.querySelector('.blur').style.display = '';
-    document.querySelector('.seasonal .previous').dataset.value = '';
-    document.querySelector('.seasonal .next').dataset.value = '';
+    document.querySelector('.seasonal .previous').href = './';
+    document.querySelector('.seasonal .next').href = './';
 
     if (timeout) {
         clearTimeout(timeout);
@@ -595,7 +679,8 @@ document.querySelector('.clear').addEventListener('click', () => {
         index.quick = true;
 
         t.setFilter('title', 'like', document.querySelector('.search').value);
-        t.redraw(true);
+        t.redraw();
+        t.rowManager.resetScroll();
 
         if (worker) {
             worker.terminate();
@@ -611,13 +696,44 @@ document.querySelector('.clear').addEventListener('click', () => {
     }, 300);
 });
 
-document.querySelector('.clear').addEventListener('dragenter', () => {
+document.querySelector('.clear').addEventListener('dragenter', (e) => {
+    e.preventDefault();
+
+    if (target) {
+        target2 = true;
+    }
+
+    target = true;
+    document.querySelector('.search-container').classList.add('over');
+});
+
+document.querySelector('.clear').addEventListener('dragleave', () => {
+    if (target2) {
+        target2 = false;
+    } else {
+        target = false;
+        target2 = false;
+        document.querySelector('.search-container').classList.remove('over');
+    }
+});
+
+document.querySelector('.clear').addEventListener('dragover', (e) => {
+    e.preventDefault();
+});
+
+document.querySelector('.clear').addEventListener('drop', (e) => {
+    e.preventDefault();
+
+    target = false;
+    target2 = false;
+
+    document.querySelector('.search-container').classList.remove('over');
     document.querySelector('.clear').style.display = 'none';
-    document.querySelector('.search').value = '';
+    document.querySelector('.search').value = e.dataTransfer.getData('text/plain');
     document.querySelector('.search').focus();
     document.querySelector('.blur').style.display = '';
-    document.querySelector('.seasonal .previous').dataset.value = '';
-    document.querySelector('.seasonal .next').dataset.value = '';
+    document.querySelector('.seasonal .previous').href = './';
+    document.querySelector('.seasonal .next').href = './';
 
     if (timeout) {
         clearTimeout(timeout);
@@ -631,7 +747,8 @@ document.querySelector('.clear').addEventListener('dragenter', () => {
         index.quick = true;
 
         t.setFilter('title', 'like', document.querySelector('.search').value);
-        t.redraw(true);
+        t.redraw();
+        t.rowManager.resetScroll();
 
         if (worker) {
             worker.terminate();
@@ -653,121 +770,48 @@ document.querySelector('.search').addEventListener('focus', (e) => {
     }
 });
 
-document.querySelector('.enter').addEventListener('click', () => {
+document.querySelector('.enter').addEventListener('click', (e) => {
+    e.preventDefault();
+
     index.quick = false;
     document.querySelector('.blur').style.display = 'none';
     searchFunction();
 });
 
-document.querySelector('.current').addEventListener('click', () => {
-    let season = null,
-        year = new Date().getFullYear();
+document.querySelector('.current').addEventListener('click', (e) => {
+    e.preventDefault();
 
-    switch (new Date().getMonth()) {
-        case 0:
-        case 1:
-            season = 'winter';
-            break;
-        case 2:
-        case 3:
-        case 4:
-            season = 'spring';
-            break;
-        case 5:
-        case 6:
-        case 7:
-            season = 'summer';
-            break;
-        case 8:
-        case 9:
-        case 10:
-            season = 'fall';
-            break;
-        case 11:
-            season = 'winter';
-            year += 1;
-            break;
-        default:
-            break;
-    }
-
-    document.querySelector('.search').value = `season:${season} year:${year} `;
+    document.querySelector('.search').value = 'is:now ';
     searchFunction();
 });
 
-document.querySelectorAll('.seasonal span').forEach((element) => {
-    element.addEventListener('click', (e) => {
-        if (!e.currentTarget.dataset.value) {
-            return;
-        }
+document.querySelector('.related').addEventListener('click', (e) => {
+    e.preventDefault();
 
-        document.querySelector('.search').value = e.currentTarget.dataset.value;
-        searchFunction();
-    });
+    // 4 = 1 + 3
+    // 5 = 2 + 3
+    switch (index.related) {
+        case 5:
+            document.querySelector('.search').value = searchReplace(document.querySelector('.search').value, '(?:^|\\s)related2:[1-9][0-9]*(?:\\s|$)', 'related2', 'related');
+            break;
+
+        default:
+            document.querySelector('.search').value = searchReplace(document.querySelector('.search').value, '(?:^|\\s)related:[1-9][0-9]*(?:\\s|$)', 'related', 'related2');
+            break;
+    }
+
+    searchFunction();
 });
 
-// same as onpopstate, separate
-document.querySelector('.return').addEventListener('click', () => {
-    index.related = false;
+document.querySelectorAll('.seasonal a').forEach((element) => {
+    element.addEventListener('click', (e) => {
+        const u = '/?query=';
 
-    if (document.querySelector('.related-container').style.display === 'inline-flex') {
-        document.querySelector('.related-container').style.display = 'none';
-        document.querySelector('.search-container').style.display = 'inline-flex';
-        document.querySelector('.related-title').innerHTML = '';
-    }
+        e.preventDefault();
 
-    if (document.querySelector('.return')) {
-        document.querySelector('.return').style.display = '';
-    }
-
-    if (location.hash) {
-        document.querySelector('.search').value = decodeURIComponent(location.hash.slice(1));
-        document.querySelector('.clear').style.display = 'inline-flex';
-        document.querySelector('.blur').style.display = '';
-
-        if (timeout) {
-            clearTimeout(timeout);
-        }
-
-        timeout = setTimeout(() => {
-            index.dimension = null;
-            index.quick = true;
-
-            t.setFilter('title', 'like', document.querySelector('.search').value);
-            t.redraw(true);
-
-            if (worker) {
-                worker.terminate();
-                worker = null;
-            }
-
-            document.querySelector('.blur').style.display = 'none';
-
-            if (document.querySelector('.search').value) {
-                document.title = `${document.querySelector('.search').value} - ${title} (quick search)`;
-            } else {
-                document.title = title;
-            }
-        }, 300);
-
-        return;
-    }
-
-    if (new URLSearchParams(location.search).get('query')) {
-        document.querySelector('.search').value = decodeURIComponent(new URLSearchParams(location.search).get('query'));
-        document.querySelector('.clear').style.display = 'inline-flex';
-    } else {
-        document.querySelector('.search').value = '';
-        document.querySelector('.clear').style.display = 'none';
-    }
-
-    document.querySelector('.tabulator').style.display = 'none';
-
-    if (document.querySelector('.searching')) {
-        document.querySelector('.searching').remove();
-    }
-
-    searchFunction(null, null, true);
+        document.querySelector('.search').value = decodeURIComponent(unescape(element.href.slice(element.href.indexOf(u) + u.length)));
+        searchFunction();
+    });
 });
 
 document.querySelector('.search').addEventListener('keydown', (e) => {
@@ -789,8 +833,8 @@ document.querySelector('.search').addEventListener('input', (e) => {
     }
 
     document.querySelector('.blur').style.display = '';
-    document.querySelector('.seasonal .previous').dataset.value = '';
-    document.querySelector('.seasonal .next').dataset.value = '';
+    document.querySelector('.seasonal .previous').href = './';
+    document.querySelector('.seasonal .next').href = './';
 
     if (timeout) {
         clearTimeout(timeout);
@@ -800,24 +844,30 @@ document.querySelector('.search').addEventListener('input', (e) => {
         const url = new URL(location.href.replace(location.search, '').replace(location.hash, ''));
 
         index.dimension = null;
-        index.qualifiers = qualifiers(e.target.value);
+        index.qualifiers = qualifiers(e.target.value.trim());
         index.quick = true;
 
-        t.setFilter('title', 'like', e.target.value);
-        t.redraw(true);
+        t.setFilter('title', 'like', e.target.value.trim());
+        t.redraw();
+        t.rowManager.resetScroll();
 
         if (worker) {
             worker.terminate();
             worker = null;
         }
 
+        url.hash = e.target.value;
+
+        if (location.hash) {
+            history.replaceState({}, '', url);
+        } else {
+            history.pushState({}, '', url);
+        }
+
         document.querySelector('.blur').style.display = 'none';
 
-        url.hash = e.target.value;
-        history.pushState({}, '', url);
-
-        if (e.target.value) {
-            document.title = `${e.target.value} - ${title} (quick search)`;
+        if (e.target.value.trim()) {
+            document.title = `${e.target.value.trim()} - ${title} (quick search)`;
         } else {
             document.title = title;
         }
@@ -826,9 +876,9 @@ document.querySelector('.search').addEventListener('input', (e) => {
 
 document.querySelectorAll('code').forEach((element) => {
     element.addEventListener('click', (e) => {
-        if ((/^$|\s$/giu).test(document.querySelector('.search').value)) {
+        if ((/^$|\s$/giv).test(document.querySelector('.search').value)) {
             if (e.currentTarget.dataset.value2) {
-                document.querySelector('.search').value += `${e.currentTarget.dataset.value2}`;
+                document.querySelector('.search').value += e.currentTarget.dataset.value2;
             } else {
                 document.querySelector('.search').value += `${e.currentTarget.dataset.value} `;
             }
@@ -855,7 +905,8 @@ document.querySelectorAll('code').forEach((element) => {
             index.quick = true;
 
             t.setFilter('title', 'like', document.querySelector('.search').value);
-            t.redraw(true);
+            t.redraw();
+            t.rowManager.resetScroll();
 
             if (worker) {
                 worker.terminate();
@@ -876,7 +927,7 @@ document.querySelectorAll('.tab').forEach((element) => {
 
         const q = `${element.querySelector('a').dataset.query} `;
 
-        if (document.querySelector('.side').style.display === 'flex') {
+        if (document.querySelector('.side').style.display) {
             document.querySelector('.side').style.display = '';
             document.querySelector('.overlay').style.display = '';
         }
@@ -902,40 +953,15 @@ document.querySelectorAll('.tab').forEach((element) => {
     });
 });
 
-document.querySelector('.selected-count').addEventListener('click', () => {
+document.querySelector('.count-selected').addEventListener('click', (e) => {
+    e.preventDefault();
+
     document.querySelector('.search').value = 'is:selected ';
     searchFunction();
 });
 
-document.querySelector('.mismatched').addEventListener('click', (e) => {
-    e.stopPropagation();
-    e.preventDefault();
-
-    const q = 'is:mismatched ';
-
-    if (document.querySelector('.side').style.display === 'flex') {
-        document.querySelector('.side').style.display = '';
-        document.querySelector('.overlay').style.display = '';
-    }
-
-    for (const value of ['a.no-tab', 'input.no-tab', 'select.no-tab']) {
-        document.querySelectorAll(value).forEach((element2) => {
-            element2.classList.remove('no-tab');
-            element2.removeAttribute('tabindex');
-        });
-    }
-
-    document.querySelectorAll('.no-tab').forEach((element2) => {
-        element2.classList.remove('no-tab');
-        element2.setAttribute('tabindex', 0);
-    });
-
-    document.querySelector('.search').value = q;
-    searchFunction(null, q, null);
-});
-
 document.querySelector('.import span').addEventListener('click', () => {
-    if (error) {
+    if (disableSelection || error || error2) {
         return;
     }
 
@@ -948,9 +974,13 @@ document.querySelector('.import span').addEventListener('click', () => {
             file = e.target.files[0],
             reader = new FileReader();
 
-        if (document.querySelector('.side').style.display === 'flex') {
+        if (document.querySelector('.side').style.display) {
             document.querySelector('.side').style.display = '';
             document.querySelector('.overlay').style.display = '';
+        }
+
+        if (document.querySelector('.reload').style.display !== 'none') {
+            document.querySelector('.reload').style.display = 'none';
         }
 
         document.querySelector('main').style.display = 'none';
@@ -966,13 +996,9 @@ document.querySelector('.import span').addEventListener('click', () => {
                 return '';
             }
 
-            function status(s, r2, t2, s2) {
+            function status(s, s2) {
                 switch (s) {
                     case 'Completed':
-                        if (r2) {
-                            return 'Rewatching';
-                        }
-
                         return 'Completed';
 
                     case 'Dropped':
@@ -989,10 +1015,6 @@ document.querySelector('.import span').addEventListener('click', () => {
                         return 'Planning';
 
                     default:
-                        if (t2) {
-                            return 'Rewatching';
-                        }
-
                         return 'Watching';
                 }
             }
@@ -1025,7 +1047,7 @@ document.querySelector('.import span').addEventListener('click', () => {
                     s = Number(parse(value, 'series_animedb_id'))
                         ? `https://myanimelist.net/anime/${parse(value, 'series_animedb_id')}`
                         : parse(value, 'series_animedb_id'),
-                    s2 = status(parse(value, 'my_status'), Number(parse(value, 'my_rewatching')), Number(parse(value, 'my_times_watched')), Number(parse(value, 'my_skipping'))),
+                    s2 = status(parse(value, 'my_status'), Number(parse(value, 'my_skipping'))),
                     s3 = s2 === 'Planning' || s2 === 'Skipping'
                         ? ''
                         : parse(value, 'my_watched_episodes') || '0',
@@ -1036,19 +1058,19 @@ document.querySelector('.import span').addEventListener('click', () => {
                     const d = db2().add({
                         episodes: ss.getData().episodes,
                         progress: s3,
-                        rewatched: s4,
                         season: ss.getData().season,
                         source: s,
                         status: s2,
                         title: ss.getData().title,
-                        type: ss.getData().type
+                        type: ss.getData().type,
+                        watched: s4
                     });
 
                     d.onsuccess = () => {
                         ss.update({
                             progress: s3,
-                            rewatched: s4,
-                            status: s2
+                            status: s2,
+                            watched: s4
                         });
 
                         count++;
@@ -1066,14 +1088,14 @@ document.querySelector('.import span').addEventListener('click', () => {
                             const result = event2.target.result;
 
                             result.progress = s3;
-                            result.rewatched = s4;
                             result.status = s2;
+                            result.watched = s4;
 
                             db2().put(result).onsuccess = () => {
                                 ss.update({
                                     progress: s3,
-                                    rewatched: s4,
-                                    status: s2
+                                    status: s2,
+                                    watched: s4
                                 });
 
                                 count++;
@@ -1105,7 +1127,7 @@ document.querySelector('.import span').addEventListener('click', () => {
 });
 
 document.querySelector('.export span').addEventListener('click', () => {
-    if (error) {
+    if (disableSelection || error) {
         return;
     }
 
@@ -1135,15 +1157,19 @@ document.querySelector('.export span').addEventListener('click', () => {
                     progress = 0;
                     break;
 
-                case 'Rewatching':
-                    status = 'Completed';
-                    rewatching = 1;
-                    break;
-
                 case 'Skipping':
                     status = 'Dropped';
                     skipping = 1;
                     progress = 0;
+                    break;
+
+                case 'Watching':
+                    status = 'Watching';
+
+                    if (Number(cursor.value.watched) > 0) {
+                        rewatching = 1;
+                    }
+
                     break;
 
                 default:
@@ -1159,10 +1185,10 @@ document.querySelector('.export span').addEventListener('click', () => {
             `        <my_skipping>${skipping}</my_skipping>\n` +
             '        <my_start_date>0000-00-00</my_start_date>\n' +
             `        <my_status>${status}</my_status>\n` +
-            `        <my_times_watched>${cursor.value.rewatched}</my_times_watched>\n` +
+            `        <my_times_watched>${cursor.value.watched}</my_times_watched>\n` +
             `        <my_watched_episodes>${progress}</my_watched_episodes>\n` +
             `        <series_animedb_id>${
-                cursor.key.match(/myanimelist/gu)
+                cursor.key.match(/myanimelist/giv)
                     ? cursor.key.substring('https://myanimelist.net/anime/'.length)
                     : cursor.key
             }</series_animedb_id>\n` +
@@ -1175,13 +1201,18 @@ document.querySelector('.export span').addEventListener('click', () => {
 
             cursor.continue();
         } else {
-            const a = document.createElement('a');
+            const
+                a = document.createElement('a'),
+                d = new Date().toISOString().split('T'),
+                d2 = d[0].split('-'),
+                d3 = d[1].split(':'),
+                d4 = d3[2].split('.');
 
             a.href = URL.createObjectURL(new Blob([`${xml}</myanimelist>`]), {
                 type: 'application/xml'
             });
 
-            a.download = `tsuzuku_${new Date().toISOString()}.xml`;
+            a.download = `tsuzuku-${d2[0]}-${d2[1]}-${d2[2]}-${d3[0]}h${d3[1]}m${d4[0]}s${d4[1].slice(0, 3)}.xml`;
             a.click();
             a.remove();
         }
@@ -1189,72 +1220,50 @@ document.querySelector('.export span').addEventListener('click', () => {
 });
 
 document.querySelector('.reset span').addEventListener('click', () => {
-    db2().clear().onsuccess = () => {
-        location.reload();
-    };
+    indexedDB.deleteDatabase('tsuzuku');
+    location.reload();
 });
 
 onpopstate = () => {
-    index.related = false;
-
-    if (document.querySelector('.related-container').style.display === 'inline-flex') {
-        document.querySelector('.related-container').style.display = 'none';
-        document.querySelector('.search-container').style.display = 'inline-flex';
-        document.querySelector('.related-title').innerHTML = '';
-    }
-
-    if (document.querySelector('.return')) {
-        document.querySelector('.return').style.display = '';
-    }
-
-    if (location.hash) {
-        document.querySelector('.search').value = decodeURIComponent(location.hash.slice(1));
-        document.querySelector('.clear').style.display = 'inline-flex';
-        document.querySelector('.blur').style.display = '';
-
-        if (timeout) {
-            clearTimeout(timeout);
-        }
-
-        timeout = setTimeout(() => {
-            index.dimension = null;
-            index.quick = true;
-
-            t.setFilter('title', 'like', document.querySelector('.search').value);
-            t.redraw(true);
-
-            if (worker) {
-                worker.terminate();
-                worker = null;
-            }
-
-            document.querySelector('.blur').style.display = 'none';
-
-            if (document.querySelector('.search').value) {
-                document.title = `${document.querySelector('.search').value} - ${title} (quick search)`;
-            } else {
-                document.title = title;
-            }
-        }, 300);
+    if (location.search) {
+        document.querySelector('.search').value = decodeURIComponent(new URLSearchParams(location.search).get('query'));
+        searchFunction(null, null, true);
 
         return;
     }
 
-    if (new URLSearchParams(location.search).get('query')) {
-        document.querySelector('.search').value = decodeURIComponent(new URLSearchParams(location.search).get('query'));
-        document.querySelector('.clear').style.display = 'inline-flex';
-    } else {
-        document.querySelector('.search').value = '';
-        document.querySelector('.clear').style.display = 'none';
+    document.querySelector('.search').value = decodeURIComponent(location.hash.slice(1));
+    document.querySelector('.clear').style.display = 'inline-flex';
+    document.querySelector('.blur').style.display = '';
+    document.querySelector('.seasonal .previous').href = './';
+    document.querySelector('.seasonal .next').href = './';
+
+    if (timeout) {
+        clearTimeout(timeout);
     }
 
-    document.querySelector('.tabulator').style.display = 'none';
+    timeout = setTimeout(() => {
+        index.dimension = null;
+        index.qualifiers = qualifiers(document.querySelector('.search').value.trim());
+        index.quick = true;
 
-    if (document.querySelector('.searching')) {
-        document.querySelector('.searching').remove();
-    }
+        t.setFilter('title', 'like', document.querySelector('.search').value.trim());
+        t.redraw();
+        t.rowManager.resetScroll();
 
-    searchFunction(null, null, true);
+        if (worker) {
+            worker.terminate();
+            worker = null;
+        }
+
+        document.querySelector('.blur').style.display = 'none';
+
+        if (document.querySelector('.search').value.trim()) {
+            document.title = `${document.querySelector('.search').value.trim()} - ${title} (quick search)`;
+        } else {
+            document.title = title;
+        }
+    }, 300);
 };
 
 export {

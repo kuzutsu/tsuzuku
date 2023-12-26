@@ -2,6 +2,51 @@ if (typeof Fuse === 'undefined') {
     importScripts('https://cdn.jsdelivr.net/npm/fuse.js@6.6.2/dist/fuse.min.js');
 }
 
+function removeReserved(text) {
+    return text.replace(/</giv, '&lt;').replace(/>/giv, '&gt;');
+}
+
+function giv(string) {
+    return RegExp(`(?<=^|\\s)${string}(?=\\s|$)`, 'giv');
+}
+
+function season2(value) {
+    if (value === 'year') {
+        let year2 = new Date().getFullYear();
+
+        if (new Date().getMonth() === 11) {
+            year2 += 1;
+        }
+
+        return year2;
+    }
+
+    switch (new Date().getMonth()) {
+        case 0:
+        case 1:
+        case 11:
+            return 'winter';
+
+        case 2:
+        case 3:
+        case 4:
+            return 'spring';
+
+        case 5:
+        case 6:
+        case 7:
+            return 'summer';
+
+        case 8:
+        case 9:
+        case 10:
+            return 'fall';
+
+        default:
+            return '';
+    }
+}
+
 function is(value1, type, value2) {
     if (!value1) {
         if (value2.toString().toLowerCase() === 'tba') {
@@ -29,42 +74,72 @@ function is(value1, type, value2) {
     }
 }
 
-function removeReserved(text) {
-    return text.replace(/</gu, '&lt;').replace(/>/gu, '&gt;');
-}
-
 addEventListener('message', (event) => {
     const
         f = [],
+        regex = {
+            alt: 'alt:false',
+            case: 'case:true',
+            deleted: 'is:deleted',
+            eps: 'eps:(?<value>tba|(?:<=|>=|<|>)?(?:0|[1-9][0-9]*)(?:&(?:<=|>=|<|>)?(?:0|[1-9][0-9]*))*)',
+            id: 'id:(?<value>(?:[1-9][0-9]*)(?:\\|[1-9][0-9]*)*)',
+            mismatched: 'is:mismatched',
+            n: 'is:new',
+            now: 'is:now',
+            ongoing: 'is:ongoing',
+            progress: 'progress:(?<value>(?:<=|>=|<|>)?(?:0|[1-9][0-9]*)%?(?:&(?:<=|>=|<|>)?(?:0|[1-9][0-9]*)%?)*)',
+            r18: 'is:r18',
+            random: 'random:(?<value>true|[1-9][0-9]*)',
+            regex: 'regex:true',
+            related: 'related:(?<value>[1-9][0-9]*)',
+            related2: 'related2:(?<value>[1-9][0-9]*)',
+            season: 'season:(?<value>(?:winter|spring|summer|fall|now|tba)(?:\\|(?:winter|spring|summer|fall|now|tba))*)',
+            selected: 'is:selected',
+            similar: 'similar:(?<value>[1-9][0-9]*)',
+            status: 'status:(?<value>(?:all|none|watching|completed|paused|dropped|planning|skipping)(?:\\|(?:all|none|watching|completed|paused|dropped|planning|skipping))*)',
+            tags: 'tag:(?<value>\\S+(?:\\|\\S+)*)',
+            type: 'type:(?<value>(?:tv|movie|ova|ona|special|tba)(?:\\|(?:tv|movie|ova|ona|special|tba))*)',
+            watched: 'watched:(?<value>(?:<=|>=|<|>)?(?:0|[1-9][0-9]*)(?:&(?:<=|>=|<|>)?(?:0|[1-9][0-9]*))*)',
+            year: 'year:(?<value>now|tba|(?:<=|>=|<|>)?[1-9][0-9]{3}(?:&(?:<=|>=|<|>)?[1-9][0-9]{3})*)'
+        },
+        rrr = [],
         ss = {
             count: 0,
             season: null,
             year: null
         },
+        t3 = [],
         u = [];
 
     let alt = true,
         case2 = false,
         dd = 'data',
-        dead = false,
+        deleted = false,
         episodes = null,
         ff = null,
         found = false,
+        id = null,
         message = null,
         mismatched = false,
         n = false,
+        now = false,
         ongoing = false,
         progress = null,
-        random = 0,
-        regex = false,
-        // related = null,
-        rewatched = false,
+        r18 = false,
+        random = null,
+        regex2 = false,
+        related = null,
+        related2 = null,
+        rr = 0,
         season = null,
+        similar = null,
+        similar2 = 0,
         status = null,
         tags = null,
         type = null,
-        uu = null,
+        // uu = null,
         v = event.data.value,
+        watched = false,
         year = null;
 
     if (!v.trim()) {
@@ -84,140 +159,253 @@ addEventListener('message', (event) => {
         return;
     }
 
-    if ((/\bepisodes:(?:&?(?:<=|>=|<|>)?(?:0|[1-9][0-9]*)\b)+/giu).test(v)) {
-        episodes = (/\bepisodes:(?:&?(?:<=|>=|<|>)?(?:0|[1-9][0-9]*)\b)+/giu).exec(v)[0].replace(/episodes:/giu, '').split('&');
-        v = v.replace(/\bepisodes:(?:&?(?:<=|>=|<|>)?(?:0|[1-9][0-9]*)\b)+/giu, '');
+    if (giv(regex.eps).test(v)) {
+        episodes = giv(regex.eps).exec(v).groups.value.split('&');
+        v = v.replace(giv(regex.eps), '');
 
+        rr = 0;
         ss.count = 0;
     }
 
-    if ((/\bprogress:(?:&?(?:<=|>=|<|>)?(?:0|[1-9][0-9]*)(?:%\B|\b))+/giu).test(v)) {
-        progress = (/\bprogress:(?:&?(?:<=|>=|<|>)?(?:0|[1-9][0-9]*)(?:%\B|\b))+/giu).exec(v)[0].replace(/progress:/giu, '').split('&');
-        v = v.replace(/\bprogress:(?:&?(?:<=|>=|<|>)?(?:0|[1-9][0-9]*)(?:%\B|\b))+/giu, '');
+    if (giv(regex.progress).test(v)) {
+        progress = giv(regex.progress).exec(v).groups.value.split('&');
+        v = v.replace(giv(regex.progress), '');
 
+        rr = 0;
         ss.count = 0;
     }
 
-    if ((/\byear:(?:tba\b|(?:&?(?:<=|>=|<|>)?[1-9][0-9]{3}\b)+)/giu).test(v)) {
-        year = (/\byear:(?:tba\b|(?:&?(?:<=|>=|<|>)?[1-9][0-9]{3}\b)+)/giu).exec(v)[0].replace(/year:/giu, '').split('&');
-        v = v.replace(/\byear:(?:tba\b|(?:&?(?:<=|>=|<|>)?[1-9][0-9]{3}\b)+)/giu, '');
+    if (giv(regex.year).test(v)) {
+        year = giv(regex.year).exec(v).groups.value.split('&');
+        v = v.replace(giv(regex.year), '');
 
-        if (year.length === 1 && (year[0].length === 4 || year[0].toLowerCase() === 'tba')) {
+        rr = 0;
+
+        if (year.length === 1 && !/<=|>=|<|>/giv.test(year[0])) {
             ss.count += 1;
-            ss.year = year[0].toLowerCase();
+            ss.year =
+                year[0].toLowerCase() === 'now'
+                    ? new Date().getFullYear().toString()
+                    : year[0].toLowerCase();
         }
     }
 
-    if ((/\btype:(?:\|?(?:tv|movie|ova|ona|special|tba)\b)+/giu).test(v)) {
-        type = (/\btype:(?:\|?(?:tv|movie|ova|ona|special|tba)\b)+/giu).exec(v)[0].replace(/type:/giu, '').split('|');
-        v = v.replace(/\btype:(?:\|?(?:tv|movie|ova|ona|special|tba)\b)+/giu, '');
+    if (giv(regex.type).test(v)) {
+        type = giv(regex.type).exec(v).groups.value.split('|');
+        v = v.replace(giv(regex.type), '');
 
+        rr = 0;
         ss.count = 0;
     }
 
-    if ((/\bstatus:(?:\|?(?:all|none|watching|completed|paused|dropped|planning|rewatching|skipping)\b)+/giu).test(v)) {
-        status = (/\bstatus:(?:\|?(?:all|none|watching|completed|paused|dropped|planning|rewatching|skipping)\b)+/giu).exec(v)[0].replace(/status:/giu, '').split('|');
-        v = v.replace(/\bstatus:(?:\|?(?:all|none|watching|completed|paused|dropped|planning|rewatching|skipping)\b)+/giu, '');
+    if (giv(regex.status).test(v)) {
+        status = giv(regex.status).exec(v).groups.value.split('|');
+        v = v.replace(giv(regex.status), '');
 
+        rr = 0;
         ss.count = 0;
     }
 
-    if ((/\bseason:(?:\|?(?:winter|spring|summer|fall|tba)\b)+/giu).test(v)) {
-        season = (/\bseason:(?:\|?(?:winter|spring|summer|fall|tba)\b)+/giu).exec(v)[0].replace(/season:/giu, '').split('|');
-        v = v.replace(/\bseason:(?:\|?(?:winter|spring|summer|fall|tba)\b)+/giu, '');
+    if (giv(regex.season).test(v)) {
+        season = giv(regex.season).exec(v).groups.value.split('|');
+        v = v.replace(giv(regex.season), '');
+
+        rr = 0;
 
         if (season.length === 1) {
-            ss.count += 1;
-            ss.season = season[0].toLowerCase();
+            ss.count += 5;
+            ss.season =
+                season[0].toLowerCase() === 'now'
+                    ? season2()
+                    : season[0].toLowerCase();
         }
     }
 
-    if ((/\btag:\S+\b/giu).test(v)) {
-        tags = (/\btag:\S+\b/giu).exec(v)[0].replace(/tag:/giu, '').split('&');
-        v = v.replace(/\btag:\S+\b/giu, '');
+    if (giv(regex.tags).test(v)) {
+        tags = giv(regex.tags).exec(v).groups.value.split('&');
+        v = v.replace(giv(regex.tags), '');
 
+        rr = 0;
         ss.count = 0;
     }
 
-    if ((/\brewatched:(?:&?(?:<=|>=|<|>)?(?:0|[1-9][0-9]*)\b)+/giu).test(v)) {
-        rewatched = (/\brewatched:(?:&?(?:<=|>=|<|>)?(?:0|[1-9][0-9]*)\b)+/giu).exec(v)[0].replace(/rewatched:/giu, '').split('&');
-        v = v.replace(/\brewatched:(?:&?(?:<=|>=|<|>)?(?:0|[1-9][0-9]*)\b)+/giu, '');
+    if (giv(regex.watched).test(v)) {
+        watched = giv(regex.watched).exec(v).groups.value.split('&');
+        v = v.replace(giv(regex.watched), '');
 
+        rr = 0;
         ss.count = 0;
     }
 
-    // if ((/\brelated:[1-9][0-9]*\b/giu).test(v)) {
-    //     related = (/\brelated:[1-9][0-9]*\b/giu).exec(v)[0].replace(/related:/giu, '');
-    //     v = v.replace(/\brelated:[1-9][0-9]*\b/giu, '');
+    if (giv(regex.id).test(v)) {
+        id = giv(regex.id).exec(v).groups.value.split('|');
+        v = v.replace(giv(regex.id), '');
 
-    //     ss.count = 0;
-    // }
+        rr = 0;
+        ss.count = 0;
+    }
 
-    if ((/\bis:selected\b/giu).test(v)) {
+    if (giv(regex.related).test(v)) {
+        related = giv(regex.related).exec(v).groups.value;
+        v = v.replace(giv(regex.related), '');
+
+        rr += 1;
+        ss.count = 0;
+    }
+
+    if (giv(regex.related2).test(v)) {
+        related2 = giv(regex.related2).exec(v).groups.value;
+        v = v.replace(giv(regex.related2), '');
+
+        rr += 2;
+        ss.count = 0;
+
+        const
+            t = event.data.data.find((i) => i.sources === `https://myanimelist.net/anime/${related2}`),
+            t2 = [];
+
+        if (t) {
+            t2.push(...t.relations);
+
+            while (t2.length) {
+                t2.forEach((value) => {
+                    event.data.data.filter((i) => {
+                        if (i.relations.indexOf(value) > -1) {
+                            return true;
+                        }
+
+                        return false;
+                    }).forEach((value2) => {
+                        if (t3.indexOf(value2.sources) === -1) {
+                            t2.push(value2.sources);
+                            t3.push(value2.sources);
+                        }
+
+                        value2.relations.forEach((value3) => {
+                            if (t3.indexOf(value3) === -1) {
+                                t2.push(value3);
+                                t3.push(value3);
+                            }
+                        });
+                    });
+
+                    t2.splice(t2.indexOf(value), 1);
+                });
+            }
+
+            if (t3.indexOf(t.sources) === -1) {
+                t3.push(t.sources);
+            }
+        }
+    }
+
+    if (giv(regex.similar).test(v)) {
+        similar = giv(regex.similar).exec(v).groups.value;
+        v = v.replace(giv(regex.similar), '');
+
+        rr = 0;
+        ss.count = 0;
+
+        const t = event.data.data.find((i) => i.sources === `https://myanimelist.net/anime/${similar}`);
+
+        if (t) {
+            rrr.push(...t.tags);
+        }
+    }
+
+    if (giv(regex.selected).test(v)) {
         dd = 'selected';
-        v = v.replace(/\bis:selected\b/giu, '');
+        v = v.replace(giv(regex.selected), '');
 
+        rr = 0;
         ss.count = 0;
     }
 
-    if ((/\bis:ongoing\b/giu).test(v)) {
+    if (giv(regex.now).test(v)) {
+        now = true;
+        v = v.replace(giv(regex.now), '');
+
+        rr = 0;
+        ss.count += 6;
+        ss.year = season2('year').toString();
+        ss.season = season2();
+    }
+
+    if (giv(regex.ongoing).test(v)) {
         ongoing = true;
-        v = v.replace(/\bis:ongoing\b/giu, '');
+        v = v.replace(giv(regex.ongoing), '');
 
+        rr = 0;
         ss.count = 0;
     }
 
-    if ((/\bis:new\b/giu).test(v)) {
+    if (giv(regex.n).test(v)) {
         n = true;
-        v = v.replace(/\bis:new\b/giu, '');
+        v = v.replace(giv(regex.n), '');
 
+        rr = 0;
         ss.count = 0;
     }
 
-    if ((/\bis:dead\b/giu).test(v)) {
-        dead = true;
-        v = v.replace(/\bis:dead\b/giu, '');
+    if (giv(regex.deleted).test(v)) {
+        deleted = true;
+        v = v.replace(giv(regex.deleted), '');
 
+        rr = 0;
         ss.count = 0;
     }
 
-    if ((/\bis:mismatched\b/giu).test(v)) {
+    if (giv(regex.r18).test(v)) {
+        r18 = true;
+        v = v.replace(giv(regex.r18), '');
+
+        rr = 0;
+        ss.count = 0;
+    }
+
+    if (giv(regex.mismatched).test(v)) {
         mismatched = true;
-        v = v.replace(/\bis:mismatched\b/giu, '');
+        v = v.replace(giv(regex.mismatched), '');
 
+        rr = 0;
         ss.count = 0;
     }
 
-    if ((/\bregex:true\b/giu).test(v)) {
-        regex = true;
-        v = v.replace(/\bregex:true\b/giu, '');
+    if (giv(regex.regex).test(v)) {
+        regex2 = true;
+        v = v.replace(giv(regex.regex), '');
 
+        rr = 0;
         ss.count = 0;
     }
 
-    if ((/\balt:false\b/giu).test(v)) {
+    if (giv(regex.alt).test(v)) {
         alt = false;
-        v = v.replace(/\balt:false\b/giu, '');
+        v = v.replace(giv(regex.alt), '');
 
+        rr = 0;
         ss.count = 0;
     }
 
-    if ((/\bcase:true\b/giu).test(v)) {
+    if (giv(regex.case).test(v)) {
         case2 = true;
-        v = v.replace(/\bcase:true\b/giu, '');
+        v = v.replace(giv(regex.case), '');
 
+        rr = 0;
         ss.count = 0;
     }
 
-    if ((/\brandom:[1-9][0-9]*\b/giu).test(v)) {
-        random = Number((/\brandom:[1-9][0-9]*\b/giu).exec(v)[0].replace(/random:/giu, ''));
-        v = v.replace(/\brandom:[1-9][0-9]*\b/giu, '');
+    if (giv(regex.random).test(v)) {
+        random = giv(regex.random).exec(v).groups.value;
+        v = v.replace(giv(regex.random), '');
 
+        rr = 0;
         ss.count = 0;
     }
 
     if (!v.trim()) {
-        ss.count += 1;
+        rr += 3;
+        ss.count += 9;
     }
 
     for (const d of event.data[dd]) {
@@ -232,7 +420,9 @@ addEventListener('message', (event) => {
             let c = false;
 
             for (const value of episodes) {
-                if (!is(d.episodes, (value.match(/<=|>=|<|>/giu) || '').toString(), value.match(/0|[1-9][0-9]*/giu).toString())) {
+                const group = /(?<operator><=|>=|<|>)?(?<value>tba|0|[1-9][0-9]*)/giv.exec(value).groups;
+    
+                if (!is(d.episodes, group.operator, group.value)) {
                     c = true;
                     break;
                 }
@@ -247,9 +437,11 @@ addEventListener('message', (event) => {
             let c = false;
 
             for (const value of progress) {
-                if ((/%/giu).test(value)) {
+                const group = /(?<operator><=|>=|<|>)?(?<value>(?:0|[1-9][0-9]*)%?)/giv.exec(value).groups;
+
+                if ((/%/giv).test(value)) {
                     if (d.episodes) {
-                        if (!is(Math.round(d.progress / d.episodes * 100), (value.match(/<=|>=|<|>/giu) || '').toString(), Number(value.match(/0|[1-9][0-9]*/giu).toString()))) {
+                        if (!is(Math.round(d.progress / d.episodes * 100), group.operator, group.value.replace('%', ''))) {
                             c = true;
                             break;
                         }
@@ -258,7 +450,7 @@ addEventListener('message', (event) => {
                         break;
                     }
                 } else {
-                    if (!is(d.progress, (value.match(/<=|>=|<|>/giu) || '').toString(), value.match(/0|[1-9][0-9]*/giu).toString())) {
+                    if (!is(d.progress, group.operator, group.value)) {
                         c = true;
                         break;
                     }
@@ -274,7 +466,14 @@ addEventListener('message', (event) => {
             let c = false;
 
             for (const value of year) {
-                if (!is(d.season.substring(d.season.indexOf(' ') + 1), (value.match(/<=|>=|<|>/giu) || '').toString(), value.match(/tba|[1-9][0-9]{3}/giu).toString())) {
+                const
+                    group = /(?<operator><=|>=|<|>)?(?<value>now|tba|[1-9][0-9]{3})/giv.exec(value).groups,
+                    group2 =
+                        group.value === 'now'
+                            ? new Date().getFullYear()
+                            : group.value;
+
+                if (!is(d.season.substring(d.season.indexOf(' ') + 1), group.operator, group2)) {
                     c = true;
                     break;
                 }
@@ -315,7 +514,7 @@ addEventListener('message', (event) => {
                     ? d.season.substring(0, d.season.indexOf(' '))
                     : 'tba';
 
-            if (season.toString().toLowerCase().split(',').indexOf(s.toLowerCase()) === -1) {
+            if (season.map((s2) => s2.toLowerCase().replace('now', season2())).indexOf(s.toLowerCase()) === -1) {
                 continue;
             }
         }
@@ -324,13 +523,13 @@ addEventListener('message', (event) => {
             let c = false;
 
             for (const value of tags) {
-                if ((/^-/giu).test(value)) {
-                    if (d.tags.indexOf(value.replace(/^-/giu, '').toLowerCase()) > -1) {
+                if ((/^!/giv).test(value)) {
+                    if (d.tags.map((t) => t.replace(/\s/giv, '_')).indexOf(value.replace(/^!/giv, '').toLowerCase()) > -1) {
                         c = true;
                         break;
                     }
                 } else {
-                    if (d.tags.indexOf(value.toLowerCase()) === -1) {
+                    if (d.tags.map((t) => t.replace(/\s/giv, '_')).indexOf(value.toLowerCase()) === -1) {
                         c = true;
                         break;
                     }
@@ -342,17 +541,70 @@ addEventListener('message', (event) => {
             }
         }
 
-        if (rewatched) {
+        if (watched) {
             let c = false;
 
-            for (const value of rewatched) {
-                if (!is(d.rewatched, (value.match(/<=|>=|<|>/giu) || '').toString(), value.match(/0|[1-9][0-9]*/giu).toString())) {
+            for (const value of watched) {
+                const group = /(?<operator><=|>=|<|>)?(?<value>0|[1-9][0-9]*)/giv.exec(value).groups;
+
+                if (!is(d.watched, group.operator, group.value)) {
                     c = true;
                     break;
                 }
             }
 
             if (c) {
+                continue;
+            }
+        }
+
+        if (id) {
+            if (id.indexOf(d.sources.slice('https://myanimelist.net/anime/'.length)) === -1) {
+                continue;
+            }
+        }
+
+        if (related) {
+            if ([d.sources, ...d.relations].indexOf(`https://myanimelist.net/anime/${related}`) === -1) {
+                continue;
+            }
+        }
+
+        if (related2) {
+            if (t3.indexOf(d.sources) === -1) {
+                continue;
+            }
+        }
+
+        if (similar) {
+            const nnn = 10;
+            similar2 = 0;
+
+            if (d.sources === `https://myanimelist.net/anime/${similar}`) {
+                similar2 = d.tags.length;
+            } else {
+                if (d.tags.length < nnn) {
+                    continue;
+                }
+
+                for (const value of rrr) {
+                    if (d.tags.indexOf(value) > -1) {
+                        similar2 += 1;
+                    }
+
+                    // if (similar2 >= nnn) {
+                    //     break;
+                    // }
+                }
+
+                if (similar2 < nnn) {
+                    continue;
+                }
+            }
+        }
+
+        if (now) {
+            if (d.season.toLowerCase() !== `${season2()} ${season2('year')}`) {
                 continue;
             }
         }
@@ -369,19 +621,26 @@ addEventListener('message', (event) => {
             }
         }
 
-        if (dead) {
-            if (!d.dead) {
+        if (deleted) {
+            if (!d.deleted) {
+                continue;
+            }
+        }
+
+        if (r18) {
+            if (!d.r18) {
                 continue;
             }
         }
 
         if (mismatched) {
-            if (d.status.toLowerCase() !== 'completed' || Number(d.progress) === Number(d.episodes)) {
+            if (!d.episodes || d.status.toLowerCase() !== 'completed' || Number(d.progress) === Number(d.episodes)) {
                 continue;
             }
         }
 
         const
+            split = [],
             t = [
                 {
                     title: d.title
@@ -390,10 +649,10 @@ addEventListener('message', (event) => {
             tt = [d.title];
 
         if (v.trim()) {
-            if (regex) {
+            if (regex2) {
                 const r2 = case2
-                    ? 'gu'
-                    : 'giu';
+                    ? 'gv'
+                    : 'giv';
 
                 let r = false;
 
@@ -416,7 +675,7 @@ addEventListener('message', (event) => {
                         }
                     }
                 } catch (error) {
-                    message = 'Invalid regular expression';
+                    message = removeReserved(error.toString());
                     break;
 
                     // postMessage({
@@ -441,16 +700,33 @@ addEventListener('message', (event) => {
                     }
                 }
 
+                for (const value2 of [...new Set(v.trim().split(' '))]) {
+                    split.push({
+                        title: value2
+                    });
+                }
+
                 const result = new Fuse(t, {
+                    // ignoreFieldNorm: true,
                     ignoreLocation: true,
+                    // includeMatches: true,
                     includeScore: true,
                     isCaseSensitive: case2,
                     keys: ['title'],
                     threshold: 0.2
-                }).search(v.trim());
+                }).search({
+                    $or: [{
+                        title: v.trim()
+                    }, {
+                        $and: split
+                    }]
+                });
 
                 if (result.length) {
-                    d.relevancy = 1 - result[0].score;
+                    d.relevancy =
+                        similar2
+                            ? (1 - result[0].score) * similar2
+                            : 1 - result[0].score;
                 } else {
                     continue;
                 }
@@ -462,14 +738,19 @@ addEventListener('message', (event) => {
                 }
             }
         } else {
-            if (regex) {
+            if (regex2) {
                 message = 'Missing regular expression';
                 break;
             }
 
+            // if (case2 || !alt || fuzzy) {
             if (case2 || !alt) {
                 message = 'Missing search query';
                 break;
+            }
+
+            if (similar2) {
+                d.relevancy = similar2;
             }
 
             d.alternative = removeReserved(d.title);
@@ -496,29 +777,38 @@ addEventListener('message', (event) => {
             filter: [''],
             message: 'success',
             message2: message,
+            related: rr,
             seasonal: ss
         });
 
         return;
     }
 
-    if (random && f.length > random) {
+    if (random === 'true' || (Number(random) && f.length > Number(random))) {
+        let n2 = null;
+
         ff = [];
-        uu = [];
+        // uu = [];
 
         postMessage({
             all: f.length,
             message: 'random'
         });
 
-        while (random--) {
+        if (Number(random)) {
+            n2 = Number(random);
+        } else {
+            n2 = Math.round(Math.random() * (f.length - 1)) || 1;
+        }
+
+        while (n2--) {
             const r = Math.round(Math.random() * (f.length - 1));
 
             ff.push(f[r]);
-            uu.push(u[r]);
+            // uu.push(u[r]);
 
             f.splice(r, 1);
-            u.splice(r, 1);
+            // u.splice(r, 1);
         }
     }
 
@@ -526,7 +816,8 @@ addEventListener('message', (event) => {
         filter: ff || f,
         message: 'success',
         query: v.trim(),
+        related: rr,
         seasonal: ss,
-        update: uu || u
+        update: u
     });
 });

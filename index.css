@@ -1,15 +1,9 @@
-.tabulator-cell[tabulator-field="alternative"],
-.tabulator-cell[tabulator-field="episodes"],
-.tabulator-cell[tabulator-field="progress"],
-.tabulator-cell[tabulator-field="rewatched"],
-.tabulator-cell[tabulator-field="season"],
-.tabulator-cell[tabulator-field="status"],
-.tabulator-cell[tabulator-field="type"] {
+.tabulator-cell[tabulator-field="alternative"] {
     user-select: text;
 }
 
 .database-container {
-    max-height: calc(100% - 80px);
+    max-height: calc(100% - 40px);
     white-space: nowrap;
     width: 100%;
 }
@@ -17,15 +11,14 @@
 .tabulator-tableholder {
     height: auto !important;
     max-height: 100%;
-    outline: none;
     overflow: auto;
 }
 
 .top-container {
     align-items: center;
+    background: var(--background);
     display: none;
     padding: 0 19px;
-    width: 100%;
 }
 
 .qualifiers > div,
@@ -34,7 +27,6 @@
 }
 
 .tabulator-cell {
-    /*height: 100% !important;*/ /* resizes to normal when switching from mobile to desktop */
     position: relative;
 }
 
@@ -77,16 +69,11 @@
     background: var(--status-completed) !important;
 }
 
-[data-status="Rewatching"] .indicator,
-[data-status="Rewatching"] [tabulator-field="color"] {
-    background: var(--status-rewatching) !important;
-}
-
 [data-status="Planning"] [tabulator-field="color"] {
     background: var(--status-planning) !important;
 }
 
-[data-status="Skipping"] {
+.dim [data-status="Skipping"] [tabulator-field]:not([tabulator-field="color"]):not([tabulator-field="sources"]):not([tabulator-field="status"]) {
     opacity: 0.2;
 }
 
@@ -113,12 +100,7 @@
 .search {
     border: 0;
     min-width: 100px;
-    outline: none;
     width: 100%;
-}
-
-.search::-webkit-search-cancel-button {
-    display: none;
 }
 
 [tabulator-field="picture"] img {
@@ -141,10 +123,10 @@
     display: block !important;
 }
 
-.tabulator-col[tabulator-field="ongoing"] .tabulator-col-title,
 .tabulator-col[tabulator-field="picture"] .tabulator-col-title,
 .tabulator-col[tabulator-field="picture2"] .tabulator-col-title,
-.tabulator-col[tabulator-field="sources"] .tabulator-col-title {
+.tabulator-col[tabulator-field="sources"] .tabulator-col-title,
+.tabulator-col:not([tabulator-field]) .tabulator-col-title {
     line-height: 0;
 }
 
@@ -196,20 +178,19 @@
 
 .header-selected {
     background: var(--selected-header);
-}
-
-.header-selected span:not(.el):not(.lip):not(.sis) {
-    color: var(--selected-header-color) !important;
-}
-
-.header-selected svg {
-    fill: var(--selected-header-color) !important;
+    z-index: 5;
 }
 
 .header-selected a,
-.header-selected .separator,
-.header-selected .theme,
-.header-selected .thumbnails {
+.header-selected span:not(.el):not(.lip):not(.sis) {
+    color: var(--selected-header-color);
+}
+
+.header-selected svg {
+    fill: var(--selected-header-color);
+}
+
+.header-selected a:not(.count-selected) {
     display: none !important;
 }
 
@@ -220,24 +201,28 @@
 .tabulator-row:focus-within,
 .tabulator-row:hover {
     background: var(--background-hover) !important;
-    opacity: 1;
+}
+
+.tabulator-row:focus-within .tabulator-cell,
+.tabulator-row:hover .tabulator-cell {
+    opacity: 1 !important;
 }
 
 .tabulator-selected {
     background: var(--selected) !important;
 }
 
-.tabulator-selected *:not(.new):not(.r18):not(.title):not(select:disabled) {
+.tabulator-selected *:not(:is(.deleted, .mismatched, .new, .ongoing, .r18, .title, select)) {
     color: var(--selected-color) !important;
 }
 
 .tabulator-selected svg {
-    fill: var(--selected-color) !important;
+    fill: var(--selected-color);
 }
 
 .tabulator-selected .tabulator-cell[tabulator-field="picture"] svg,
 .tabulator-selected .tabulator-cell[tabulator-field="picture2"] svg {
-    fill: var(--selected-header) !important;
+    fill: var(--selected-header);
 }
 
 .tabulator-selected:focus-within,
@@ -253,6 +238,19 @@
 .tabulator-col-content {
     width: 100%;
 }
+
+/* .tabulator-cell[tabulator-field="alternative"] span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tabulator-row:focus-within .tabulator-cell[tabulator-field="alternative"] span,
+.tabulator-row:hover .tabulator-cell[tabulator-field="alternative"] span {
+    overflow: auto;
+    text-overflow: auto;
+    white-space: auto;
+} */
 
 #number:disabled {
     background: var(--background);
@@ -280,6 +278,7 @@
 
 .nothing .current,
 .nothing .enter,
+.nothing .related,
 .return,
 .seasonal .next,
 .seasonal .previous {
@@ -288,22 +287,15 @@
     font-weight: 500;
 }
 
-.count-selected:hover,
-.nothing .current:hover,
-.nothing .enter:hover,
-.relations:hover,
-.return:hover,
-.seasonal .next:hover,
-.seasonal .previous:hover {
-    cursor: pointer;
-    text-decoration: underline;
-}
-
 header select {
     background: transparent;
     border: 0;
     border-bottom: 1px solid var(--selected-header-color);
     color: var(--selected-header-color);
+}
+
+header select:disabled {
+    border-bottom: 1px solid var(--disabled);
 }
 
 header option {
@@ -348,6 +340,16 @@ header option:disabled {
     border: 0;
     color: var(--color);
 }
+
+/* .tabulator-cell select {
+    border-bottom: 1px solid transparent;
+}
+
+.tabulator-cell input,
+.tabulator-row:focus-within select,
+.tabulator-row:hover select {
+    border-bottom: 1px solid var(--selected-color);
+} */
 
 .tabulator-cell[tabulator-field="alternative"] {
     overflow-wrap: anywhere;
@@ -399,7 +401,6 @@ input {
     padding: 0;
 }
 
-.related-container,
 .search-container {
     height: 40px;
     overflow: auto;
@@ -415,7 +416,7 @@ input {
     display: none;
 }
 
-.selected-count span:first-child {
+.count-selected {
     font-weight: 500;
 }
 
@@ -429,22 +430,101 @@ input {
     opacity: 1;
 }
 
-[data-dead="true"] [tabulator-field="alternative"],
-[data-dead="true"] [tabulator-field="episodes"],
-[data-dead="true"] [tabulator-field="season"],
-[data-dead="true"] [tabulator-field="type"] {
+.over {
+    background: var(--color);
+}
+
+.over input {
+    color: var(--background-hover);
+}
+
+.over svg {
+    fill: var(--background-hover);
+}
+
+.deleted,
+.mismatched,
+.new,
+.ongoing,
+.r18 {
+    color: var(--background);
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 500;
+    margin-left: 6px;
+    padding: 0 3px;
+    user-select: none;
+    white-space: nowrap;
+}
+
+.tab:hover :is(.deleted, .mismatched) {
+    color: var(--side-hover);
+}
+
+.tabulator-row:focus-within :is(.deleted, .mismatched, .new, .ongoing, .r18),
+.tabulator-row:hover :is(.deleted, .mismatched, .new, .ongoing, .r18) {
+    color: var(--background-hover);
+}
+
+.tabulator-selected :is(.deleted, .mismatched, .new, .ongoing, .r18) {
+    color: var(--selected);
+}
+
+.tabulator-selected:focus-within :is(.deleted, .mismatched, .new, .ongoing, .r18),
+.tabulator-selected:hover :is(.deleted, .mismatched, .new, .ongoing, .r18) {
+    color: var(--selected-hover);
+}
+
+.deleted {
+    background: var(--deleted);
+}
+
+.mismatched {
+    background: var(--mismatched);
+}
+
+.new {
+    background: var(--new);
+}
+
+.ongoing {
+    background: var(--ongoing);
+}
+
+.r18 {
+    background: var(--r18);
+}
+
+[data-deleted="true"] [tabulator-field="alternative"],
+[data-deleted="true"] [tabulator-field="episodes"],
+[data-deleted="true"] [tabulator-field="season"],
+[data-deleted="true"] [tabulator-field="type"] {
     text-decoration: line-through;
 }
 
-.error select:disabled,
+.export span,
+.import span {
+    color: var(--selected-header);
+}
+
+.error .export span,
+.error .import span,
+.error2 .import span,
+.error .tabulator-cell[tabulator-field="progress"] span,
+.error .tabulator-cell[tabulator-field="status"] select,
+.error .tabulator-cell[tabulator-field="watched"] span,
 .error .tabulator-col[tabulator-field="progress"] .tabulator-col-title,
-.error .tabulator-col[tabulator-field="rewatched"] .tabulator-col-title,
-.error .tabulator-col[tabulator-field="status"] .tabulator-col-title {
+.error .tabulator-col[tabulator-field="status"] .tabulator-col-title,
+.error .tabulator-col[tabulator-field="watched"] .tabulator-col-title {
     color: var(--disabled) !important;
 }
 
-.error .menu svg {
-    fill: var(--disabled);
+.error .add svg,
+.error .close svg,
+.error .menu svg,
+.error [tabulator-field="picture"] svg,
+.error [tabulator-field="picture2"] svg {
+    fill: var(--disabled) !important;
 }
 
 .side {
@@ -530,33 +610,188 @@ input {
 }
 
 .relations,
+.similar,
 .source {
-    display: none;
-}
-
-.tabulator-row:focus-within .relations,
-.tabulator-row:focus-within .source,
-.tabulator-row:hover .relations,
-.tabulator-row:hover .source {
     align-items: center;
     display: inline-flex;
+    opacity: 0.2;
+}
+
+/* .tabulator-row[data-status=""] .tabulator-cell select {
+    opacity: 0.2;
+} */
+
+.tabulator-row:focus-within .relations,
+.tabulator-row:focus-within .similar,
+.tabulator-row:focus-within .source,
+.tabulator-row:hover .relations,
+.tabulator-row:hover .similar,
+.tabulator-row:hover .source {
+    opacity: 1;
 }
 
 .qualifiers {
     display: none;
-    height: calc(100% - 109px);
     margin: 0 19px 19px 19px;
+    max-height: calc(100% - 109px);
+    overflow: auto;
     position: absolute;
     top: 90px;
     width: calc(100% - 38px);
     z-index: 4;
 }
 
+#popup-main {
+    margin: 0 19px 19px 19px;
+    max-height: calc(100% - 109px);
+    overflow: auto;
+    position: absolute;
+    top: 90px;
+    width: calc(100% - 38px);
+}
+
+.popup-header {
+    background: var(--side);
+    font-weight: 500;
+    position: sticky;
+    top: 0;
+}
+
+#popup-visual,
+#popup-synonyms,
+#popup-tags {
+    display: flex;
+    flex-direction: column;
+}
+
+#popup-synonyms div,
+#popup-tags div,
+#popup-visual div {
+    background: var(--side);
+}
+
+#popup-synonyms div div,
+#popup-tags div div,
+#popup-visual div div {
+    padding: 11.5px 19px;
+}
+
+#popup-synonyms div div:not(.popup-header):hover,
+#popup-tags div div:not(.popup-header):hover {
+    background: var(--side-hover);
+}
+
+#popup-synonyms div div:not(.popup-header) {
+    user-select: text;
+}
+
+#popup-tags div div:not(.popup-header) {
+    display: flex;
+}
+
+#popup-tags a {
+    margin-right: auto;
+}
+
+#popup-tags span {
+    margin-left: 9.5px;
+}
+
+#popup-visual img {
+    width: 100%;
+}
+
+#popup-synonyms,
+#popup-tags {
+    padding-top: 40px;
+}
+
+@media only screen and (min-width: 656px) {
+    #popup-main {
+        display: flex;
+    }
+
+    #popup-synonyms,
+    #popup-tags,
+    #popup-visual {
+        margin: 0 19px;
+        overflow: auto;
+        width: calc(100% / 3);
+    }
+
+    #popup-synonyms,
+    #popup-tags {
+        padding-top: 0;
+    }
+}
+
 @media only screen and (min-width: 1301px) {
+    #popup-main,
     .qualifiers {
         margin: 0 calc(15% + 19px) 19px calc(15% + 19px);
         width: calc(70% - 38px);
     }
+
+    .top-container {
+        margin: 0 15%;
+    }
+}
+
+main {
+    max-height: calc(100% - 140px);
+}
+
+/* #footer {
+    align-items: center;
+    bottom: 0;
+    display: none;
+    height: 50px;
+    min-height: 50px;
+    position: absolute;
+    width: 100%;
+}
+
+#footer > div {
+    align-items: center;
+    display: inline-flex;
+    width: calc(100% / 3);
+}
+
+.search-container .menu {
+    align-items: center; 
+    display: none;
+}
+
+@media only screen and (max-width: 655px) {
+    #footer {
+        display: flex;
+    }
+
+    main {
+        max-height: calc(100% - 150px);
+    }
+
+    .top-container {
+        height: 50px;
+        position: absolute;
+        top: 0;
+        width: 100%;
+    }
+
+    .search-container .menu {
+        display: inline-flex;
+    }
+
+    .qualifiers {
+        max-height: calc(100% - 59px);
+        top: 45px;
+    }
+} */
+
+.tr {
+    background: var(--background-hover);
+    position: sticky;
+    top: 0;
 }
 
 code,
@@ -570,7 +805,13 @@ td {
     vertical-align: baseline;
 }
 
+td:nth-of-type(1) {
+    min-width: 140px;
+    width: 140px;
+}
+
 td:nth-of-type(2) {
+    overflow-wrap: anywhere;
     padding-left: 19px;
 }
 
@@ -582,9 +823,8 @@ tr {
     font-family: monospace;
 }
 
-.mismatched svg,
-[title="Mismatched"] svg {
-    fill: var(--mismatched);
+[data-mismatched="true"] [tabulator-field="progress"] span:not(.add) {
+    color: var(--mismatched) !important;
 }
 
 .tab span {
@@ -595,9 +835,11 @@ tr {
     margin-right: auto;
 }
 
+.dim-skipping,
 .export,
 .import,
 .reset,
+.toggle-delisted,
 .toggle-progress,
 .toggle-thumbnails {
     align-items: center;
@@ -608,12 +850,22 @@ tr {
 
 .blur {
     background: var(--background);
-    height: calc(100% - 40px);
+    height: 100%;
     opacity: 0.4;
     position: absolute;
-    top: 40px;
     width: 100%;
     z-index: 3;
+}
+
+.add {
+    align-items: center;
+    display: inline-flex;
+    margin-right: auto;
+}
+
+[data-status="Watching"] [tabulator-field="progress"] span:not(.add) {
+    margin-left: auto;
+    text-align: right;
 }
 
 /* fix incorrect behavior when scrolling */

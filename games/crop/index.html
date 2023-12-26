@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en-US" dir="ltr">
     <head>
-        <title>Quiz</title>
+        <title>Crop</title>
         <meta charset="UTF-8">
         <meta name="description" content="a certain anime index + tracker + games">
         <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
@@ -29,7 +29,7 @@
                     <path d="m313-440 224 224-57 56-320-320 320-320 57 56-224 224h487v80H313Z"></path>
                 </svg>
             </a>
-            <span class="bold">Quiz</span>
+            <span class="bold">Crop</span>
             <span class="flex-separator"></span>
             <a href="https://github.com/kuzutsu/tsuzuku" rel="noreferrer" target="_blank" style="display: inline-flex; align-items: center; text-decoration: none;">
                 <span>GitHub&nbsp;</span>
@@ -58,82 +58,44 @@
                 <div class="label">
                     <span style="color: var(--disabled);">※ Changing any setting will reset both scores</span>
                 </div>
-                <table style="border-spacing: 0;">
+                <!-- <table style="border-spacing: 0;">
                     <tr class="tr">
                         <td>General</td>
                         <td></td>
                     </tr>
                     <tr>
                         <td>
-                            <label for="category">Category</label>
+                            <label for="auto-focus">Auto-focus</label>
                         </td>
                         <td>
-                            <select id="category">
-                                <option>episodes</option>
-                                <option>season</option>
-                                <option>tag</option>
-                                <option>type</option>
-                                <option>year</option>
-                                <option>random</option>
-                            </select>
+                            <input id="auto-focus" type="checkbox"></input>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <label for="operators">Enable operators</label>
+                            <label for="repeat">Repeat until correct</label>
                         </td>
                         <td>
-                            <input id="operators" type="checkbox"></input>
+                            <input id="repeat" type="checkbox"></input>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <label for="choices">Number of choices</label>
+                            <label for="clear">Clear when incorrect</label>
                         </td>
                         <td>
-                            <select id="choices">
-                                <option>2</option>
-                                <option>3</option>
-                                <option>4</option>
-                                <option>5</option>
-                                <option>6</option>
-                                <option>7</option>
-                                <option>8</option>
-                                <option>9</option>
-                                <option>10</option>
-                                <option>random</option>
-                            </select>
+                            <input id="clear" type="checkbox"></input>
                         </td>
                     </tr>
-                    <tr>
-                        <td>
-                            <label for="selection">Number of correct answers</label>
-                        </td>
-                        <td>
-                            <select id="selection">
-                                <option>1</option>
-                                <option>1 or more</option>
-                                <option>0 or more</option>
-                            </select>
-                        </td>
-                    </tr>
-                </table>
+                </table> -->
                 <table style="border-spacing: 0;">
-                    <tr>
+                    <!-- <tr>
                         <td></td>
                         <td></td>
-                    </tr>
+                    </tr> -->
                     <tr class="tr">
                         <td>Submit</td>
                         <td></td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <label for="auto-submit">Auto-submit</label>
-                        </td>
-                        <td>
-                            <input id="auto-submit" type="checkbox"></input>
-                        </td>
                     </tr>
                     <tr>
                         <td>
@@ -220,14 +182,24 @@
                 </table>
             </div>
             <div class="query">
-                <div class="query-container">
-                    <a href></a>
-                </div>
+                <div class="query-container" style="height: 40px; position: absolute;"></div>
+                <a class="source" href title="Search" style="display: none; margin-left: 119px;">
+                    <svg viewBox="0 -960 960 960" height="17" width="17">
+                        <path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"></path>
+                    </svg>
+                </a>
                 <span style="width: 100%;"></span>
                 <span class="skip bold" tabindex="0" style="margin-left: 19px;">Skip</span>
                 <span class="submit bold" tabindex="0" style="margin-left: 19px;">Submit</span>
             </div>
-            <div class="choice"></div>
+            <div class="main" style="margin: 100px 0 11.5px 0; overflow: auto;">
+                <div class="input2" style="align-items: center; display: flex; height: 40px; padding: 0 19px;">
+                    <div style="align-items: center; background: var(--background-hover); display: inline-flex; height: 40px; overflow: auto; padding: 0 19px; width: 100%;">
+                        <input class="input" type="search" placeholder="Enter anime (case-insensitive)" style="border: 0; font-size: 14px; min-width: 100px; padding: 0; width: 100%;">
+                    </div>
+                </div>
+                <div class="answers" style="overflow: auto; padding: 0 19px;"></div>
+            </div>
         </main>
         <footer>
             <div class="loading">Fetching database<span class="el">.</span><span class="lip">.</span><span class="sis">.</span></div>
@@ -241,18 +213,16 @@
         <script>
             const
                 settings = {
-                    autoSubmit: false,
-                    category: 'tag',
+                    // autoFocus: true,
+                    // clear: true,
                     cheat: {},
-                    choices: 4,
                     high: 0,
                     negative: true,
-                    operators: false,
+                    // repeat: false,
                     resetIncorrect: false,
                     resultSkip: false,
                     resultSubmit: true,
                     score: 0,
-                    selection: '1',
                     skip: true
                 },
                 settings2 = {};
@@ -260,7 +230,7 @@
             let value = null;
 
             try {
-                const map = new Map(Object.entries(JSON.parse(localStorage.getItem('quiz'))));
+                const map = new Map(Object.entries(JSON.parse(localStorage.getItem('crop'))));
 
                 for (const [key, value2] of Object.entries(settings)) {
                     if (map.has(key)) {
@@ -270,44 +240,31 @@
                     }
                 }
 
-                localStorage.setItem('quiz', JSON.stringify(settings2));
+                localStorage.setItem('crop', JSON.stringify(settings2));
             } catch (e) {
-                localStorage.setItem('quiz', JSON.stringify(settings));
+                localStorage.setItem('crop', JSON.stringify(settings));
             }
 
-            value = JSON.parse(localStorage.getItem('quiz'));
+            value = JSON.parse(localStorage.getItem('crop'));
 
-            document.querySelector('#choices').value = value.choices;
-            document.querySelector('#selection').value = value.selection;
-            document.querySelector('#category').value = value.category;
-
-            document.querySelector('#operators').checked = value.operators;
-            document.querySelector('#auto-submit').checked = value.autoSubmit;
+            // document.querySelector('#auto-focus').checked = value.autoFocus;
+            // document.querySelector('#clear').checked = value.clear;
+            // document.querySelector('#repeat').checked = value.repeat;
             document.querySelector('#skip').checked = value.skip;
             document.querySelector('#negative').checked = value.negative;
             document.querySelector('#reset-incorrect').checked = value.resetIncorrect;
             document.querySelector('#result-submit').checked = value.resultSubmit;
             document.querySelector('#result-skip').checked = value.resultSkip;
 
-            if (['episodes', 'year'].indexOf(value.category) > -1) {
-                document.querySelector('[for="operators"]').style.color = '';
-                document.querySelector('#operators').removeAttribute('disabled');
-                document.querySelector('#operators').parentElement.parentElement.style.display = '';
-            } else {
-                document.querySelector('[for="operators"]').style.color = 'var(--disabled)';
-                document.querySelector('#operators').setAttribute('disabled', '');
-                document.querySelector('#operators').parentElement.parentElement.style.display = 'none';
-            }
-
-            if (value.selection.indexOf('or more') > -1) {
-                document.querySelector('[for="auto-submit"]').style.color = 'var(--disabled)';
-                document.querySelector('#auto-submit').setAttribute('disabled', '');
-                document.querySelector('#auto-submit').parentElement.parentElement.style.display = 'none';
-            } else {
-                document.querySelector('[for="auto-submit"]').style.color = '';
-                document.querySelector('#auto-submit').removeAttribute('disabled');
-                document.querySelector('#auto-submit').parentElement.parentElement.style.display = '';
-            }
+            // if (value.repeat) {
+            //     document.querySelector('[for="clear"]').style.color = '';
+            //     document.querySelector('#clear').removeAttribute('disabled');
+            //     document.querySelector('#clear').parentElement.parentElement.style.display = '';
+            // } else {
+            //     document.querySelector('[for="clear"]').style.color = 'var(--disabled)';
+            //     document.querySelector('#clear').setAttribute('disabled', '');
+            //     document.querySelector('#clear').parentElement.parentElement.style.display = 'none';
+            // }
 
             if (value.resetIncorrect) {
                 document.querySelector('[for="negative"]').style.color = 'var(--disabled)';

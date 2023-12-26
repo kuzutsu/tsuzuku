@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-US" dir="ltr">
     <head>
         <title>Tsuzuku</title>
-        <meta charset="utf-8">
+        <meta charset="UTF-8">
         <meta name="description" content="a certain anime index + tracker + games">
         <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
         <meta name="theme-color" content="#000">
@@ -24,109 +24,139 @@
         <link href="./index.css" rel="stylesheet">
     </head>
     <body>
-        <noscript>Tsuzuku can't run without JavaScript</noscript>
+        <noscript>Tsuzuku is useless without JavaScript</noscript>
         <div class="overlay" tabindex="0"></div>
         <aside class="side">
-            <div style="height: 50px; min-height: 50px; display: flex; align-items: center; padding: 0 19px;">
-                <span class="side-title">Personal stats</span>
-            </div>
             <div style="overflow: auto;">
-                <div class="tab" style="padding: 0 19px;">
-                    <a href="./?query=status%253Aall%2520" data-query="status:all">All</a>
-                    <span class="all">0</span>
-                </div>
-                <div class="tab" style="border-left: 4px solid var(--status-completed);">
-                    <a href="./?query=status%253Acompleted%2520" data-query="status:completed" style="margin-right: auto;">Completed</a>
-                    <a class="mismatched" href="./?query=is%253Amismatched%2520" title="Mismatched" style="display: none; align-items: center;">
-                        <svg viewBox="0 0 24 24" width="17" height="17">
-                            <path d="M1 21 12 2 23 21ZM11 15H13V10H11ZM12 18Q12.425 18 12.713 17.712Q13 17.425 13 17Q13 16.575 12.713 16.288Q12.425 16 12 16Q11.575 16 11.288 16.288Q11 16.575 11 17Q11 17.425 11.288 17.712Q11.575 18 12 18Z"></path>
+                <div>
+                    <div style="height: 50px; min-height: 50px; display: flex; align-items: center; padding: 0 19px; position: sticky; top: 0; background: var(--side);">
+                        <span class="side-title">Personal list</span>
+                    </div>
+                    <div class="tab" id="all" style="padding: 0 19px;">
+                        <a href="./?query=status%253Aall%2520" data-query="status:all">All</a>
+                        <span class="all" style="margin-left: 9.5px;">0</span>
+                    </div>
+                    <div class="tab" id="deleted" style="display: none; padding: 0 19px;">
+                        <svg viewBox="0 -960 960 960" width="17" height="17">
+                            <path d="m560-120-57-57 144-143H200v-480h80v400h367L503-544l56-57 241 241-240 240Z"></path>
                         </svg>
-                    </a>
-                    <span class="completed">0</span>
-                </div>
-                <div class="tab" style="border-left: 4px solid var(--status-dropped);">
-                    <a href="./?query=status%253Adropped%2520" data-query="status:dropped">Dropped</a>
-                    <span class="dropped">0</span>
-                </div>
-                <div class="tab" style="border-left: 4px solid var(--status-paused);">
-                    <a href="./?query=status%253Apaused%2520" data-query="status:paused">Paused</a>
-                    <span class="paused">0</span>
-                </div>
-                <div class="tab" style="border-left: 4px solid var(--status-planning);">
-                    <a href="./?query=status%253Aplanning%2520" data-query="status:planning">Planning</a>
-                    <span class="planning">0</span>
-                </div>
-                <div class="tab" style="border-left: 4px solid var(--status-rewatching);">
-                    <a href="./?query=status%253Arewatching%2520" data-query="status:rewatching">Rewatching</a>
-                    <span class="rewatching">0</span>
-                </div>
-                <div class="tab" style="border-left: 4px solid var(--status-skipping);">
-                    <a href="./?query=status%253Askipping%2520" data-query="status:skipping">Skipping</a>
-                    <span class="skipping">0</span>
-                </div>
-                <div class="tab" style="border-left: 4px solid var(--status-watching);">
-                    <a href="./?query=status%253Awatching%2520" data-query="status:watching">Watching</a>
-                    <span class="watching">0</span>
+                        <a class="deleted" href="./?query=is%253Adeleted%2520" data-query="is:deleted">Deleted</a>
+                        <span style="margin-left: 9.5px;">0</span>
+                    </div>
+                    <div class="tab" id="completed" style="border-left: 4px solid var(--status-completed);">
+                        <a href="./?query=status%253Acompleted%2520" data-query="status:completed">Completed</a>
+                        <span style="margin-left: 9.5px;">0</span>
+                    </div>
+                    <div class="tab" id="mismatched" style="display: none; padding: 0 19px;">
+                        <svg viewBox="0 -960 960 960" width="17" height="17">
+                            <path d="m560-120-57-57 144-143H200v-480h80v400h367L503-544l56-57 241 241-240 240Z"></path>
+                        </svg>
+                        <a class="mismatched" href="./?query=is%253Amismatched%2520" data-query="is:mismatched">Mismatched</a>
+                        <span style="margin-left: 9.5px;">0</span>
+                    </div>
+                    <div class="tab" id="dropped" style="border-left: 4px solid var(--status-dropped);">
+                        <a href="./?query=status%253Adropped%2520" data-query="status:dropped">Dropped</a>
+                        <span style="margin-left: 9.5px;">0</span>
+                    </div>
+                    <div class="tab" id="paused" style="border-left: 4px solid var(--status-paused);">
+                        <a href="./?query=status%253Apaused%2520" data-query="status:paused">Paused</a>
+                        <span style="margin-left: 9.5px;">0</span>
+                    </div>
+                    <div class="tab" id="planning" style="border-left: 4px solid var(--status-planning);">
+                        <a href="./?query=status%253Aplanning%2520" data-query="status:planning">Planning</a>
+                        <span style="margin-left: 9.5px;">0</span>
+                    </div>
+                    <div class="tab" id="skipping" style="border-left: 4px solid var(--status-skipping);">
+                        <a href="./?query=status%253Askipping%2520" data-query="status:skipping">Skipping</a>
+                        <span style="margin-left: 9.5px;">0</span>
+                    </div>
+                    <div class="tab" id="watching" style="border-left: 4px solid var(--status-watching);">
+                        <a href="./?query=status%253Awatching%2520" data-query="status:watching">Watching</a>
+                        <span style="margin-left: 9.5px;">0</span>
+                    </div>
+                    <div style="height: 40px; display: flex; align-items: center;"></div>
+                    <div class="import">
+                        <span tabindex="0" style="font-weight: 500;">Import</span>
+                    </div>
+                    <div class="export">
+                        <span tabindex="0" style="font-weight: 500;">Export</span>
+                    </div>
+                    <div style="height: 40px; display: flex; align-items: center;"></div>
+                    <div class="reset">
+                        <span tabindex="0" style="color: var(--reset); font-weight: 500;">Reset</span>
+                    </div>
                 </div>
                 <div style="height: 40px; display: flex; align-items: center;"></div>
-                <div class="import">
-                    <span tabindex="0" style="color: var(--selected-header); font-weight: 500;">Import</span>
-                </div>
-                <div class="export">
-                    <span tabindex="0" style="color: var(--selected-header); font-weight: 500;">Export</span>
+                <div>
+                    <div style="height: 50px; min-height: 50px; display: flex; align-items: center; padding: 0 19px; position: sticky; top: 0; background: var(--side);">
+                        <span class="side-title">Settings</span>
+                    </div>
+                    <div class="toggle-delisted">
+                        <label for="toggle-delisted" style="margin-right: auto;">Show delisted <span tabindex="0" style="color: var(--disabled);">※</span></label>
+                        <input id="toggle-delisted" type="checkbox"></input>
+                    </div>
+                    <div class="toggle-thumbnails">
+                        <label for="toggle-thumbnails" style="margin-right: auto;">Show thumbnails</label>
+                        <input id="toggle-thumbnails" type="checkbox"></input>
+                    </div>
+                    <div class="toggle-progress">
+                        <label for="toggle-progress" style="margin-right: auto;">Show progress bars</label>
+                        <input id="toggle-progress" type="checkbox"></input>
+                    </div>
+                    <div class="dim-skipping">
+                        <label for="dim-skipping" style="margin-right: auto;">Dim skipping</label>
+                        <input id="dim-skipping" type="checkbox"></input>
+                    </div>
                 </div>
                 <div style="height: 40px; display: flex; align-items: center;"></div>
-                <div class="reset">
-                    <span tabindex="0" style="color: var(--reset); font-weight: 500;">Reset</span>
-                </div>
-                <div style="height: 40px; display: flex; align-items: center;"></div>
-                <div style="height: 50px; min-height: 50px; display: flex; align-items: center; padding: 0 19px;">
-                    <span class="side-title">Settings</span>
-                </div>
-                <div class="toggle-thumbnails">
-                    <label for="toggle-thumbnails" style="margin-right: auto;">Show thumbnails</label>
-                    <input id="toggle-thumbnails" type="checkbox"></input>
-                </div>
-                <div class="toggle-progress">
-                    <label for="toggle-progress" style="margin-right: auto;">Show progress bars</label>
-                    <input id="toggle-progress" type="checkbox"></input>
+                <div style="align-items: center; display: flex; height: 40px; padding: 0 19px;">
+                    <span tabindex="0" style="color: var(--disabled);">※ Requires reload</span>
                 </div>
             </div>
         </aside>
         <div class="overlay2" tabindex="0"></div>
         <header>
-            <div class="menu" title="Open menu" tabindex="0" style="display: inline-flex; align-items: center; margin-right: 19px;">
-                <svg viewBox="0 0 24 24" width="17" height="17">
-                    <path d="M3 18V16H21V18ZM3 13V11H21V13ZM3 8V6H21V8Z"></path>
+            <div class="menu" title="Menu" tabindex="0" style="display: inline-flex; align-items: center; margin-right: 19px;">
+                <svg viewBox="0 -960 960 960" width="17" height="17">
+                    <path d="M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z"></path>
                 </svg>
             </div>
             <div class="close" title="Clear selection" tabindex="0" style="display: none; align-items: center; margin-right: 19px;">
-                <svg viewBox="0 0 24 24" width="17" height="17">
-                    <path d="M6.4 19 5 17.6 10.6 12 5 6.4 6.4 5 12 10.6 17.6 5 19 6.4 13.4 12 19 17.6 17.6 19 12 13.4Z"></path>
+                <svg viewBox="0 -960 960 960" width="17" height="17">
+                    <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"></path>
                 </svg>
             </div>
             <span class="header-title">Tsuzuku</span>
-            <span class="selected-count" tabindex="0"></span>
-            <a href="./tags/" rel="noreferrer" style="margin-left: 19px;">Tags</a>
+            <span class="selected-count">
+                <a class="count-selected" href="./"></a>
+                <span></span>
+            </span>
+            <a href="./tags/" rel="noreferrer" style="margin-left: 19px;">Index</a>
             <a href="./games/" rel="noreferrer" style="margin-left: 19px;">Games</a>
             <span class="flex-separator"></span>
             <a href="https://github.com/kuzutsu/tsuzuku" rel="noreferrer" target="_blank" style="display: inline-flex; align-items: center; text-decoration: none;">
                 <span>GitHub&nbsp;</span>
-                <svg viewBox="0 0 24 24" height="17" width="17">
-                    <path d="M21 12V19Q21 19.825 20.413 20.413Q19.825 21 19 21H5Q4.175 21 3.587 20.413Q3 19.825 3 19V5Q3 4.175 3.587 3.587Q4.175 3 5 3H12V5H5Q5 5 5 5Q5 5 5 5V19Q5 19 5 19Q5 19 5 19H19Q19 19 19 19Q19 19 19 19V12ZM9.7 15.7 8.3 14.3 17.6 5H14V3H21V10H19V6.4Z"></path>
+                <svg viewBox="0 -960 960 960" height="17" width="17">
+                    <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h560v-280h80v280q0 33-23.5 56.5T760-120H200Zm188-212-56-56 372-372H560v-80h280v280h-80v-144L388-332Z"></path>
                 </svg>
             </a>
-            <span class="changing" style="margin-left: 19px; display: none;">Changing status<span class="el">.</span><span class="lip">.</span><span class="sis">.</span></span>
-            <div class="copy" title="Copy as table" tabindex="0" style="display: none; align-items: center; margin-left: 19px;">
-                <svg viewBox="0 0 24 24" width="17" height="17">
-                    <path d="M5 22q-.825 0-1.413-.587Q3 20.825 3 20V6h2v14h11v2Zm4-4q-.825 0-1.412-.587Q7 16.825 7 16V4q0-.825.588-1.413Q8.175 2 9 2h9q.825 0 1.413.587Q20 3.175 20 4v12q0 .825-.587 1.413Q18.825 18 18 18Zm0-2h9V4H9v12Zm0 0V4v12Z"></path>
+            <!-- <div class="selected-search" title="Search" tabindex="0" style="display: none; align-items: center; margin-right: 19px;">
+                <svg viewBox="0 -960 960 960" width="17" height="17">
+                    <path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"></path>
+                </svg>
+            </div> -->
+            <div class="copy" title="Copy as TSV" tabindex="0" style="display: none; align-items: center; margin-right: 19px;">
+                <svg viewBox="0 -960 960 960" width="17" height="17">
+                    <path d="M360-240q-33 0-56.5-23.5T280-320v-480q0-33 23.5-56.5T360-880h360q33 0 56.5 23.5T800-800v480q0 33-23.5 56.5T720-240H360Zm0-80h360v-480H360v480ZM200-80q-33 0-56.5-23.5T120-160v-560h80v560h440v80H200Zm160-240v-480 480Z"></path>
                 </svg>
             </div>
+            <span class="changing" style="display: none;">Changing status<span class="el">.</span><span class="lip">.</span><span class="sis">.</span></span>
         </header>
         <div class="qualifiers">
-            <div style="height: 100%; overflow: auto; padding: 0 19px; width: 100%;">
+            <div style="height: 100%; padding: 0 19px; width: 100%;">
+                <!-- <div style="align-items: center; color: var(--disabled); display: inline-flex; height: 40px; width: 100%;">※ Search filters only work in full search</div> -->
                 <table style="border-spacing: 0;">
-                    <tr>
+                    <tr class="tr">
                         <td style="font-weight: 500;">App</td>
                         <td></td>
                     </tr>
@@ -140,43 +170,69 @@
                     </tr>
                     <tr>
                         <td><code data-value="is:selected" tabindex="0">is:selected</code></td>
-                        <td>Matches anime you've selected</td>
+                        <td>Matches anime you have selected</td>
                     </tr>
                     <tr>
                         <td><code data-value2="random:" tabindex="0">random:<span style="font-style: italic;">NUMBER</span></code></td>
-                        <td>Randomly selects desired number of anime from search results</td>
+                        <td>Randomly selects desired number of anime from search results<br><br><span style="font-weight: 500;">Tip:</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Use <span class="mono">true</span> to select random number</td>
                     </tr>
                     <tr>
                         <td><code data-value="regex:true" tabindex="0">regex:true</code></td>
-                        <td>Enables regular expression search (recommended with <span class="mono">alt:false</span>)</td>
+                        <td>Enables regular expression search (<span class="mono">giv</span>-mode)<br><br><span style="font-weight: 500;">Tip:</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Recommended to use with <span class="mono">alt:false</span><br><br><span style="font-weight: 500;">Tip:</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Use with <span class="mono">case:true</span> to remove <span class="mono">i</span> flag</td>
                     </tr>
+                </table>
+                <table style="border-spacing: 0;">
                     <tr>
                         <td></td>
                         <td></td>
                     </tr>
-                    <tr>
+                    <tr class="tr">
                         <td style="font-weight: 500;">Database</td>
                         <td></td>
                     </tr>
                     <tr>
-                        <td><code data-value2="episodes:" tabindex="0">episodes:<span style="font-style: italic;">EPISODES</span></code></td>
-                        <td>Matches anime with desired number of episodes</td>
+                        <td><code data-value2="eps:" tabindex="0">eps:<span style="font-style: italic;">EPISODES</span></code></td>
+                        <td>Matches anime with desired number of episodes (accepts <span class="mono">tba</span>)<br><br><span style="font-weight: 500;">Examples:</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="mono">eps:10</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="mono">eps:&gt;1000</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="mono">eps:&gt;=5&&lt;=50</span></td>
+                    </tr>
+                    <tr>
+                        <td><code data-value2="id:" tabindex="0">id:<span style="font-style: italic;">ID</span></code></td>
+                        <td>Matches anime of desired ID<br><br><span style="font-weight: 500;">Examples:</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="mono">id:1</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="mono">id:1|10</span></td>
                     </tr>
                     <tr>
                         <td><code data-value="is:new" tabindex="0">is:new</code></td>
                         <td>Matches anime that were added to the database since last update</td>
                     </tr>
                     <tr>
+                        <td><code data-value="is:now" tabindex="0">is:now</code></td>
+                        <td>Matches anime in the current season</td>
+                    </tr>
+                    <tr>
                         <td><code data-value="is:ongoing" tabindex="0">is:ongoing</code></td>
-                        <td>Matches anime that are ongoing</td>
+                        <td>Matches anime that are still going on</td>
+                    </tr>
+                    <tr>
+                        <td><code data-value="is:r18" tabindex="0">is:r18</code></td>
+                        <td>Matches anime targeted for mature audiences</td>
+                    </tr>
+                    <tr>
+                        <td><code data-value2="related:" tabindex="0">related:<span style="font-style: italic;">ID</span></code></td>
+                        <td>Matches anime that are directly related to desired ID</td>
+                    </tr>
+                    <tr>
+                        <td><code data-value2="related2:" tabindex="0">related2:<span style="font-style: italic;">ID</span></code></td>
+                        <td>Matches anime that are directly and indirectly related to desired ID</td>
                     </tr>
                     <tr>
                         <td><code data-value2="season:" tabindex="0">season:<span style="font-style: italic;">SEASON</span></code></td>
-                        <td>Matches anime in desired season (<span class="mono">winter</span>, <span class="mono">spring</span>, <span class="mono">summer</span>, <span class="mono">fall</span>, <span class="mono">tba</span>)</td>
+                        <td>Matches anime in desired season (<span class="mono">winter</span>, <span class="mono">spring</span>, <span class="mono">summer</span>, <span class="mono">fall</span>, <span class="mono">now</span>, <span class="mono">tba</span>)</td>
+                    </tr>
+                    <tr>
+                        <td><code data-value2="similar:" tabindex="0">similar:<span style="font-style: italic;">ID</span></code></td>
+                        <td>Matches anime that are similar to desired ID</td>
                     </tr>
                     <tr>
                         <td><code data-value2="tag:" tabindex="0">tag:<span style="font-style: italic;">TAG</span></code></td>
-                        <td>Matches anime with desired tag (<a href="./tags/" rel="noreferrer" target="_blank">list of tags</a>)</td>
+                        <td>Matches anime with desired tag<br><br><span style="font-weight: 500;">Examples:</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="mono">tag:comedy</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="mono">tag:!horror</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="mono">tag:based_on_a_light_novel&!isekai</span></td>
                     </tr>
                     <tr>
                         <td><code data-value2="type:" tabindex="0">type:<span style="font-style: italic;">TYPE</span></code></td>
@@ -184,84 +240,125 @@
                     </tr>
                     <tr>
                         <td><code data-value2="year:" tabindex="0">year:<span style="font-style: italic;">YEAR</span></code></td>
-                        <td>Matches anime in desired year</td>
+                        <td>Matches anime in desired year (accepts <span class="mono">now</span>, <span class="mono">tba</span>)<br><br><span style="font-weight: 500;">Examples:</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="mono">year:2020</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="mono">year:&lt;2010</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="mono">year:&lt;=2000&&gt;=1990</span></td>
                     </tr>
+                </table>
+                <table style="border-spacing: 0;">
                     <tr>
                         <td></td>
                         <td></td>
                     </tr>
-                    <tr>
-                        <td style="font-weight: 500;">Personal stats</td>
+                    <tr class="tr">
+                        <td style="font-weight: 500;">Personal list</td>
                         <td></td>
                     </tr>
                     <tr>
-                        <td><code data-value="is:dead" tabindex="0">is:dead</code></td>
-                        <td>Matches anime on your list that were removed from the database</td>
+                        <td><code data-value="is:deleted" tabindex="0">is:deleted</code></td>
+                        <td>Matches anime on your list that are no longer in the database</td>
                     </tr>
                     <tr> 
                         <td><code data-value="is:mismatched" tabindex="0">is:mismatched</code></td>
-                        <td>Matches anime you've completed with progress that is different from the number of episodes</td>
+                        <td>Matches anime you have completed with progress that is different from number of episodes</td>
                     </tr>
                     <tr>
                         <td><code data-value2="progress:" tabindex="0">progress:<span style="font-style: italic;">PROGRESS</span></code></td>
-                        <td>Matches anime with desired progress (absolute or relative to the number of episodes)</td>
-                    </tr>
-                    <tr>
-                        <td><code data-value2="rewatched:" tabindex="0">rewatched:<span style="font-style: italic;">TIMES</span></code></td>
-                        <td>Matches anime you've rewatched desired number of times</td>
+                        <td>Matches anime with desired progress (absolute or relative to number of episodes)<br><br><span style="font-weight: 500;">Examples:</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="mono">progress:10</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="mono">progress:100%</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="mono">progress:&gt;=5&&lt;=50%</span></td>
                     </tr>
                     <tr>
                         <td><code data-value2="status:" tabindex="0">status:<span style="font-style: italic;">STATUS</span></code></td>
-                        <td>Matches anime with desired status (<span class="mono">all</span>, <span class="mono">none</span>, <span class="mono">completed</span>, <span class="mono">dropped</span>, <span class="mono">paused</span>, <span class="mono">planning</span>, <span class="mono">rewatching</span>, <span class="mono">skipping</span>, <span class="mono">watching</span>)</td>
+                        <td>Matches anime with desired status (<span class="mono">all</span>, <span class="mono">none</span>, <span class="mono">completed</span>, <span class="mono">dropped</span>, <span class="mono">paused</span>, <span class="mono">planning</span>, <span class="mono">skipping</span>, <span class="mono">watching</span>)</td>
+                    </tr>
+                    <tr>
+                        <td><code data-value2="watched:" tabindex="0">watched:<span style="font-style: italic;">TIMES</span></code></td>
+                        <td>Matches anime you have watched desired number of times<br><br><span style="font-weight: 500;">Examples:</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="mono">watched:1</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="mono">watched:&gt;0</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="mono">watched:&gt;=5&&lt;=10</span></td>
                     </tr>
                 </table>
             </div>
         </div>
-        <main>
-            <div class="top-container" style="flex-direction: column;">
-                <div class="search-container" style="width: 100%; display: inline-flex; align-items: center; z-index: 4;">
-                    <input class="search" type="search" autocapitalize="off" autocomplete="off" placeholder="Search anime (press Enter for full results)" title="Enter query" style="margin-right: 19px;">
-                    <span class="clear" title="Clear" tabindex="0" style="display: none; align-items: center; margin-right: 19px;">
-                        <svg viewBox="0 0 24 24" width="17" height="17">
-                            <path d="M6.4 19 5 17.6 10.6 12 5 6.4 6.4 5 12 10.6 17.6 5 19 6.4 13.4 12 19 17.6 17.6 19 12 13.4Z"></path>
-                        </svg>
-                    </span>
-                    <span class="help" title="Help" tabindex="0" style="display: inline-flex; align-items: center;">
-                        <svg viewBox="0 0 24 24" width="17" height="17">
-                            <path d="M11.95 18Q12.475 18 12.838 17.637Q13.2 17.275 13.2 16.75Q13.2 16.225 12.838 15.863Q12.475 15.5 11.95 15.5Q11.425 15.5 11.062 15.863Q10.7 16.225 10.7 16.75Q10.7 17.275 11.062 17.637Q11.425 18 11.95 18ZM11.05 14.15H12.9Q12.9 13.325 13.088 12.85Q13.275 12.375 14.15 11.55Q14.8 10.9 15.175 10.312Q15.55 9.725 15.55 8.9Q15.55 7.5 14.525 6.75Q13.5 6 12.1 6Q10.675 6 9.788 6.75Q8.9 7.5 8.55 8.55L10.2 9.2Q10.325 8.75 10.763 8.225Q11.2 7.7 12.1 7.7Q12.9 7.7 13.3 8.137Q13.7 8.575 13.7 9.1Q13.7 9.6 13.4 10.037Q13.1 10.475 12.65 10.85Q11.55 11.825 11.3 12.325Q11.05 12.825 11.05 14.15ZM12 22Q9.95 22 8.125 21.212Q6.3 20.425 4.938 19.075Q3.575 17.725 2.788 15.9Q2 14.075 2 12Q2 9.925 2.788 8.1Q3.575 6.275 4.938 4.925Q6.3 3.575 8.125 2.787Q9.95 2 12 2Q14.1 2 15.925 2.787Q17.75 3.575 19.1 4.925Q20.45 6.275 21.225 8.1Q22 9.925 22 12Q22 14.075 21.225 15.9Q20.45 17.725 19.1 19.075Q17.75 20.425 15.925 21.212Q14.1 22 12 22ZM12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12ZM12 20Q15.35 20 17.675 17.663Q20 15.325 20 12Q20 8.675 17.675 6.337Q15.35 4 12 4Q8.725 4 6.362 6.337Q4 8.675 4 12Q4 15.325 6.362 17.663Q8.725 20 12 20Z"></path>
-                        </svg>
-                    </span>
-                </div>
-                <div class="related-container" style="width: 100%; display: none; align-items: center;">
-                    <span style="overflow: auto; white-space: nowrap; width: 100%;">
-                        <span style="font-weight: 500;">Related to </span>
-                        <span class="related-title"></span>
-                    </span>
-                </div>
+        <div class="top-container">
+            <div class="search-container" style="width: 100%; display: inline-flex; align-items: center; z-index: 4;">
+                <!-- <span class="menu" title="Menu" tabindex="0" style="margin-right: 19px;">
+                    <svg viewBox="0 -960 960 960" width="17" height="17">
+                        <path d="M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z"></path>
+                    </svg>
+                </span> -->
+                <input class="search" type="search" autocapitalize="off" autocomplete="off" placeholder="Search as you type (press Enter for full results)" title="Enter query" style="margin-right: 19px;">
+                <span class="clear" title="Clear" tabindex="0" style="display: none; align-items: center; margin-right: 19px;">
+                    <svg viewBox="0 -960 960 960" width="17" height="17">
+                        <path d="M318-200 120-480l198-280h522v560H318Zm138-120 104-104 104 104 56-56-104-104 104-104-56-56-104 104-104-104-56 56 104 104-104 104 56 56Z"></path>
+                    </svg>
+                </span>
+                <span class="help" title="Help" tabindex="0" style="display: inline-flex; align-items: center;">
+                    <svg viewBox="0 -960 960 960" width="17" height="17">
+                        <path d="M478-240q21 0 35.5-14.5T528-290q0-21-14.5-35.5T478-340q-21 0-35.5 14.5T428-290q0 21 14.5 35.5T478-240Zm-36-154h74q0-33 7.5-52t42.5-52q26-26 41-49.5t15-56.5q0-56-41-86t-97-30q-57 0-92.5 30T342-618l66 26q5-18 22.5-39t53.5-21q32 0 48 17.5t16 38.5q0 20-12 37.5T506-526q-44 39-54 59t-10 73Zm38 314q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"></path>
+                    </svg>
+                </span>
             </div>
+        </div>
+        <main>
             <div class="blur" style="display: none;"></div>
             <div class="nothing" style="display: none;">
                 <span class="results">0 results</span>
                 <span class="flex-separator"></span>
-                <span class="return" tabindex="0">Back to search</span>
                 <span class="seasonal">
-                    <span class="previous">Previous season</span>
-                    <span class="next" style="margin-left: 19px;">Next season</span>
+                    <a class="previous" href="./"></a>
+                    <a class="next" href="./" style="margin-left: 19px;"></a>
                 </span>
-                <span class="current" tabindex="0">Show current season</span>
-                <span class="enter" tabindex="0">Full search (slow)</span>
+                <a class="current" href="./?query=is%253Anow%2520">Show current season</a>
+                <a class="related" href="./"></a>
+                <a class="enter" href="./"></a>
             </div>
             <div class="database-container" style="display: none;"></div>
         </main>
         <footer>
-            <div class="loading">Fetching database<span class="el">.</span><span class="lip">.</span><span class="sis">.</span></div>
+            <div class="loading">Checking personal list<span class="el">.</span><span class="lip">.</span><span class="sis">.</span></div>
+            <span class="reload" title="Reload" tabindex="0" style="display: none; align-items: center; margin-left: 9.5px;">
+                <svg viewBox="0 -960 960 960" width="17" height="17">
+                    <path d="M480-160q-134 0-227-93t-93-227q0-134 93-227t227-93q69 0 132 28.5T720-690v-110h80v280H520v-80h168q-32-56-87.5-88T480-720q-100 0-170 70t-70 170q0 100 70 170t170 70q77 0 139-44t87-116h84q-28 106-114 173t-196 67Z"></path>
+                </svg>
+            </span>
         </footer>
+        <!-- <div id="footer">
+            <div>
+                <div style="align-items: center; display: flex; flex-direction: column; margin: auto;">
+                    <div style="align-items: center; display: flex;">
+                        <svg viewBox="0 -960 960 960" width="17" height="17">
+                            <path d="M320-280q17 0 28.5-11.5T360-320q0-17-11.5-28.5T320-360q-17 0-28.5 11.5T280-320q0 17 11.5 28.5T320-280Zm0-160q17 0 28.5-11.5T360-480q0-17-11.5-28.5T320-520q-17 0-28.5 11.5T280-480q0 17 11.5 28.5T320-440Zm0-160q17 0 28.5-11.5T360-640q0-17-11.5-28.5T320-680q-17 0-28.5 11.5T280-640q0 17 11.5 28.5T320-600Zm120 320h240v-80H440v80Zm0-160h240v-80H440v80Zm0-160h240v-80H440v80ZM200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm0-560v560-560Z"></path>
+                        </svg>
+                    </div>
+                    <div style="align-items: center; display: flex;">Index</div>
+                </div>
+            </div>
+            <div>
+                <div style="align-items: center; display: flex; flex-direction: column; margin: auto;">
+                    <div style="align-items: center; display: flex;">
+                        <svg viewBox="0 -960 960 960" width="17" height="17">
+                            <path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"></path>
+                        </svg>
+                    </div style="align-items: center; display: flex;">
+                    <div>Tracker</div>
+                </div>
+            </div>
+            <div>
+                <div style="align-items: center; display: flex; flex-direction: column; margin: auto;">
+                    <div style="align-items: center; display: flex;">
+                        <svg viewBox="0 -960 960 960" width="17" height="17">
+                            <path d="M352-120H200q-33 0-56.5-23.5T120-200v-152q48 0 84-30.5t36-77.5q0-47-36-77.5T120-568v-152q0-33 23.5-56.5T200-800h160q0-42 29-71t71-29q42 0 71 29t29 71h160q33 0 56.5 23.5T800-720v160q42 0 71 29t29 71q0 42-29 71t-71 29v160q0 33-23.5 56.5T720-120H568q0-50-31.5-85T460-240q-45 0-76.5 35T352-120Zm-152-80h85q24-66 77-93t98-27q45 0 98 27t77 93h85v-240h80q8 0 14-6t6-14q0-8-6-14t-14-6h-80v-240H480v-80q0-8-6-14t-14-6q-8 0-14 6t-6 14v80H200v88q54 20 87 67t33 105q0 57-33 104t-87 68v88Zm260-260Z"></path>
+                        </svg>
+                    </div>
+                    <div style="align-items: center; display: flex;">Games</div>
+                </div>
+            </div>
+        </div> -->
         <script type="module" src="./global.js"></script>
         <script>
             const
                 settings = {
+                    delisted: false,
+                    dimSkipping: true,
                     progress: true,
-                    thumbnails: true
+                    thumbnails: true,
+                    version: 1
                 },
                 settings2 = {};
 
@@ -270,11 +367,11 @@
             try {
                 const map = new Map(Object.entries(JSON.parse(localStorage.getItem('tsuzuku'))));
 
-                for (const [key, value] of Object.entries(settings)) {
+                for (const [key, value2] of Object.entries(settings)) {
                     if (map.has(key)) {
                         settings2[key] = map.get(key);
                     } else {
-                        settings2[key] = value;
+                        settings2[key] = value2;
                     }
                 }
 
@@ -285,8 +382,10 @@
 
             value = JSON.parse(localStorage.getItem('tsuzuku'));
 
+            document.querySelector('#toggle-delisted').checked = value.delisted;
             document.querySelector('#toggle-progress').checked = value.progress;
             document.querySelector('#toggle-thumbnails').checked = value.thumbnails;
+            document.querySelector('#dim-skipping').checked = value.dimSkipping;
 
             if (!value.thumbnails) {
                 document.body.classList.add('hide');
@@ -294,6 +393,10 @@
 
             if (!value.progress) {
                 document.body.classList.add('hide2');
+            }
+
+            if (value.dimSkipping) {
+                document.body.classList.add('dim');
             }
         </script>
         <script defer type="module" src="./index.js"></script>

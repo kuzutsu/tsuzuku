@@ -1,16 +1,46 @@
 .container {
-    display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
     overflow: auto;
+    /* white-space: break-spaces; */
 }
 
-.container div {
-    overflow-wrap: anywhere;
+.columns div {
+    display: flex;
+    /* overflow-wrap: anywhere; */
     padding: 11.5px 19px;
-    width: 250px;
+    width: 100%;
 }
 
-.container .bold:not(:nth-of-type(1)) {
-    margin-top: 17px;
+@media only screen and (min-width: 436px) {
+    .columns {
+        column-gap: 19px;
+        columns: 200px;
+    }
+
+    .columns div {
+        width: 200px;
+    }
+}
+
+.columns div:hover {
+    background: var(--background-hover);
+}
+
+.title {
+    background: var(--background);
+    font-weight: 500;
+    padding: 11.5px 19px;
+    position: sticky;
+    top: 0;
+}
+
+.divide {
+    height: 40px;
+}
+
+.columns a {
+    margin-right: auto;
+}
+
+.columns span {
+    margin-left: 9.5px;
 }

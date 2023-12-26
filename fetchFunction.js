@@ -10,7 +10,7 @@ import {
     SelectRowModule,
     SortModule,
     Tabulator
-} from 'https://cdn.jsdelivr.net/npm/tabulator-tables@5.4.2/dist/js/tabulator_esm.min.js';
+} from 'https://cdn.jsdelivr.net/npm/tabulator-tables@5.4.4/dist/js/tabulator_esm.min.js';
 
 Tabulator.registerModule(
     [
@@ -28,15 +28,23 @@ Tabulator.registerModule(
 );
 
 import {
+    addCommas,
+    removeReserved,
+    searchReplace,
+    source,
+    svg,
+    tagsDelisted
+} from './global.js';
+
+import {
     index,
     qualifiers,
     searchFunction
 } from './index.js';
 
 import {
-    removeReserved,
-    source
-} from './global.js';
+    message
+} from './message.js';
 
 const
     channel =
@@ -46,7 +54,7 @@ const
     data4 = [],
     data5 = [],
     database = [],
-    database2 = {},
+    database2 = new Map(),
     map4 = new Map(),
     selected = {
         s: true,
@@ -56,18 +64,7 @@ const
         dir: 'desc',
         field: 'relevancy'
     },
-    status = ['', 'Completed', 'Dropped', 'Paused', 'Planning', 'Rewatching', 'Skipping', 'Watching'],
-    // move to images
-    svg = {
-        arrow: '<path d="M11 20V7.825L5.4 13.425L4 12L12 4L20 12L18.6 13.425L13 7.825V20Z"></path>',
-        blank: '<path d="M5 21Q4.175 21 3.587 20.413Q3 19.825 3 19V5Q3 4.175 3.587 3.587Q4.175 3 5 3H19Q19.825 3 20.413 3.587Q21 4.175 21 5V19Q21 19.825 20.413 20.413Q19.825 21 19 21ZM5 19H19Q19 19 19 19Q19 19 19 19V5Q19 5 19 5Q19 5 19 5H5Q5 5 5 5Q5 5 5 5V19Q5 19 5 19Q5 19 5 19Z"></path>',
-        check: '<path d="M5 21Q4.175 21 3.587 20.413Q3 19.825 3 19V5Q3 4.175 3.587 3.587Q4.175 3 5 3H19Q19.825 3 20.413 3.587Q21 4.175 21 5V19Q21 19.825 20.413 20.413Q19.825 21 19 21ZM10.6 16.2 17.65 9.15 16.25 7.75 10.6 13.4 7.75 10.55 6.35 11.95Z"></path>',
-        helpClose: '<path d="M11.95 18Q12.475 18 12.838 17.637Q13.2 17.275 13.2 16.75Q13.2 16.225 12.838 15.863Q12.475 15.5 11.95 15.5Q11.425 15.5 11.062 15.863Q10.7 16.225 10.7 16.75Q10.7 17.275 11.062 17.637Q11.425 18 11.95 18ZM11.05 14.15H12.9Q12.9 13.325 13.088 12.85Q13.275 12.375 14.15 11.55Q14.8 10.9 15.175 10.312Q15.55 9.725 15.55 8.9Q15.55 7.5 14.525 6.75Q13.5 6 12.1 6Q10.675 6 9.788 6.75Q8.9 7.5 8.55 8.55L10.2 9.2Q10.325 8.75 10.763 8.225Q11.2 7.7 12.1 7.7Q12.9 7.7 13.3 8.137Q13.7 8.575 13.7 9.1Q13.7 9.6 13.4 10.037Q13.1 10.475 12.65 10.85Q11.55 11.825 11.3 12.325Q11.05 12.825 11.05 14.15ZM12 22Q9.95 22 8.125 21.212Q6.3 20.425 4.938 19.075Q3.575 17.725 2.788 15.9Q2 14.075 2 12Q2 9.925 2.788 8.1Q3.575 6.275 4.938 4.925Q6.3 3.575 8.125 2.787Q9.95 2 12 2Q14.1 2 15.925 2.787Q17.75 3.575 19.1 4.925Q20.45 6.275 21.225 8.1Q22 9.925 22 12Q22 14.075 21.225 15.9Q20.45 17.725 19.1 19.075Q17.75 20.425 15.925 21.212Q14.1 22 12 22ZM12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12ZM12 20Q15.35 20 17.675 17.663Q20 15.325 20 12Q20 8.675 17.675 6.337Q15.35 4 12 4Q8.725 4 6.362 6.337Q4 8.675 4 12Q4 15.325 6.362 17.663Q8.725 20 12 20Z"></path>',
-        helpOpen: '<path d="M12 22Q9.95 22 8.125 21.212Q6.3 20.425 4.938 19.075Q3.575 17.725 2.788 15.9Q2 14.075 2 12Q2 9.925 2.788 8.1Q3.575 6.275 4.938 4.925Q6.3 3.575 8.125 2.787Q9.95 2 12 2Q14.1 2 15.925 2.787Q17.75 3.575 19.1 4.925Q20.45 6.275 21.225 8.1Q22 9.925 22 12Q22 14.075 21.225 15.9Q20.45 17.725 19.1 19.075Q17.75 20.425 15.925 21.212Q14.1 22 12 22ZM11.05 14.15H12.9Q12.9 13.325 13.088 12.85Q13.275 12.375 14.15 11.55Q14.8 10.9 15.175 10.312Q15.55 9.725 15.55 8.9Q15.55 7.5 14.525 6.75Q13.5 6 12.1 6Q10.675 6 9.788 6.75Q8.9 7.5 8.55 8.55L10.2 9.2Q10.325 8.75 10.763 8.225Q11.2 7.7 12.1 7.7Q12.9 7.7 13.3 8.137Q13.7 8.575 13.7 9.1Q13.7 9.6 13.4 10.037Q13.1 10.475 12.65 10.85Q11.55 11.825 11.3 12.325Q11.05 12.825 11.05 14.15ZM11.95 18Q12.475 18 12.838 17.637Q13.2 17.275 13.2 16.75Q13.2 16.225 12.838 15.863Q12.475 15.5 11.95 15.5Q11.425 15.5 11.062 15.863Q10.7 16.225 10.7 16.75Q10.7 17.275 11.062 17.637Q11.425 18 11.95 18Z"></path>',
-        indeterminate: '<path d="M7 13H17V11H7ZM5 21Q4.175 21 3.587 20.413Q3 19.825 3 19V5Q3 4.175 3.587 3.587Q4.175 3 5 3H19Q19.825 3 20.413 3.587Q21 4.175 21 5V19Q21 19.825 20.413 20.413Q19.825 21 19 21Z"></path>',
-        link: '<path d="M21 12V19Q21 19.825 20.413 20.413Q19.825 21 19 21H5Q4.175 21 3.587 20.413Q3 19.825 3 19V5Q3 4.175 3.587 3.587Q4.175 3 5 3H12V5H5Q5 5 5 5Q5 5 5 5V19Q5 19 5 19Q5 19 5 19H19Q19 19 19 19Q19 19 19 19V12ZM9.7 15.7 8.3 14.3 17.6 5H14V3H21V10H19V6.4Z"></path>',
-        play: '<path d="M8 19V5L19 12Z"></path>'
-    },
+    status = ['', 'Completed', 'Dropped', 'Paused', 'Planning', 'Skipping', 'Watching'],
     title = document.title,
     years = new Set(),
     years2 = [];
@@ -79,6 +76,7 @@ let built = false,
     error = false,
     error2 = false,
     f = null,
+    hasProgress = false,
     r = null,
     statuses = '',
     t = null,
@@ -189,6 +187,10 @@ function clickCell(e, cell, shift) {
     }
 
     if (cell.getTable().getSelectedRows().length) {
+        const
+            hstatus = document.createElement('select'),
+            ids = [];
+
         let active = 0;
 
         index.lastRow = cell.getRow();
@@ -201,10 +203,17 @@ function clickCell(e, cell, shift) {
             }
         }
 
-        document.querySelector('.selected-count').innerHTML = `<span class="count-selected">${cell.getTable().getSelectedRows().length} selected</span>`;
+        for (const value of cell.getTable().getSelectedRows()) {
+            ids.push(value.getData().sources.slice('https://myanimelist.net/anime/'.length));
+        }
+
+        document.querySelector('.count-selected').href = `./?query=${escape(encodeURIComponent(`id:${ids.join('|')} `))}`;
+        document.querySelector('.count-selected').innerHTML = `${addCommas(cell.getTable().getSelectedRows().length)} selected`;
 
         if (cell.getTable().getSelectedRows().length > active) {
-            document.querySelector('.selected-count').innerHTML += `<span>${active} from search results</span>`;
+            document.querySelector('.selected-count span').innerHTML = `${addCommas(active)} from search results`;
+        } else {
+            document.querySelector('.selected-count span').innerHTML = '';
         }
 
         if (document.querySelector('header .menu')) {
@@ -219,8 +228,6 @@ function clickCell(e, cell, shift) {
             document.querySelector('.copy').style.display = 'inline-flex';
         }
 
-        const hstatus = document.createElement('select');
-
         if (error) {
             hstatus.disabled = true;
         }
@@ -229,7 +236,7 @@ function clickCell(e, cell, shift) {
         hstatus.title = 'Status';
         hstatus.innerHTML = `<option selected disabled>Status</option>${statuses}`;
         hstatus.addEventListener('change', () => {
-            if (error) {
+            if (disableSelection || error) {
                 return;
             }
 
@@ -237,8 +244,11 @@ function clickCell(e, cell, shift) {
 
             channelMessage();
             disableSelection = true;
+
+            document.body.classList.add('error');
             document.querySelector('.changing').style.display = '';
             document.querySelector('.copy').style.display = 'none';
+
             hstatus.style.display = 'none';
 
             for (const value of cell.getTable().getSelectedRows()) {
@@ -246,7 +256,7 @@ function clickCell(e, cell, shift) {
                     new Promise((resolve2) => {
                         const
                             p = value.getData().progress || '0',
-                            r2 = value.getData().rewatched || '0';
+                            w2 = value.getData().watched || '0';
 
                         if (hstatus.value) {
                             const d2 = db2().add({
@@ -257,23 +267,25 @@ function clickCell(e, cell, shift) {
                                         : ['Planning', 'Skipping'].indexOf(hstatus.value) > -1
                                             ? ''
                                             : '0',
-                                rewatched:
-                                    ['Planning', 'Skipping'].indexOf(hstatus.value) > -1
-                                        ? ''
-                                        : '0',
                                 season: value.getData().season,
                                 source: value.getData().sources,
                                 status: hstatus.value,
                                 title: value.getData().title,
-                                type: value.getData().type
+                                type: value.getData().type,
+                                watched:
+                                    hstatus.value === 'Completed'
+                                        ? 1
+                                        : ['Planning', 'Skipping'].indexOf(hstatus.value) > -1
+                                            ? ''
+                                            : '0'
                             });
 
                             d2.onsuccess = () => {
                                 if (hstatus.value === 'Completed') {
                                     value.update({
                                         progress: value.getData().episodes || '0',
-                                        rewatched: '0',
-                                        status: hstatus.value
+                                        status: hstatus.value,
+                                        watched: 1
                                     });
 
                                     resolve2();
@@ -283,8 +295,8 @@ function clickCell(e, cell, shift) {
                                 if (hstatus.value === 'Planning' || hstatus.value === 'Skipping') {
                                     value.update({
                                         progress: '',
-                                        rewatched: '',
-                                        status: hstatus.value
+                                        status: hstatus.value,
+                                        watched: ''
                                     });
 
                                     resolve2();
@@ -293,8 +305,8 @@ function clickCell(e, cell, shift) {
 
                                 value.update({
                                     progress: '0',
-                                    rewatched: '0',
-                                    status: hstatus.value
+                                    status: hstatus.value,
+                                    watched: '0'
                                 });
 
                                 resolve2();
@@ -307,19 +319,22 @@ function clickCell(e, cell, shift) {
                                         status2 = result.status;
 
                                     if (hstatus.value === 'Completed') {
-                                        result.progress = value.getData().episodes || '0';
-                                        result.rewatched =
-                                            status2 === 'Rewatching'
-                                                ? Number(value.getData().rewatched) + 1
-                                                : value.getData().rewatched;
+                                        result.progress =
+                                            Number(value.getData().progress) === Number(value.getData().episodes)
+                                                ? value.getData().episodes
+                                                : value.getData().progress || '0';
+                                        result.watched =
+                                            status2 === 'Completed'
+                                                ? value.getData().watched
+                                                : Number(value.getData().watched) + 1;
                                     } else {
                                         if (hstatus.value === 'Planning' || hstatus.value === 'Skipping') {
                                             result.progress = '';
-                                            result.rewatched = '';
+                                            result.watched = '';
                                         } else {
                                             if (status2 === 'Planning' || status2 === 'Skipping') {
                                                 result.progress = '0';
-                                                result.rewatched = '0';
+                                                result.watched = '0';
                                             }
                                         }
                                     }
@@ -329,6 +344,7 @@ function clickCell(e, cell, shift) {
                                     db2().put(result).onsuccess = () => {
                                         if (hstatus.value === 'Completed') {
                                             value.getElement().dataset.progress = '';
+                                            value.getElement().dataset.mismatched = value.getData().episodes && value.getData().status === 'Completed' && Number(value.getElement().dataset.progress || value.getData().progress) !== Number(value.getData().episodes);
 
                                             // force update
                                             value.update({
@@ -336,11 +352,32 @@ function clickCell(e, cell, shift) {
                                             });
 
                                             value.update({
-                                                progress: value.getData().episodes || '0',
-                                                rewatched:
-                                                    status2 === 'Rewatching'
-                                                        ? Number(value.getData().rewatched) + 1
-                                                        : value.getData().rewatched,
+                                                progress:
+                                                    Number(value.getData().progress) === Number(value.getData().episodes)
+                                                        ? value.getData().episodes
+                                                        : result.progress || '0',
+                                                status: hstatus.value,
+                                                watched:
+                                                    status2 === 'Completed'
+                                                        ? value.getData().watched
+                                                        : Number(value.getData().watched) + 1
+                                            });
+
+                                            resolve2();
+                                            return;
+                                        }
+
+                                        if (hstatus.value === 'Watching' && status2 === 'Completed') {
+                                            value.getElement().dataset.progress = '';
+                                            value.getElement().dataset.mismatched = value.getData().episodes && value.getData().status === 'Completed' && Number(value.getElement().dataset.progress || value.getData().progress) !== Number(value.getData().episodes);
+
+                                            // force update
+                                            value.update({
+                                                progress: ''
+                                            });
+
+                                            value.update({
+                                                progress: '0',
                                                 status: hstatus.value
                                             });
 
@@ -350,11 +387,12 @@ function clickCell(e, cell, shift) {
 
                                         if (hstatus.value === 'Planning' || hstatus.value === 'Skipping') {
                                             value.getElement().dataset.progress = '';
+                                            value.getElement().dataset.mismatched = value.getData().episodes && value.getData().status === 'Completed' && Number(value.getElement().dataset.progress || value.getData().progress) !== Number(value.getData().episodes);
 
                                             value.update({
                                                 progress: '',
-                                                rewatched: '',
-                                                status: hstatus.value
+                                                status: hstatus.value,
+                                                watched: ''
                                             });
 
                                             resolve2();
@@ -364,8 +402,8 @@ function clickCell(e, cell, shift) {
                                         if (status2 === 'Planning' || status2 === 'Skipping') {
                                             value.update({
                                                 progress: '0',
-                                                rewatched: '0',
-                                                status: hstatus.value
+                                                status: hstatus.value,
+                                                watched: '0'
                                             });
 
                                             resolve2();
@@ -379,8 +417,8 @@ function clickCell(e, cell, shift) {
 
                                         value.update({
                                             progress: p,
-                                            rewatched: r2,
-                                            status: hstatus.value
+                                            status: hstatus.value,
+                                            watched: w2
                                         });
 
                                         resolve2();
@@ -390,11 +428,12 @@ function clickCell(e, cell, shift) {
                         } else {
                             db2().delete(value.getData().sources).onsuccess = () => {
                                 value.getElement().dataset.progress = '';
+                                value.getElement().dataset.mismatched = value.getData().episodes && value.getData().status === 'Completed' && Number(value.getElement().dataset.progress || value.getData().progress) !== Number(value.getData().episodes);
 
                                 value.update({
                                     progress: '',
-                                    rewatched: '',
-                                    status: ''
+                                    status: '',
+                                    watched: ''
                                 });
 
                                 resolve2();
@@ -406,28 +445,43 @@ function clickCell(e, cell, shift) {
 
             Promise.all(ddd).then(() => {
                 disableSelection = false;
+
+                document.body.classList.remove('error');
                 document.querySelector('.changing').style.display = 'none';
                 document.querySelector('.copy').style.display = 'inline-flex';
+
                 hstatus.style.display = '';
             });
         });
 
-        document.querySelector('.copy').insertAdjacentElement('beforebegin', hstatus);
+        document.querySelector('.copy').insertAdjacentElement('afterend', hstatus);
         document.head.querySelector('[name="theme-color"]').content = '#a6c6f7';
 
         if (selected.s) {
-            cell.getColumn().getElement().querySelector('.tabulator-col-title').title = 'Unselect all search results';
-            cell.getColumn().getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.check;
-            cell.getColumn().getElement().querySelector('.tabulator-col-title svg').style.fill = 'var(--selected-header)';
+            cell.getTable().getColumn('picture').getElement().querySelector('.tabulator-col-title').title = 'Deselect all search results';
+            cell.getTable().getColumn('picture').getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.check;
+            cell.getTable().getColumn('picture').getElement().querySelector('.tabulator-col-title svg').style.fill = 'var(--selected-header)';
+
+            cell.getTable().getColumn('picture2').getElement().querySelector('.tabulator-col-title').title = 'Deselect all search results';
+            cell.getTable().getColumn('picture2').getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.check;
+            cell.getTable().getColumn('picture2').getElement().querySelector('.tabulator-col-title svg').style.fill = 'var(--selected-header)';
         } else {
             if (selected.ss.length) {
-                cell.getColumn().getElement().querySelector('.tabulator-col-title').title = 'Unselect all search results';
-                cell.getColumn().getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.indeterminate;
-                cell.getColumn().getElement().querySelector('.tabulator-col-title svg').style.fill = 'var(--selected-header)';
+                cell.getTable().getColumn('picture').getElement().querySelector('.tabulator-col-title').title = 'Deselect all search results';
+                cell.getTable().getColumn('picture').getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.indeterminate;
+                cell.getTable().getColumn('picture').getElement().querySelector('.tabulator-col-title svg').style.fill = 'var(--selected-header)';
+
+                cell.getTable().getColumn('picture2').getElement().querySelector('.tabulator-col-title').title = 'Deselect all search results';
+                cell.getTable().getColumn('picture2').getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.indeterminate;
+                cell.getTable().getColumn('picture2').getElement().querySelector('.tabulator-col-title svg').style.fill = 'var(--selected-header)';
             } else {
-                cell.getColumn().getElement().querySelector('.tabulator-col-title').title = 'Select all search results';
-                cell.getColumn().getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.blank;
-                cell.getColumn().getElement().querySelector('.tabulator-col-title svg').style.fill = '';
+                cell.getTable().getColumn('picture').getElement().querySelector('.tabulator-col-title').title = 'Select all search results';
+                cell.getTable().getColumn('picture').getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.blank;
+                cell.getTable().getColumn('picture').getElement().querySelector('.tabulator-col-title svg').style.fill = '';
+
+                cell.getTable().getColumn('picture2').getElement().querySelector('.tabulator-col-title').title = 'Select all search results';
+                cell.getTable().getColumn('picture2').getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.blank;
+                cell.getTable().getColumn('picture2').getElement().querySelector('.tabulator-col-title svg').style.fill = '';
             }
         }
     } else {
@@ -449,9 +503,13 @@ function clickCell(e, cell, shift) {
 
         document.head.querySelector('[name="theme-color"]').content = '#000';
 
-        cell.getColumn().getElement().querySelector('.tabulator-col-title').title = 'Select all search results';
-        cell.getColumn().getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.blank;
-        cell.getColumn().getElement().querySelector('.tabulator-col-title svg').style.fill = '';
+        cell.getTable().getColumn('picture').getElement().querySelector('.tabulator-col-title').title = 'Select all search results';
+        cell.getTable().getColumn('picture').getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.blank;
+        cell.getTable().getColumn('picture').getElement().querySelector('.tabulator-col-title svg').style.fill = '';
+
+        cell.getTable().getColumn('picture2').getElement().querySelector('.tabulator-col-title').title = 'Select all search results';
+        cell.getTable().getColumn('picture2').getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.blank;
+        cell.getTable().getColumn('picture2').getElement().querySelector('.tabulator-col-title svg').style.fill = '';
     }
 }
 
@@ -486,6 +544,10 @@ function clickHeader(e, column) {
     }
 
     if (column.getTable().getSelectedRows().length) {
+        const
+            hstatus = document.createElement('select'),
+            ids = [];
+
         let active = 0;
 
         document.querySelector('header').classList.add('header-selected');
@@ -496,10 +558,17 @@ function clickHeader(e, column) {
             }
         }
 
-        document.querySelector('.selected-count').innerHTML = `<span class="count-selected">${column.getTable().getSelectedRows().length} selected</span>`;
+        for (const value of column.getTable().getSelectedRows()) {
+            ids.push(value.getData().sources.slice('https://myanimelist.net/anime/'.length));
+        }
+
+        document.querySelector('.count-selected').href = `./?query=${escape(encodeURIComponent(`id:${ids.join('|')} `))}`;
+        document.querySelector('.count-selected').innerHTML = `${addCommas(column.getTable().getSelectedRows().length)} selected`;
 
         if (column.getTable().getSelectedRows().length > active) {
-            document.querySelector('.selected-count').innerHTML += `<span>${active} from search results</span>`;
+            document.querySelector('.selected-count span').innerHTML = `${addCommas(active)} from search results`;
+        } else {
+            document.querySelector('.selected-count span').innerHTML = '';
         }
 
         if (document.querySelector('header .menu')) {
@@ -507,13 +576,21 @@ function clickHeader(e, column) {
         }
 
         if (selected.s) {
-            column.getElement().querySelector('.tabulator-col-title').title = 'Unselect all search results';
-            column.getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.check;
-            column.getElement().querySelector('.tabulator-col-title svg').style.fill = 'var(--selected-header)';
+            column.getTable().getColumn('picture').getElement().querySelector('.tabulator-col-title').title = 'Deselect all search results';
+            column.getTable().getColumn('picture').getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.check;
+            column.getTable().getColumn('picture').getElement().querySelector('.tabulator-col-title svg').style.fill = 'var(--selected-header)';
+
+            column.getTable().getColumn('picture2').getElement().querySelector('.tabulator-col-title').title = 'Deselect all search results';
+            column.getTable().getColumn('picture2').getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.check;
+            column.getTable().getColumn('picture2').getElement().querySelector('.tabulator-col-title svg').style.fill = 'var(--selected-header)';
         } else {
-            column.getElement().querySelector('.tabulator-col-title').title = 'Select all search results';
-            column.getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.blank;
-            column.getElement().querySelector('.tabulator-col-title svg').style.fill = '';
+            column.getTable().getColumn('picture').getElement().querySelector('.tabulator-col-title').title = 'Select all search results';
+            column.getTable().getColumn('picture').getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.blank;
+            column.getTable().getColumn('picture').getElement().querySelector('.tabulator-col-title svg').style.fill = '';
+
+            column.getTable().getColumn('picture2').getElement().querySelector('.tabulator-col-title').title = 'Select all search results';
+            column.getTable().getColumn('picture2').getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.blank;
+            column.getTable().getColumn('picture2').getElement().querySelector('.tabulator-col-title svg').style.fill = '';
         }
 
         if (document.querySelector('.header-status')) {
@@ -524,8 +601,6 @@ function clickHeader(e, column) {
             document.querySelector('.copy').style.display = 'inline-flex';
         }
 
-        const hstatus = document.createElement('select');
-
         if (error) {
             hstatus.disabled = true;
         }
@@ -534,7 +609,7 @@ function clickHeader(e, column) {
         hstatus.title = 'Status';
         hstatus.innerHTML = `<option selected disabled>Status</option>${statuses}`;
         hstatus.addEventListener('change', () => {
-            if (error) {
+            if (disableSelection || error) {
                 return;
             }
 
@@ -542,8 +617,11 @@ function clickHeader(e, column) {
 
             channelMessage();
             disableSelection = true;
+
+            document.body.classList.add('error');
             document.querySelector('.changing').style.display = '';
             document.querySelector('.copy').style.display = 'none';
+
             hstatus.style.display = 'none';
 
             for (const value of column.getTable().getSelectedRows()) {
@@ -551,7 +629,7 @@ function clickHeader(e, column) {
                     new Promise((resolve2) => {
                         const
                             p = value.getData().progress || '0',
-                            r2 = value.getData().rewatched || '0';
+                            w2 = value.getData().watched || '0';
 
                         if (hstatus.value) {
                             const d2 = db2().add({
@@ -562,23 +640,25 @@ function clickHeader(e, column) {
                                         : ['Planning', 'Skipping'].indexOf(hstatus.value) > -1
                                             ? ''
                                             : '0',
-                                rewatched:
-                                    ['Planning', 'Skipping'].indexOf(hstatus.value) > -1
-                                        ? ''
-                                        : '0',
                                 season: value.getData().season,
                                 source: value.getData().sources,
                                 status: hstatus.value,
                                 title: value.getData().title,
-                                type: value.getData().type
+                                type: value.getData().type,
+                                watched:
+                                    hstatus.value === 'Completed'
+                                        ? 1
+                                        : ['Planning', 'Skipping'].indexOf(hstatus.value) > -1
+                                            ? ''
+                                            : '0'
                             });
 
                             d2.onsuccess = () => {
                                 if (hstatus.value === 'Completed') {
                                     value.update({
                                         progress: value.getData().episodes || '0',
-                                        rewatched: '0',
-                                        status: hstatus.value
+                                        status: hstatus.value,
+                                        watched: 1
                                     });
 
                                     resolve2();
@@ -588,8 +668,8 @@ function clickHeader(e, column) {
                                 if (hstatus.value === 'Planning' || hstatus.value === 'Skipping') {
                                     value.update({
                                         progress: '',
-                                        rewatched: '',
-                                        status: hstatus.value
+                                        status: hstatus.value,
+                                        watched: ''
                                     });
 
                                     resolve2();
@@ -598,8 +678,8 @@ function clickHeader(e, column) {
 
                                 value.update({
                                     progress: '0',
-                                    rewatched: '0',
-                                    status: hstatus.value
+                                    status: hstatus.value,
+                                    watched: '0'
                                 });
 
                                 resolve2();
@@ -612,19 +692,22 @@ function clickHeader(e, column) {
                                         status2 = result.status;
 
                                     if (hstatus.value === 'Completed') {
-                                        result.progress = value.getData().episodes || '0';
-                                        result.rewatched =
-                                            status2 === 'Rewatching'
-                                                ? Number(value.getData().rewatched) + 1
-                                                : value.getData().rewatched;
+                                        result.progress =
+                                            Number(value.getData().progress) === Number(value.getData().episodes)
+                                                ? value.getData().episodes
+                                                : value.getData().progress || '0';
+                                        result.watched =
+                                            status2 === 'Completed'
+                                                ? value.getData().watched
+                                                : Number(value.getData().watched) + 1;
                                     } else {
                                         if (hstatus.value === 'Planning' || hstatus.value === 'Skipping') {
                                             result.progress = '';
-                                            result.rewatched = '';
+                                            result.watched = '';
                                         } else {
                                             if (status2 === 'Planning' || status2 === 'Skipping') {
                                                 result.progress = '0';
-                                                result.rewatched = '0';
+                                                result.watched = '0';
                                             }
                                         }
                                     }
@@ -634,6 +717,7 @@ function clickHeader(e, column) {
                                     db2().put(result).onsuccess = () => {
                                         if (hstatus.value === 'Completed') {
                                             value.getElement().dataset.progress = '';
+                                            value.getElement().dataset.mismatched = value.getData().episodes && value.getData().status === 'Completed' && Number(value.getElement().dataset.progress || value.getData().progress) !== Number(value.getData().episodes);
 
                                             // force update
                                             value.update({
@@ -641,11 +725,32 @@ function clickHeader(e, column) {
                                             });
 
                                             value.update({
-                                                progress: value.getData().episodes || '0',
-                                                rewatched:
-                                                    status2 === 'Rewatching'
-                                                        ? Number(value.getData().rewatched) + 1
-                                                        : value.getData().rewatched,
+                                                progress:
+                                                    Number(value.getData().progress) === Number(value.getData().episodes)
+                                                        ? value.getData().episodes
+                                                        : result.progress || '0',
+                                                status: hstatus.value,
+                                                watched:
+                                                    status2 === 'Completed'
+                                                        ? value.getData().watched
+                                                        : Number(value.getData().watched) + 1
+                                            });
+
+                                            resolve2();
+                                            return;
+                                        }
+
+                                        if (hstatus.value === 'Watching' && status2 === 'Completed') {
+                                            value.getElement().dataset.progress = '';
+                                            value.getElement().dataset.mismatched = value.getData().episodes && value.getData().status === 'Completed' && Number(value.getElement().dataset.progress || value.getData().progress) !== Number(value.getData().episodes);
+
+                                            // force update
+                                            value.update({
+                                                progress: ''
+                                            });
+
+                                            value.update({
+                                                progress: '0',
                                                 status: hstatus.value
                                             });
 
@@ -655,11 +760,12 @@ function clickHeader(e, column) {
 
                                         if (hstatus.value === 'Planning' || hstatus.value === 'Skipping') {
                                             value.getElement().dataset.progress = '';
+                                            value.getElement().dataset.mismatched = value.getData().episodes && value.getData().status === 'Completed' && Number(value.getElement().dataset.progress || value.getData().progress) !== Number(value.getData().episodes);
 
                                             value.update({
                                                 progress: '',
-                                                rewatched: '',
-                                                status: hstatus.value
+                                                status: hstatus.value,
+                                                watched: ''
                                             });
 
                                             resolve2();
@@ -669,8 +775,8 @@ function clickHeader(e, column) {
                                         if (status2 === 'Planning' || status2 === 'Skipping') {
                                             value.update({
                                                 progress: '0',
-                                                rewatched: '0',
-                                                status: hstatus.value
+                                                status: hstatus.value,
+                                                watched: '0'
                                             });
 
                                             resolve2();
@@ -684,8 +790,8 @@ function clickHeader(e, column) {
 
                                         value.update({
                                             progress: p,
-                                            rewatched: r2,
-                                            status: hstatus.value
+                                            status: hstatus.value,
+                                            watched: w2
                                         });
 
                                         resolve2();
@@ -695,11 +801,12 @@ function clickHeader(e, column) {
                         } else {
                             db2().delete(value.getData().sources).onsuccess = () => {
                                 value.getElement().dataset.progress = '';
+                                value.getElement().dataset.mismatched = value.getData().episodes && value.getData().status === 'Completed' && Number(value.getElement().dataset.progress || value.getData().progress) !== Number(value.getData().episodes);
 
                                 value.update({
                                     progress: '',
-                                    rewatched: '',
-                                    status: ''
+                                    status: '',
+                                    watched: ''
                                 });
 
                                 resolve2();
@@ -711,19 +818,27 @@ function clickHeader(e, column) {
 
             Promise.all(ddd).then(() => {
                 disableSelection = false;
+
+                document.body.classList.remove('error');
                 document.querySelector('.changing').style.display = 'none';
                 document.querySelector('.copy').style.display = 'inline-flex';
+
                 hstatus.style.display = '';
             });
         });
 
-        document.querySelector('.copy').insertAdjacentElement('beforebegin', hstatus);
+        document.querySelector('.copy').insertAdjacentElement('afterend', hstatus);
         document.head.querySelector('[name="theme-color"]').content = '#a6c6f7';
     } else {
         document.querySelector('header').classList.remove('header-selected');
-        column.getElement().querySelector('.tabulator-col-title').title = 'Select all search results';
-        column.getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.blank;
-        column.getElement().querySelector('.tabulator-col-title svg').style.fill = '';
+
+        column.getTable().getColumn('picture').getElement().querySelector('.tabulator-col-title').title = 'Select all search results';
+        column.getTable().getColumn('picture').getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.blank;
+        column.getTable().getColumn('picture').getElement().querySelector('.tabulator-col-title svg').style.fill = '';
+
+        column.getTable().getColumn('picture2').getElement().querySelector('.tabulator-col-title').title = 'Select all search results';
+        column.getTable().getColumn('picture2').getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.blank;
+        column.getTable().getColumn('picture2').getElement().querySelector('.tabulator-col-title svg').style.fill = '';
 
         if (document.querySelector('.header-status')) {
             document.querySelector('.header-status').remove();
@@ -839,7 +954,7 @@ function customSort(e, column) {
 }
 
 function quick() {
-    if (index.quick && !index.related) {
+    if (index.quick) {
         return ' (quick)';
     }
 
@@ -849,125 +964,144 @@ function quick() {
 if (channel) {
     channel.onmessage = () => {
         error = true;
-
-        document.querySelectorAll('select[title="Status"]').forEach((element) => {
-            element.disabled = true;
-        });
+        document.body.classList.add('.error');
     };
 }
 
-fetch(source)
-    .then((response) => response.json())
-    .then((data) => {
-        const d = data.data;
+new Promise((resolve) => {
+    const db = indexedDB.open('tsuzuku', 1);
 
-        updated = data.lastUpdate;
+    db.onupgradeneeded = (event) => {
+        // const
+        //     index2 = [
+        //         'episodes',
+        //         'progress',
+        //         'season',
+        //         'status',
+        //         'title',
+        //         'type',
+        //         'watched'
+        //     ],
+        //     storage = event.target.result.createObjectStore('tsuzuku', {
+        //         keyPath: 'source'
+        //     });
 
-        if (localStorage.getItem('updated') && localStorage.getItem('updated') !== updated) {
-            updated2 = true;
-        }
+        // for (const value of index2) {
+        //     storage.createIndex(value, value, {
+        //         unique: false
+        //     });
+        // }
 
-        localStorage.setItem('updated', updated);
+        event.target.result.createObjectStore('tsuzuku', {
+            keyPath: 'source'
+        });
+    };
 
-        document.querySelector('.loading').innerHTML = 'Building table<span class="el">.</span><span class="lip">.</span><span class="sis">.</span>';
+    db.onerror = () => resolve('error');
 
-        new Promise((resolve) => {
-            const db = indexedDB.open('tsuzuku', 1);
+    db.onsuccess = (event3) => {
+        db2 = () => event3.target.result.transaction('tsuzuku', 'readwrite').objectStore('tsuzuku');
 
-            db.onupgradeneeded = (event) => {
-                const
-                    index2 = [
-                        'episodes',
-                        'progress',
-                        'rewatched',
-                        'season',
-                        'status',
-                        'title',
-                        'type'
-                    ],
-                    storage = event.target.result.createObjectStore('tsuzuku', {
-                        keyPath: 'source'
-                    });
+        db2().openCursor().onsuccess = (event5) => {
+            const cursor = event5.target.result;
 
-                for (const value of index2) {
-                    storage.createIndex(value, value, {
-                        unique: false
-                    });
-                }
-            };
+            if (cursor) {
+                map4.set(cursor.key, {
+                    episodes: cursor.value.episodes,
+                    progress: cursor.value.progress,
+                    season: cursor.value.season,
+                    status: cursor.value.status,
+                    title: cursor.value.title,
+                    type: cursor.value.type,
+                    watched: cursor.value.watched
+                });
 
-            db.onerror = () => resolve('error');
+                cursor.continue();
+            } else {
+                return resolve('success');
+            }
 
-            db.onsuccess = (event3) => {
-                db2 = () => event3.target.result.transaction('tsuzuku', 'readwrite').objectStore('tsuzuku');
+            return null;
+        };
+    };
+}).then((value6) => {
+    document.querySelector('.loading').innerHTML = 'Fetching database<span class="el">.</span><span class="lip">.</span><span class="sis">.</span>';
 
-                db2().openCursor().onsuccess = (event5) => {
-                    const cursor = event5.target.result;
+    fetch(source)
+        .then((response) => response.json())
+        .then((data) => {
+            document.querySelector('.loading').innerHTML = 'Building table<span class="el">.</span><span class="lip">.</span><span class="sis">.</span>';
 
-                    if (cursor) {
-                        map4.set(cursor.key, {
-                            episodes: cursor.value.episodes,
-                            progress: cursor.value.progress,
-                            rewatched: cursor.value.rewatched,
-                            season: cursor.value.season,
-                            status: cursor.value.status,
-                            title: cursor.value.title,
-                            type: cursor.value.type
-                        });
-
-                        cursor.continue();
-                    } else {
-                        return resolve('success');
-                    }
-
-                    return null;
-                };
-            };
-        }).then((value6) => {
             const
+                d = data.data,
                 set4 = localStorage.getItem('data')
                     ? new Set(JSON.parse(localStorage.getItem('data')))
                     : new Set(),
                 set5 = localStorage.getItem('new')
                     ? new Set(JSON.parse(localStorage.getItem('new')))
-                    : new Set();
+                    : new Set(),
+                set6 = new Set();
+
+            updated = data.lastUpdate;
+
+            if (localStorage.getItem('updated') && localStorage.getItem('updated') !== updated) {
+                updated2 = true;
+            }
+
+            localStorage.setItem('updated', updated);
 
             if (value6 === 'error') {
                 error = true;
                 document.body.classList.add('error');
-                document.querySelector('header .menu').remove();
-
-                // document.querySelector('header .menu').title = 'Can\'t track, import, or export without IndexedDB';
             }
 
             for (const ii of status) {
                 statuses += `<option>${ii}</option>`;
             }
 
+            if ([...map4].length) {
+                hasProgress = true;
+            }
+
             for (const i of d) {
                 const
-                    source2 = /myanimelist\.net/gu,
+                    source2 = /myanimelist\.net/giv,
                     ss = i.animeSeason.season,
-                    tt = i.tags.map((tags2) => tags2.replace(/\s/gu, '_')),
+                    tt = new Set(i.tags.map((tags2) => tags2.replace(/&/giv, 'and').replace(/\s/giv, ' ').replace(/-/giv, ' ').replace(/,$/giv, ''))),
                     value = i.sources.filter((sources) => sources.match(source2))[0];
 
-                let n2 = false,
+                let c = false,
+                    n2 = false,
                     p2 = '',
-                    r2 = '',
+                    r3 = false,
                     s = '',
                     s2 = '',
-                    ttt = '';
+                    ttt = '',
+                    w2 = '';
 
-                if (!i.sources.filter((sources) => sources.match(/myanimelist\.net/gu)).length) {
+                if (!i.sources.filter((sources) => sources.match(source2)).length) {
                     continue;
                 }
 
-                if (i.picture === 'https://cdn.myanimelist.net/images/qm_50.gif') {
+                if (set6.has(value)) {
                     continue;
                 }
 
-                if (i.tags.indexOf('anime influenced') > -1) {
-                    continue;
+                if (!JSON.parse(localStorage.getItem('tsuzuku')).delisted) {
+                    if (i.picture === 'https://cdn.myanimelist.net/images/qm_50.gif') {
+                        continue;
+                    }
+
+                    for (const td of tagsDelisted) {
+                        if ([...tt].indexOf(td) > -1) {
+                            c = true;
+                            break;
+                        }
+                    }
+
+                    if (c) {
+                        continue;
+                    }
                 }
 
                 if (ss !== 'UNDEFINED') {
@@ -980,11 +1114,15 @@ fetch(source)
                     s = '';
                 }
 
-                for (const value2 of tt) {
-                    if (database2[value2]) {
-                        database2[value2] += 1;
+                for (const value2 of [...tt]) {
+                    if (database2.has(value2)) {
+                        database2.set(value2, database2.get(value2) + 1);
                     } else {
-                        database2[value2] = 1;
+                        database2.set(value2, 1);
+                    }
+
+                    if (['borderline h', 'hentai'].indexOf(value2) > -1) {
+                        r3 = true;
                     }
                 }
 
@@ -1001,8 +1139,8 @@ fetch(source)
 
                 if (map4.has(value)) {
                     p2 = map4.get(value).progress;
-                    r2 = map4.get(value).rewatched;
                     s2 = map4.get(value).status;
+                    w2 = map4.get(value).watched;
 
                     map4.delete(value);
                 }
@@ -1019,35 +1157,36 @@ fetch(source)
 
                 database.push({
                     alternative: i.title,
-                    dead: false,
+                    deleted: false,
                     episodes: i.episodes || '',
                     new: n2,
                     ongoing: i.status === 'ONGOING',
-                    picture: i.picture,
+                    picture: i.picture.replace(i.picture.substr(i.picture.lastIndexOf('.')), '.webp'),
                     progress: p2,
-                    r18: tt.indexOf('hentai') > -1,
+                    r18: r3,
                     relations: [
                         ...i.sources.filter((sources) => sources.match(source2) && sources !== value),
-                        ...i.relations.filter((relations) => relations.match(/myanimelist\.net/gu))
+                        ...i.relations.filter((relations) => relations.match(source2))
                     ],
                     relevancy: 1,
-                    rewatched: r2,
                     season: s,
                     sources: value,
                     status: s2,
                     synonyms: i.synonyms,
-                    tags: tt,
+                    tags: [...tt],
                     title: i.title,
-                    type: ttt
+                    type: ttt,
+                    watched: w2
                 });
 
                 data4.push(value);
+                set6.add(value);
             }
 
             for (const [key, value] of map4.entries()) {
                 database.push({
                     alternative: value.title,
-                    dead: true,
+                    deleted: true,
                     episodes: value.episodes,
                     new: false,
                     ongoing: false,
@@ -1056,14 +1195,14 @@ fetch(source)
                     r18: false,
                     relations: [],
                     relevancy: 1,
-                    rewatched: value.rewatched,
                     season: value.season,
                     sources: key,
                     status: value.status,
                     synonyms: [],
                     tags: [],
                     title: value.title,
-                    type: value.type
+                    type: value.type,
+                    watched: value.watched
                 });
             }
 
@@ -1153,8 +1292,8 @@ fetch(source)
                             cell.getElement().tabIndex = 0;
 
                             return (
-                                // `<svg class="blank" viewBox="0 0 24 24" width="17" height="17">${svg.blank}</svg>` +
-                                `<svg class="check" viewBox="0 0 24 24" width="17" height="17">${svg.check}</svg>` +
+                                // `<svg class="blank" viewBox="${svg.viewBox}" width="17" height="17">${svg.blank}</svg>` +
+                                `<svg class="check" viewBox="${svg.viewBox}" width="17" height="17">${svg.check}</svg>` +
                                 // replace with document.createElement('img')
                                 // `<img src="${cell.getValue().replace(cell.getValue().substr(cell.getValue().lastIndexOf('.')), '.webp')}" loading="lazy" alt style="height: 40px; object-fit: cover; user-select: none; width: 40px;" onerror="this.src = &quot;${cell.getValue()}&quot;;">`
                                 `<img src="${cell.getValue()}" loading="lazy" alt style="height: 40px; object-fit: cover; user-select: none; width: 40px;">`
@@ -1170,11 +1309,11 @@ fetch(source)
                         titleFormatter: function (h) {
                             h.getElement().title = 'Select all search results';
 
-                            return `<svg viewBox="0 0 24 24" width="17" height="17">${svg.blank}</svg>`;
+                            return `<svg viewBox="${svg.viewBox}" width="17" height="17">${svg.blank}</svg>`;
 
                             // return (
                             //     '<div title="Select all search results">' +
-                            //         `<svg viewBox="0 0 24 24" width="17" height="17">${svg.blank}</svg>` +
+                            //         `<svg viewBox="${svg.viewBox}" width="17" height="17">${svg.blank}</svg>` +
                             //     '</div>'
                             // );
                         },
@@ -1195,10 +1334,10 @@ fetch(source)
 
                             return (
                                 '<span class="blank" title="Select">' +
-                                    `<svg viewBox="0 0 24 24" width="17" height="17">${svg.blank}</svg>` +
+                                    `<svg viewBox="${svg.viewBox}" width="17" height="17">${svg.blank}</svg>` +
                                 '</span>' +
-                                '<span class="check" title="Unselect">' +
-                                    `<svg viewBox="0 0 24 24" width="17" height="17">${svg.check}</svg>` +
+                                '<span class="check" title="Deselect">' +
+                                    `<svg viewBox="${svg.viewBox}" width="17" height="17">${svg.check}</svg>` +
                                 '</span>'
                             );
                         },
@@ -1213,11 +1352,11 @@ fetch(source)
                         titleFormatter: function (h) {
                             h.getElement().title = 'Select all search results';
 
-                            return `<svg viewBox="0 0 24 24" width="17" height="17">${svg.blank}</svg>`;
+                            return `<svg viewBox="${svg.viewBox}" width="17" height="17">${svg.blank}</svg>`;
 
                             // return (
                             //     '<div title="Select all search results">' +
-                            //         `<svg viewBox="0 0 24 24" width="17" height="17">${svg.blank}</svg>` +
+                            //         `<svg viewBox="${svg.viewBox}" width="17" height="17">${svg.blank}</svg>` +
                             //     '</div>'
                             // );
                         },
@@ -1226,48 +1365,75 @@ fetch(source)
                     },
                     {
                         // padding
+                        cellClick: function (e, cell) {
+                            const div = document.createElement('div');
+
+                            let s2 = '',
+                                ttt = '';
+
+                            for (const s of [cell.getRow().getData().title, ...cell.getRow().getData().synonyms]) {
+                                s2 += `<div>${removeReserved(s)}</div>`;
+                            }
+
+                            for (const tt of cell.getRow().getData().tags) {
+                                ttt += `<div data-value="${tt}"><a href="../?query=${escape(encodeURIComponent(`tag:${tt.replace(/\s/giv, '_')} `))}">${tt}</a><span style="color: var(--disabled);">${addCommas(database2.get(tt))}</span></div>`;
+                            }
+
+                            div.id = 'popup';
+                            div.style.alignItems = 'center';
+                            div.style.display = 'flex';
+                            div.style.height = '100%';
+                            div.style.justifyContent = 'center';
+                            div.style.position = 'absolute';
+                            div.style.width = '100%';
+                            div.style.zIndex = 6;
+                            div.innerHTML =
+                                '<div id="overlay3" style="background: var(--background); height: 100%; opacity: 0.8; width: 100%;"></div>' +
+                                '<div id="popup-main">' +
+                                    '<div id="popup-visual">' +
+                                        '<div>' +
+                                            '<div class="popup-header">Visual</div>' +
+                                            `<div><img src="${cell.getRow().getData().picture}"></div>` +
+                                        '</div>' +
+                                    '</div>' +
+                                    '<div id="popup-synonyms">' +
+                                        '<div>' +
+                                            `<div class="popup-header">Synonyms</div>${s2}` +
+                                        '</div>' +
+                                    '</div>' +
+                                    '<div id="popup-tags">' +
+                                        '<div>' +
+                                            `<div class="popup-header">Tags</div>${ttt}` +
+                                        '</div>' +
+                                    '</div>' +
+                                '</div>';
+
+                            div.addEventListener('click', (e2) => {
+                                if (e2.target.id) {
+                                    div.remove();
+                                }
+                            });
+
+                            div.querySelectorAll('#popup-tags > div > div:not(.popup-header)').forEach((element) => {
+                                element.addEventListener('click', () => {
+                                    document.querySelector('.search').value = `tag:${element.dataset.value.replace(/\s/giv, '_')} `;
+                                    searchFunction(cell.getTable());
+
+                                    div.remove();
+                                });
+
+                                element.querySelector('a').addEventListener('click', (e2) => {
+                                    e2.preventDefault();
+                                });
+                            });
+
+                            document.body.appendChild(div);
+                        },
                         clipboard: false,
                         frozen: true,
                         headerSort: false,
                         minWidth: 19,
                         width: 19
-                    },
-                    {
-                        field: 'ongoing',
-                        formatter: function (cell) {
-                            if (!cell.getValue()) {
-                                return '';
-                            }
-
-                            const
-                                a = document.createElement('a'),
-                                v = 'is:ongoing ';
-
-                            a.href = `./?query=${escape(encodeURIComponent(v))}`;
-                            a.title = 'Ongoing';
-                            a.innerHTML = `<svg viewBox="3 2 20 20" width="17" height="17">${svg.play}</svg>`;
-                            a.style.display = 'inline-flex';
-                            a.style.alignItems = 'center';
-                            a.addEventListener('click', (e) => {
-                                e.preventDefault();
-
-                                document.querySelector('.search').value = v;
-                                searchFunction(cell.getTable());
-                            });
-
-                            return a;
-                        },
-                        headerHozAlign: 'center',
-                        headerSort: false,
-                        hozAlign: 'center',
-                        minWidth: 17,
-                        titleClipboard: 'Ongoing',
-                        titleFormatter: function (h) {
-                            h.getElement().title = 'Ongoing';
-
-                            return `<svg viewBox="3 2 20 20" width="17" height="17">${svg.play}</svg>`;
-                        },
-                        width: 17
                     },
                     {
                         // padding
@@ -1283,13 +1449,25 @@ fetch(source)
                             const
                                 div = document.createElement('div'),
                                 fragment = new DocumentFragment(),
+                                m = document.createElement('a'),
+                                m2 = 'is:mismatched ',
                                 span = document.createElement('span');
 
-                            if (!f.length || (f.length && f[0].field === 'title') || index.related) {
+                            if (!f.length || (f.length && f[0].field === 'title')) {
                                 span.innerHTML = removeReserved(cell.getValue());
                             } else {
                                 span.innerHTML = cell.getValue();
                             }
+
+                            m.classList.add('mismatched');
+                            m.href = `./?query=${escape(encodeURIComponent(m2))}`;
+                            m.innerHTML = 'Mismatched';
+                            m.addEventListener('click', (e) => {
+                                e.preventDefault();
+
+                                document.querySelector('.search').value = m2;
+                                searchFunction(cell.getTable());
+                            });
 
                             div.classList.add('indicator');
                             div.style.position = 'absolute';
@@ -1300,46 +1478,76 @@ fetch(source)
                             if (cell.getRow().getData().r18) {
                                 const
                                     r18 = document.createElement('a'),
-                                    v = 'tag:hentai ';
+                                    v2 = 'is:r18 ';
 
                                 r18.classList.add('r18');
-                                r18.href = `./?query=${escape(encodeURIComponent(v))}`;
-                                r18.style.color = 'var(--r18)';
-                                r18.style.fontWeight = 500;
-                                r18.style.userSelect = 'none';
-                                r18.innerHTML = 'R18+';
+                                r18.href = `./?query=${escape(encodeURIComponent(v2))}`;
+                                r18.innerHTML = 'R18';
                                 r18.addEventListener('click', (e) => {
                                     e.preventDefault();
 
-                                    document.querySelector('.search').value = v;
+                                    document.querySelector('.search').value = v2;
                                     searchFunction(cell.getTable());
                                 });
 
-                                span.innerHTML += '<span style="user-select: none;">&nbsp;</span>';
                                 span.appendChild(r18);
+                            }
+
+                            if (cell.getRow().getData().ongoing) {
+                                const
+                                    o = document.createElement('a'),
+                                    v2 = 'is:ongoing ';
+
+                                o.classList.add('ongoing');
+                                o.href = `./?query=${escape(encodeURIComponent(v2))}`;
+                                o.innerHTML = 'Ongoing';
+                                o.addEventListener('click', (e) => {
+                                    e.preventDefault();
+
+                                    document.querySelector('.search').value = v2;
+                                    searchFunction(cell.getTable());
+                                });
+
+                                span.appendChild(o);
                             }
 
                             if (cell.getRow().getData().new) {
                                 const
                                     n = document.createElement('a'),
-                                    v = 'is:new ';
+                                    v2 = 'is:new ';
 
                                 n.classList.add('new');
-                                n.href = `./?query=${escape(encodeURIComponent(v))}`;
-                                n.style.color = 'var(--new)';
-                                n.style.fontWeight = 500;
-                                n.style.userSelect = 'none';
+                                n.href = `./?query=${escape(encodeURIComponent(v2))}`;
                                 n.innerHTML = 'New';
                                 n.addEventListener('click', (e) => {
                                     e.preventDefault();
 
-                                    document.querySelector('.search').value = v;
+                                    document.querySelector('.search').value = v2;
                                     searchFunction(cell.getTable());
                                 });
 
-                                span.innerHTML += '<span style="user-select: none;">&nbsp;</span>';
                                 span.appendChild(n);
                             }
+
+                            if (cell.getRow().getData().deleted) {
+                                const
+                                    d2 = document.createElement('a'),
+                                    v2 = 'is:deleted ';
+
+                                d2.classList.add('deleted');
+                                d2.href = `./?query=${escape(encodeURIComponent(v2))}`;
+                                d2.innerHTML = 'Deleted';
+                                d2.addEventListener('click', (e) => {
+                                    e.preventDefault();
+
+                                    document.querySelector('.search').value = v2;
+                                    searchFunction(cell.getTable());
+                                });
+
+                                span.appendChild(d2);
+                            }
+
+                            span.appendChild(m);
 
                             fragment.appendChild(span);
                             fragment.appendChild(div);
@@ -1374,7 +1582,13 @@ fetch(source)
                     {
                         clipboard: true,
                         field: 'r18',
-                        titleClipboard: 'R18+',
+                        titleClipboard: 'R18',
+                        visible: false
+                    },
+                    {
+                        clipboard: true,
+                        field: 'ongoing',
+                        titleClipboard: 'Ongoing',
                         visible: false
                     },
                     {
@@ -1391,10 +1605,10 @@ fetch(source)
 
                             a.href = cell.getValue();
                             a.classList.add('source');
-                            a.title = 'Go to source';
+                            a.title = 'Go to external database';
                             a.rel = 'noreferrer';
                             a.target = '_blank';
-                            a.innerHTML = `<svg viewBox="0 0 24 24" width="17" height="17">${svg.link}</svg>`;
+                            a.innerHTML = `<svg viewBox="${svg.viewBox}" width="17" height="17">${svg.link}</svg>`;
 
                             return a;
                         },
@@ -1427,6 +1641,9 @@ fetch(source)
                     },
                     {
                         field: 'episodes',
+                        formatter: function (cell) {
+                            return addCommas(cell.getValue());
+                        },
                         headerClick: function (e, column) {
                             customSort(e, column);
                         },
@@ -1515,122 +1732,84 @@ fetch(source)
                         width: 100
                     },
                     {
+                        // padding
+                        clipboard: false,
+                        headerSort: false,
+                        minWidth: 19,
+                        width: 19
+                    },
+                    {
                         clipboard: false,
                         formatter: function (cell) {
-                            const relations = document.createElement('span');
-
-                            if (index.related) {
-                                return '';
-                            }
+                            const
+                                relations = document.createElement('a'),
+                                v = `related:${cell.getRow().getData().sources.slice('https://myanimelist.net/anime/'.length)} `;
 
                             relations.classList.add('relations');
-                            relations.style.fontWeight = 500;
-                            relations.style.userSelect = 'none';
-                            relations.tabIndex = 0;
-                            relations.innerHTML = 'Relations';
-                            relations.addEventListener('click', () => {
-                                const
-                                    temp = [cell.getRow().getData().sources, ...cell.getRow().getData().relations],
-                                    temp2 = [];
+                            relations.href = `./?query=${escape(encodeURIComponent(v))}`;
+                            relations.title = 'Relations';
+                            relations.innerHTML = `<svg viewBox="${svg.viewBox}" width="17" height="17">${svg.relations}</svg>`;
+                            relations.addEventListener('click', (e) => {
+                                e.preventDefault();
 
-                                index.related = true;
-
-                                if (document.querySelector('.search-container').style.display === 'inline-flex') {
-                                    document.querySelector('.search-container').style.display = 'none';
-                                    document.querySelector('.related-container').style.display = 'inline-flex';
-                                }
-
-                                document.querySelector('.related-title').innerHTML = cell.getRow().getData().title;
-                                document.querySelector('.tabulator').style.display = 'none';
-
-                                if (document.querySelector('.searching')) {
-                                    document.querySelector('.searching').remove();
-                                }
-
-                                document.querySelector('main').insertAdjacentHTML('beforeend',
-                                    '<div class="searching">' +
-                                        '<div class="progress" style="left: 0; position: absolute; top: 0;"></div>' +
-                                    '</div>'
-                                );
-
-                                document.querySelector('.nothing .results').innerHTML = 'Searching<span class="el">.</span><span class="lip">.</span><span class="sis">.</span>';
-                                document.querySelector('.nothing .current').style.display = '';
-                                document.querySelector('.nothing .enter').style.display = '';
-
-                                document.querySelector('.seasonal .previous').style.display = '';
-                                document.querySelector('.seasonal .next').style.display = '';
-
-                                function tempFunction() {
-                                    temp.forEach((ttt) => {
-                                        const m = cell.getTable().getData().filter((i) => {
-                                            if (i.relations.indexOf(ttt) > -1) {
-                                                return true;
-                                            }
-
-                                            return false;
-                                        });
-
-                                        m.forEach((mm) => {
-                                            if (temp2.indexOf(mm.sources) === -1) {
-                                                temp.push(mm.sources);
-                                                temp2.push(mm.sources);
-                                            }
-
-                                            mm.relations.forEach((mmm) => {
-                                                if (temp2.indexOf(mmm) === -1) {
-                                                    temp.push(mmm);
-                                                    temp2.push(mmm);
-                                                }
-                                            });
-                                        });
-
-                                        temp.splice(temp.indexOf(ttt), 1);
-                                    });
-
-                                    if (temp.length) {
-                                        tempFunction();
-                                    } else {
-                                        index.dimension = null;
-
-                                        if (temp2.length) {
-                                            document.querySelector('.progress').classList.add('found');
-                                        }
-
-                                        document.querySelector('.progress').style.width = '100%';
-
-                                        if (document.querySelector('.searching')) {
-                                            document.querySelector('.nothing .results').innerHTML = 'Filtering table<span class="el">.</span><span class="lip">.</span><span class="sis">.</span>';
-                                        }
-
-                                        setTimeout(() => {
-                                            cell.getTable().setFilter('sources', 'in',
-                                                temp2.length
-                                                    ? temp2
-                                                    : ['']
-                                            );
-
-                                            cell.getTable().redraw(true);
-
-                                            document.querySelector('.return').style.display = 'inline-flex';
-                                        }, 100);
-                                    }
-                                }
-
-                                setTimeout(tempFunction, 100);
+                                document.querySelector('.search').value = v;
+                                searchFunction(cell.getTable());
                             });
 
                             return relations;
                         },
+                        headerHozAlign: 'center',
                         headerSort: false,
                         hozAlign: 'center',
-                        width: 100
+                        minWidth: 17,
+                        width: 17
+                    },
+                    {
+                        // padding
+                        clipboard: false,
+                        headerSort: false,
+                        minWidth: 19,
+                        width: 19
+                    },
+                    {
+                        clipboard: false,
+                        formatter: function (cell) {
+                            const
+                                similar = document.createElement('a'),
+                                v = `similar:${cell.getRow().getData().sources.slice('https://myanimelist.net/anime/'.length)} `;
+
+                            similar.classList.add('similar');
+                            similar.href = `./?query=${escape(encodeURIComponent(v))}`;
+                            similar.title = 'Similarities';
+                            similar.innerHTML = `<svg viewBox="${svg.viewBox}" width="17" height="17">${svg.similar}</svg>`;
+                            similar.addEventListener('click', (e) => {
+                                e.preventDefault();
+
+                                document.querySelector('.search').value = v;
+                                searchFunction(cell.getTable());
+                            });
+
+                            return similar;
+                        },
+                        headerHozAlign: 'center',
+                        headerSort: false,
+                        hozAlign: 'center',
+                        minWidth: 17,
+                        width: 17
+                    },
+                    {
+                        // padding
+                        clipboard: false,
+                        headerSort: false,
+                        minWidth: 19,
+                        width: 19
                     },
                     {
                         editable: function () {
                             return false;
                         },
                         editor: function (cell, rendered, success) {
-                            if (error) {
+                            if (disableSelection || error) {
                                 return false;
                             }
 
@@ -1642,19 +1821,19 @@ fetch(source)
                             input.placeholder = 0;
                             input.autocomplete = 'off';
                             input.value = cell.getValue();
-                            input.title = 'Enter times rewatched';
+                            input.title = 'Enter times watched';
 
                             input.addEventListener('input', () => {
                                 new Promise((resolve) => {
                                     const d2 = db2().add({
                                         episodes: cell.getRow().getData().episodes,
                                         progress: cell.getRow().getData().progress,
-                                        rewatched: cell.getRow().getData().watched,
                                         season: cell.getRow().getData().season,
                                         source: cell.getRow().getData().sources,
                                         status: cell.getRow().getData().status,
                                         title: cell.getRow().getData().title,
-                                        type: cell.getRow().getData().type
+                                        type: cell.getRow().getData().type,
+                                        watched: cell.getRow().getData().watched
                                     });
 
                                     d2.onerror = () => resolve();
@@ -1664,11 +1843,11 @@ fetch(source)
                                         const result = event.target.result;
 
                                         if (input.value <= 0) {
-                                            result.rewatched = '0';
+                                            result.watched = '0';
                                         } else if (input.value >= 9999) {
-                                            result.rewatched = 9999;
+                                            result.watched = 9999;
                                         } else {
-                                            result.rewatched = input.value;
+                                            result.watched = input.value;
                                         }
 
                                         db2().put(result).onsuccess = () => {
@@ -1702,7 +1881,7 @@ fetch(source)
 
                             return input;
                         },
-                        field: 'rewatched',
+                        field: 'watched',
                         formatter: function (cell) {
                             const span = document.createElement('span');
 
@@ -1712,9 +1891,9 @@ fetch(source)
                                 span.tabIndex = 0;
                             }
 
-                            span.innerHTML = cell.getValue();
+                            span.innerHTML = addCommas(cell.getValue());
                             span.addEventListener('click', () => {
-                                if (error) {
+                                if (disableSelection || error) {
                                     return;
                                 }
 
@@ -1736,7 +1915,7 @@ fetch(source)
                         sorterParams: {
                             alignEmptyValues: 'bottom'
                         },
-                        title: 'Rewatched',
+                        title: 'Watched',
                         width: 100
                     },
                     {
@@ -1744,7 +1923,7 @@ fetch(source)
                             return false;
                         },
                         editor: function (cell, rendered, success) {
-                            if (error) {
+                            if (disableSelection || error) {
                                 return false;
                             }
 
@@ -1794,24 +1973,35 @@ fetch(source)
 
                                             cell.getRow().getElement().dataset.progress = input.value;
                                             cell.getRow().getCell('alternative').getElement().querySelector('.indicator').style.width = `${input.value / cell.getRow().getData().episodes * 100}%`;
+                                            cell.getRow().getCell('alternative').getElement().querySelector('.mismatched').style.display =
+                                                cell.getRow().getData().status === 'Completed' && Number(input.value) !== Number(cell.getRow().getData().episodes)
+                                                    ? ''
+                                                    : 'none';
 
                                             if (Number(input.value) === cell.getRow().getData().episodes) {
                                                 if (cell.getRow().getData().status === 'Completed') {
+                                                    cell.getRow().getElement().dataset.mismatched = false;
                                                     return;
                                                 }
 
-                                                db2().get(cell.getRow().getData().sources).onsuccess = (event2) => {
-                                                    const result2 = event2.target.result;
-                                                    result2.status = 'Completed';
+                                                if (!cell.getRow().getData().ongoing) {
+                                                    db2().get(cell.getRow().getData().sources).onsuccess = (event2) => {
+                                                        const result2 = event2.target.result;
 
-                                                    db2().put(result2).onsuccess = () => {
-                                                        cell.getRow().update({
-                                                            status: 'Completed'
-                                                        });
+                                                        result2.status = 'Completed';
+                                                        result2.watched = Number(result2.watched) + 1;
+
+                                                        db2().put(result2).onsuccess = () => {
+                                                            cell.getRow().update({
+                                                                status: 'Completed',
+                                                                watched: Number(cell.getRow().getData().watched) + 1
+                                                            });
+                                                        };
                                                     };
-                                                };
+                                                }
                                             } else {
-                                                if (['Completed', 'Rewatching', 'Watching'].indexOf(cell.getRow().getData().status) > -1) {
+                                                if (['Completed', 'Watching'].indexOf(cell.getRow().getData().status) > -1) {
+                                                    cell.getRow().getElement().dataset.mismatched = cell.getRow().getData().status === 'Completed' && Number(cell.getRow().getElement().dataset.progress || cell.getRow().getData().progress) !== Number(cell.getRow().getData().episodes);
                                                     return;
                                                 }
 
@@ -1848,7 +2038,7 @@ fetch(source)
                                     success(input.value);
                                 }
 
-                                cell.getElement().querySelector('span:not(.add)').title = `${Math.round(input.value / cell.getRow().getData().episodes * 100)}%`;
+                                cell.getElement().querySelector('span:not(.add)').title = `${addCommas(input.value / cell.getRow().getData().episodes, 'percent')}`;
                             });
 
                             rendered(() => {
@@ -1860,21 +2050,22 @@ fetch(source)
                         field: 'progress',
                         formatter: function (cell) {
                             const
-                                a = document.createElement('a'),
+                                div = document.createElement('div'),
+                                div2 = document.createElement('div'),
                                 fragment = new DocumentFragment(),
+                                separator = document.createElement('div'),
                                 span = document.createElement('span'),
-                                span2 = document.createElement('span'),
-                                v = 'is:mismatched ';
+                                span2 = document.createElement('span');
 
                             cell.getElement().tabIndex = -1;
 
-                            if (['Completed', 'Dropped', 'Paused', 'Rewatching', 'Watching'].indexOf(cell.getRow().getData().status) > -1) {
+                            if (['Completed', 'Dropped', 'Paused', 'Watching'].indexOf(cell.getRow().getData().status) > -1) {
                                 span.tabIndex = 0;
                             }
 
-                            span.innerHTML = cell.getValue();
+                            span.innerHTML = addCommas(cell.getValue());
                             span.addEventListener('click', () => {
-                                if (error) {
+                                if (disableSelection || error) {
                                     return;
                                 }
 
@@ -1885,128 +2076,127 @@ fetch(source)
                                 cell.edit(true);
                             });
 
-                            span2.classList.add('add');
-                            span2.tabIndex = 0;
-                            span2.title = '+1';
-                            span2.style.display = 'inline-flex';
-                            span2.style.marginLeft = '9.5px';
-                            span2.innerHTML = '<svg viewBox="0 0 24 24" height="17" width="17"><path d="M11 17H13V13H17V11H13V7H11V11H7V13H11ZM5 21Q4.175 21 3.587 20.413Q3 19.825 3 19V5Q3 4.175 3.587 3.587Q4.175 3 5 3H19Q19.825 3 20.413 3.587Q21 4.175 21 5V19Q21 19.825 20.413 20.413Q19.825 21 19 21Z"></path></svg>';
+                            div.style.alignItems = 'center';
+                            div.style.display = 'inline-flex';
+                            div.appendChild(span);
 
-                            span2.addEventListener('dblclick', () => {
-                                getSelection().removeAllRanges();
-                            });
+                            fragment.appendChild(div);
 
-                            span2.addEventListener('click', () => {
-                                if (error) {
-                                    return;
-                                }
+                            if (cell.getRow().getData().status === 'Watching') {
+                                span2.classList.add('add');
+                                span2.tabIndex = 0;
+                                span2.title = '+1';
+                                span2.innerHTML = `<svg viewBox="${svg.viewBox}" height="17" width="17">${svg.add}</svg>`;
 
-                                new Promise((resolve) => {
-                                    const d2 = db2().add({
-                                        episodes: cell.getRow().getData().episodes,
-                                        progress: cell.getRow().getData().progress,
-                                        season: cell.getRow().getData().season,
-                                        source: cell.getRow().getData().sources,
-                                        status: cell.getRow().getData().status,
-                                        title: cell.getRow().getData().title,
-                                        type: cell.getRow().getData().type,
-                                        watched: cell.getRow().getData().watched
-                                    });
+                                span2.querySelector('svg').addEventListener('dblclick', () => {
+                                    getSelection().removeAllRanges();
+                                });
 
-                                    d2.onerror = () => resolve();
-                                    d2.onsuccess = () => resolve();
-                                }).then(() => {
-                                    db2().get(cell.getRow().getData().sources).onsuccess = (event) => {
-                                        const result = event.target.result;
-                                        result.progress++;
+                                span2.querySelector('svg').addEventListener('click', () => {
+                                    if (disableSelection || error) {
+                                        return;
+                                    }
 
-                                        if (result.progress > 9999) {
-                                            return;
-                                        }
+                                    new Promise((resolve) => {
+                                        const d2 = db2().add({
+                                            episodes: cell.getRow().getData().episodes,
+                                            progress: cell.getRow().getData().progress,
+                                            season: cell.getRow().getData().season,
+                                            source: cell.getRow().getData().sources,
+                                            status: cell.getRow().getData().status,
+                                            title: cell.getRow().getData().title,
+                                            type: cell.getRow().getData().type,
+                                            watched: cell.getRow().getData().watched
+                                        });
 
-                                        db2().put(result).onsuccess = () => {
-                                            let value = cell.getValue();
+                                        d2.onerror = () => resolve();
+                                        d2.onsuccess = () => resolve();
+                                    }).then(() => {
+                                        db2().get(cell.getRow().getData().sources).onsuccess = (event) => {
+                                            const result = event.target.result;
+                                            result.progress++;
 
-                                            channelMessage();
-                                            value++;
-
-                                            cell.getRow().update({
-                                                progress: value
-                                            });
-
-                                            if (!cell.getRow().getData().episodes) {
+                                            if (result.progress > 9999) {
                                                 return;
                                             }
 
-                                            cell.getRow().getElement().dataset.progress = value;
-                                            cell.getRow().getCell('alternative').getElement().querySelector('.indicator').style.width = `${value / cell.getRow().getData().episodes * 100}%`;
-                                            cell.getElement().querySelector('span:not(.add)').title = `${Math.round(value / cell.getRow().getData().episodes * 100)}%`;
+                                            db2().put(result).onsuccess = () => {
+                                                let value = cell.getValue();
 
-                                            if (value === cell.getRow().getData().episodes) {
-                                                if (cell.getRow().getData().status === 'Completed') {
+                                                channelMessage();
+                                                value++;
+
+                                                cell.getRow().update({
+                                                    progress: value
+                                                });
+
+                                                if (!cell.getRow().getData().episodes) {
                                                     return;
                                                 }
 
-                                                db2().get(cell.getRow().getData().sources).onsuccess = (event2) => {
-                                                    const result2 = event2.target.result;
-                                                    result2.status = 'Completed';
+                                                cell.getRow().getElement().dataset.progress = value;
+                                                cell.getRow().getCell('alternative').getElement().querySelector('.indicator').style.width = `${value / cell.getRow().getData().episodes * 100}%`;
+                                                cell.getElement().querySelector('span:not(.add)').title = `${addCommas(value / cell.getRow().getData().episodes, 'percent')}`;
 
-                                                    db2().put(result2).onsuccess = () => {
-                                                        // force update
-                                                        cell.getRow().update({
-                                                            progress: ''
-                                                        });
+                                                if (value === cell.getRow().getData().episodes) {
+                                                    if (cell.getRow().getData().status === 'Completed') {
+                                                        cell.getRow().getElement().dataset.mismatched = false;
+                                                        return;
+                                                    }
 
-                                                        cell.getRow().update({
-                                                            progress: value,
-                                                            status: 'Completed'
-                                                        });
+                                                    if (!cell.getRow().getData().ongoing) {
+                                                        db2().get(cell.getRow().getData().sources).onsuccess = (event2) => {
+                                                            const result2 = event2.target.result;
+
+                                                            result2.status = 'Completed';
+                                                            result2.watched = Number(result2.watched) + 1;
+
+                                                            db2().put(result2).onsuccess = () => {
+                                                                // force update
+                                                                cell.getRow().update({
+                                                                    progress: ''
+                                                                });
+
+                                                                cell.getRow().update({
+                                                                    progress: value,
+                                                                    status: 'Completed',
+                                                                    watched: Number(cell.getRow().getData().watched) + 1
+                                                                });
+                                                            };
+                                                        };
+                                                    }
+                                                } else {
+                                                    if (['Completed', 'Watching'].indexOf(cell.getRow().getData().status) > -1) {
+                                                        cell.getRow().getElement().dataset.mismatched = cell.getRow().getData().status === 'Completed' && Number(cell.getRow().getElement().dataset.progress || cell.getRow().getData().progress) !== Number(cell.getRow().getData().episodes);
+                                                        return;
+                                                    }
+
+                                                    db2().get(cell.getRow().getData().sources).onsuccess = (event2) => {
+                                                        const result2 = event2.target.result;
+                                                        result2.status = 'Watching';
+
+                                                        db2().put(result2).onsuccess = () => {
+                                                            cell.getRow().update({
+                                                                status: 'Watching'
+                                                            });
+                                                        };
                                                     };
-                                                };
-                                            } else {
-                                                if (['Completed', 'Rewatching', 'Watching'].indexOf(cell.getRow().getData().status) > -1) {
-                                                    return;
                                                 }
-
-                                                db2().get(cell.getRow().getData().sources).onsuccess = (event2) => {
-                                                    const result2 = event2.target.result;
-                                                    result2.status = 'Watching';
-
-                                                    db2().put(result2).onsuccess = () => {
-                                                        cell.getRow().update({
-                                                            status: 'Watching'
-                                                        });
-                                                    };
-                                                };
-                                            }
+                                            };
                                         };
-                                    };
+                                    });
                                 });
-                            });
 
-                            a.href = `./?query=${escape(encodeURIComponent(v))}`;
-                            a.title = 'Mismatched';
-                            a.style.display = 'inline-flex';
-                            a.style.alignItems = 'center';
-                            a.style.marginLeft = '9.5px';
-                            // remove style
-                            a.innerHTML = '<svg viewBox="0 0 24 24" height="17" width="17" style="fill: var(--mismatched) !important;"><path d="M1 21 12 2 23 21ZM11 15H13V10H11ZM12 18Q12.425 18 12.713 17.712Q13 17.425 13 17Q13 16.575 12.713 16.288Q12.425 16 12 16Q11.575 16 11.288 16.288Q11 16.575 11 17Q11 17.425 11.288 17.712Q11.575 18 12 18Z"></path></svg>';
+                                div.style.width = 'calc((100% - 9.5px) / 2)';
+                                separator.style.width = '9.5px';
 
-                            a.addEventListener('click', (e) => {
-                                e.preventDefault();
+                                div2.style.alignItems = 'center';
+                                div2.style.display = 'inline-flex';
+                                div2.style.width = 'calc((100% - 9.5px) / 2)';
+                                div2.appendChild(span2);
 
-                                document.querySelector('.search').value = v;
-                                searchFunction(cell.getTable());
-                            });
-
-                            fragment.appendChild(span);
-
-                            if (['Dropped', 'Paused', 'Rewatching', 'Watching'].indexOf(cell.getRow().getData().status) > -1) {
-                                fragment.appendChild(span2);
-                            }
-
-                            if (cell.getRow().getData().status === 'Completed' && Number(cell.getRow().getData().progress) !== Number(cell.getRow().getData().episodes)) {
-                                fragment.appendChild(a);
+                                fragment.appendChild(separator);
+                                fragment.appendChild(div2);
                             }
 
                             return fragment;
@@ -2029,21 +2219,22 @@ fetch(source)
                         formatter: function (cell) {
                             const select = document.createElement('select');
 
-                            if (error) {
-                                select.disabled = true;
-                            }
-
                             select.innerHTML = statuses;
                             select.value = cell.getValue();
                             select.title = 'Status';
+
+                            select.addEventListener('mouseenter', () => {
+                                select.disabled = disableSelection || error;
+                            });
+
                             select.addEventListener('change', () => {
-                                if (error) {
+                                if (disableSelection || error) {
                                     return;
                                 }
 
                                 const
                                     p = cell.getRow().getData().progress || '0',
-                                    r2 = cell.getRow().getData().rewatched || '0';
+                                    w2 = cell.getRow().getData().watched || '0';
 
                                 if (select.value) {
                                     const d2 = db2().add({
@@ -2054,15 +2245,17 @@ fetch(source)
                                                 : ['Planning', 'Skipping'].indexOf(select.value) > -1
                                                     ? ''
                                                     : '0',
-                                        rewatched:
-                                            ['Planning', 'Skipping'].indexOf(select.value) > -1
-                                                ? ''
-                                                : '0',
                                         season: cell.getRow().getData().season,
                                         source: cell.getRow().getData().sources,
                                         status: select.value,
                                         title: cell.getRow().getData().title,
-                                        type: cell.getRow().getData().type
+                                        type: cell.getRow().getData().type,
+                                        watched:
+                                            select.value === 'Completed'
+                                                ? 1
+                                                : ['Planning', 'Skipping'].indexOf(select.value) > -1
+                                                    ? ''
+                                                    : '0'
                                     });
 
                                     d2.onsuccess = () => {
@@ -2071,8 +2264,8 @@ fetch(source)
                                         if (select.value === 'Completed') {
                                             cell.getRow().update({
                                                 progress: cell.getRow().getData().episodes || '0',
-                                                rewatched: '0',
-                                                status: select.value
+                                                status: select.value,
+                                                watched: 1
                                             });
 
                                             return;
@@ -2081,8 +2274,8 @@ fetch(source)
                                         if (select.value === 'Planning' || select.value === 'Skipping') {
                                             cell.getRow().update({
                                                 progress: '',
-                                                rewatched: '',
-                                                status: select.value
+                                                status: select.value,
+                                                watched: ''
                                             });
 
                                             return;
@@ -2090,8 +2283,8 @@ fetch(source)
 
                                         cell.getRow().update({
                                             progress: '0',
-                                            rewatched: '0',
-                                            status: select.value
+                                            status: select.value,
+                                            watched: '0'
                                         });
                                     };
 
@@ -2102,19 +2295,22 @@ fetch(source)
                                                 status2 = result.status;
 
                                             if (select.value === 'Completed') {
-                                                result.progress = cell.getRow().getData().episodes || '0';
-                                                result.rewatched =
-                                                    status2 === 'Rewatching'
-                                                        ? Number(cell.getRow().getData().rewatched) + 1
-                                                        : cell.getRow().getData().rewatched;
+                                                result.progress =
+                                                    Number(cell.getRow().getData().progress) === Number(cell.getRow().getData().episodes)
+                                                        ? cell.getRow().getData().episodes
+                                                        : cell.getRow().getData().progress || '0';
+                                                result.watched =
+                                                    status2 === 'Completed'
+                                                        ? cell.getRow().getData().watched
+                                                        : Number(cell.getRow().getData().watched) + 1;
                                             } else {
                                                 if (select.value === 'Planning' || select.value === 'Skipping') {
                                                     result.progress = '';
-                                                    result.rewatched = '';
+                                                    result.watched = '';
                                                 } else {
                                                     if (status2 === 'Planning' || status2 === 'Skipping') {
                                                         result.progress = '0';
-                                                        result.rewatched = '0';
+                                                        result.watched = '0';
                                                     }
                                                 }
                                             }
@@ -2126,6 +2322,7 @@ fetch(source)
 
                                                 if (select.value === 'Completed') {
                                                     cell.getRow().getElement().dataset.progress = '';
+                                                    cell.getRow().getElement().dataset.mismatched = cell.getRow().getData().episodes && cell.getRow().getData().status === 'Completed' && Number(cell.getRow().getElement().dataset.progress || cell.getRow().getData().progress) !== Number(cell.getRow().getData().episodes);
 
                                                     // force update
                                                     cell.getRow().update({
@@ -2133,11 +2330,31 @@ fetch(source)
                                                     });
 
                                                     cell.getRow().update({
-                                                        progress: cell.getRow().getData().episodes || '0',
-                                                        rewatched:
-                                                            status2 === 'Rewatching'
-                                                                ? Number(cell.getRow().getData().rewatched) + 1
-                                                                : cell.getRow().getData().rewatched,
+                                                        progress:
+                                                            Number(cell.getRow().getData().progress) === Number(cell.getRow().getData().episodes)
+                                                                ? cell.getRow().getData().episodes
+                                                                : result.progress || '0',
+                                                        status: select.value,
+                                                        watched:
+                                                            status2 === 'Completed'
+                                                                ? cell.getRow().getData().watched
+                                                                : Number(cell.getRow().getData().watched) + 1
+                                                    });
+
+                                                    return;
+                                                }
+
+                                                if (select.value === 'Watching' && status2 === 'Completed') {
+                                                    cell.getRow().getElement().dataset.progress = '';
+                                                    cell.getRow().getElement().dataset.mismatched = cell.getRow().getData().episodes && cell.getRow().getData().status === 'Completed' && Number(cell.getRow().getElement().dataset.progress || cell.getRow().getData().progress) !== Number(cell.getRow().getData().episodes);
+
+                                                    // force update
+                                                    cell.getRow().update({
+                                                        progress: ''
+                                                    });
+
+                                                    cell.getRow().update({
+                                                        progress: '0',
                                                         status: select.value
                                                     });
 
@@ -2146,11 +2363,12 @@ fetch(source)
 
                                                 if (select.value === 'Planning' || select.value === 'Skipping') {
                                                     cell.getRow().getElement().dataset.progress = '';
+                                                    cell.getRow().getElement().dataset.mismatched = cell.getRow().getData().episodes && cell.getRow().getData().status === 'Completed' && Number(cell.getRow().getElement().dataset.progress || cell.getRow().getData().progress) !== Number(cell.getRow().getData().episodes);
 
                                                     cell.getRow().update({
                                                         progress: '',
-                                                        rewatched: '',
-                                                        status: select.value
+                                                        status: select.value,
+                                                        watched: ''
                                                     });
 
                                                     return;
@@ -2159,8 +2377,8 @@ fetch(source)
                                                 if (status2 === 'Planning' || status2 === 'Skipping') {
                                                     cell.getRow().update({
                                                         progress: '0',
-                                                        rewatched: '0',
-                                                        status: select.value
+                                                        status: select.value,
+                                                        watched: '0'
                                                     });
 
                                                     return;
@@ -2173,8 +2391,8 @@ fetch(source)
 
                                                 cell.getRow().update({
                                                     progress: p,
-                                                    rewatched: r2,
-                                                    status: select.value
+                                                    status: select.value,
+                                                    watched: w2
                                                 });
                                             };
                                         };
@@ -2182,11 +2400,12 @@ fetch(source)
                                 } else {
                                     db2().delete(cell.getRow().getData().sources).onsuccess = () => {
                                         cell.getRow().getElement().dataset.progress = '';
+                                        cell.getRow().getElement().dataset.mismatched = cell.getRow().getData().episodes && cell.getRow().getData().status === 'Completed' && Number(cell.getRow().getElement().dataset.progress || cell.getRow().getData().progress) !== Number(cell.getRow().getData().episodes);
 
                                         cell.getRow().update({
                                             progress: '',
-                                            rewatched: '',
-                                            status: ''
+                                            status: '',
+                                            watched: ''
                                         });
 
                                         channelMessage();
@@ -2209,11 +2428,13 @@ fetch(source)
                         width: 100
                     },
                     {
+                        clipboard: false,
                         field: 'relevancy',
                         visible: false
                     },
                     {
                         // padding
+                        clipboard: false,
                         headerSort: false,
                         minWidth: 19,
                         width: 19
@@ -2234,16 +2455,16 @@ fetch(source)
                 rowFormatter: function (row) {
                     let width = null;
 
-                    row.getElement().dataset.dead = row.getData().dead;
+                    row.getElement().dataset.deleted = row.getData().deleted;
+                    row.getElement().dataset.mismatched = row.getData().episodes && row.getData().status === 'Completed' && Number(row.getElement().dataset.progress || row.getData().progress) !== Number(row.getData().episodes);
                     row.getElement().dataset.status = row.getData().status;
 
                     switch (row.getData().status) {
                         case 'Completed':
                         case 'Dropped':
                         case 'Paused':
-                        case 'Rewatching':
                         case 'Watching':
-                            width = (row.getElement().dataset.progress || row.getData().progress) / row.getData().episodes * 100;
+                            width = Number(row.getElement().dataset.progress || row.getData().progress) / Number(row.getData().episodes);
                             break;
 
                         default:
@@ -2251,16 +2472,22 @@ fetch(source)
                             break;
                     }
 
-                    row.getCell('alternative').getElement().querySelector('.indicator').style.width = `${width}%`;
+                    row.getCell('alternative').getElement().querySelector('.indicator').style.width = `${width * 100}%`;
+                    row.getCell('alternative').getElement().querySelector('.mismatched').style.display =
+                        row.getElement().dataset.mismatched === 'true'
+                            ? ''
+                            : 'none';
 
                     if (row.getCell('progress').getElement().querySelector('span:not(.add)')) {
-                        row.getCell('progress').getElement().querySelector('span:not(.add)').title = `${Math.round(width)}%`;
+                        row.getCell('progress').getElement().querySelector('span:not(.add)').title = `${addCommas(width, 'percent')}`;
                     }
                 },
                 sortOrderReverse: true
             });
 
             t.on('dataFiltered', (filters, rows) => {
+                const ids = [];
+
                 f = filters;
                 r = rows;
                 selected.s = true;
@@ -2277,32 +2504,68 @@ fetch(source)
                     }
                 }
 
-                document.querySelector('.selected-count').innerHTML = `<span class="count-selected">${t.getSelectedRows().length} selected</span>`;
+                if (t.getSelectedRows().length) {
+                    for (const value of t.getSelectedRows()) {
+                        ids.push(value.getData().sources.slice('https://myanimelist.net/anime/'.length));
+                    }
+
+                    document.querySelector('.count-selected').href = `./?query=${escape(encodeURIComponent(`id:${ids.join('|')} `))}`;
+                    document.querySelector('.count-selected').innerHTML = `${addCommas(t.getSelectedRows().length)} selected`;
+                }
 
                 if (t.getSelectedRows().length > selected.ss.length) {
-                    document.querySelector('.selected-count').innerHTML += `<span>${selected.ss.length} from search results</span>`;
+                    document.querySelector('.selected-count span').innerHTML = `${addCommas(selected.ss.length)} from search results`;
+                } else {
+                    document.querySelector('.selected-count span').innerHTML = '';
                 }
 
                 if (selected.s) {
-                    t.getColumn('picture').getElement().querySelector('.tabulator-col-title').title = 'Unselect all search results';
+                    t.getColumn('picture').getElement().querySelector('.tabulator-col-title').title = 'Deselect all search results';
                     t.getColumn('picture').getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.check;
                     t.getColumn('picture').getElement().querySelector('.tabulator-col-title svg').style.fill = 'var(--selected-header)';
+
+                    t.getColumn('picture2').getElement().querySelector('.tabulator-col-title').title = 'Deselect all search results';
+                    t.getColumn('picture2').getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.check;
+                    t.getColumn('picture2').getElement().querySelector('.tabulator-col-title svg').style.fill = 'var(--selected-header)';
                 } else {
                     if (selected.ss.length) {
-                        t.getColumn('picture').getElement().querySelector('.tabulator-col-title').title = 'Unselect all search results';
+                        t.getColumn('picture').getElement().querySelector('.tabulator-col-title').title = 'Deselect all search results';
                         t.getColumn('picture').getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.indeterminate;
                         t.getColumn('picture').getElement().querySelector('.tabulator-col-title svg').style.fill = 'var(--selected-header)';
+
+                        t.getColumn('picture2').getElement().querySelector('.tabulator-col-title').title = 'Deselect all search results';
+                        t.getColumn('picture2').getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.indeterminate;
+                        t.getColumn('picture2').getElement().querySelector('.tabulator-col-title svg').style.fill = 'var(--selected-header)';
                     } else {
                         t.getColumn('picture').getElement().querySelector('.tabulator-col-title').title = 'Select all search results';
                         t.getColumn('picture').getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.blank;
                         t.getColumn('picture').getElement().querySelector('.tabulator-col-title svg').style.fill = '';
+
+                        t.getColumn('picture2').getElement().querySelector('.tabulator-col-title').title = 'Select all search results';
+                        t.getColumn('picture2').getElement().querySelector('.tabulator-col-title svg').innerHTML = svg.blank;
+                        t.getColumn('picture2').getElement().querySelector('.tabulator-col-title svg').style.fill = '';
                     }
                 }
 
                 if (index.dimension) {
                     if (index.quick) {
+                        // if (dimension2) {
+                        //     for (const value of dimension2) {
+                        //         value.update({
+                        //             alternative: value.getData().title,
+                        //             relevancy: 1
+                        //         });
+                        //     }
+
+                        //     dimension2 = null;
+                        // }
+
                         if (dimension2) {
                             for (const value of dimension2) {
+                                if (value.getData().alternative === value.getData().title && value.getData().relevancy === 1) {
+                                    continue;
+                                }
+
                                 value.update({
                                     alternative: value.getData().title,
                                     relevancy: 1
@@ -2319,11 +2582,27 @@ fetch(source)
                             });
                         }
 
-                        dimension2 = rows;
+                        // dimension2 = rows;
+                        dimension2 = t.getRows();
                     }
                 } else {
+                    // if (dimension2) {
+                    //     for (const value of dimension2) {
+                    //         value.update({
+                    //             alternative: value.getData().title,
+                    //             relevancy: 1
+                    //         });
+                    //     }
+
+                    //     dimension2 = null;
+                    // }
+
                     if (dimension2) {
                         for (const value of dimension2) {
+                            if (value.getData().alternative === value.getData().title && value.getData().relevancy === 1) {
+                                continue;
+                            }
+
                             value.update({
                                 alternative: value.getData().title,
                                 relevancy: 1
@@ -2338,37 +2617,46 @@ fetch(source)
                     document.querySelector('.searching').remove();
                 }
 
-                document.querySelector('.nothing .enter').innerHTML = 'Full search (slow)';
+                document.querySelector('.nothing .enter').href = `./?query=${escape(encodeURIComponent(document.querySelector('.search').value))}`;
+                document.querySelector('.nothing .enter').innerHTML = 'Show full results';
 
                 if (index.quick) {
+                    document.querySelector('.nothing .related').style.display = '';
+
                     if (rows.length) {
                         document.querySelector('.tabulator').style.display = '';
                         document.querySelector('.nothing .results').innerHTML =
                             rows.length === 1
                                 ? `1 result${quick()}`
-                                : `${rows.length} results${quick()}`;
+                                : `${addCommas(rows.length)} results${quick()}`;
 
                         if (filters.length && filters[0].value) {
                             document.querySelector('.nothing .current').style.display = '';
+
+                            document.querySelector('.nothing .enter').href = `./?query=${escape(encodeURIComponent(document.querySelector('.search').value))}`;
+                            document.querySelector('.nothing .enter').innerHTML = 'Show full results';
                             document.querySelector('.nothing .enter').style.display = 'inline-flex';
                         } else {
-                            document.querySelector('.nothing .results').innerHTML = `${rows.length} results`;
+                            document.querySelector('.nothing .results').innerHTML = `${addCommas(rows.length)} results`;
                             document.querySelector('.nothing .current').style.display = 'inline-flex';
+
+                            document.querySelector('.nothing .enter').href = './';
+                            document.querySelector('.nothing .enter').innerHTML = '';
                             document.querySelector('.nothing .enter').style.display = '';
                         }
                     } else {
                         document.querySelector('.tabulator').style.display = 'none';
 
                         if (index.qualifiers) {
-                            document.querySelector('.nothing .results').innerHTML =
-                                index.qualifiers === 1
-                                    ? 'Search qualifier detected'
-                                    : 'Search qualifiers detected';
+                            document.querySelector('.nothing .results').innerHTML = 'Press Enter to use search filters';
                         } else {
                             document.querySelector('.nothing .results').innerHTML = `0 results${quick()}`;
                         }
 
                         document.querySelector('.nothing .current').style.display = '';
+
+                        document.querySelector('.nothing .enter').href = `./?query=${escape(encodeURIComponent(document.querySelector('.search').value))}`;
+                        document.querySelector('.nothing .enter').innerHTML = 'Show full results';
                         document.querySelector('.nothing .enter').style.display = 'inline-flex';
                     }
 
@@ -2379,26 +2667,56 @@ fetch(source)
                         document.querySelector('.tabulator').style.display = '';
                         document.querySelector('.nothing .results').innerHTML =
                             index.random
-                                ? `${rows.length} of ${index.random} results`
+                                ? `${addCommas(rows.length)} of ${addCommas(index.random)} results`
                                 : rows.length === 1
                                     ? '1 result'
-                                    : `${rows.length} results`;
+                                    : `${addCommas(rows.length)} results`;
 
                         if (index.random) {
                             document.querySelector('.nothing .current').style.display = '';
+
+                            document.querySelector('.nothing .enter').href = `./?query=${escape(encodeURIComponent(document.querySelector('.search').value))}`;
                             document.querySelector('.nothing .enter').innerHTML = 'Randomize';
                             document.querySelector('.nothing .enter').style.display = 'inline-flex';
                         } else {
                             if (filters.length && filters[0].value) {
                                 document.querySelector('.nothing .current').style.display = '';
+
+                                document.querySelector('.nothing .enter').href = './';
+                                document.querySelector('.nothing .enter').innerHTML = '';
                                 document.querySelector('.nothing .enter').style.display = '';
                             } else {
                                 document.querySelector('.nothing .current').style.display = 'inline-flex';
+
+                                document.querySelector('.nothing .enter').href = './';
+                                document.querySelector('.nothing .enter').innerHTML = '';
                                 document.querySelector('.nothing .enter').style.display = '';
                             }
                         }
+
+                        if ([4, 5].indexOf(index.related) > -1) {
+                            document.querySelector('.nothing .current').style.display = '';
+
+                            document.querySelector('.nothing .related').style.display = 'inline-flex';
+
+                            if (index.related === 4) {
+                                document.querySelector('.nothing .related').href = `./?query=${escape(encodeURIComponent(document.querySelector('.search').value))}`;
+                                document.querySelector('.nothing .related').innerHTML = 'Show also indirect';
+                            } else {
+                                document.querySelector('.nothing .related').href = `./?query=${escape(encodeURIComponent(searchReplace(document.querySelector('.search').value, '(?:^|\\s)related2:[1-9][0-9]*(?:\\s|$)', 'related2', 'related')))}`;
+                                document.querySelector('.nothing .related').innerHTML = 'Show only direct';
+                            }
+
+                            document.querySelector('.nothing .enter').href = './';
+                            document.querySelector('.nothing .enter').innerHTML = '';
+                            document.querySelector('.nothing .enter').style.display = '';
+
+                            document.querySelector('.seasonal .previous').style.display = '';
+                            document.querySelector('.seasonal .next').style.display = '';
+                        }
                     } else {
                         document.querySelector('.tabulator').style.display = 'none';
+                        document.querySelector('.nothing .related').style.display = '';
 
                         if (index.message) {
                             document.querySelector('.nothing .results').innerHTML = index.message;
@@ -2407,29 +2725,22 @@ fetch(source)
                         }
 
                         document.querySelector('.nothing .current').style.display = '';
+
+                        document.querySelector('.nothing .enter').href = './';
+                        document.querySelector('.nothing .enter').innerHTML = '';
                         document.querySelector('.nothing .enter').style.display = '';
 
                         document.querySelector('.seasonal .previous').style.display = '';
                         document.querySelector('.seasonal .next').style.display = '';
                     }
 
-                    if (index.count) {
-                        if (document.querySelector('.seasonal .previous').dataset.value) {
-                            document.querySelector('.seasonal .previous').style.display = 'inline-flex';
-                        }
-
-                        if (document.querySelector('.seasonal .next').dataset.value) {
-                            document.querySelector('.seasonal .next').style.display = 'inline-flex';
-                        }
+                    if (index.previous) {
+                        document.querySelector('.seasonal .previous').style.display = 'inline-flex';
                     }
-                }
 
-                if (index.related) {
-                    document.querySelector('.nothing .current').style.display = '';
-                    document.querySelector('.nothing .enter').style.display = '';
-
-                    document.querySelector('.seasonal .previous').style.display = '';
-                    document.querySelector('.seasonal .next').style.display = '';
+                    if (index.next) {
+                        document.querySelector('.seasonal .next').style.display = 'inline-flex';
+                    }
                 }
             });
 
@@ -2437,6 +2748,7 @@ fetch(source)
                 document.querySelector('.tabulator').style.display = 'none';
                 document.querySelector('.nothing').style.display = '';
                 document.querySelector('.loading').innerHTML = `Database as of ${updated}`;
+                document.querySelector('.reload').style.display = 'inline-flex';
                 document.querySelector('.top-container').style.display = 'inline-flex';
 
                 if (location.hash) {
@@ -2445,11 +2757,12 @@ fetch(source)
                     document.querySelector('.blur').style.display = '';
 
                     index.dimension = null;
-                    index.qualifiers = qualifiers(document.querySelector('.search').value);
+                    index.qualifiers = qualifiers(document.querySelector('.search').value.trim());
                     index.quick = true;
 
-                    t.setFilter('title', 'like', document.querySelector('.search').value);
-                    t.redraw(true);
+                    t.setFilter('title', 'like', document.querySelector('.search').value.trim());
+                    t.redraw();
+                    t.rowManager.resetScroll();
 
                     t.setSort([
                         {
@@ -2464,8 +2777,8 @@ fetch(source)
 
                     document.querySelector('.blur').style.display = 'none';
 
-                    if (document.querySelector('.search').value) {
-                        document.title = `${document.querySelector('.search').value} - ${title} (quick search)`;
+                    if (document.querySelector('.search').value.trim()) {
+                        document.title = `${document.querySelector('.search').value.trim()} - ${title} (quick search)`;
                     } else {
                         document.title = title;
                     }
@@ -2500,6 +2813,8 @@ fetch(source)
             });
 
             t.on('tableBuilding', () => {
+                message();
+
                 document.querySelector('.database-container').addEventListener('dblclick', (e) => {
                     e.stopImmediatePropagation();
                 });
@@ -2513,7 +2828,7 @@ fetch(source)
                     header = document.querySelector('.tabulator-header');
 
                 if (!error) {
-                    columns.push(...['rewatched', 'progress', 'status']);
+                    columns.push(...['watched', 'progress', 'status']);
                 }
 
                 for (const value of columns) {
@@ -2526,7 +2841,7 @@ fetch(source)
                 document.querySelectorAll('.tabulator-col-sorter-element').forEach((element) => {
                     element.parentElement.insertAdjacentHTML('beforeend',
                         '<div class="tabulator-col-sorter">' +
-                            `<svg viewBox="0 0 24 24" width="17" height="17">${svg.arrow}</path></svg>` +
+                            `<svg viewBox="${svg.viewBox}" width="17" height="17">${svg.arrow}</svg>` +
                         '</div>'
                     );
 
@@ -2535,153 +2850,14 @@ fetch(source)
 
                 built = true;
             });
-        });
-    })
-    .catch(() => {
-        new Promise((resolve) => {
-            const db = indexedDB.open('tsuzuku', 1);
-
-            db.onupgradeneeded = (event) => {
-                const
-                    index2 = [
-                        'episodes',
-                        'progress',
-                        'rewatched',
-                        'season',
-                        'status',
-                        'title',
-                        'type'
-                    ],
-                    storage = event.target.result.createObjectStore('tsuzuku', {
-                        keyPath: 'source'
-                    });
-
-                for (const value of index2) {
-                    storage.createIndex(value, value, {
-                        unique: false
-                    });
-                }
-            };
-
-            db.onerror = () => resolve('error');
-
-            db.onsuccess = (event3) => {
-                db2 = () => event3.target.result.transaction('tsuzuku', 'readwrite').objectStore('tsuzuku');
-
-                db2().openCursor().onsuccess = (event5) => {
-                    const cursor = event5.target.result;
-
-                    if (cursor) {
-                        map4.set(cursor.key, {
-                            episodes: cursor.value.episodes,
-                            progress: cursor.value.progress,
-                            rewatched: cursor.value.rewatched,
-                            season: cursor.value.season,
-                            status: cursor.value.status,
-                            title: cursor.value.title,
-                            type: cursor.value.type
-                        });
-
-                        cursor.continue();
-                    } else {
-                        return resolve('success');
-                    }
-
-                    return null;
-                };
-            };
-        }).then(() => {
-            document.querySelector('.loading').innerHTML = 'Database not found';
-
+        })
+        .catch(() => {
             error2 = true;
 
-            if (error) {
-                return;
-            }
-
-            document.querySelector('.loading').innerHTML += ' (<span class="export2" tabindex="0">Export your progress</span>)';
-
-            document.querySelector('.export2').addEventListener('click', () => {
-                let xml =
-                    '<?xml version="1.0" encoding="UTF-8"?>\n' +
-                    '<myanimelist>\n' +
-                    '    <myinfo>\n' +
-                    '        <user_export_type>1</user_export_type>\n' +
-                    '    </myinfo>\n';
-
-                db2().openCursor().onsuccess = (event) => {
-                    const cursor = event.target.result;
-
-                    if (cursor) {
-                        let progress = cursor.value.progress,
-                            rewatching = 0,
-                            skipping = 0,
-                            status2 = null;
-
-                        switch (cursor.value.status) {
-                            case 'Paused':
-                                status2 = 'On-Hold';
-                                break;
-
-                            case 'Planning':
-                                status2 = 'Plan to Watch';
-                                progress = 0;
-                                break;
-
-                            case 'Rewatching':
-                                status2 = 'Completed';
-                                rewatching = 1;
-                                break;
-
-                            case 'Skipping':
-                                status2 = 'Dropped';
-                                skipping = 1;
-                                progress = 0;
-                                break;
-
-                            default:
-                                status2 = cursor.value.status;
-                                break;
-                        }
-
-                        xml +=
-                        '    <anime>\n' +
-                        '        <my_finish_date>0000-00-00</my_finish_date>\n' +
-                        `        <my_rewatching>${rewatching}</my_rewatching>\n` +
-                        '        <my_score>0</my_score>\n' +
-                        `        <my_skipping>${skipping}</my_skipping>\n` +
-                        '        <my_start_date>0000-00-00</my_start_date>\n' +
-                        `        <my_status>${status2}</my_status>\n` +
-                        `        <my_times_watched>${cursor.value.rewatched}</my_times_watched>\n` +
-                        `        <my_watched_episodes>${progress}</my_watched_episodes>\n` +
-                        `        <series_animedb_id>${
-                            cursor.key.match(/myanimelist/gu)
-                                ? cursor.key.substring('https://myanimelist.net/anime/'.length)
-                                : cursor.key
-                        }</series_animedb_id>\n` +
-                        `        <series_episodes>${cursor.value.episodes}</series_episodes>\n` +
-                        `        <series_season>${cursor.value.season}</series_season>\n` +
-                        `        <series_title><![CDATA[${cursor.value.title}]]></series_title>\n` +
-                        `        <series_type>${cursor.value.type}</series_type>\n` +
-                        '        <update_on_import>1</update_on_import>\n' +
-                        '    </anime>\n';
-
-                        cursor.continue();
-                    } else {
-                        const a = document.createElement('a');
-
-                        a.href = URL.createObjectURL(new Blob([`${xml}</myanimelist>`]), {
-                            type: 'application/xml'
-                        });
-
-                        a.download = `tsuzuku_${new Date().toISOString()}.xml`;
-                        a.click();
-                        a.remove();
-                    }
-                };
-            });
+            document.body.classList.add('error2');
+            document.querySelector('.loading').innerHTML = 'Database not found';
         });
-    });
+});
 
 export {
     built,
@@ -2689,6 +2865,7 @@ export {
     disableSelection,
     error,
     error2,
+    hasProgress,
     selected,
     svg,
     t,

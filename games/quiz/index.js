@@ -1,8 +1,12 @@
 import {
-    source
+    addCommas,
+    source,
+    svg,
+    tagsDelisted
 } from '../../global.js';
 
 const
+    categories = ['episodes (with operators)', 'season', 'tag', 'type', 'year (with operators)'],
     choice = [],
     choice2 = [2, 3, 4, 5, 6, 7, 8, 9, 10],
     database = [],
@@ -18,17 +22,23 @@ const
     },
     operators = ['', '<', '>', '<=', '>='],
     seasons = ['fall', 'spring', 'summer', 'winter'],
-    settingsClose = '<path d="M9.25 22 8.85 18.8Q8.525 18.675 8.238 18.5Q7.95 18.325 7.675 18.125L4.7 19.375L1.95 14.625L4.525 12.675Q4.5 12.5 4.5 12.337Q4.5 12.175 4.5 12Q4.5 11.825 4.5 11.662Q4.5 11.5 4.525 11.325L1.95 9.375L4.7 4.625L7.675 5.875Q7.95 5.675 8.25 5.5Q8.55 5.325 8.85 5.2L9.25 2H14.75L15.15 5.2Q15.475 5.325 15.763 5.5Q16.05 5.675 16.325 5.875L19.3 4.625L22.05 9.375L19.475 11.325Q19.5 11.5 19.5 11.662Q19.5 11.825 19.5 12Q19.5 12.175 19.5 12.337Q19.5 12.5 19.45 12.675L22.025 14.625L19.275 19.375L16.325 18.125Q16.05 18.325 15.75 18.5Q15.45 18.675 15.15 18.8L14.75 22ZM12.05 15.5Q13.5 15.5 14.525 14.475Q15.55 13.45 15.55 12Q15.55 10.55 14.525 9.525Q13.5 8.5 12.05 8.5Q10.575 8.5 9.562 9.525Q8.55 10.55 8.55 12Q8.55 13.45 9.562 14.475Q10.575 15.5 12.05 15.5ZM12.05 13.5Q11.425 13.5 10.988 13.062Q10.55 12.625 10.55 12Q10.55 11.375 10.988 10.938Q11.425 10.5 12.05 10.5Q12.675 10.5 13.113 10.938Q13.55 11.375 13.55 12Q13.55 12.625 13.113 13.062Q12.675 13.5 12.05 13.5ZM12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12Q12 12 12 12ZM11 20H12.975L13.325 17.35Q14.1 17.15 14.763 16.762Q15.425 16.375 15.975 15.825L18.45 16.85L19.425 15.15L17.275 13.525Q17.4 13.175 17.45 12.787Q17.5 12.4 17.5 12Q17.5 11.6 17.45 11.212Q17.4 10.825 17.275 10.475L19.425 8.85L18.45 7.15L15.975 8.2Q15.425 7.625 14.763 7.237Q14.1 6.85 13.325 6.65L13 4H11.025L10.675 6.65Q9.9 6.85 9.238 7.237Q8.575 7.625 8.025 8.175L5.55 7.15L4.575 8.85L6.725 10.45Q6.6 10.825 6.55 11.2Q6.5 11.575 6.5 12Q6.5 12.4 6.55 12.775Q6.6 13.15 6.725 13.525L4.575 15.15L5.55 16.85L8.025 15.8Q8.575 16.375 9.238 16.762Q9.9 17.15 10.675 17.35Z"></path>',
-    settingsOpen = '<path d="M9.25 22 8.85 18.8Q8.525 18.675 8.238 18.5Q7.95 18.325 7.675 18.125L4.7 19.375L1.95 14.625L4.525 12.675Q4.5 12.5 4.5 12.337Q4.5 12.175 4.5 12Q4.5 11.825 4.5 11.662Q4.5 11.5 4.525 11.325L1.95 9.375L4.7 4.625L7.675 5.875Q7.95 5.675 8.25 5.5Q8.55 5.325 8.85 5.2L9.25 2H14.75L15.15 5.2Q15.475 5.325 15.763 5.5Q16.05 5.675 16.325 5.875L19.3 4.625L22.05 9.375L19.475 11.325Q19.5 11.5 19.5 11.662Q19.5 11.825 19.5 12Q19.5 12.175 19.5 12.337Q19.5 12.5 19.45 12.675L22.025 14.625L19.275 19.375L16.325 18.125Q16.05 18.325 15.75 18.5Q15.45 18.675 15.15 18.8L14.75 22ZM12.05 15.5Q13.5 15.5 14.525 14.475Q15.55 13.45 15.55 12Q15.55 10.55 14.525 9.525Q13.5 8.5 12.05 8.5Q10.575 8.5 9.562 9.525Q8.55 10.55 8.55 12Q8.55 13.45 9.562 14.475Q10.575 15.5 12.05 15.5Z"></path>',
+    set = new Set(),
     tags = [],
     tags2 = new Map(),
-    types = ['tag', 'episodes (with operators)', 'year (with operators)', 'season'],
+    types = ['movie', 'ona', 'ova', 'special', 'tv'],
     years = [],
     years2 = new Map();
 
-let choice3 = null,
+let category = null,
+    choice3 = null,
     choices = null,
-    type = null,
+    game = function () {
+        // defined below
+    },
+    reset = true,
+    skipped = false,
+    stop = false,
+    submitted = false,
     updated = '???';
 
 fetch(source)
@@ -41,77 +51,88 @@ fetch(source)
         document.querySelector('.loading').innerHTML = 'Building game<span class="el">.</span><span class="lip">.</span><span class="sis">.</span>';
 
         setTimeout(() => {
-            for (let i = 0; i < d.length; i++) {
+            for (const i of d) {
                 const
-                    e = d[i].episodes,
-                    m = d[i].sources.filter((sources) => sources.match(/myanimelist\.net/gu)),
-                    y = d[i].animeSeason.year;
+                    e = i.episodes,
+                    m = i.sources.filter((sources) => sources.match(/myanimelist\.net/giv)),
+                    tt = new Set(i.tags.map((t) => t.replace(/&/giv, 'and').replace(/\s/giv, ' ').replace(/-/giv, ' ').replace(/,$/giv, ''))),
+                    y = i.animeSeason.year;
 
-                let source2 = null;
+                let c = false;
 
                 if (!m.length) {
                     continue;
                 }
 
-                if (!d[i].episodes) {
+                if (!i.episodes) {
                     continue;
                 }
 
-                if (d[i].sources.filter((sources) => sources.match(/myanimelist\.net/gu)).length) {
-                    source2 = /myanimelist\.net/gu;
-                }
-
-                if (d[i].picture === 'https://cdn.myanimelist.net/images/qm_50.gif') {
+                if (set.has(m[0])) {
                     continue;
                 }
 
-                if (d[i].tags.indexOf('anime influenced') > -1) {
-                    continue;
-                }
+                if (!localStorage.getItem('tsuzuku') || !JSON.parse(localStorage.getItem('tsuzuku')).delisted) {
+                    if (i.picture === 'https://cdn.myanimelist.net/images/qm_50.gif') {
+                        continue;
+                    }
 
-                for (const value of d[i].sources.filter((sources) => sources.match(source2))) {
-                    const tt = d[i].tags.map((t) => t.replace(/\s/gu, '_'));
-
-                    for (const value2 of tt) {
-                        if (tags2.has(value2)) {
-                            tags2.set(value2, tags2.get(value2) + 1);
-                        } else {
-                            tags2.set(value2, 1);
-                            tags.push(value2);
+                    for (const td of tagsDelisted) {
+                        if ([...tt].indexOf(td) > -1) {
+                            c = true;
+                            break;
                         }
                     }
 
-                    if (years2.has(y)) {
-                        years2.set(y, years2.get(y) + 1);
-                    } else {
-                        years2.set(y, 1);
-                        years.push(y);
+                    if (c) {
+                        continue;
                     }
-
-                    if (episodes2.has(e)) {
-                        episodes2.set(e, episodes2.get(e) + 1);
-                    } else {
-                        episodes2.set(e, 1);
-                        episodes.push(e);
-                    }
-
-                    database.push({
-                        episodes: e,
-                        link: value,
-                        // picture: d[i].picture.replace(d[i].picture.substr(d[i].picture.lastIndexOf('.')), '.webp'),
-                        picture: d[i].picture,
-                        season: d[i].animeSeason.season.toLowerCase(),
-                        tags: tt,
-                        title: d[i].title,
-                        year: y
-                    });
                 }
+
+                for (const value2 of [...tt]) {
+                    if (tags2.has(value2)) {
+                        tags2.set(value2, tags2.get(value2) + 1);
+                    } else {
+                        tags2.set(value2, 1);
+                        tags.push(value2);
+                    }
+                }
+
+                if (!y) {
+                    continue;
+                }
+
+                if (years2.has(y)) {
+                    years2.set(y, years2.get(y) + 1);
+                } else {
+                    years2.set(y, 1);
+                    years.push(y);
+                }
+
+                if (episodes2.has(e)) {
+                    episodes2.set(e, episodes2.get(e) + 1);
+                } else {
+                    episodes2.set(e, 1);
+                    episodes.push(e);
+                }
+
+                database.push({
+                    episodes: e,
+                    link: m[0],
+                    picture: i.picture.replace(i.picture.substr(i.picture.lastIndexOf('.')), '.webp'),
+                    season: i.animeSeason.season.toLowerCase(),
+                    tags: [...tt],
+                    title: i.title,
+                    type: i.type.toLowerCase(),
+                    year: y
+                });
+
+                set.add(m[0]);
             }
 
             tags.sort();
-            episodes.sort();
             years.sort();
-            years.splice(years.indexOf(null), 1);
+            episodes.sort();
 
             max.episode = Math.max(...episodes);
             min.episode = Math.min(...episodes);
@@ -167,88 +188,143 @@ fetch(source)
                     minus = 0,
                     plus = 0;
 
+                stop = true;
+
+                document.querySelector('.plus').style.display = '';
+                document.querySelector('.plus').innerHTML = '';
+                document.querySelector('.minus').style.display = '';
+                document.querySelector('.minus').innerHTML = '';
+                document.querySelector('.min').style.display = '';
+                document.querySelector('.min').innerHTML = '';
+
                 for (let i = 0; i < choice3; i++) {
                     if (choice.indexOf(i) > -1) {
                         if (document.querySelector(`.choice > div:nth-child(${i + 1})`).classList.contains('selected')) {
-                            document.querySelector(`.choice > div:nth-child(${i + 1})`).classList.remove('selected');
-                            document.querySelector(`.choice > div:nth-child(${i + 1})`).style.background = 'var(--green)';
-                            plus += 1;
+                            if ((submitted && c.resultSubmit) || (c.skip && skipped && c.resultSkip)) {
+                                document.querySelector(`.choice > div:nth-child(${i + 1})`).classList.remove('selected');
+
+                                if (submitted && c.resultSubmit) {
+                                    document.querySelector(`.choice > div:nth-child(${i + 1})`).classList.add('correct');
+                                } else {
+                                    document.querySelector(`.choice > div:nth-child(${i + 1})`).classList.add('none');
+                                }
+                            }
+
+                            if (submitted) {
+                                plus += 1;
+                            }
                         } else {
-                            if (c.selection === '0 or more') {
-                                document.querySelector(`.choice > div:nth-child(${i + 1})`).style.background = 'var(--red)';
-                                minus += 1;
-                                incorrect = true;
+                            if (c.selection.indexOf('or more') > -1) {
+                                if ((submitted && c.resultSubmit) || (c.skip && skipped && c.resultSkip)) {
+                                    if (submitted && c.resultSubmit) {
+                                        document.querySelector(`.choice > div:nth-child(${i + 1})`).classList.add('incorrect');
+                                    }
+                                }
+
+                                if (submitted) {
+                                    minus += 1;
+                                    incorrect = true;
+                                }
                             }
                         }
                     } else {
                         if (document.querySelector(`.choice > div:nth-child(${i + 1})`).classList.contains('selected')) {
-                            document.querySelector(`.choice > div:nth-child(${i + 1})`).classList.remove('selected');
-                            document.querySelector(`.choice > div:nth-child(${i + 1})`).style.background = 'var(--red)';
-                            minus += 1;
-                            incorrect = true;
+                            if ((submitted && c.resultSubmit) || (c.skip && skipped && c.resultSkip)) {
+                                document.querySelector(`.choice > div:nth-child(${i + 1})`).classList.remove('selected');
+
+                                if (submitted && c.resultSubmit) {
+                                    document.querySelector(`.choice > div:nth-child(${i + 1})`).classList.add('incorrect');
+                                } else {
+                                    document.querySelector(`.choice > div:nth-child(${i + 1})`).classList.add('none');
+                                }
+                            }
+
+                            if (submitted) {
+                                minus += 1;
+                                incorrect = true;
+                            }
                         } else {
-                            if (c.selection === '0 or more') {
-                                document.querySelector(`.choice > div:nth-child(${i + 1})`).style.background = 'var(--green)';
-                                plus += 1;
+                            if (c.selection.indexOf('or more') > -1) {
+                                if ((submitted && c.resultSubmit) || (c.skip && skipped && c.resultSkip)) {
+                                    if (submitted && c.resultSubmit) {
+                                        document.querySelector(`.choice > div:nth-child(${i + 1})`).classList.add('correct');
+                                    }
+                                }
+
+                                if (submitted) {
+                                    plus += 1;
+                                }
                             }
                         }
 
-                        document.querySelector(`.choice > div:nth-child(${i + 1})`).classList.add('dim');
+                        if ((submitted && c.resultSubmit) || (c.skip && skipped && c.resultSkip)) {
+                            document.querySelector(`.choice > div:nth-child(${i + 1})`).classList.add('dim');
+                        }
                     }
                 }
 
-                if (plus) {
-                    document.querySelector('.plus').innerHTML = `+${plus}`;
-                    document.querySelector('.plus').style.display = 'inline';
-                } else {
-                    document.querySelector('.plus').innerHTML = '';
-                    document.querySelector('.plus').style.display = '';
-                }
+                if (submitted) {
+                    if (plus) {
+                        document.querySelector('.plus').innerHTML = `+${addCommas(plus)}`;
+                        document.querySelector('.plus').style.display = 'inline';
+                    } else {
+                        document.querySelector('.plus').innerHTML = '';
+                        document.querySelector('.plus').style.display = '';
+                    }
 
-                if (minus) {
-                    document.querySelector('.minus').innerHTML = `-${minus}`;
-                    document.querySelector('.minus').style.display = 'inline';
-                } else {
-                    document.querySelector('.minus').innerHTML = '';
-                    document.querySelector('.minus').style.display = '';
-                }
+                    if (minus) {
+                        document.querySelector('.minus').innerHTML = `-${addCommas(minus)}`;
+                        document.querySelector('.minus').style.display = 'inline';
+                    } else {
+                        document.querySelector('.minus').innerHTML = '';
+                        document.querySelector('.minus').style.display = '';
+                    }
 
-                c.score += plus - minus;
+                    c.score += plus - minus;
 
-                if (c.resetIncorrect && incorrect) {
-                    document.querySelector('.min').innerHTML = 'Reset';
-                    document.querySelector('.min').style.display = 'inline';
+                    if (c.resetIncorrect && incorrect) {
+                        document.querySelector('.min').innerHTML = 'Reset';
+                        document.querySelector('.min').style.display = 'inline';
 
-                    c.score = 0;
-                }
+                        c.score = 0;
+                    }
 
-                if (!c.negative && c.score < 0) {
-                    document.querySelector('.min').innerHTML = 'Min reached';
-                    document.querySelector('.min').style.display = 'inline';
+                    if (!c.negative && c.score < 0) {
+                        document.querySelector('.min').innerHTML = 'Min reached';
+                        document.querySelector('.min').style.display = 'inline';
 
-                    c.score = 0;
-                }
+                        c.score = 0;
+                    }
 
-                document.querySelector('.score').innerHTML = c.score;
+                    document.querySelector('.score').innerHTML = addCommas(c.score);
 
-                if (c.score > c.high) {
-                    c.high = c.score;
-                    document.querySelector('.high').innerHTML = c.high;
+                    if (c.score > c.high) {
+                        c.high = c.score;
+                        document.querySelector('.high').innerHTML = addCommas(c.high);
+                    }
                 }
 
                 if (c.skip) {
-                    document.querySelector('.reload').style.display = 'none';
+                    document.querySelector('.skip').style.display = 'none';
                 }
 
-                document.querySelector('.submit').innerHTML = 'Next';
-                document.querySelector('.submit').style.display = '';
+                if ((submitted && c.resultSubmit) || (c.skip && skipped && c.resultSkip)) {
+                    document.querySelector('.submit').innerHTML = 'Next';
+                    document.querySelector('.submit').style.display = '';
+                }
 
                 c.cheat = {};
 
                 localStorage.setItem('quiz', JSON.stringify(c));
+
+                if ((submitted && !c.resultSubmit) || (c.skip && skipped && !c.resultSkip)) {
+                    submitted = false;
+                    skipped = false;
+                    game();
+                }
             }
 
-            function game(start) {
+            game = function (start) {
                 const
                     c = JSON.parse(localStorage.getItem('quiz')),
                     choices2 = [],
@@ -259,21 +335,32 @@ fetch(source)
                     season =
                         start && c.cheat.season
                             ? c.cheat.season
-                            : seasons[Math.round(Math.random() * (seasons.length - 1))];
+                            : seasons[Math.round(Math.random() * (seasons.length - 1))],
+                    type =
+                        start && c.cheat.type
+                            ? c.cheat.type
+                            : types[Math.round(Math.random() * (types.length - 1))];
 
-                document.querySelector('.score').innerHTML = c.score;
-                document.querySelector('.high').innerHTML = c.high;
+                if (reset || (submitted && c.resultSubmit) || (c.skip && skipped && c.resultSkip)) {
+                    document.querySelector('.score').innerHTML = addCommas(c.score);
+                    document.querySelector('.high').innerHTML = addCommas(c.high);
 
-                document.querySelector('.plus').style.display = '';
-                document.querySelector('.plus').innerHTML = '';
-                document.querySelector('.minus').style.display = '';
-                document.querySelector('.minus').innerHTML = '';
-                document.querySelector('.min').style.display = '';
-                document.querySelector('.min').innerHTML = '';
+                    document.querySelector('.plus').style.display = '';
+                    document.querySelector('.plus').innerHTML = '';
+                    document.querySelector('.minus').style.display = '';
+                    document.querySelector('.minus').innerHTML = '';
+                    document.querySelector('.min').style.display = '';
+                    document.querySelector('.min').innerHTML = '';
+                }
+
+                reset = false;
+                skipped = false;
+                stop = false;
+                submitted = false;
 
                 document.querySelector('.choice').innerHTML = '';
 
-                if (c.autoSubmit && c.selection !== '0 or more') {
+                if (c.autoSubmit && c.selection.indexOf('or more') === -1) {
                     document.querySelector('.submit').style.color = '';
                     document.querySelector('.submit').innerHTML = '';
                     document.querySelector('.submit').style.display = 'none';
@@ -289,25 +376,25 @@ fetch(source)
                 }
 
                 if (c.skip) {
-                    document.querySelector('.reload').style.display = '';
+                    document.querySelector('.skip').style.display = '';
                 } else {
-                    document.querySelector('.reload').style.display = 'none';
+                    document.querySelector('.skip').style.display = 'none';
                 }
 
-                if (start && c.cheat.type) {
-                    type = c.cheat.type;
+                if (start && c.cheat.category) {
+                    category = c.cheat.category;
                 } else {
-                    if (c.type === 'random') {
-                        type = types[Math.round(Math.random() * (types.length - 1))];
+                    if (c.category === 'random') {
+                        category = categories[Math.round(Math.random() * (categories.length - 1))];
                     } else {
-                        if (['episodes', 'year'].indexOf(c.type) > -1) {
+                        if (['episodes', 'year'].indexOf(c.category) > -1) {
                             if (c.operators) {
-                                type = `${c.type} (with operators)`;
+                                category = `${c.category} (with operators)`;
                             } else {
-                                type = `${c.type} (without operators)`;
+                                category = `${c.category} (without operators)`;
                             }
                         } else {
-                            type = c.type;
+                            category = c.category;
                         }
                     }
                 }
@@ -322,10 +409,17 @@ fetch(source)
                     }
                 }
 
-                choices =
-                    c.selection === '0 or more'
-                        ? Math.round(Math.random() * choice3)
-                        : 1;
+                switch (c.selection) {
+                    case '1 or more':
+                        choices = Math.round(Math.random() * (choice3 - 1)) + 1;
+                        break;
+                    case '0 or more':
+                        choices = Math.round(Math.random() * choice3);
+                        break;
+                    default:
+                        choices = 1;
+                        break;
+                }
 
                 choice.splice(0);
 
@@ -360,14 +454,14 @@ fetch(source)
 
                 document.querySelector('.query a').href = '../../?query=';
 
-                switch (type) {
+                switch (category) {
                     case 'episodes (without operators)':
                         while (episodes2.get(episode) < choices) {
                             episode = episodes[Math.round(Math.random() * (episodes.length - 1))];
                         }
 
-                        document.querySelector('.query a').href += escape(encodeURIComponent(`episodes:${episode} `));
-                        document.querySelector('.query a').innerHTML = `episodes:<span class="bold">${episode}</span>`;
+                        document.querySelector('.query a').href += escape(encodeURIComponent(`eps:${episode} `));
+                        document.querySelector('.query a').innerHTML = `eps:<span class="bold">${episode}</span>`;
                         break;
 
                     case 'episodes (with operators)':
@@ -403,13 +497,18 @@ fetch(source)
                                 break;
                         }
 
-                        document.querySelector('.query a').href += escape(encodeURIComponent(`episodes:${operator + episode} `));
-                        document.querySelector('.query a').innerHTML = `episodes:<span class="bold">${operator + episode}</span>`;
+                        document.querySelector('.query a').href += escape(encodeURIComponent(`eps:${operator + episode} `));
+                        document.querySelector('.query a').innerHTML = `eps:<span class="bold">${operator + episode}</span>`;
                         break;
 
                     case 'season':
                         document.querySelector('.query a').href += escape(encodeURIComponent(`season:${season} `));
                         document.querySelector('.query a').innerHTML = `season:<span class="bold">${season}</span>`;
+                        break;
+
+                    case 'type':
+                        document.querySelector('.query a').href += escape(encodeURIComponent(`type:${type} `));
+                        document.querySelector('.query a').innerHTML = `type:<span class="bold">${type}</span>`;
                         break;
 
                     case 'year (without operators)':
@@ -463,8 +562,8 @@ fetch(source)
                             tag = tags[Math.round(Math.random() * (tags.length - 1))];
                         }
 
-                        document.querySelector('.query a').href += escape(encodeURIComponent(`tag:${tag} `));
-                        document.querySelector('.query a').innerHTML = `tag:<span class="bold">${tag}</span>`;
+                        document.querySelector('.query a').href += escape(encodeURIComponent(`tag:${tag.replace(/\s/giv, '_')} `));
+                        document.querySelector('.query a').innerHTML = `tag:<span class="bold">${tag.replace(/\s/giv, '_')}</span>`;
                         break;
                 }
 
@@ -472,13 +571,11 @@ fetch(source)
                     const div = document.createElement('div');
 
                     let random =
-                        start && c.cheat.link && c.cheat.link.length === choice3
-                            ? database.findIndex((ii) => ii.link === c.cheat.link[i]) > -1
-                                ? database.findIndex((ii) => ii.link === c.cheat.link[i])
-                                : Math.round(Math.random() * (database.length - 1))
+                        start && c.cheat.link && c.cheat.link.length === choice3 && database.findIndex((ii) => ii.link === c.cheat.link[i]) > -1
+                            ? database.findIndex((ii) => ii.link === c.cheat.link[i])
                             : Math.round(Math.random() * (database.length - 1));
 
-                    switch (type) {
+                    switch (category) {
                         case 'episodes (without operators)':
                             if (choice.indexOf(i) > -1) {
                                 while (database[random].episodes !== episode || choices2.indexOf(database[random].link) > -1) {
@@ -569,6 +666,19 @@ fetch(source)
                                 }
                             } else {
                                 while (database[random].season === season || choices2.indexOf(database[random].link) > -1) {
+                                    random = Math.round(Math.random() * (database.length - 1));
+                                }
+                            }
+
+                            break;
+
+                        case 'type':
+                            if (choice.indexOf(i) > -1) {
+                                while (database[random].type !== type || choices2.indexOf(database[random].link) > -1) {
+                                    random = Math.round(Math.random() * (database.length - 1));
+                                }
+                            } else {
+                                while (database[random].type === type || choices2.indexOf(database[random].link) > -1) {
                                     random = Math.round(Math.random() * (database.length - 1));
                                 }
                             }
@@ -679,10 +789,8 @@ fetch(source)
                         `<img class="picture" src="${database[random].picture}" loading="lazy" alt style="margin-right: 19px;">` +
                         `<span class="title" style="width: 100%;">${database[random].title}</span>` +
                         '<div class="source">' +
-                            `<a href="${database[random].link}" target="_blank" rel="noreferrer" title="Go to source">` +
-                                '<svg viewBox="0 0 24 24" height="17" width="17">' +
-                                    '<path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"></path>' +
-                                '</svg>' +
+                            `<a href="../../?query=${escape(encodeURIComponent(`id:${database[random].link.slice('https://myanimelist.net/anime/'.length)} `))}" target="_blank" title="Search">` +
+                                `<svg viewBox="${svg.viewBox}" height="17" width="17">${svg.search}</svg>` +
                             '</a>' +
                         '</div>';
 
@@ -691,21 +799,29 @@ fetch(source)
                             return;
                         }
 
-                        if (document.querySelector('.choice > div[style]')) {
+                        if (stop) {
                             return;
                         }
 
-                        if (!c.autoSubmit && c.selection !== '0 or more') {
-                            document.querySelector('.submit').style.color = '';
-                        }
-
-                        if (c.selection !== '0 or more' && document.querySelector('.selected')) {
+                        if (c.selection === '1' && document.querySelector('.selected') && !e.currentTarget.classList.contains('selected')) {
                             document.querySelector('.selected').classList.remove('selected');
                         }
 
                         e.currentTarget.classList.toggle('selected');
 
-                        if (c.autoSubmit && c.selection !== '0 or more') {
+                        if (document.querySelector('.selected')) {
+                            document.querySelector('.submit').style.color = '';
+                        } else {
+                            if (c.selection === '0 or more') {
+                                document.querySelector('.submit').style.color = '';
+                            } else {
+                                document.querySelector('.submit').style.color = 'var(--disabled)';
+                            }
+                        }
+
+                        if (c.autoSubmit && c.selection.indexOf('or more') === -1) {
+                            submitted = true;
+
                             div.blur();
                             submit();
                         }
@@ -715,6 +831,7 @@ fetch(source)
                 }
 
                 c.cheat = {
+                    category: category,
                     choice: choice,
                     choices: choice3,
                     episode: episode,
@@ -727,14 +844,16 @@ fetch(source)
                 };
 
                 localStorage.setItem('quiz', JSON.stringify(c));
-            }
+            };
 
             game(true);
 
             document.querySelector('.submit').addEventListener('click', () => {
                 const c = JSON.parse(localStorage.getItem('quiz'));
 
-                if (document.querySelector('.choice > div[style]')) {
+                submitted = true;
+
+                if (document.querySelector('.choice > .dim') || document.querySelector('.choice > div[style]')) {
                     game();
 
                     return;
@@ -754,19 +873,18 @@ fetch(source)
                 c.score = 0;
                 c.high = 0;
 
-                if (e.target.value === '0 or more') {
+                if (e.target.value.indexOf('or more') > -1) {
                     document.querySelector('[for="auto-submit"]').style.color = 'var(--disabled)';
-                    document.querySelector('[for="auto-submit"]').parentElement.style.display = 'none';
                     document.querySelector('#auto-submit').setAttribute('disabled', '');
-                    document.querySelector('#auto-submit').parentElement.style.display = 'none';
+                    document.querySelector('#auto-submit').parentElement.parentElement.style.display = 'none';
                 } else {
                     document.querySelector('[for="auto-submit"]').style.color = '';
-                    document.querySelector('[for="auto-submit"]').parentElement.style.display = '';
                     document.querySelector('#auto-submit').removeAttribute('disabled');
-                    document.querySelector('#auto-submit').parentElement.style.display = '';
+                    document.querySelector('#auto-submit').parentElement.parentElement.style.display = '';
                 }
 
                 localStorage.setItem('quiz', JSON.stringify(c));
+                reset = true;
                 game();
             });
 
@@ -778,6 +896,7 @@ fetch(source)
                 c.high = 0;
 
                 localStorage.setItem('quiz', JSON.stringify(c));
+                reset = true;
                 game();
             });
 
@@ -789,6 +908,7 @@ fetch(source)
                 c.high = 0;
 
                 localStorage.setItem('quiz', JSON.stringify(c));
+                reset = true;
                 game();
             });
 
@@ -799,7 +919,18 @@ fetch(source)
                 c.score = 0;
                 c.high = 0;
 
+                if (e.target.checked) {
+                    document.querySelector('[for="result-skip"]').style.color = '';
+                    document.querySelector('#result-skip').removeAttribute('disabled');
+                    document.querySelector('#result-skip').parentElement.parentElement.style.display = '';
+                } else {
+                    document.querySelector('[for="result-skip"]').style.color = 'var(--disabled)';
+                    document.querySelector('#result-skip').setAttribute('disabled', '');
+                    document.querySelector('#result-skip').parentElement.parentElement.style.display = 'none';
+                }
+
                 localStorage.setItem('quiz', JSON.stringify(c));
+                reset = true;
                 game();
             });
 
@@ -811,6 +942,7 @@ fetch(source)
                 c.high = 0;
 
                 localStorage.setItem('quiz', JSON.stringify(c));
+                reset = true;
                 game();
             });
 
@@ -821,19 +953,42 @@ fetch(source)
                 c.score = 0;
                 c.high = 0;
 
-                if (document.querySelector('#reset-incorrect').checked) {
+                if (e.target.checked) {
                     document.querySelector('[for="negative"]').style.color = 'var(--disabled)';
-                    document.querySelector('[for="negative"]').parentElement.style.display = 'none';
                     document.querySelector('#negative').setAttribute('disabled', '');
-                    document.querySelector('#negative').parentElement.style.display = 'none';
+                    document.querySelector('#negative').parentElement.parentElement.style.display = 'none';
                 } else {
                     document.querySelector('[for="negative"]').style.color = '';
-                    document.querySelector('[for="negative"]').parentElement.style.display = '';
                     document.querySelector('#negative').removeAttribute('disabled');
-                    document.querySelector('#negative').parentElement.style.display = '';
+                    document.querySelector('#negative').parentElement.parentElement.style.display = '';
                 }
 
                 localStorage.setItem('quiz', JSON.stringify(c));
+                reset = true;
+                game();
+            });
+
+            document.querySelector('#result-submit').addEventListener('change', (e) => {
+                const c = JSON.parse(localStorage.getItem('quiz'));
+
+                c.resultSubmit = e.target.checked;
+                c.score = 0;
+                c.high = 0;
+
+                localStorage.setItem('quiz', JSON.stringify(c));
+                reset = true;
+                game();
+            });
+
+            document.querySelector('#result-skip').addEventListener('change', (e) => {
+                const c = JSON.parse(localStorage.getItem('quiz'));
+
+                c.resultSkip = e.target.checked;
+                c.score = 0;
+                c.high = 0;
+
+                localStorage.setItem('quiz', JSON.stringify(c));
+                reset = true;
                 game();
             });
 
@@ -845,43 +1000,43 @@ fetch(source)
                 c.high = 0;
 
                 localStorage.setItem('quiz', JSON.stringify(c));
+                reset = true;
                 game();
             });
 
-            document.querySelector('#type').addEventListener('change', (e) => {
+            document.querySelector('#category').addEventListener('change', (e) => {
                 const c = JSON.parse(localStorage.getItem('quiz'));
 
-                c.type = e.target.value;
+                c.category = e.target.value;
                 c.score = 0;
                 c.high = 0;
 
                 if (['episodes', 'year'].indexOf(e.target.value) > -1) {
                     document.querySelector('[for="operators"]').style.color = '';
-                    document.querySelector('[for="operators"]').parentElement.style.display = '';
                     document.querySelector('#operators').removeAttribute('disabled');
-                    document.querySelector('#operators').parentElement.style.display = '';
+                    document.querySelector('#operators').parentElement.parentElement.style.display = '';
                 } else {
                     document.querySelector('[for="operators"]').style.color = 'var(--disabled)';
-                    document.querySelector('[for="operators"]').parentElement.style.display = 'none';
                     document.querySelector('#operators').setAttribute('disabled', '');
-                    document.querySelector('#operators').parentElement.style.display = 'none';
+                    document.querySelector('#operators').parentElement.parentElement.style.display = 'none';
                 }
 
                 localStorage.setItem('quiz', JSON.stringify(c));
+                reset = true;
                 game();
             });
 
             document.querySelector('.settings').addEventListener('click', () => {
                 if (document.querySelector('.settings-container').style.display === 'none') {
-                    document.querySelector('.settings svg').innerHTML = settingsOpen;
+                    document.querySelector('.settings svg').innerHTML = svg.settingsOpen;
                     document.querySelector('.settings-container').style.display = 'flex';
+                    document.querySelector('.query').style.display = 'none';
+                    document.querySelector('.choice').style.display = 'none';
+                } else {
+                    document.querySelector('.settings svg').innerHTML = svg.settingsClose;
+                    document.querySelector('.settings-container').style.display = 'none';
                     document.querySelector('.query').style.display = '';
                     document.querySelector('.choice').style.display = '';
-                } else {
-                    document.querySelector('.settings svg').innerHTML = settingsClose;
-                    document.querySelector('.settings-container').style.display = 'none';
-                    document.querySelector('.query').style.display = 'inline-flex';
-                    document.querySelector('.choice').style.display = 'block';
                 }
             });
 
@@ -889,9 +1044,10 @@ fetch(source)
                 const c = JSON.parse(localStorage.getItem('quiz'));
 
                 c.score = 0;
-                document.querySelector('.score').innerHTML = c.score;
+                document.querySelector('.score').innerHTML = addCommas(c.score);
 
                 localStorage.setItem('quiz', JSON.stringify(c));
+                reset = true;
                 game();
             });
 
@@ -899,16 +1055,38 @@ fetch(source)
                 const c = JSON.parse(localStorage.getItem('quiz'));
 
                 c.high = 0;
-                document.querySelector('.high').innerHTML = c.high;
+                document.querySelector('.high').innerHTML = addCommas(c.high);
 
                 localStorage.setItem('quiz', JSON.stringify(c));
+                reset = true;
                 game();
             });
 
-            document.querySelector('.reload').addEventListener('click', () => {
+            document.querySelector('.reset-both').addEventListener('click', () => {
+                const c = JSON.parse(localStorage.getItem('quiz'));
+
+                c.score = 0;
+                c.high = 0;
+                document.querySelector('.score').innerHTML = addCommas(c.score);
+                document.querySelector('.high').innerHTML = addCommas(c.high);
+
+                localStorage.setItem('quiz', JSON.stringify(c));
+                reset = true;
+                game();
+            });
+
+            document.querySelector('.skip').addEventListener('click', () => {
                 const c = JSON.parse(localStorage.getItem('quiz'));
 
                 if (!c.skip) {
+                    return;
+                }
+
+                skipped = true;
+
+                if (c.resultSkip) {
+                    document.querySelector('.submit').style.color = '';
+                    submit();
                     return;
                 }
 
@@ -916,9 +1094,8 @@ fetch(source)
             });
 
             document.querySelector('.loading').innerHTML = `Database as of ${updated}`;
-            document.querySelector('.choice').style.display = 'block';
-            document.querySelector('.menu').style.display = 'inline-flex';
-            document.querySelector('.query').style.display = 'inline-flex';
+            document.querySelector('.reload').style.display = 'inline-flex';
+            document.querySelector('main').style.display = '';
         }, 100);
     })
     .catch(() => {

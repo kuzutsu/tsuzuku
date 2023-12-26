@@ -1,18 +1,14 @@
 {
     "env": {
         "browser": true,
-        "es2020": true,
+        "es2023": true,
         "worker": true
     },
     "globals": {
-        "Fuse": "readonly",
-        "Row": "readonly",
-        "RowManager": "readonly",
-        "Tabulator": "readonly"
+        "Fuse": "readonly"
     },
     "extends": "eslint:all",
     "parserOptions": {
-        "ecmaVersion": 2020,
         "sourceType": "module"
     },
     "rules": {
@@ -30,6 +26,7 @@
         "indent": ["error", 4, {
             "SwitchCase": 1
         }],
+        "linebreak-style": "off",
         "max-depth": "off",
         "max-len": "off",
         "max-lines": "off",

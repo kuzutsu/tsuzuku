@@ -1,8 +1,13 @@
 .selected {
-    background: var(--selected) !important;
+    background: var(--selected);
 }
 
-.selected:focus-within,
+/* .selected:focus-within, */
+.choice > div:hover {
+    background: var(--background-hover);
+    opacity: 1;
+}
+
 .selected:hover {
     background: var(--selected-hover) !important;
 }
@@ -29,8 +34,8 @@
     min-width: 300px;
 }
 
-.choice > div:focus-within,
-.choice > div:hover,
+/* .choice > div:focus-within, */
+/* .choice > div:hover, */
 .picture {
     background: var(--background-hover);
     opacity: 1;
@@ -44,7 +49,7 @@ select {
 .menu,
 .query {
     align-items: center;
-    display: none;
+    display: inline-flex;
     overflow: auto;
     padding: 0 38px;
     white-space: nowrap;
@@ -63,7 +68,7 @@ select {
 }
 
 .menu,
-.reload,
+.skip,
 .submit {
     user-select: none;
 }
@@ -89,14 +94,13 @@ select {
     user-select: text;
 }
 
-.query-container {
+/* .query-container {
     min-width: 100px;
     overflow: auto;
     width: 100%;
-}
+} */
 
 .choice {
-    display: none;
     overflow: auto;
     padding: 11.5px 19px;
 }
@@ -110,13 +114,17 @@ select {
 }
 
 .source a {
-    display: none;
-}
-
-.choice > div:focus-within .source a,
-.choice > div:hover .source a {
     align-items: center;
     display: inline-flex;
+}
+
+div:not(.dim) > .source a {
+    opacity: 0.2;
+}
+
+/* .choice > div:focus-within .source a, */
+.choice > div:hover .source a {
+    opacity: 1;
 }
 
 select {
@@ -143,12 +151,13 @@ select {
     margin-top: 11.5px;
 }
 
+.reset-both,
 .reset-high,
-.reset-score {
+.reset-score,
+.skip {
     color: var(--reset);
 }
 
-.reload,
 .submit {
     color: var(--selected-header);
 }
@@ -169,4 +178,53 @@ select {
 
 .plus {
     color: var(--green);
+}
+
+tr {
+    height: 40px;
+}
+
+td:nth-of-type(1) {
+    min-width: 190px;
+    width: 190px;
+}
+
+td:nth-of-type(2) {
+    min-width: 100px;
+    padding-left: 19px;
+    text-align: end
+}
+
+.tr {
+    background: var(--background);
+    position: sticky;
+    top: 0;
+}
+
+.tr td {
+    font-weight: 500;
+}
+
+.correct {
+    background: var(--green);
+}
+
+.incorrect {
+    background: var(--red);
+}
+
+.none {
+    background: var(--selected);
+}
+
+.correct:hover {
+    background: var(--green-hover) !important;
+}
+
+.incorrect:hover {
+    background: var(--red-hover) !important;
+}
+
+.none:hover {
+    background: var(--selected-hover) !important;
 }
