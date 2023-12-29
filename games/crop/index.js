@@ -349,9 +349,12 @@ fetch(source)
                     y: y
                 };
 
-                document.querySelector('.input').value = '';
-                document.querySelector('.input2').style.display = '';
                 document.querySelector('.answers').innerHTML = '';
+
+                document.querySelector('.input2').style.display = '';
+                document.querySelector('.clear').style.display = 'none';
+
+                document.querySelector('.input').value = '';
                 document.querySelector('.input').focus();
 
                 localStorage.setItem('crop', JSON.stringify(c));
@@ -591,6 +594,20 @@ fetch(source)
                 }
 
                 game();
+            });
+
+            document.querySelector('.input').addEventListener('input', (e) => {
+                if (e.target.value) {
+                    document.querySelector('.clear').style.display = 'inline-flex';
+                } else {
+                    document.querySelector('.clear').style.display = 'none';
+                }
+            });
+
+            document.querySelector('.clear').addEventListener('click', () => {
+                document.querySelector('.clear').style.display = 'none';
+                document.querySelector('.input').value = '';
+                document.querySelector('.input').focus();
             });
 
             document.querySelector('.loading').innerHTML = `Database as of ${updated}`;
